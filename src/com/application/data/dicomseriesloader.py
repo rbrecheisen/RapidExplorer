@@ -13,7 +13,7 @@ class DicomSeriesLoader:
     def execute(self) -> None:
         directory = QFileDialog.getExistingDirectory(self._parent, "Select DICOM Series")
         if not directory:
-            return
+            return self.dicomSeries
         self.dicomSeries = [pydicom.dcmread(os.path.join(directory, f)) for f in os.listdir(directory)]
         for p in self.dicomSeries:
             p.decompress('pylibjpeg')

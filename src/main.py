@@ -3,7 +3,7 @@ from com.application.mainwindow import MainWindow
 
 
 def main():
-    app = QApplication(['Mosamatic Desktop'])
+    app = QApplication(['Rbeesoft RAPID'])
     mainWindow = MainWindow()
     mainWindow.show()
     app.exec()
