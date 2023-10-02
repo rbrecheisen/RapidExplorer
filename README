@@ -1,12 +1,37 @@
 TODO
 
-DATA
+DESIGN
 
-- ImageData
-    - DicomImageData
-    - NiftiImageData
+RAPID is designed around the concepts of datasets, tasks operating on
+datasets and producing other datasets, and views for displaying
+datasets.
 
-- ImageLoadingStrategy
-    - DicomImageLoadingStrategy
-    - DicomSeriesLoadingStrategy
-    - MultipleDicomSeriesLoadingStrategy
+DATASETS
+
+Datasets can refer to tabular or imaging data. We envision the following
+class hierarchy for datasets
+
+- Dataset
+    - ImageDataset
+        - DicomImageDataset
+        - DicomImageSeriesDataset
+        - MultiDicomImageSeriesDataset
+        - NiftiImageDataset
+        - MultiNiftiImageDataset
+        - ArrayDataset2D
+        - ArrayDataset3D
+
+TASKS
+
+Tasks operate on datasets and produce datasets as output whether it be
+a simple scalar value, a table or image dataset. Each task knows what
+kind of dataset it supports as input and what kind of dataset it outputs.
+
+class Task:
+- input_dataset_type = DicomImageDataset
+- output_dataset_type = ArrayDataset2D
+
+
+VIEWS
+
+Views display datasets.

@@ -2,8 +2,8 @@ import resources
 
 from PySide6.QtCore import Qt, QSize
 from PySide6.QtGui import QPainter, QPaintEvent, QPixmap, QColor, QAction
-from PySide6.QtWidgets import QMainWindow, QMenuBar, QMenu
-from com.application.tabwidget import TabWidget
+from PySide6.QtWidgets import QMainWindow
+from com.application.tab.tabwidget import TabWidget
 
 
 class MainWindow(QMainWindow):

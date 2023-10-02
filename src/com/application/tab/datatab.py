@@ -4,7 +4,7 @@ import numpy as np
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QImage, QPixmap, QAction
 from PySide6.QtWidgets import QLabel, QPushButton, QVBoxLayout, QSlider, QLineEdit, QMenu
-from com.application.data.dicomseriesloader import DicomSeriesLoader
+from com.application.dataset.dicomseriesloader import DicomSeriesLoader
 from com.application.tab import Tab
 
 
