@@ -1,2 +1,2 @@
 #!/bin/bash
-./distribution/mosamatic-desktop
+./distribution/rapid
