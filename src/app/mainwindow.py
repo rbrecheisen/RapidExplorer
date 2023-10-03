@@ -16,7 +16,7 @@ class MainWindow(QMainWindow):
     MESSAGE_BOX_QUESTION = 'Are you sure you want to quit?'
     WIDTH = 1000
     HEIGHT = 1200
-    BACKGROUND_IMAGE = ':/images/cachexia.png'
+    BACKGROUND_IMAGE = ':/res/img/cachexia.png'
     BACKGROUND_GRAY_RECT_R = 255
     BACKGROUND_GRAY_RECT_G = 255
     BACKGROUND_GRAY_RECT_B = 255
