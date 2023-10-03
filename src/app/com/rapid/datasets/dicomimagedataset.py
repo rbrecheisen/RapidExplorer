@@ -1,4 +1,4 @@
-from rapid.datasets.imagedataset import ImageDataset
+from com.rapid.datasets.imagedataset import ImageDataset
 
 
 class DicomImageDataset(ImageDataset):

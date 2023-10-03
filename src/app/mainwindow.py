@@ -4,7 +4,7 @@ from PySide6.QtCore import QSize
 from PySide6.QtGui import QPainter, QPaintEvent, QPixmap, QColor, QGuiApplication, QAction
 from PySide6.QtWidgets import QApplication, QMainWindow, QMenu, QMessageBox
 
-from rapid.tabs.tabwidget import TabWidget
+from com.rapid.tabs.tabwidget import TabWidget
 
 
 class MainWindow(QMainWindow):
@@ -32,7 +32,7 @@ class MainWindow(QMainWindow):
         tabWidget = TabWidget(self.menuBar())
         self.menuBar().setNativeMenuBar(False)
         self.setCentralWidget(tabWidget)
-        self.setFixedSize(QSize(MainWindow.WIDTH, MainWindow.HEIGHT))
+        # self.setFixedSize(QSize(MainWindow.WIDTH, MainWindow.HEIGHT))
         self.setWindowTitle(MainWindow.TITLE)
         self._centerWindow()
 

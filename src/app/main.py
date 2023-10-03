@@ -1,13 +1,13 @@
 import sys
 
 from PySide6.QtWidgets import QApplication
-from rapid.mainwindow import MainWindow
+from mainwindow import MainWindow
 
 
 def main():
     app = QApplication([])
     mainWindow = MainWindow()
-    mainWindow.show()
+    mainWindow.showMaximized()
     sys.exit(app.exec())
 
 

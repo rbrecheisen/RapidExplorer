@@ -1,4 +1,4 @@
-from rapid.tabs.tab import Tab
+from com.rapid.tabs.tab import Tab
 
 
 class TaskTab(Tab):

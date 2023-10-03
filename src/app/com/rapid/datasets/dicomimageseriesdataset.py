@@ -1,7 +1,7 @@
 import os
 import pydicom
 
-from rapid.datasets.imagedataset import ImageDataset
+from com.rapid.datasets.imagedataset import ImageDataset
 
 
 class DicomImageSeriesDataset(ImageDataset):
