@@ -11,7 +11,7 @@ class DicomImageSeriesDataset(ImageDataset):
 
     def load(self, path: str) -> None:
         images = [pydicom.dcmread(os.path.join(path, f)) for f in os.listdir(path)]
-        [p.decompress() for p in images]
+        [p.decompress('pylibjpeg') for p in images]
         images.sort(key=lambda p: int(p.InstanceNumber))
         self._data = {path: images}
 
