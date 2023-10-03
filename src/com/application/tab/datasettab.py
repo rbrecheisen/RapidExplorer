@@ -4,7 +4,7 @@ import numpy as np
 
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QImage, QPixmap, QAction
-from PySide6.QtWidgets import QLabel, QVBoxLayout, QSlider, QLineEdit, QMenu, QFileDialog
+from PySide6.QtWidgets import QLabel, QVBoxLayout, QSlider, QLineEdit, QMenu, QFileDialog, QWidget, QHBoxLayout
 
 from com.application.dataset.dicomimageseriesdataset import DicomImageSeriesDataset
 from com.application.tab.tab import Tab
@@ -17,18 +17,19 @@ class DatasetTab(Tab):
     MENU_ITEM_LOAD_DICOM = 'Load DICOM Image'
     MENU_ITEM_LOAD_DICOM_SERIES = 'Load DICOM Image Series'
     MENU_ITEM_LOAD_MULTI_DICOM_SERIES = 'Load Multiple DICOM Image Series'
-    # DEFAULT_WINDOW_LEVEL = 400
-    # DEFAULT_WINDOW_WIDTH = 50
+    DEFAULT_WINDOW_LEVEL = 400
+    DEFAULT_WINDOW_WIDTH = 50
 
     def __init__(self) -> None:
         super(DatasetTab, self).__init__()
         self._menu = None
-        # self._imageContent = None
-        # self._sliderSliceSelection = None
-        # self._lineEditWindowLevelAndWidth = None
-        # self._selectedDataset = None
-        # self._windowLevel = DatasetTab.DEFAULT_WINDOW_LEVEL
-        # self._windowWidth = DatasetTab.DEFAULT_WINDOW_WIDTH
+        self._imageContent = None
+        self._imageContentContainer = None
+        self._sliderSliceSelection = None
+        self._lineEditWindowLevelAndWidth = None
+        self._selectedDataset = None
+        self._windowLevel = DatasetTab.DEFAULT_WINDOW_LEVEL
+        self._windowWidth = DatasetTab.DEFAULT_WINDOW_WIDTH
         self._initUi()
 
     def _initUi(self) -> None:
@@ -45,22 +46,29 @@ class DatasetTab(Tab):
         self._menu.addAction(action2)
         self._menu.addAction(action3)
 
-        # self._imageContent = QLabel(DatasetTab.EMPTY_TEXT)
-        # self._imageContent.setAlignment(Tab.LABEL_ALIGNMENT)
-        # self._imageContent.setStyleSheet(f'color: {Tab.FONT_COLOR}')
+        self._imageContent = QLabel(DatasetTab.EMPTY_TEXT)
+        self._imageContent.setAlignment(Tab.LABEL_ALIGNMENT)
+        self._imageContent.setStyleSheet(f'color: {Tab.FONT_COLOR}')
 
-        # self._sliderSliceSelection = QSlider(Qt.Horizontal)
-        # self._sliderSliceSelection.valueChanged.connect(self._showImage)
-        # self._sliderSliceSelection.setEnabled(False)
+        containerLayout = QHBoxLayout()
+        containerLayout.addWidget(self._imageContent)
+        containerLayout.setAlignment(self._imageContent, Qt.AlignCenter)
+        self._imageContentContainer = QWidget()
+        self._imageContentContainer.setLayout(containerLayout)
 
-        # self._lineEditWindowLevelAndWidth = QLineEdit(f'{self._windowLevel}, {self._windowWidth}')
-        # self._lineEditWindowLevelAndWidth.textChanged.connect(self._updateWindowLevelAndWidth)
+        self._sliderSliceSelection = QSlider(Qt.Horizontal)
+        self._sliderSliceSelection.valueChanged.connect(self._showImage)
+        self._sliderSliceSelection.setEnabled(False)
 
-        # layout = QVBoxLayout()
-        # layout.addWidget(self._lineEditWindowLevelAndWidth)
-        # layout.addWidget(self._imageContent)
-        # layout.addWidget(self._sliderSliceSelection)
-        # self.setLayout(layout)
+        self._lineEditWindowLevelAndWidth = QLineEdit(f'{self._windowLevel}, {self._windowWidth}')
+        self._lineEditWindowLevelAndWidth.textChanged.connect(self._updateWindowLevelAndWidth)
+
+        layout = QVBoxLayout()
+        layout.addWidget(self._lineEditWindowLevelAndWidth)
+        layout.addWidget(self._imageContentContainer)
+        layout.addWidget(self._sliderSliceSelection)
+        layout.setAlignment(self._imageContentContainer, Qt.AlignCenter)
+        self.setLayout(layout)
 
     def getMenu(self) -> QMenu:
         return self._menu
