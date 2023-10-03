@@ -6,6 +6,8 @@ class Base(DeclarativeBase):
 
 
 class Dataset(Base):
+    # rootDirectory
+    
     __tablename__ = 'dataset'
 
 
