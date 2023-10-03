@@ -1,2 +1,3 @@
 #!/bin/bash
-~/.venv/rapid/bin/pyside6-rcc -o src/resources.py src/resources.qrc
+cd src/rapid
+~/.venv/rapid/bin/pyside6-rcc -o resources.py resources.qrc
