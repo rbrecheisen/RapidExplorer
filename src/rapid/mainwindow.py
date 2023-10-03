@@ -4,7 +4,7 @@ from PySide6.QtCore import QSize
 from PySide6.QtGui import QPainter, QPaintEvent, QPixmap, QColor, QGuiApplication, QAction
 from PySide6.QtWidgets import QApplication, QMainWindow, QMenu, QMessageBox
 
-from com.application.tab.tabwidget import TabWidget
+from rapid.tabs.tabwidget import TabWidget
 
 
 class MainWindow(QMainWindow):

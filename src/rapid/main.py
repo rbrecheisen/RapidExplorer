@@ -1,7 +1,7 @@
 import sys
 
 from PySide6.QtWidgets import QApplication
-from com.application.mainwindow import MainWindow
+from rapid.mainwindow import MainWindow
 
 
 def main():

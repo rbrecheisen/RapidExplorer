@@ -6,10 +6,11 @@ class Base(DeclarativeBase):
 
 
 class Dataset(Base):
-    # rootDirectory
+    # path: str
     
     __tablename__ = 'dataset'
 
 
 class File(Base):
+    # path: str
     __tablename__ = 'file'

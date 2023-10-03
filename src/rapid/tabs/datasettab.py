@@ -6,8 +6,8 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QImage, QPixmap, QAction
 from PySide6.QtWidgets import QLabel, QVBoxLayout, QSlider, QLineEdit, QMenu, QFileDialog, QWidget, QHBoxLayout
 
-from com.application.dataset.dicomimageseriesdataset import DicomImageSeriesDataset
-from com.application.tab.tab import Tab
+from rapid.datasets.dicomimageseriesdataset import DicomImageSeriesDataset
+from rapid.tabs.tab import Tab
 
 
 class DatasetTab(Tab):
