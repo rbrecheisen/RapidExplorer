@@ -1,0 +1,8 @@
+TODO
+
+- Background data loading using QRunnable
+- QDockWidgets for datasets, tasks and views (instead of tabs)
+- Application icon
+- SQL database for tracking datasets and files (SQLAlchemy and SQLite3)
+- Background tasks using Celery
+- Data storage
