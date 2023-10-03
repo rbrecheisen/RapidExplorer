@@ -3,4 +3,6 @@ from com.application.dataset.dataset import Dataset
 
 
 class ImageDataset(Dataset, ABC):
-    pass
+    
+    def __init__(self) -> None:
+        super(ImageDataset, self).__init__()

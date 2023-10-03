@@ -1,12 +1,14 @@
+import sys
+
 from PySide6.QtWidgets import QApplication
 from com.application.mainwindow import MainWindow
 
 
 def main():
-    app = QApplication(['Rbeesoft RAPID'])
+    app = QApplication([])
     mainWindow = MainWindow()
     mainWindow.show()
-    app.exec()
+    sys.exit(app.exec())
 
 
 if __name__ == "__main__":

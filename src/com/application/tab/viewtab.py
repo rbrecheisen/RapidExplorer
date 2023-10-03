@@ -1,4 +1,4 @@
-from com.application.tab import Tab
+from com.application.tab.tab import Tab
 
 
 class ViewTab(Tab):

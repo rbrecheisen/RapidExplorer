@@ -1,5 +1,9 @@
 TODO
 
+- Background dataset loading and progress bar
+- Application icon
+
+
 DESIGN
 
 RAPID is designed around the concepts of datasets, tasks operating on
