@@ -1,14 +1,9 @@
 TODO
 
 - Background dataset loading and progress bar
+- Create dataset repository
 - Application icon
 
-
-DESIGN
-
-RAPID is designed around the concepts of datasets, tasks operating on
-datasets and producing other datasets, and views for displaying
-datasets.
 
 DATASETS
 
