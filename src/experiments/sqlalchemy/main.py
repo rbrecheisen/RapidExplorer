@@ -1,5 +1,4 @@
-from typing import List
-from sqlalchemy.orm import mapped_column, relationship, Session
+from sqlalchemy.orm import Session
 from sqlalchemy import create_engine
 
 from models.basemodel import BaseModel
