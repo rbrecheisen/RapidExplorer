@@ -1,6 +1,10 @@
 from PySide6.QtCore import Qt, QSize
 from PySide6.QtGui import QGuiApplication, QAction
-from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QDockWidget, QVBoxLayout, QLabel, QTextEdit, QMenu
+from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QLabel, QMenu
+
+from widgets.datasetdockwidget import DatasetDockWidget
+from widgets.taskdockwidget import TaskDockWidget
+from widgets.logdockwidget import LogDockWidget
 
 
 class MainWindow(QMainWindow):
@@ -68,25 +72,23 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(widget)
 
     def initDatasetWidget(self) -> None:
-        self.dockWidgetDatasets = QDockWidget(MainWindow.MAINWINDOW_DOCK_WIDGET_DATASET_TITLE)
-        self.dockWidgetDatasets.setWidget(QTextEdit('Place holder for datasets'))
-        self.dockWidgetDatasets.setMinimumWidth(MainWindow.MAINWINDOW_DOCK_WIDGET_DATASET_WIDTH_MIN)
-        self.dockWidgetDatasets.setMaximumWidth(MainWindow.MAINWINDOW_DOCK_WIDGET_DATASET_WIDTH_MAX)
-        self.dockWidgetDatasets.setFeatures(QDockWidget.DockWidgetMovable | QDockWidget.DockWidgetFloatable)
+        self.dockWidgetDatasets = DatasetDockWidget(
+            MainWindow.MAINWINDOW_DOCK_WIDGET_DATASET_TITLE,
+            MainWindow.MAINWINDOW_DOCK_WIDGET_DATASET_WIDTH_MIN,
+            MainWindow.MAINWINDOW_DOCK_WIDGET_DATASET_WIDTH_MAX,
+        )
         self.addDockWidget(Qt.LeftDockWidgetArea, self.dockWidgetDatasets)
 
     def initTaskWidget(self) -> None:
-        self.dockWidgetTasks = QDockWidget(MainWindow.MAINWINDOW_DOCK_WIDGET_TASK_TITLE)
-        self.dockWidgetTasks.setWidget(QTextEdit('Place holder for tasks'))
-        self.dockWidgetTasks.setMinimumWidth(MainWindow.MAINWINDOW_DOCK_WIDGET_TASK_WIDTH_MIN)
-        self.dockWidgetTasks.setMaximumWidth(MainWindow.MAINWINDOW_DOCK_WIDGET_TASK_WIDTH_MAX)
-        self.dockWidgetTasks.setFeatures(QDockWidget.DockWidgetMovable | QDockWidget.DockWidgetFloatable)
+        self.dockWidgetTasks = TaskDockWidget(
+            MainWindow.MAINWINDOW_DOCK_WIDGET_TASK_TITLE,
+            MainWindow.MAINWINDOW_DOCK_WIDGET_TASK_WIDTH_MIN,
+            MainWindow.MAINWINDOW_DOCK_WIDGET_TASK_WIDTH_MAX,
+        )
         self.addDockWidget(Qt.LeftDockWidgetArea, self.dockWidgetTasks)
 
     def initLogWidget(self) -> None:
-        self.dockWidgetLog = QDockWidget(MainWindow.MAINWINDOW_DOCK_WIDGET_LOG_TITLE)
-        self.dockWidgetLog.setWidget(QTextEdit('Place holder for logging'))
-        self.dockWidgetLog.setFeatures(QDockWidget.DockWidgetMovable | QDockWidget.DockWidgetFloatable)
+        self.dockWidgetLog = LogDockWidget(MainWindow.MAINWINDOW_DOCK_WIDGET_LOG_TITLE)
         self.addDockWidget(Qt.BottomDockWidgetArea, self.dockWidgetLog)
 
     def initToolBar(self) -> None:
