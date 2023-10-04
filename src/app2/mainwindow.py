@@ -1,6 +1,6 @@
 from PySide6.QtCore import Qt, QSize
-from PySide6.QtGui import QGuiApplication
-from PySide6.QtWidgets import QMainWindow, QWidget, QDockWidget, QVBoxLayout, QLabel, QTextEdit
+from PySide6.QtGui import QGuiApplication, QAction
+from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QDockWidget, QVBoxLayout, QLabel, QTextEdit, QMenu
 
 
 class MainWindow(QMainWindow):
@@ -16,6 +16,7 @@ class MainWindow(QMainWindow):
     MAINWINDOW_DOCK_WIDGET_TASK_WIDTH_MAX = 600
     MAINWINDOW_DOCK_WIDGET_LOG_TITLE = 'Logs'
     MAINWINDOW_DOCK_WIDGET_LOG_HEIGHT = 200
+    MENU_DATASETS_TITLE = 'Data'
 
     def __init__(self) -> None:
         super(MainWindow, self).__init__()
@@ -32,7 +33,31 @@ class MainWindow(QMainWindow):
         self.splitDockWidget(self.dockWidgetDatasets, self.dockWidgetTasks, Qt.Vertical)
         self.setFixedSize(QSize(MainWindow.MAINWINDOW_WIDTH, MainWindow.MAINWINDOW_HEIGHT))
         self.setWindowTitle(MainWindow.MAINWINDOW_TITLE)
+        self.initMenus()
         self.centerWindow()
+
+    def initMenus(self) -> None:
+        loadDicomImageAction = QAction('Load DICOM Image...', self)
+        loadDicomImageAction.triggered.connect(self.loadDicomImage)
+        loadDicomImageSeriesAction = QAction('Load DICOM Image Series...', self)
+        loadDicomImageSeriesAction.triggered.connect(self.loadDicomImageSeries)
+        loadMultiDicomImageSeriesAction = QAction('Load Multiple DICOM Image Series...', self)
+        loadMultiDicomImageSeriesAction.triggered.connect(self.loadMultiDicomImageSeries)
+        loadPngImageAction = QAction('Load PNG Image...', self)
+        loadPngImageAction.triggered.connect(self.loadPngImage)
+        loadJpgImageAction = QAction('Load JPG Image...', self)
+        loadJpgImageAction.triggered.connect(self.loadJpgImage)
+        exitAction = QAction('Exit', self)
+        exitAction.triggered.connect(self.exit)
+        datasetsMenu = QMenu(MainWindow.MENU_DATASETS_TITLE)
+        datasetsMenu.addAction(loadDicomImageAction)
+        datasetsMenu.addAction(loadDicomImageSeriesAction)
+        datasetsMenu.addAction(loadMultiDicomImageSeriesAction)
+        datasetsMenu.addAction(loadPngImageAction)
+        datasetsMenu.addAction(loadJpgImageAction)
+        datasetsMenu.addAction(exitAction)
+        self.menuBar().addMenu(datasetsMenu)
+        self.menuBar().setNativeMenuBar(False)
 
     def initViewWidget(self) -> None:
         canvas = QLabel('Image viewer')
@@ -79,3 +104,23 @@ class MainWindow(QMainWindow):
         x = (screen.width() - self.geometry().width()) / 2
         y = (screen.height() - self.geometry().height()) / 2
         self.move(int(x), int(y))
+
+    # Event handlers
+
+    def loadDicomImage(self) -> None:
+        pass
+
+    def loadDicomImageSeries(self) -> None:
+        pass
+
+    def loadMultiDicomImageSeries(self) -> None:
+        pass
+
+    def loadPngImage(self) -> None:
+        pass
+
+    def loadJpgImage(self) -> None:
+        pass
+
+    def exit(self) -> None:
+        QApplication.exit()
