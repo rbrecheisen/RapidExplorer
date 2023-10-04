@@ -1,11 +1,9 @@
-import enum
-
-from abc import ABC
 from typing import List
-from sqlalchemy import ForeignKey, String, Enum
+from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, Session
-from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy import create_engine
+
+from datasetloader import DatasetLoader
 
 
 class Base(DeclarativeBase):
@@ -50,8 +48,16 @@ engine = create_engine('sqlite://', echo=True)
 Base.metadata.create_all(engine)
 
 with Session(engine) as session:
-    dataset = Dataset(path='/path/to/dataset')
-    fileSet = FileSet(path='/path/to/dataset/fileSet', dataset=dataset)
-    file = File(path='/path/to/dataset/fileSet/file', fileSet=fileSet)
-    session.add_all([dataset, fileSet, file])
+    loader = DatasetLoader(path='/Users/ralph/Desktop/downloads/dataset')
+    dataset = loader.execute()
+
+    # Create dataset storage manager?
+    datasetObj = Dataset(path=dataset.path)
+    for fileSet in dataset.fileSets:
+        fileSetObj = FileSet(path=fileSet.path, dataset=datasetObj)
+        for file in fileSet.files:            
+            fileObj = File(path=file.path, fileSet=fileSetObj)
+            session.add(fileObj)
+        session.add(fileSetObj)
+    session.add(datasetObj)
     session.commit()
