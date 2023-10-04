@@ -26,6 +26,7 @@ class MainWindow(QMainWindow):
         self.initUi()
 
     def initUi(self) -> None:
+        self.initMenus()
         self.initViewWidget()
         self.initDatasetWidget()
         self.initTaskWidget()
@@ -33,7 +34,6 @@ class MainWindow(QMainWindow):
         self.splitDockWidget(self.dockWidgetDatasets, self.dockWidgetTasks, Qt.Vertical)
         self.setFixedSize(QSize(MainWindow.MAINWINDOW_WIDTH, MainWindow.MAINWINDOW_HEIGHT))
         self.setWindowTitle(MainWindow.MAINWINDOW_TITLE)
-        self.initMenus()
         self.centerWindow()
 
     def initMenus(self) -> None:
@@ -72,6 +72,7 @@ class MainWindow(QMainWindow):
         self.dockWidgetDatasets.setWidget(QTextEdit('Place holder for datasets'))
         self.dockWidgetDatasets.setMinimumWidth(MainWindow.MAINWINDOW_DOCK_WIDGET_DATASET_WIDTH_MIN)
         self.dockWidgetDatasets.setMaximumWidth(MainWindow.MAINWINDOW_DOCK_WIDGET_DATASET_WIDTH_MAX)
+        self.dockWidgetDatasets.setFeatures(QDockWidget.DockWidgetMovable | QDockWidget.DockWidgetFloatable)
         self.addDockWidget(Qt.LeftDockWidgetArea, self.dockWidgetDatasets)
 
     def initTaskWidget(self) -> None:
@@ -79,11 +80,13 @@ class MainWindow(QMainWindow):
         self.dockWidgetTasks.setWidget(QTextEdit('Place holder for tasks'))
         self.dockWidgetTasks.setMinimumWidth(MainWindow.MAINWINDOW_DOCK_WIDGET_TASK_WIDTH_MIN)
         self.dockWidgetTasks.setMaximumWidth(MainWindow.MAINWINDOW_DOCK_WIDGET_TASK_WIDTH_MAX)
+        self.dockWidgetTasks.setFeatures(QDockWidget.DockWidgetMovable | QDockWidget.DockWidgetFloatable)
         self.addDockWidget(Qt.LeftDockWidgetArea, self.dockWidgetTasks)
 
     def initLogWidget(self) -> None:
         self.dockWidgetLog = QDockWidget(MainWindow.MAINWINDOW_DOCK_WIDGET_LOG_TITLE)
         self.dockWidgetLog.setWidget(QTextEdit('Place holder for logging'))
+        self.dockWidgetLog.setFeatures(QDockWidget.DockWidgetMovable | QDockWidget.DockWidgetFloatable)
         self.addDockWidget(Qt.BottomDockWidgetArea, self.dockWidgetLog)
 
     def initToolBar(self) -> None:
