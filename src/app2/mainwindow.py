@@ -63,8 +63,8 @@ class MainWindow(QMainWindow):
 
     def initToolBar(self) -> None:
         toolbar = QToolBar()
-        action1 = QAction(QIcon(QPixmap("icon1.png")), "Action 1", self)
-        action2 = QAction(QIcon(QPixmap("icon2.png")), "Action 2", self)
+        action1 = QAction(QIcon(QPixmap('')), 'Action 1', self)
+        action2 = QAction(QIcon(QPixmap('')), 'Action 2', self)
         toolbar.addAction(action1)
         toolbar.addAction(action2)
         self.addToolBar(Qt.TopToolBarArea, toolbar)
