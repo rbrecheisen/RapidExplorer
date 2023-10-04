@@ -1,6 +1,7 @@
 TODO
 
 - ** Background data loading using QRunnable and progess bar
+- Custom dock widgets and pluggable widgets
 - Background tasks using Celery
 - Data storage intermediate and output datasets
 - Select L3 and export as DICOM file
