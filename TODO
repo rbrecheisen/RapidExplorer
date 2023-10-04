@@ -1,8 +1,14 @@
 TODO
 
-- Background data loading using QRunnable
-- QDockWidgets for datasets, tasks and views (instead of tabs)
 - Application icon
-- SQL database for tracking datasets and files (SQLAlchemy and SQLite3)
+- Background data loading using QRunnable
 - Background tasks using Celery
-- Data storage
+- Data storage intermediate and output datasets
+- Select L3 and export as DICOM file
+- Dataset explorer widget
+- Task widget
+- Pluggable tasks and views
+
+x QDockWidgets for datasets, tasks and views (instead of tabs)
+x SQL database for tracking datasets and files (SQLAlchemy and SQLite3)
+x Data storage
