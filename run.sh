@@ -1,2 +1,2 @@
 #!/bin/bash
-./distribution/rapid
+./distribution/rapid-xplorer
