@@ -19,7 +19,7 @@ class Dataset:
         return None
         
     def __str__(self) -> str:
-        s = f'Dataset({self.name}):\n'
+        s = f'Dataset(name={self.name}, path={self.path}):\n'
         for fileSet in self.fileSets:
             s += str(fileSet) + '\n'
         return s

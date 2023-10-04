@@ -10,6 +10,7 @@ from models.filemodel import FileModel
 class FileSetModel(BaseModel):
     __tablename__ = 'fileset'
     id: Mapped[int] = mapped_column('id', primary_key=True)
+    name: Mapped[str] = mapped_column('name', String(256), unique=False)
     path: Mapped[str] = mapped_column('path', String(1024))
     dataset: Mapped['DatasetModel'] = relationship(back_populates='fileSets')
     datasetId: Mapped[int] = mapped_column('dataset_id', ForeignKey('dataset.id'))

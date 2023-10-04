@@ -12,22 +12,23 @@ engine = create_engine('sqlite://', echo=False)
 BaseModel.metadata.create_all(engine)
 
 with Session(engine) as session:
+
     builder = DatasetBuilder(
         path='/Users/ralph/Desktop/downloads/dataset',
         name='myDataset',
     )
     dataset = builder.build()
+    
     manager = DatasetStorageManager(session=session)
     name = manager.save(dataset)
     dataset = manager.load(name)
 
     imageLoader = DicomImageLoader(dataset)
     image = imageLoader.load()
-    print(image.SeriesDescription)
 
     imageSeriesLoader = DicomImageSeriesLoader(dataset)
     images = imageSeriesLoader.load()
     for image in images:
-        print(image.SeriesDescription)
+        pass
 
     manager.delete(name)

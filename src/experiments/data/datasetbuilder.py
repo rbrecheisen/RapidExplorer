@@ -23,9 +23,10 @@ class DatasetBuilder:
             self.name = utilities.create_random_name(prefix='dataset')
         dataset = Dataset(self.path, self.name)
         for fileSetPath in data.keys():
-            fileSet = FileSet(fileSetPath)
+            fileSetName = os.path.split(fileSetPath)[1]                 # Use last directory name as name
+            fileSet = FileSet(path=fileSetPath, name=fileSetName)
             for filePath in data[fileSetPath]:
-                f = File(filePath)
-                fileSet.files.append(f)
+                file = File(path=filePath)
+                fileSet.files.append(file)
             dataset.fileSets.append(fileSet)
         return dataset

@@ -15,7 +15,7 @@ class DatasetStorageManager:
     def save(self, dataset: Dataset):
         datasetModel = DatasetModel(path=dataset.path, name=dataset.name)
         for fileSet in dataset.fileSets:
-            fileSetModel = FileSetModel(path=fileSet.path, dataset=datasetModel)
+            fileSetModel = FileSetModel(path=fileSet.path, name=fileSet.name, dataset=datasetModel)
             for file in fileSet.files:
                 fileModel = FileModel(path=file.path, fileSet=fileSetModel)
                 self.session.add(fileModel)
@@ -29,7 +29,7 @@ class DatasetStorageManager:
         # convert back to dataset
         dataset = Dataset(path=datasetModel.path, name=datasetModel.name)
         for fileSetModel in datasetModel.fileSets:
-            fileSet = FileSet(path=fileSetModel.path)
+            fileSet = FileSet(path=fileSetModel.path, name=fileSetModel.name)
             for fileModel in fileSetModel.files:
                 file = File(path=fileModel.path)
                 fileSet.files.append(file)
