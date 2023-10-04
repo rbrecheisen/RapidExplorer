@@ -9,7 +9,7 @@ from com.rapid.tabs.tabwidget import TabWidget
 
 class MainWindow(QMainWindow):
 
-    TITLE = 'Rbeesoft RAPID'
+    TITLE = 'Rbeesoft RAPID-xplorer'
     MENU_ITEM_APPLICATION = 'Application'
     ACTION_EXIT = 'Exit'
     MESSAGE_BOX_TITLE = 'Exit'
