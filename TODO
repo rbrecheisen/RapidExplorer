@@ -1,7 +1,6 @@
 TODO
 
-- Application icon
-- Background data loading using QRunnable
+- ** Background data loading using QRunnable and progess bar
 - Background tasks using Celery
 - Data storage intermediate and output datasets
 - Select L3 and export as DICOM file
