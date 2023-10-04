@@ -4,7 +4,7 @@ from PySide6.QtCore import QSize
 from PySide6.QtGui import QPainter, QPaintEvent, QPixmap, QColor, QGuiApplication, QAction
 from PySide6.QtWidgets import QApplication, QMainWindow, QMenu, QMessageBox
 
-from com.rapid.tabs.tabwidget import TabWidget
+from com.rapidxplorer.tabs.tabwidget import TabWidget
 
 
 class MainWindow(QMainWindow):
@@ -16,7 +16,7 @@ class MainWindow(QMainWindow):
     MESSAGE_BOX_QUESTION = 'Are you sure you want to quit?'
     WIDTH = 1000
     HEIGHT = 1200
-    BACKGROUND_IMAGE = ':/res/img/cachexia.png'
+    BACKGROUND_IMAGE = ':/res/img/background.jpg'
     BACKGROUND_GRAY_RECT_R = 255
     BACKGROUND_GRAY_RECT_G = 255
     BACKGROUND_GRAY_RECT_B = 255
@@ -32,7 +32,7 @@ class MainWindow(QMainWindow):
         tabWidget = TabWidget(self.menuBar())
         self.menuBar().setNativeMenuBar(False)
         self.setCentralWidget(tabWidget)
-        # self.setFixedSize(QSize(MainWindow.WIDTH, MainWindow.HEIGHT))
+        self.setFixedSize(QSize(MainWindow.WIDTH, MainWindow.HEIGHT))
         self.setWindowTitle(MainWindow.TITLE)
         self._centerWindow()
 

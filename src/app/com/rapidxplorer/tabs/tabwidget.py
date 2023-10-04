@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QTabWidget, QMainWindow, QMenuBar, QMenu
-from com.rapid.tabs.datasettab import DatasetTab
-from com.rapid.tabs.tasktab import TaskTab
-from com.rapid.tabs.viewtab import ViewTab
+from com.rapidxplorer.tabs.datasettab import DatasetTab
+from com.rapidxplorer.tabs.tasktab import TaskTab
+from com.rapidxplorer.tabs.viewtab import ViewTab
 
 
 class TabWidget(QTabWidget):

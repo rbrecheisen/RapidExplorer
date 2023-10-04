@@ -1,5 +1,5 @@
 from abc import ABC
-from com.rapid.datasets.dataset import Dataset
+from com.rapidxplorer.data.dataset import Dataset
 
 
 class ImageDataset(Dataset, ABC):
