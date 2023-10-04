@@ -1,3 +1,5 @@
+import time
+
 from PySide6.QtCore import Qt, QThreadPool, QRunnable, Signal, QObject
 from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QProgressBar, QVBoxLayout, QWidget
 
@@ -5,20 +7,19 @@ class Signals(QObject):
     progress = Signal(int)
 
 class FileLoader(QRunnable):
-    def __init__(self, file_list):
+    def __init__(self, file_list=None):
         super(FileLoader, self).__init__()
         self.file_list = file_list
         self.signals = Signals()
 
     def run(self):
-        total_files = len(self.file_list)
-        for i, file_name in enumerate(self.file_list):
-            # Simulate file loading
-            print(f"Loading {file_name}")
-            
-            # Update the progress
-            progress = int((i + 1) / total_files * 100)
+        steps = 5
+        for i in range(steps):
+            print(f'Loading file {i}...')
+            time.sleep(2)
+            progress = int((i + 1) / steps * 100)
             self.signals.progress.emit(progress)
+        print('Done')
 
 class MainWindow(QMainWindow):
     def __init__(self):

@@ -2,7 +2,9 @@ from sqlalchemy.orm import Session
 from sqlalchemy import create_engine
 
 from models.basemodel import BaseModel
-from datasetfilepathbuilder import DatasetFilePathBuilder
+from datasetbuilder import DatasetBuilder
+from dicomimageloader import DicomImageLoader
+from dicomimageseriesloader import DicomImageSeriesLoader
 from datasetstoragemanager import DatasetStorageManager
 
 
@@ -10,13 +12,22 @@ engine = create_engine('sqlite://', echo=False)
 BaseModel.metadata.create_all(engine)
 
 with Session(engine) as session:
-    builder = DatasetFilePathBuilder(
+    builder = DatasetBuilder(
         path='/Users/ralph/Desktop/downloads/dataset',
         name='myDataset',
     )
-    dataset = builder.execute()
+    dataset = builder.build()
     manager = DatasetStorageManager(session=session)
     name = manager.save(dataset)
     dataset = manager.load(name)
-    print(dataset)
+
+    imageLoader = DicomImageLoader(dataset)
+    image = imageLoader.load()
+    print(image.SeriesDescription)
+
+    imageSeriesLoader = DicomImageSeriesLoader(dataset)
+    images = imageSeriesLoader.load()
+    for image in images:
+        print(image.SeriesDescription)
+
     manager.delete(name)

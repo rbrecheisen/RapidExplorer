@@ -49,10 +49,11 @@ class MainWindow(QMainWindow):
         painter.drawRect(self.rect())
 
     def _exitApplication(self) -> None:
-        choice = QMessageBox.question(
-            self, MainWindow.MESSAGE_BOX_TITLE, MainWindow.MESSAGE_BOX_QUESTION, QMessageBox.Yes | QMessageBox.No)
-        if choice == QMessageBox.Yes:
-            QApplication.quit()
+        # choice = QMessageBox.question(
+        #     self, MainWindow.MESSAGE_BOX_TITLE, MainWindow.MESSAGE_BOX_QUESTION, QMessageBox.Yes | QMessageBox.No)
+        # if choice == QMessageBox.Yes:
+        #     QApplication.quit()
+        QApplication.quit()
 
     def _centerWindow(self) -> None:
         screen = QGuiApplication.primaryScreen().geometry()

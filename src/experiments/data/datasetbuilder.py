@@ -6,12 +6,12 @@ from models.fileset import FileSet
 from models.file import File
 
 
-class DatasetFilePathBuilder:
+class DatasetBuilder:
     def __init__(self, path: str, name: str=None) -> None:
         self.path = path
         self.name = name
 
-    def execute(self):
+    def build(self):
         data = {}
         for root, dirs, files in os.walk(self.path):
             for f_name in files:
