@@ -3,14 +3,13 @@ from sqlalchemy import String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from models.basemodel import BaseModel
-from models.datasetmodel import DatasetModel
 
 
 class FileModel(BaseModel):
     __tablename__ = 'file'
     id: Mapped[int] = mapped_column('id', primary_key=True)
     path: Mapped[str] = mapped_column('path', String(1024))
-    fileSet: Mapped['DatasetModel'] = relationship(back_populates='files')
+    fileSet: Mapped['FileSetModel'] = relationship(back_populates='files')
     fileSetId: Mapped[int] = mapped_column('fileset_id', ForeignKey('fileset.id'))
 
     def __repr__(self) -> str:

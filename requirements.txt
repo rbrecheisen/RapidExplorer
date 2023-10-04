@@ -1,0 +1,7 @@
+numpy
+pydicom 
+pyside6
+sqlalchemy
+pendulum 
+pylibjpeg[openjpeg]
+nuitka

@@ -1,15 +1,17 @@
 import os
+import utilities
 
 from models.dataset import Dataset
 from models.fileset import FileSet
 from models.file import File
 
 
-class DatasetFilePathIndexer:
-    def __init__(self, path: str) -> None:
+class DatasetFilePathBuilder:
+    def __init__(self, path: str, name: str=None) -> None:
         self.path = path
+        self.name = name
 
-    def load(self):
+    def execute(self):
         data = {}
         for root, dirs, files in os.walk(self.path):
             for f_name in files:
@@ -17,7 +19,9 @@ class DatasetFilePathIndexer:
                 if root not in data.keys():
                     data[root] = []
                 data[root].append(f_path)
-        dataset = Dataset(self.path)
+        if self.name is None:
+            self.name = utilities.create_random_name(prefix='dataset')
+        dataset = Dataset(self.path, self.name)
         for fileSetPath in data.keys():
             fileSet = FileSet(fileSetPath)
             for filePath in data[fileSetPath]:
