@@ -47,6 +47,10 @@ class MainWindow(QMainWindow):
         loadDicomImageSeriesAction.triggered.connect(self.loadDicomImageSeries)
         loadMultiDicomImageSeriesAction = QAction('Load Multiple DICOM Image Series...', self)
         loadMultiDicomImageSeriesAction.triggered.connect(self.loadMultiDicomImageSeries)
+        loadNiftiVolumeAction = QAction('Load NIFTI Volume...', self)
+        loadNiftiVolumeAction.triggered.connect(self.loadNiftiVolume)
+        loadMultiNiftiVolumeAction = QAction('Load Multiple NIFTI Volumes...', self)
+        loadMultiNiftiVolumeAction.triggered.connect(self.loadMultiNiftiVolumes)
         loadPngImageAction = QAction('Load PNG Image...', self)
         loadPngImageAction.triggered.connect(self.loadPngImage)
         loadJpgImageAction = QAction('Load JPG Image...', self)
@@ -57,8 +61,13 @@ class MainWindow(QMainWindow):
         datasetsMenu.addAction(loadDicomImageAction)
         datasetsMenu.addAction(loadDicomImageSeriesAction)
         datasetsMenu.addAction(loadMultiDicomImageSeriesAction)
+        datasetsMenu.addSeparator()
+        datasetsMenu.addAction(loadNiftiVolumeAction)
+        datasetsMenu.addAction(loadMultiNiftiVolumeAction)
+        datasetsMenu.addSeparator()
         datasetsMenu.addAction(loadPngImageAction)
         datasetsMenu.addAction(loadJpgImageAction)
+        datasetsMenu.addSeparator()
         datasetsMenu.addAction(exitAction)
         self.menuBar().addMenu(datasetsMenu)
         self.menuBar().setNativeMenuBar(False)
@@ -119,6 +128,12 @@ class MainWindow(QMainWindow):
         pass
 
     def loadMultiDicomImageSeries(self) -> None:
+        pass
+
+    def loadNiftiVolume(self) -> None:
+        pass
+
+    def loadMultiNiftiVolumes(self) -> None:
         pass
 
     def loadPngImage(self) -> None:

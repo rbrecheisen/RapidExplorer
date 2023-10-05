@@ -11,11 +11,11 @@ class DatasetDockWidget(Dockwidget):
 
     def initUi(self) -> None:
         listWidget = QListWidget()
-        listWidget.addItem(QListWidgetItem('Item 1'))
-        listWidget.addItem(QListWidgetItem('Item 2'))
-        listWidget.addItem(QListWidgetItem('Item 3'))
+        listWidget.addItem(QListWidgetItem('Dataset 1'))
+        listWidget.addItem(QListWidgetItem('Dataset 2'))
+        listWidget.addItem(QListWidgetItem('Dataset 3'))
         listWidget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.setWidget(listWidget)
         self.setMinimumWidth(self.minWidth)
-        self.setMaximumHeight(self.maxWidth)
+        self.setMaximumWidth(self.maxWidth)
         self.setFeatures(QDockWidget.DockWidgetMovable | QDockWidget.DockWidgetFloatable)
