@@ -5,6 +5,8 @@ TODO
 - Background tasks using Celery
 - Data storage intermediate and output datasets
 - Select L3 and export as DICOM file
+- Rescale non-512 DICOM images
+- Anonymize DICOM images
 - Dataset explorer widget
 - Task widget
 - Pluggable tasks and views
