@@ -1,7 +1,7 @@
 TODO
 
-- ** Background data loading using QRunnable and progess bar
-- Custom dock widgets and pluggable widgets
+- Table widget for datasets
+- Background data loading using QRunnable and progess bar
 - Background tasks using Celery
 - Data storage intermediate and output datasets
 - Select L3 and export as DICOM file
@@ -12,3 +12,7 @@ TODO
 x QDockWidgets for datasets, tasks and views (instead of tabs)
 x SQL database for tracking datasets and files (SQLAlchemy and SQLite3)
 x Data storage
+
++------+----+--------------------------------+
+|Name|Loader|Nr. Files|Nr. File Sets|Uploaded|
++------+----+--------------------------------+
