@@ -8,8 +8,8 @@ TODO
 - Rescale non-512 DICOM images
 - Anonymize DICOM images
 - Dataset explorer widget
-- Task widget
-- Pluggable tasks and views
+- Pluggable tasks dialogs
+- Left-side QDockWidget for view selection/configuration
 
 x QDockWidgets for datasets, tasks and views (instead of tabs)
 x SQL database for tracking datasets and files (SQLAlchemy and SQLite3)

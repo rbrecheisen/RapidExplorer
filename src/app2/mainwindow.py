@@ -19,7 +19,8 @@ class MainWindow(QMainWindow):
     MAINWINDOW_DOCK_WIDGET_TASK_WIDTH_MIN = 450
     MAINWINDOW_DOCK_WIDGET_TASK_WIDTH_MAX = 600
     MAINWINDOW_DOCK_WIDGET_LOG_TITLE = 'Logs'
-    MAINWINDOW_DOCK_WIDGET_LOG_HEIGHT = 200
+    MAINWINDOW_DOCK_WIDGET_LOG_HEIGHT_MIN = 100
+    MAINWINDOW_DOCK_WIDGET_LOG_HEIGHT_MAX = 100
     MENU_DATASETS_TITLE = 'Data'
 
     def __init__(self) -> None:
@@ -97,8 +98,13 @@ class MainWindow(QMainWindow):
         self.addDockWidget(Qt.LeftDockWidgetArea, self.dockWidgetTasks)
 
     def initLogWidget(self) -> None:
-        self.dockWidgetLog = LogDockWidget(MainWindow.MAINWINDOW_DOCK_WIDGET_LOG_TITLE)
+        self.dockWidgetLog = LogDockWidget(
+            MainWindow.MAINWINDOW_DOCK_WIDGET_LOG_TITLE,
+            MainWindow.MAINWINDOW_DOCK_WIDGET_LOG_HEIGHT_MIN,
+            MainWindow.MAINWINDOW_DOCK_WIDGET_LOG_HEIGHT_MAX,
+        )
         self.addDockWidget(Qt.BottomDockWidgetArea, self.dockWidgetLog)
+        self.dockWidgetLog.resize(self.dockWidgetLog.width(), self.dockWidgetLog.minimumHeight())
 
     def initToolBar(self) -> None:
         toolbar = QToolBar()
