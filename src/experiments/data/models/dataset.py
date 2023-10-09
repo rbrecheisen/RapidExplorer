@@ -8,6 +8,15 @@ class Dataset:
         self.name = name
         self.fileSets = []
 
+    def nrFileSets(self) -> int:
+        return len(self.fileSets)
+    
+    def nrFiles(self) -> int:
+        total = 0
+        for fileSet in self.fileSets:
+            total += fileSet.nrFiles()
+        return total
+
     def firstFile(self) -> File:
         if len(self.fileSets) > 0:
             return self.fileSets[0].firstFile()

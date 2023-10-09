@@ -9,4 +9,6 @@ class DicomImageLoader:
 
     def load(self) -> pydicom.FileDataset:
         file = self.dataset.firstFile()
-        return pydicom.dcmread(file.path)
+        p = pydicom.dcmread(file.path)
+        p.decompress('pylibjpeg')
+        return p

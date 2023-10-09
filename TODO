@@ -1,5 +1,6 @@
 TODO
 
+- DICOM images loaders all return Dict object?
 - Table widget for datasets
 - Background data loading using QRunnable and progess bar
 - Background tasks using Celery

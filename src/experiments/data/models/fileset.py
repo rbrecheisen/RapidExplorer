@@ -7,11 +7,14 @@ class FileSet:
         self.name = name
         self.files = []
 
+    def nrFiles(self) -> int:
+        return len(self.files)
+        
     def firstFile(self) -> File:
-        if len(self.files) > 0:
+        if self.nrFiles() > 0:
             return self.files[0]
         return None
-        
+    
     def __str__(self) -> str:
         s = f'  FileSet(name={self.name}, path={self.path}):\n'
         for f in self.files:

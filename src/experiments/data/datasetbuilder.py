@@ -21,9 +21,10 @@ class DatasetBuilder:
                 data[root].append(f_path)
         if self.name is None:
             self.name = utilities.create_random_name(prefix='dataset')
-        dataset = Dataset(self.path, self.name)
+        dataset = Dataset(self.path, self.name)                         # Path points to dataset root directory
         for fileSetPath in data.keys():
-            fileSetName = os.path.split(fileSetPath)[1]                 # Use last directory name as name
+            # fileSetName = os.path.split(fileSetPath)[1]
+            fileSetName = os.path.relpath(fileSetPath, dataset.path)    # Get file set directory relative to dataset root directory
             fileSet = FileSet(path=fileSetPath, name=fileSetName)
             for filePath in data[fileSetPath]:
                 file = File(path=filePath)
