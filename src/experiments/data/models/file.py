@@ -1,6 +1,13 @@
+from abc import ABC, abstractmethod
+
+
 class File:
     def __init__(self, path: str) -> None:
         self._path = path
 
-    def __str__(self) -> str:
-        return f'    File: {self._path}'
+    def path(self) -> str:
+        return self._path
+
+    @abstractmethod
+    def data(self):
+        pass
