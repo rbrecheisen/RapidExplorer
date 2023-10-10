@@ -1,27 +1,35 @@
 import pydicom
 
-from typing import List
-from models.dataset import Dataset
-from signals.fileloaderprogresssignal import FileLoaderProgressSignal
+from typing import List, Dict
+from PySide6.QtCore import QRunnable
+from models.dataset import Dataset, FileSet
+from signals.loaderprogresssignal import LoaderProgressSignal
 
 
-class DicomImageSeriesLoader:
-    def __init__(self, dataset: Dataset, progressSignal: FileLoaderProgressSignal=None) -> None:
+class DicomImageSeriesLoader(QRunnable):
+    def __init__(self, dataset: Dataset) -> None:
+        super(DicomImageSeriesLoader, self).__init__()
         self.dataset = dataset
-        self.progressSignal = progressSignal
+        self.data = {}
+        self.signal = LoaderProgressSignal()
 
-    def load(self) -> List[pydicom.FileDataset]:
+    def getData(self) -> Dict[str, FileSet]:
+        return self.data
+    
+    def getImageSeries(self) -> List[pydicom.FileDataset]:
+        return self.data[list(self.data.keys())[0]]
+
+    def run(self):
         fileSet = self.dataset.firstFileSet()
         i = 0
-        images = []
+        self.data = {fileSet.name: []}
         for file in fileSet.files:
             p = pydicom.dcmread(file.path)
             p.decompress('pylibjpeg')
-            images.append(p)
-            if self.progressSignal:
-                progress = int((i + 1) / fileSet.nrFiles() * 100)
-                self.progressSignal.progress.emit(progress)
-                i += 1
-        images.sort(key=lambda p: int(p.InstanceNumber))
-        return images
+            self.data[fileSet.name].append(p)
+            progress = int((i + 1) / fileSet.nrFiles() * 100)
+            self.signal.progress.emit(progress)
+            i += 1
+        self.data[fileSet.name].sort(key=lambda p: int(p.InstanceNumber))
+        self.signal.done.emit(True)
  

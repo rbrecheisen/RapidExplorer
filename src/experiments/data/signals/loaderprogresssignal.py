@@ -1,4 +1,5 @@
 from PySide6.QtCore import Signal, QObject
 
-class FileLoaderProgressSignal(QObject):
+class LoaderProgressSignal(QObject):
     progress = Signal(int)
+    done = Signal(bool)

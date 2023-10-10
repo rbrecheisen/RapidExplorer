@@ -26,7 +26,6 @@ class DatasetStorageManager:
 
     def load(self, name: str):
         datasetModel = self.session.query(DatasetModel).filter_by(name=name).one()
-        # convert back to dataset
         dataset = Dataset(path=datasetModel.path, name=datasetModel.name)
         for fileSetModel in datasetModel.fileSets:
             fileSet = FileSet(path=fileSetModel.path, name=fileSetModel.name)

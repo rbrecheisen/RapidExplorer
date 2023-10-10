@@ -1,37 +1,75 @@
 import os
 
-from sqlalchemy.orm import Session
-from sqlalchemy import create_engine
+from PySide6.QtCore import QThreadPool
+from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QProgressBar, QVBoxLayout, QWidget, QMessageBox
 
-from models.basemodel import BaseModel
 from datasetbuilder import DatasetBuilder
 from dicomimageloader import DicomImageLoader
 from dicomimageseriesloader import DicomImageSeriesLoader
 from multidicomimageseriesloader import MultiDicomImageSeriesLoader
-from datasetstoragemanager import DatasetStorageManager
 
-
-engine = create_engine('sqlite://', echo=False)
-BaseModel.metadata.create_all(engine)
 
 DATASET_DIR = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset')
 DATASET_NAME = 'myDataset'
 
 
-with Session(engine) as session:
-    builder = DatasetBuilder(path=DATASET_DIR, name=DATASET_NAME)   # Build dataset from file paths
-    dataset = builder.build()
-    manager = DatasetStorageManager(session=session)                # Save to database
-    name = manager.save(dataset)
-    dataset = manager.load(name)                                    # Load back into memory
-    imageLoader = DicomImageLoader(dataset)                         # Load the first image in dataset (as PyDicom object)
-    image = imageLoader.load()
-    imageSeriesLoader = DicomImageSeriesLoader(dataset)             # Load first scan in dataset (as file set of PyDicom objects)
-    images = imageSeriesLoader.load()
-    for image in images:
-        pass
-    multiImageSeriesLoader = MultiDicomImageSeriesLoader(dataset)
-    images = multiImageSeriesLoader.load()
-    for fileSetName in images.keys():
-        print(fileSetName)
-    manager.delete(name)
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        layout = QVBoxLayout()
+        self.progressBar = QProgressBar()
+        self.progressBar.setValue(0)
+        layout.addWidget(self.progressBar)
+        self.button1 = QPushButton("Load DICOM Image")
+        self.button2 = QPushButton("Load DICOM Image Series")
+        self.button3 = QPushButton("Load Multiple DICOM Image Series")
+        self.button1.clicked.connect(self.loadDicomImage)
+        self.button2.clicked.connect(self.loadDicomImageSeries)
+        self.button3.clicked.connect(self.loadMultipleDicomImageSeries)
+        layout.addWidget(self.button1)
+        layout.addWidget(self.button2)
+        layout.addWidget(self.button3)
+        container = QWidget()
+        container.setLayout(layout)
+        self.setCentralWidget(container)
+        self.setWindowTitle('RAPID-X')
+
+    def loadDicomImage(self):
+        self.progressBar.setValue(0)
+        builder = DatasetBuilder(path=DATASET_DIR, name=DATASET_NAME)
+        dataset = builder.build()
+        loader = DicomImageLoader(dataset=dataset)
+        loader.signal.done.connect(self.loadFinished)
+        loader.signal.progress.connect(self.updateProgress)
+        QThreadPool.globalInstance().start(loader)
+
+    def loadDicomImageSeries(self):
+        self.progressBar.setValue(0)
+        builder = DatasetBuilder(path=DATASET_DIR, name=DATASET_NAME)
+        dataset = builder.build()
+        loader = DicomImageSeriesLoader(dataset=dataset)
+        loader.signal.done.connect(self.loadFinished)
+        loader.signal.progress.connect(self.updateProgress)
+        QThreadPool.globalInstance().start(loader)
+
+    def loadMultipleDicomImageSeries(self):
+        self.progressBar.setValue(0)
+        builder = DatasetBuilder(path=DATASET_DIR, name=DATASET_NAME)
+        dataset = builder.build()
+        loader = MultiDicomImageSeriesLoader(dataset=dataset)
+        loader.signal.done.connect(self.loadFinished)
+        loader.signal.progress.connect(self.updateProgress)
+        QThreadPool.globalInstance().start(loader)
+
+    def updateProgress(self, value):
+        self.progressBar.setValue(value)
+
+    def loadFinished(self, value):
+        QMessageBox.information(self, '', 'Finished')
+
+
+if __name__ == '__main__':
+    app = QApplication([])
+    window = MainWindow()
+    window.show()
+    app.exec()
