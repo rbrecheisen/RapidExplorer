@@ -3,8 +3,6 @@ from sqlalchemy import String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from models.basemodel import BaseModel
-from models.datasetmodel import DatasetModel
-from models.filemodel import FileModel
 
 
 class FileSetModel(BaseModel):

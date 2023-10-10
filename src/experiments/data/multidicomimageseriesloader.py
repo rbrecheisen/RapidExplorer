@@ -9,24 +9,24 @@ from signals.loaderprogresssignal import LoaderProgressSignal
 class MultiDicomImageSeriesLoader(QRunnable):
     def __init__(self, dataset: Dataset) -> None:
         super(MultiDicomImageSeriesLoader, self).__init__()
-        self.dataset = dataset
-        self.data = {}
-        self.signal = LoaderProgressSignal()
+        self._dataset = dataset
+        self._data = {}
+        self._signal = LoaderProgressSignal()
 
     def getData(self) -> Dict[str, FileSet]:
-        return self.data
+        return self._data
     
     def run(self):
-        self.data = {}
+        self._data = {}
         i = 0
-        for fileSet in self.dataset.fileSets:
-            self.data[fileSet.name] = []
+        for fileSet in self._dataset.fileSets:
+            self._data[fileSet.name] = []
             for file in fileSet.files:
                 p = pydicom.dcmread(file.path)
                 p.decompress('pylibjpeg')                
-                self.data[fileSet.name].append(p)
-                progress = int((i + 1) / self.dataset.nrFiles() * 100)
-                self.signal.progress.emit(progress)
+                self._data[fileSet.name].append(p)
+                progress = int((i + 1) / self._dataset.nrFiles() * 100)
+                self._signal.progress.emit(progress)
                 i += 1
-            self.data[fileSet.name].sort(key=lambda p: int(p.InstanceNumber))
-        self.signal.done.emit(True)
+            self._data[fileSet.name].sort(key=lambda p: int(p.InstanceNumber))
+        self._signal.done.emit(True)

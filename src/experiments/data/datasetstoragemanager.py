@@ -10,7 +10,7 @@ from models.filemodel import FileModel
 
 class DatasetStorageManager:
     def __init__(self, session: Session) -> None:
-        self.session = session
+        self._session = session
 
     def save(self, dataset: Dataset):
         datasetModel = DatasetModel(path=dataset.path, name=dataset.name)
@@ -18,14 +18,14 @@ class DatasetStorageManager:
             fileSetModel = FileSetModel(path=fileSet.path, name=fileSet.name, dataset=datasetModel)
             for file in fileSet.files:
                 fileModel = FileModel(path=file.path, fileSet=fileSetModel)
-                self.session.add(fileModel)
-            self.session.add(fileSetModel)
-        self.session.add(datasetModel)
-        self.session.commit()
+                self._session.add(fileModel)
+            self._session.add(fileSetModel)
+        self._session.add(datasetModel)
+        self._session.commit()
         return dataset.name
 
     def load(self, name: str):
-        datasetModel = self.session.query(DatasetModel).filter_by(name=name).one()
+        datasetModel = self._session.query(DatasetModel).filter_by(name=name).one()
         dataset = Dataset(path=datasetModel.path, name=datasetModel.name)
         for fileSetModel in datasetModel.fileSets:
             fileSet = FileSet(path=fileSetModel.path, name=fileSetModel.name)
@@ -36,5 +36,5 @@ class DatasetStorageManager:
         return dataset
 
     def delete(self, name: str):
-        datasetModel = self.session.query(DatasetModel).filter_by(name=name).one()
-        self.session.delete(datasetModel)
+        datasetModel = self._session.query(DatasetModel).filter_by(name=name).one()
+        self._session.delete(datasetModel)
