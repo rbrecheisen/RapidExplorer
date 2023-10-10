@@ -4,9 +4,9 @@ from PySide6.QtCore import QThreadPool
 from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QProgressBar, QVBoxLayout, QWidget, QMessageBox
 
 from datasetbuilder import DatasetBuilder
-from dicomimageloader import DicomImageLoader
-from dicomimageseriesloader import DicomImageSeriesLoader
-from multidicomimageseriesloader import MultiDicomImageSeriesLoader
+from dicomfileloader import DicomFileLoader
+from dicomfilesetloader import DicomFileSetLoader
+from dicomdatasetloader import MultiDicomImageSeriesLoader
 
 
 DATASET_DIR = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset')
@@ -38,7 +38,7 @@ class MainWindow(QMainWindow):
         self.progressBar.setValue(0)
         builder = DatasetBuilder(path=DATASET_DIR, name=DATASET_NAME)
         dataset = builder.build()
-        loader = DicomImageLoader(dataset=dataset)
+        loader = DicomFileLoader(dataset=dataset)
         loader._signal.done.connect(self.loadFinished)
         loader._signal.progress.connect(self.updateProgress)
         QThreadPool.globalInstance().start(loader)
@@ -47,7 +47,7 @@ class MainWindow(QMainWindow):
         self.progressBar.setValue(0)
         builder = DatasetBuilder(path=DATASET_DIR, name=DATASET_NAME)
         dataset = builder.build()
-        loader = DicomImageSeriesLoader(dataset=dataset)
+        loader = DicomFileSetLoader(dataset=dataset)
         loader._signal.done.connect(self.loadFinished)
         loader._signal.progress.connect(self.updateProgress)
         QThreadPool.globalInstance().start(loader)

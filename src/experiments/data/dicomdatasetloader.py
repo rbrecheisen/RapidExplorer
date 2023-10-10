@@ -6,9 +6,9 @@ from models.dataset import Dataset, FileSet
 from signals.loaderprogresssignal import LoaderProgressSignal
 
 
-class MultiDicomImageSeriesLoader(QRunnable):
+class DicomDatasetLoader(QRunnable):
     def __init__(self, dataset: Dataset) -> None:
-        super(MultiDicomImageSeriesLoader, self).__init__()
+        super(DicomDatasetLoader, self).__init__()
         self._dataset = dataset
         self._data = {}
         self._signal = LoaderProgressSignal()

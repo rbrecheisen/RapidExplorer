@@ -23,7 +23,7 @@ class ImageLoader(QRunnable, ABC):                  # Generic file set loader?
         pass
 
 
-class DicomImageLoader2(ImageLoader):
+class DicomImageLoader2(ImageLoader):                               # Also create PngImageLoader
     def __init__(self, path: str) -> None:
         super(DicomImageLoader2, self).__init__(path)
         self._data = Dataset(path=path, name='Dataset')             # Create random name
@@ -36,9 +36,9 @@ class DicomImageLoader2(ImageLoader):
 
 
 
-class DicomImageLoader(QRunnable):
+class DicomFileLoader(QRunnable):
     def __init__(self, dataset: Dataset) -> None:
-        super(DicomImageLoader, self).__init__()
+        super(DicomFileLoader, self).__init__()
         self._dataset = dataset
         self._data = {}
         self._signal = LoaderProgressSignal()
