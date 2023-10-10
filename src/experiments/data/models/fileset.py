@@ -1,10 +1,14 @@
+import utilities
+
 from models.file import File
 
 
 class FileSet:
-    def __init__(self, path: str, name: str) -> None:
+    def __init__(self, path: str, name: str=None) -> None:
         self._path = path
         self._name = name
+        if not self._name:
+            self._name = utilities.create_random_name('fileset')
         self._files = []
 
     def nrFiles(self) -> int:
