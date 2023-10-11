@@ -4,12 +4,14 @@ from PySide6.QtCore import QThreadPool
 from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QProgressBar, QVBoxLayout, QWidget, QMessageBox
 
 from datasetbuilder import DatasetBuilder
-from dicomfileloader import DicomFileLoader
-from dicomfilesetloader import DicomFileSetLoader
-from dicomdatasetloader import MultiDicomImageSeriesLoader
+from loaders.dicomfileloader import DicomFileLoader
+from loaders.dicomfilesetloader import DicomFileSetLoader
+from loaders.dicomdatasetloader import DicomDatasetLoader
 
 
 DATASET_DIR = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset')
+FILESET_DIR = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset/scan1')
+FILE_PATH = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset/scan1/image-00000.dcm')
 DATASET_NAME = 'myDataset'
 
 
@@ -36,11 +38,9 @@ class MainWindow(QMainWindow):
 
     def loadDicomImage(self):
         self.progressBar.setValue(0)
-        builder = DatasetBuilder(path=DATASET_DIR, name=DATASET_NAME)
-        dataset = builder.build()
-        loader = DicomFileLoader(dataset=dataset)
-        loader._signal.done.connect(self.loadFinished)
-        loader._signal.progress.connect(self.updateProgress)
+        loader = DicomFileLoader(path=FILE_PATH)
+        loader.signal().done.connect(self.loadFinished)
+        loader.signal().progress.connect(self.updateProgress)
         QThreadPool.globalInstance().start(loader)
 
     def loadDicomImageSeries(self):
@@ -56,7 +56,7 @@ class MainWindow(QMainWindow):
         self.progressBar.setValue(0)
         builder = DatasetBuilder(path=DATASET_DIR, name=DATASET_NAME)
         dataset = builder.build()
-        loader = MultiDicomImageSeriesLoader(dataset=dataset)
+        loader = DicomDatasetLoader(dataset=dataset)
         loader._signal.done.connect(self.loadFinished)
         loader._signal.progress.connect(self.updateProgress)
         QThreadPool.globalInstance().start(loader)

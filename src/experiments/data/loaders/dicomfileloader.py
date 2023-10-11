@@ -1,25 +1,39 @@
 import pydicom
 
 from typing import Dict
-from loaders.loader import Loader
+from PySide6.QtCore import QRunnable
+# from loaders.loader import Loader
 from models.dataset import Dataset
 from models.fileset import FileSet
 from models.dicomfile import DicomFile
+from signals.loaderprogresssignal import LoaderProgressSignal
 
 
-class DicomFileLoader(Loader):
-    """ HOE GAAN WE DIRECTORIES DOORSPITTEN OP ZOEK NAAR FILES? """
+class DicomFileLoader(QRunnable):
     def __init__(self, path: str) -> None:
-        super(DicomImageLoader2, self).__init__(path)
+        super(DicomFileLoader, self).__init__()
+        self._path = path
         self._data = Dataset(path=path)
+        self._signal = LoaderProgressSignal()
+
+    def path(self) -> str:
+        return self._path
 
     def data(self) -> Dataset:
         return self._data
+    
+    def signal(self) -> LoaderProgressSignal:
+        return self._signal
 
     def run(self):
-        self.data().addFileSet(FileSet(path=path))
+        # Load DICOM file
         p = pydicom.dcmread(self.path())
         p.decompress('pylibjpeg')
-        self.data().firstFileSet().addFile(DicomFile(self.path(), p))
+        # Build dataset
+        file = DicomFile(path=self.path(), data=p)
+        fileSet = FileSet(path=self.path())
+        fileSet.addFile(file)
+        self.data().addFileSet(fileSet)
+        # Emit signals
         self.signal().progress.emit(100)
         self.signal().done.emit(True)

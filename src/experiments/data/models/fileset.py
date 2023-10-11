@@ -1,5 +1,6 @@
 import utilities
 
+from typing import List
 from models.file import File
 
 
@@ -11,16 +12,16 @@ class FileSet:
             self._name = utilities.create_random_name('fileset')
         self._files = []
 
+    def files(self) -> List[str]:
+        return self._files
+
+    def addFile(self, f) -> None:
+        self.files().append(f)
+
     def nrFiles(self) -> int:
-        return len(self._files)
+        return len(self.files())
         
     def firstFile(self) -> File:
         if self.nrFiles() > 0:
-            return self._files[0]
+            return self.files()[0]
         return None
-    
-    def __str__(self) -> str:
-        s = f'  FileSet(name={self._name}, path={self._path}):\n'
-        for f in self._files:
-            s += str(f) + '\n'
-        return s

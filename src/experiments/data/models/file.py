@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class File:
+class File(ABC):
     def __init__(self, path: str) -> None:
         self._path = path
 

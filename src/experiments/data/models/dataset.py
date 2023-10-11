@@ -1,5 +1,6 @@
 import utilities
 
+from typing import List
 from models.fileset import FileSet
 from models.file import File
 
@@ -11,6 +12,12 @@ class Dataset:
         if not self._name:
             self._name = utilities.create_random_name('dataset')
         self._fileSets = []
+
+    def fileSets(self) -> List[FileSet]:
+        return self._fileSets
+    
+    def addFileSet(self, fileSet) -> None:
+        self.fileSets().append(fileSet)
 
     def nrFileSets(self) -> int:
         return len(self._fileSets)
@@ -30,9 +37,3 @@ class Dataset:
         if len(self._fileSets) > 0:
             return self._fileSets[0]
         return None
-        
-    def __str__(self) -> str:
-        s = f'Dataset(name={self._name}, path={self._path}):\n'
-        for fileSet in self._fileSets:
-            s += str(fileSet) + '\n'
-        return s
