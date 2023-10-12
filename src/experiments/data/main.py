@@ -75,6 +75,7 @@ class MainWindow(QMainWindow):
         self.progressBar.setValue(value)
 
     def importDicomFileFinished(self, value):
+        # TODO: importer handles SQL storage itself (or through the storage manager)
         dataset = self.dicomFileImporter.data()
         with DbSession() as session:
             manager = DatasetStorageManager(session=session)
@@ -82,6 +83,7 @@ class MainWindow(QMainWindow):
             self.treeWidget.addDataset(dataset)
 
     def importDicomFileSetFinished(self, value):
+        # TODO: importer handles SQL storage itself (or through the storage manager)
         dataset = self.dicomFileSetImporter.data()
         with DbSession() as session:
             manager = DatasetStorageManager(session)
@@ -89,6 +91,7 @@ class MainWindow(QMainWindow):
             self.treeWidget.addDataset(dataset)
 
     def importDicomDatasetFinished(self, value):
+        # TODO: importer handles SQL storage itself (or through the storage manager)
         dataset = self.dicomDatasetImporter.data()
         with DbSession() as session:
             manager = DatasetStorageManager(session)
