@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from PySide6.QtCore import QRunnable
-from signals.loaderprogresssignal import LoaderProgressSignal
+from experiments.data.loaderprogresssignal import LoaderProgressSignal
 
 
 class Loader(QRunnable, ABC):

@@ -7,9 +7,9 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QProgressB
 
 from models.basemodel import BaseModel
 from datasetstoragemanager import DatasetStorageManager
-from loaders.dicomfileloader import DicomFileLoader
-from loaders.dicomfilesetloader import DicomFileSetLoader
-from loaders.dicomdatasetloader import DicomDatasetLoader
+from experiments.data.dicomfileloader import DicomFileLoader
+from experiments.data.dicomfilesetloader import DicomFileSetLoader
+from experiments.data.dicomdatasetloader import DicomDatasetLoader
 
 
 DATASET_DIR = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset')

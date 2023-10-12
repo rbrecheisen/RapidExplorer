@@ -6,7 +6,7 @@ from PySide6.QtCore import QRunnable
 from models.dataset import Dataset
 from models.fileset import FileSet
 from models.dicomfile import DicomFile
-from signals.loaderprogresssignal import LoaderProgressSignal
+from experiments.data.loaderprogresssignal import LoaderProgressSignal
 
 
 class DicomFileLoader(QRunnable):
