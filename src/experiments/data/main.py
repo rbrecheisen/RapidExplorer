@@ -11,8 +11,6 @@ from dicomfileloader import DicomFileImporter
 from dicomfilesetloader import DicomFileSetImporter
 from dicomdatasetloader import DicomDatasetImporter
 
-# TODO: Rename methods to refer to importers instead of loaders!
-
 DATASET_DIR = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset')
 FILESET_DIR = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset/scan1')
 FILE_PATH = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset/scan1/image-00000.dcm')
@@ -24,19 +22,19 @@ BaseModel.metadata.create_all(engine)
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.dicomFileLoader = None
-        self.dicomFileSetLoader = None
-        self.dicomDatasetLoader = None
+        self.dicomFileImporter = None
+        self.dicomFileSetImporter = None
+        self.dicomDatasetImporter = None
         layout = QVBoxLayout()
         self.progressBar = QProgressBar()
         self.progressBar.setValue(0)
         layout.addWidget(self.progressBar)
-        self.button1 = QPushButton("Load DICOM Image")
-        self.button2 = QPushButton("Load DICOM Image Series")
-        self.button3 = QPushButton("Load Multiple DICOM Image Series")
-        self.button1.clicked.connect(self.loadDicomFile)
-        self.button2.clicked.connect(self.loadDicomFileSet)
-        self.button3.clicked.connect(self.loadMultipleDicomDataset)
+        self.button1 = QPushButton("Import DICOM Image")
+        self.button2 = QPushButton("Import DICOM Image Series")
+        self.button3 = QPushButton("Import Multiple DICOM Image Series")
+        self.button1.clicked.connect(self.importDicomFile)
+        self.button2.clicked.connect(self.importDicomFileSet)
+        self.button3.clicked.connect(self.importMultipleDicomDataset)
         layout.addWidget(self.button1)
         layout.addWidget(self.button2)
         layout.addWidget(self.button3)
@@ -45,53 +43,53 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(container)
         self.setWindowTitle('RAPID-X')
 
-    def loadDicomFile(self):
+    def importDicomFile(self):
         self.progressBar.setValue(0)
-        self.dicomFileLoader = DicomFileImporter(path=FILE_PATH)
-        self.dicomFileLoader.signal().done.connect(self.loadDicomFileFinished)
-        self.dicomFileLoader.signal().progress.connect(self.updateProgress)
-        QThreadPool.globalInstance().start(self.dicomFileLoader)
+        self.dicomFileImporter = DicomFileImporter(path=FILE_PATH)
+        self.dicomFileImporter.signal().done.connect(self.importDicomFileFinished)
+        self.dicomFileImporter.signal().progress.connect(self.updateProgress)
+        QThreadPool.globalInstance().start(self.dicomFileImporter)
 
-    def loadDicomFileSet(self):
+    def importDicomFileSet(self):
         self.progressBar.setValue(0)
-        self.dicomFileSetLoader = DicomFileSetImporter(path=FILESET_DIR)
-        self.dicomFileSetLoader._signal.done.connect(self.loadDicomFileSetFinished)
-        self.dicomFileSetLoader._signal.progress.connect(self.updateProgress)
-        QThreadPool.globalInstance().start(self.dicomFileSetLoader)
+        self.dicomFileSetImporter = DicomFileSetImporter(path=FILESET_DIR)
+        self.dicomFileSetImporter._signal.done.connect(self.importDicomFileSetFinished)
+        self.dicomFileSetImporter._signal.progress.connect(self.updateProgress)
+        QThreadPool.globalInstance().start(self.dicomFileSetImporter)
 
-    def loadMultipleDicomDataset(self):
+    def importMultipleDicomDataset(self):
         self.progressBar.setValue(0)
-        self.dicomDatasetLoader = DicomDatasetImporter(path=DATASET_DIR)
-        self.dicomDatasetLoader._signal.done.connect(self.loadDicomDatasetFinished)
-        self.dicomDatasetLoader._signal.progress.connect(self.updateProgress)
-        QThreadPool.globalInstance().start(self.dicomDatasetLoader)
+        self.dicomDatasetImporter = DicomDatasetImporter(path=DATASET_DIR)
+        self.dicomDatasetImporter._signal.done.connect(self.importDicomDatasetFinished)
+        self.dicomDatasetImporter._signal.progress.connect(self.updateProgress)
+        QThreadPool.globalInstance().start(self.dicomDatasetImporter)
 
     def updateProgress(self, value):
         self.progressBar.setValue(value)
 
-    def loadDicomFileFinished(self, value):
-        dataset = self.dicomFileLoader.data()
+    def importDicomFileFinished(self, value):
+        dataset = self.dicomFileImporter.data()
         with Session(engine) as session:
             manager = DatasetStorageManager(session)
             manager.save(dataset)
             self.showFinished()
 
-    def loadDicomFileSetFinished(self, value):
-        dataset = self.dicomFileSetLoader.data()
+    def importDicomFileSetFinished(self, value):
+        dataset = self.dicomFileSetImporter.data()
         with Session(engine) as session:
             manager = DatasetStorageManager(session)
             manager.save(dataset)
             self.showFinished()
 
-    def loadDicomDatasetFinished(self, value):
-        dataset = self.dicomDatasetLoader.data()
+    def importDicomDatasetFinished(self, value):
+        dataset = self.dicomDatasetImporter.data()
         with Session(engine) as session:
             manager = DatasetStorageManager(session)
             manager.save(dataset)
             self.showFinished()
 
     def showFinished(self):
-        QMessageBox.information(self, '', 'Finished')
+        QMessageBox.information(self, '', 'Import succeeded')
 
 
 if __name__ == '__main__':
