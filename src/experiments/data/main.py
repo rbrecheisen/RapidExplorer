@@ -53,17 +53,17 @@ class MainWindow(QMainWindow):
 
     def loadDicomFileSet(self):
         self.progressBar.setValue(0)
-        loader = DicomFileSetLoader(path=FILESET_DIR)
-        loader._signal.done.connect(self.loadDicomFileSetFinished)
-        loader._signal.progress.connect(self.updateProgress)
-        QThreadPool.globalInstance().start(loader)
+        self.dicomFileSetLoader = DicomFileSetLoader(path=FILESET_DIR)
+        self.dicomFileSetLoader._signal.done.connect(self.loadDicomFileSetFinished)
+        self.dicomFileSetLoader._signal.progress.connect(self.updateProgress)
+        QThreadPool.globalInstance().start(self.dicomFileSetLoader)
 
     def loadMultipleDicomDataset(self):
         self.progressBar.setValue(0)
-        loader = DicomDatasetLoader(path=DATASET_DIR)
-        loader._signal.done.connect(self.loadDicomDatasetFinished)
-        loader._signal.progress.connect(self.updateProgress)
-        QThreadPool.globalInstance().start(loader)
+        self.dicomDatasetLoader = DicomDatasetLoader(path=DATASET_DIR)
+        self.dicomDatasetLoader._signal.done.connect(self.loadDicomDatasetFinished)
+        self.dicomDatasetLoader._signal.progress.connect(self.updateProgress)
+        QThreadPool.globalInstance().start(self.dicomDatasetLoader)
 
     def updateProgress(self, value):
         self.progressBar.setValue(value)
