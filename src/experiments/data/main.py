@@ -1,14 +1,12 @@
 import os
 
-from sqlalchemy.orm import Session
-from sqlalchemy import create_engine
 from PySide6.QtCore import QThreadPool
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QPushButton, QProgressBar, QVBoxLayout, QWidget, QMessageBox,
     QFileDialog
 )
 
-from basemodel import BaseModel
+from db import DbSession
 from datasetstoragemanager import DatasetStorageManager
 from dicomfileloader import DicomFileImporter
 from dicomfilesetloader import DicomFileSetImporter
@@ -18,9 +16,6 @@ from datasettreewidget import DatasetTreeWidget
 DATASET_DIR = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset')
 FILESET_DIR = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset/scan1')
 FILE_PATH = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset/scan1/image-00000.dcm')
-
-engine = create_engine('sqlite://', echo=False)
-BaseModel.metadata.create_all(engine)
 
 
 class MainWindow(QMainWindow):
@@ -81,21 +76,21 @@ class MainWindow(QMainWindow):
 
     def importDicomFileFinished(self, value):
         dataset = self.dicomFileImporter.data()
-        with Session(engine) as session:
-            manager = DatasetStorageManager(session)
+        with DbSession() as session:
+            manager = DatasetStorageManager(session=session)
             manager.save(dataset)
             self.treeWidget.addDataset(dataset)
 
     def importDicomFileSetFinished(self, value):
         dataset = self.dicomFileSetImporter.data()
-        with Session(engine) as session:
+        with DbSession() as session:
             manager = DatasetStorageManager(session)
             manager.save(dataset)
             self.treeWidget.addDataset(dataset)
 
     def importDicomDatasetFinished(self, value):
         dataset = self.dicomDatasetImporter.data()
-        with Session(engine) as session:
+        with DbSession() as session:
             manager = DatasetStorageManager(session)
             manager.save(dataset)
             self.treeWidget.addDataset(dataset)
