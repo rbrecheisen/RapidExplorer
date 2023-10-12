@@ -37,7 +37,7 @@ class DicomFileSetImporter(QRunnable):
             try:
                 p = pydicom.dcmread(filePath)
                 p.decompress('pylibjpeg')
-                file = DicomFile(path=self.path(), data=p)
+                file = DicomFile(path=filePath, data=p)
                 fileSet.addFile(file)
             except pydicom.errors.InvalidDicomError:
                 print(f'File {fileName} is not a valid DICOM file')
