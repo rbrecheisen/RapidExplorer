@@ -2,7 +2,7 @@ from typing import List
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from models.basemodel import BaseModel
+from basemodel import BaseModel
 
 
 class DatasetModel(BaseModel):

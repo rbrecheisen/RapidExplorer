@@ -1,5 +1,6 @@
 from PySide6.QtCore import Signal, QObject
 
-class LoaderProgressSignal(QObject):
+
+class ImporterProgressSignal(QObject):
     progress = Signal(int)
     done = Signal(bool)

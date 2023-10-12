@@ -1,18 +1,19 @@
 from abc import ABC, abstractmethod
 from PySide6.QtCore import QRunnable
-from experiments.data.loaderprogresssignal import LoaderProgressSignal
+
+from importerprogresssignal import ImporterProgressSignal
 
 
-class Loader(QRunnable, ABC):
+class Importer(QRunnable, ABC):
     def __init__(self, path: str) -> None:
-        super(Loader, self).__init__()
+        super(Importer, self).__init__()
         self._path = path
-        self._signal = LoaderProgressSignal()
+        self._signal = ImporterProgressSignal()
 
     def path(self) -> str:
         return self._path
     
-    def signal(self) -> LoaderProgressSignal:
+    def signal(self) -> ImporterProgressSignal:
         return self._signal
     
     @abstractmethod

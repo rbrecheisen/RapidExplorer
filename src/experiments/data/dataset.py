@@ -1,8 +1,8 @@
 import utilities
 
 from typing import List
-from models.fileset import FileSet
-from models.file import File
+from fileset import FileSet
+from file import File
 
 
 class Dataset:

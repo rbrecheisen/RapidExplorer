@@ -4,18 +4,18 @@ import pydicom.errors
 
 from typing import Dict
 from PySide6.QtCore import QRunnable
-from models.dataset import Dataset
-from models.fileset import FileSet
-from models.dicomfile import DicomFile
-from experiments.data.loaderprogresssignal import LoaderProgressSignal
+from dataset import Dataset
+from fileset import FileSet
+from dicomfile import DicomFile
+from importerprogresssignal import ImporterProgressSignal
 
 
-class DicomDatasetLoader(QRunnable):
+class DicomDatasetImporter(QRunnable):
     def __init__(self, path: str) -> None:
-        super(DicomDatasetLoader, self).__init__()
+        super(DicomDatasetImporter, self).__init__()
         self._path = path
         self._data = Dataset(path=path)
-        self._signal = LoaderProgressSignal()
+        self._signal = ImporterProgressSignal()
 
     def path(self) -> str:
         return self._path
@@ -23,7 +23,7 @@ class DicomDatasetLoader(QRunnable):
     def data(self) -> Dataset:
         return self._data
     
-    def signal(self) -> LoaderProgressSignal:
+    def signal(self) -> ImporterProgressSignal:
         return self._signal
 
     def run(self):

@@ -1,4 +1,4 @@
-from models.file import File
+from file import File
 
 
 class PngFile(File):

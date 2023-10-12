@@ -5,12 +5,13 @@ from sqlalchemy import create_engine
 from PySide6.QtCore import QThreadPool
 from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QProgressBar, QVBoxLayout, QWidget, QMessageBox
 
-from models.basemodel import BaseModel
+from basemodel import BaseModel
 from datasetstoragemanager import DatasetStorageManager
-from experiments.data.dicomfileloader import DicomFileLoader
-from experiments.data.dicomfilesetloader import DicomFileSetLoader
-from experiments.data.dicomdatasetloader import DicomDatasetLoader
+from dicomfileloader import DicomFileImporter
+from dicomfilesetloader import DicomFileSetImporter
+from dicomdatasetloader import DicomDatasetImporter
 
+# TODO: Rename methods to refer to importers instead of loaders!
 
 DATASET_DIR = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset')
 FILESET_DIR = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset/scan1')
@@ -46,21 +47,21 @@ class MainWindow(QMainWindow):
 
     def loadDicomFile(self):
         self.progressBar.setValue(0)
-        self.dicomFileLoader = DicomFileLoader(path=FILE_PATH)
+        self.dicomFileLoader = DicomFileImporter(path=FILE_PATH)
         self.dicomFileLoader.signal().done.connect(self.loadDicomFileFinished)
         self.dicomFileLoader.signal().progress.connect(self.updateProgress)
         QThreadPool.globalInstance().start(self.dicomFileLoader)
 
     def loadDicomFileSet(self):
         self.progressBar.setValue(0)
-        self.dicomFileSetLoader = DicomFileSetLoader(path=FILESET_DIR)
+        self.dicomFileSetLoader = DicomFileSetImporter(path=FILESET_DIR)
         self.dicomFileSetLoader._signal.done.connect(self.loadDicomFileSetFinished)
         self.dicomFileSetLoader._signal.progress.connect(self.updateProgress)
         QThreadPool.globalInstance().start(self.dicomFileSetLoader)
 
     def loadMultipleDicomDataset(self):
         self.progressBar.setValue(0)
-        self.dicomDatasetLoader = DicomDatasetLoader(path=DATASET_DIR)
+        self.dicomDatasetLoader = DicomDatasetImporter(path=DATASET_DIR)
         self.dicomDatasetLoader._signal.done.connect(self.loadDicomDatasetFinished)
         self.dicomDatasetLoader._signal.progress.connect(self.updateProgress)
         QThreadPool.globalInstance().start(self.dicomDatasetLoader)

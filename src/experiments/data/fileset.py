@@ -1,7 +1,7 @@
 import utilities
 
 from typing import List
-from models.file import File
+from file import File
 
 
 class FileSet:

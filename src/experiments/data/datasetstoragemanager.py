@@ -1,11 +1,11 @@
 from sqlalchemy.orm import Session
 
-from models.dataset import Dataset
-from models.fileset import FileSet
-from models.file import File
-from models.datasetmodel import DatasetModel
-from models.filesetmodel import FileSetModel
-from models.filemodel import FileModel
+from dataset import Dataset
+from fileset import FileSet
+from file import File
+from datasetmodel import DatasetModel
+from filesetmodel import FileSetModel
+from filemodel import FileModel
 
 
 class DatasetStorageManager:
