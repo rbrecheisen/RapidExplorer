@@ -1,31 +1,35 @@
 DATASETS
 
-I now have a DatasetBuilder that parses a directory structure searching for files of a certain type.
-It's now doing DICOM files but it could be anything.
+Package structure:
 
-I now have several DICOM loaders. These loaders are passed a dataset object that lists the file paths.
-This is a bit strange. The loader could find these file paths itself and then RETURN a dataset.
-
-class Dataset:
-    self.fileSets = []
-
-class FileSet:
-    self.files = []
-
-class File:
-    def getData():
-        pass
-
-class PngFile(File):
-    def getData():
-        return []
-
-class DicomFile(File):
-    def getData():
-        return pydicom.FileDataset
-
-pixels = dataset.getFileSet(0).getFile(0).getData() # in case of PngFile
-     p = dataset.getFileSet(0).getFile(0).getData() # in case of DicomFile
+- data
+  - loaders
+    - dicomdatasetloader.py
+    - dicomfileloader.py
+    - dicomfilesetloader.py
+    - niftifileloader.py
+    - pngfileloader.py
+    - textfileloader.py
+  - models
+    - basemodel.py
+    - datasetmodel.py
+    - filemodel.py
+    - filesetmodel.py
+  - objs
+    - dataset.py
+    - file.py
+    - fileset.py
+- images
+  - icons
+- widgets
+  - dialogs
+    - logdialog.py
+  - panels
+    - taskpanel.py
+  - datasetdockwidget.py
+  - dockwidget.py
+  - taskdockwidget.py
+  - viewdockwidget.py
 
 TASKS
 
