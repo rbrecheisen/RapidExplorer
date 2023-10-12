@@ -1,9 +1,12 @@
 import os
 
+from sqlalchemy.orm import Session
+from sqlalchemy import create_engine
 from PySide6.QtCore import QThreadPool
 from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QProgressBar, QVBoxLayout, QWidget, QMessageBox
 
-from datasetbuilder import DatasetBuilder
+from models.basemodel import BaseModel
+from datasetstoragemanager import DatasetStorageManager
 from loaders.dicomfileloader import DicomFileLoader
 from loaders.dicomfilesetloader import DicomFileSetLoader
 from loaders.dicomdatasetloader import DicomDatasetLoader
@@ -12,12 +15,17 @@ from loaders.dicomdatasetloader import DicomDatasetLoader
 DATASET_DIR = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset')
 FILESET_DIR = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset/scan1')
 FILE_PATH = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset/scan1/image-00000.dcm')
-DATASET_NAME = 'myDataset'
+
+engine = create_engine('sqlite://', echo=True)
+BaseModel.metadata.create_all(engine)
 
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.dicomFileLoader = None
+        self.dicomFileSetLoader = None
+        self.dicomDatasetLoader = None
         layout = QVBoxLayout()
         self.progressBar = QProgressBar()
         self.progressBar.setValue(0)
@@ -25,9 +33,9 @@ class MainWindow(QMainWindow):
         self.button1 = QPushButton("Load DICOM Image")
         self.button2 = QPushButton("Load DICOM Image Series")
         self.button3 = QPushButton("Load Multiple DICOM Image Series")
-        self.button1.clicked.connect(self.loadDicomImage)
-        self.button2.clicked.connect(self.loadDicomImageSeries)
-        self.button3.clicked.connect(self.loadMultipleDicomImageSeries)
+        self.button1.clicked.connect(self.loadDicomFile)
+        self.button2.clicked.connect(self.loadDicomFileSet)
+        self.button3.clicked.connect(self.loadMultipleDicomDataset)
         layout.addWidget(self.button1)
         layout.addWidget(self.button2)
         layout.addWidget(self.button3)
@@ -36,31 +44,44 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(container)
         self.setWindowTitle('RAPID-X')
 
-    def loadDicomImage(self):
+    def loadDicomFile(self):
         self.progressBar.setValue(0)
-        loader = DicomFileLoader(path=FILE_PATH)
-        loader.signal().done.connect(self.loadFinished)
-        loader.signal().progress.connect(self.updateProgress)
-        QThreadPool.globalInstance().start(loader)
+        self.dicomFileLoader = DicomFileLoader(path=FILE_PATH)
+        self.dicomFileLoader.signal().done.connect(self.loadDicomFileFinished)
+        self.dicomFileLoader.signal().progress.connect(self.updateProgress)
+        QThreadPool.globalInstance().start(self.dicomFileLoader)
 
-    def loadDicomImageSeries(self):
+    def loadDicomFileSet(self):
         self.progressBar.setValue(0)
         loader = DicomFileSetLoader(path=FILESET_DIR)
-        loader._signal.done.connect(self.loadFinished)
+        loader._signal.done.connect(self.loadDicomFileSetFinished)
         loader._signal.progress.connect(self.updateProgress)
         QThreadPool.globalInstance().start(loader)
 
-    def loadMultipleDicomImageSeries(self):
+    def loadMultipleDicomDataset(self):
         self.progressBar.setValue(0)
         loader = DicomDatasetLoader(path=DATASET_DIR)
-        loader._signal.done.connect(self.loadFinished)
+        loader._signal.done.connect(self.loadDicomDatasetFinished)
         loader._signal.progress.connect(self.updateProgress)
         QThreadPool.globalInstance().start(loader)
 
     def updateProgress(self, value):
         self.progressBar.setValue(value)
 
-    def loadFinished(self, value):
+    def loadDicomFileFinished(self, value):
+        dataset = self.dicomFileLoader.data()
+        with Session(engine) as session:
+            manager = DatasetStorageManager(session)
+            manager.save(dataset)
+            self.showFinished()
+
+    def loadDicomFileSetFinished(self, value):
+        pass
+
+    def loadDicomDatasetFinished(self, value):
+        pass
+
+    def showFinished(self):
         QMessageBox.information(self, '', 'Finished')
 
 

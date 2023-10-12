@@ -13,6 +13,12 @@ class Dataset:
             self._name = utilities.create_random_name('dataset')
         self._fileSets = []
 
+    def path(self) -> str:
+        return self._path
+    
+    def name(self) -> str:
+        return self._name
+
     def fileSets(self) -> List[FileSet]:
         return self._fileSets
     

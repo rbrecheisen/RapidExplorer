@@ -12,6 +12,12 @@ class FileSet:
             self._name = utilities.create_random_name('fileset')
         self._files = []
 
+    def path(self) -> str:
+        return self._path
+    
+    def name(self) -> str:
+        return self._name
+
     def files(self) -> List[str]:
         return self._files
 

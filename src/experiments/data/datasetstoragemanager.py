@@ -13,11 +13,11 @@ class DatasetStorageManager:
         self._session = session
 
     def save(self, dataset: Dataset):
-        datasetModel = DatasetModel(path=dataset.path, name=dataset.name)
-        for fileSet in dataset.fileSets:
-            fileSetModel = FileSetModel(path=fileSet.path, name=fileSet.name, dataset=datasetModel)
-            for file in fileSet.files:
-                fileModel = FileModel(path=file.path, fileSet=fileSetModel)
+        datasetModel = DatasetModel(path=dataset.path(), name=dataset.name())
+        for fileSet in dataset.fileSets():
+            fileSetModel = FileSetModel(path=fileSet.path(), name=fileSet.name(), dataset=datasetModel)
+            for file in fileSet.files():
+                fileModel = FileModel(path=file.path(), fileSet=fileSetModel)
                 self._session.add(fileModel)
             self._session.add(fileSetModel)
         self._session.add(datasetModel)
