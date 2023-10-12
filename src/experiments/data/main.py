@@ -76,10 +76,18 @@ class MainWindow(QMainWindow):
             self.showFinished()
 
     def loadDicomFileSetFinished(self, value):
-        pass
+        dataset = self.dicomFileSetLoader.data()
+        with Session(engine) as session:
+            manager = DatasetStorageManager(session)
+            manager.save(dataset)
+            self.showFinished()
 
     def loadDicomDatasetFinished(self, value):
-        pass
+        dataset = self.dicomDatasetLoader.data()
+        with Session(engine) as session:
+            manager = DatasetStorageManager(session)
+            manager.save(dataset)
+            self.showFinished()
 
     def showFinished(self):
         QMessageBox.information(self, '', 'Finished')
