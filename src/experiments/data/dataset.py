@@ -18,6 +18,10 @@ class Dataset:
     
     def name(self) -> str:
         return self._name
+    
+    def setName(self, name: str) -> None:
+        # TODO: also update SQL database object!
+        self._name = name
 
     def fileSets(self) -> List[FileSet]:
         return self._fileSets

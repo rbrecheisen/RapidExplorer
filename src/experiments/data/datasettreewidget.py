@@ -4,6 +4,7 @@ from PySide6.QtWidgets import QTreeView
 from PySide6.QtGui import QStandardItemModel, QStandardItem
 
 from dataset import Dataset
+from datasetitem import DatasetItem
 
 
 class DatasetTreeWidget(QTreeView):
@@ -11,10 +12,12 @@ class DatasetTreeWidget(QTreeView):
         super(DatasetTreeWidget, self).__init__(parent)
         self._model = QStandardItemModel()
         self._model.setHorizontalHeaderLabels(['Datasets'])
+        self._model.itemChanged.connect(self._itemChanged)
         self.setModel(self._model)
 
     def addDataset(self, dataset: Dataset) -> None:
-        datasetNode = QStandardItem(dataset.name())
+        # datasetNode = QStandardItem(dataset.name())
+        datasetNode = DatasetItem(model=self._model, dataset=dataset)
         for fileSet in dataset.fileSets():
             fileSetNode = QStandardItem(fileSet.name())
             datasetNode.appendRow(fileSetNode)
@@ -23,3 +26,6 @@ class DatasetTreeWidget(QTreeView):
                 fileNode = QStandardItem(fileName)
                 fileSetNode.appendRow(fileNode)
         self._model.appendRow(datasetNode)
+
+    def _itemChanged(self, item) -> None:
+        item.setName(item.text())
