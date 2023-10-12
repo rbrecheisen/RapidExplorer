@@ -25,3 +25,6 @@ class FileSet:
         if self.nrFiles() > 0:
             return self.files()[0]
         return None
+    
+    def sortByInstanceNumber(self) -> None:
+        self.files().sort(key=lambda p: int(p.data().InstanceNumber))

@@ -45,18 +45,14 @@ class MainWindow(QMainWindow):
 
     def loadDicomImageSeries(self):
         self.progressBar.setValue(0)
-        builder = DatasetBuilder(path=DATASET_DIR, name=DATASET_NAME)
-        dataset = builder.build()
-        loader = DicomFileSetLoader(dataset=dataset)
+        loader = DicomFileSetLoader(path=FILESET_DIR)
         loader._signal.done.connect(self.loadFinished)
         loader._signal.progress.connect(self.updateProgress)
         QThreadPool.globalInstance().start(loader)
 
     def loadMultipleDicomImageSeries(self):
         self.progressBar.setValue(0)
-        builder = DatasetBuilder(path=DATASET_DIR, name=DATASET_NAME)
-        dataset = builder.build()
-        loader = DicomDatasetLoader(dataset=dataset)
+        loader = DicomDatasetLoader(path=DATASET_DIR)
         loader._signal.done.connect(self.loadFinished)
         loader._signal.progress.connect(self.updateProgress)
         QThreadPool.globalInstance().start(loader)

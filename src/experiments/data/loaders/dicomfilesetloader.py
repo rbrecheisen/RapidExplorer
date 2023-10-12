@@ -1,9 +1,11 @@
+import os
 import pydicom
+import pydicom.errors
 
-from typing import List, Dict
 from PySide6.QtCore import QRunnable
 from models.dataset import Dataset
 from models.fileset import FileSet
+from models.dicomfile import DicomFile
 from signals.loaderprogresssignal import LoaderProgressSignal
 
 
@@ -12,7 +14,7 @@ class DicomFileSetLoader(QRunnable):
         super(DicomFileSetLoader, self).__init__()
         self._path = path
         self._data = Dataset(path=path)
-        self._signal = LoaderProgressSignal()
+        self._signal = LoaderProgressSignal() 
 
     def path(self) -> str:
         return self._path
@@ -24,13 +26,26 @@ class DicomFileSetLoader(QRunnable):
         return self._signal
 
     def run(self):
-        # Bla
-        file = DicomFile(path=self.path(), data=p)
         fileSet = FileSet(path=self.path())
-        fileSet.addFile(file)
+        files = os.listdir(self.path())
+        nrFiles = len(files)
+        i = 0
+        for f in files:
+            fileName = f
+            filePath = os.path.join(self.path(), fileName)
+            try:
+                p = pydicom.dcmread(filePath)
+                p.decompress('pylibjpeg')
+                file = DicomFile(path=self.path(), data=p)
+                fileSet.addFile(file)
+            except pydicom.errors.InvalidDicomError:
+                print(f'File {fileName} is not a valid DICOM file')
+                continue
+            progress = int((i + 1) / nrFiles * 100)
+            i += 1
+            self.signal().progress.emit(progress)
+        fileSet.sortByInstanceNumber()
         self.data().addFileSet(fileSet)
-        # Emit signals
-        self.signal().progress.emit(100)
         self.signal().done.emit(True)
 
 
