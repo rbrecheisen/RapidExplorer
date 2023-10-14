@@ -7,6 +7,7 @@ from PySide6.QtCore import QRunnable
 from dataset import Dataset
 from fileset import FileSet
 from dicomfile import DicomFile
+from datasetstoragemanager import DatasetStorageManager
 from importerprogresssignal import ImporterProgressSignal
 
 
@@ -47,35 +48,6 @@ class DicomFileSetImporter(QRunnable):
             self.signal().progress.emit(progress)
         fileSet.sortByInstanceNumber()
         self.data().addFileSet(fileSet)
+        manager = DatasetStorageManager()
+        manager.save(self.data())
         self.signal().done.emit(True)
-
-
-
-
-# class DicomFileSetLoader(QRunnable):
-#     def __init__(self, dataset: Dataset) -> None:
-#         super(DicomFileSetLoader, self).__init__()
-#         self._dataset = dataset
-#         self._data = {}
-#         self._signal = LoaderProgressSignal()
-
-#     def getData(self) -> Dict[str, FileSet]:
-#         return self._data
-    
-#     def getImageSeries(self) -> List[pydicom.FileDataset]:
-#         return self._data[list(self._data.keys())[0]]
-
-#     def run(self):
-#         fileSet = self._dataset.firstFileSet()
-#         i = 0
-#         self._data = {fileSet.name: []}
-#         for file in fileSet.files:
-#             p = pydicom.dcmread(file.path)
-#             p.decompress('pylibjpeg')
-#             self._data[fileSet.name].append(p)
-#             progress = int((i + 1) / fileSet.nrFiles() * 100)
-#             self._signal.progress.emit(progress)
-#             i += 1
-#         self._data[fileSet.name].sort(key=lambda p: int(p.InstanceNumber))
-#         self._signal.done.emit(True)
- 

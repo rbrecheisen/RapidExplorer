@@ -2,12 +2,10 @@ import os
 
 from PySide6.QtCore import QThreadPool
 from PySide6.QtWidgets import (
-    QApplication, QMainWindow, QPushButton, QProgressBar, QVBoxLayout, QWidget, QMessageBox,
-    QFileDialog
+    QApplication, QMainWindow, QPushButton, QProgressBar, QVBoxLayout, QWidget,
+    QFileDialog,
 )
 
-from db import DbSession
-from datasetstoragemanager import DatasetStorageManager
 from dicomfileloader import DicomFileImporter
 from dicomfilesetloader import DicomFileSetImporter
 from dicomdatasetloader import DicomDatasetImporter
@@ -75,28 +73,13 @@ class MainWindow(QMainWindow):
         self.progressBar.setValue(value)
 
     def importDicomFileFinished(self, value):
-        # TODO: importer handles SQL storage itself (or through the storage manager)
-        dataset = self.dicomFileImporter.data()
-        with DbSession() as session:
-            manager = DatasetStorageManager(session=session)
-            manager.save(dataset)
-            self.treeWidget.addDataset(dataset)
+        self.treeWidget.addDataset(self.dicomFileImporter.data())
 
     def importDicomFileSetFinished(self, value):
-        # TODO: importer handles SQL storage itself (or through the storage manager)
-        dataset = self.dicomFileSetImporter.data()
-        with DbSession() as session:
-            manager = DatasetStorageManager(session)
-            manager.save(dataset)
-            self.treeWidget.addDataset(dataset)
+        self.treeWidget.addDataset(self.dicomFileSetImporter.data())
 
     def importDicomDatasetFinished(self, value):
-        # TODO: importer handles SQL storage itself (or through the storage manager)
-        dataset = self.dicomDatasetImporter.data()
-        with DbSession() as session:
-            manager = DatasetStorageManager(session)
-            manager.save(dataset)
-            self.treeWidget.addDataset(dataset)
+        self.treeWidget.addDataset(self.dicomDatasetImporter.data())
 
 
 if __name__ == '__main__':

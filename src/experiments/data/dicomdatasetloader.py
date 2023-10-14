@@ -7,6 +7,7 @@ from PySide6.QtCore import QRunnable
 from dataset import Dataset
 from fileset import FileSet
 from dicomfile import DicomFile
+from datasetstoragemanager import DatasetStorageManager
 from importerprogresssignal import ImporterProgressSignal
 
 
@@ -55,4 +56,6 @@ class DicomDatasetImporter(QRunnable):
                 i += 1
             fileSet.sortByInstanceNumber()
             self.data().addFileSet(fileSet)
+        manager = DatasetStorageManager()
+        manager.save(self.data())
         self.signal().done.emit(True)

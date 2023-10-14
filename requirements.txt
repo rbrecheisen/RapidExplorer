@@ -5,3 +5,4 @@ sqlalchemy
 pendulum 
 pylibjpeg[openjpeg]
 nuitka
+pytest

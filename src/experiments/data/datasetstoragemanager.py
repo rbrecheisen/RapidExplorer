@@ -6,35 +6,36 @@ from file import File
 from datasetmodel import DatasetModel
 from filesetmodel import FileSetModel
 from filemodel import FileModel
+from db import DbSession
 
 
 class DatasetStorageManager:
-    def __init__(self, session: Session) -> None:
-        self._session = session
-
     def save(self, dataset: Dataset):
-        datasetModel = DatasetModel(path=dataset.path(), name=dataset.name())
-        for fileSet in dataset.fileSets():
-            fileSetModel = FileSetModel(path=fileSet.path(), name=fileSet.name(), dataset=datasetModel)
-            for file in fileSet.files():
-                fileModel = FileModel(path=file.path(), fileSet=fileSetModel)
-                self._session.add(fileModel)
-            self._session.add(fileSetModel)
-        self._session.add(datasetModel)
-        self._session.commit()
+        with DbSession() as session:
+            datasetModel = DatasetModel(path=dataset.path(), name=dataset.name())
+            for fileSet in dataset.fileSets():
+                fileSetModel = FileSetModel(path=fileSet.path(), name=fileSet.name(), dataset=datasetModel)
+                for file in fileSet.files():
+                    fileModel = FileModel(path=file.path(), fileSet=fileSetModel)
+                    session.add(fileModel)
+                session.add(fileSetModel)
+            session.add(datasetModel)
+            session.commit()
         return dataset.name
 
     def load(self, name: str):
-        datasetModel = self._session.query(DatasetModel).filter_by(name=name).one()
-        dataset = Dataset(path=datasetModel.path, name=datasetModel.name)
-        for fileSetModel in datasetModel.fileSets:
-            fileSet = FileSet(path=fileSetModel.path, name=fileSetModel.name)
-            for fileModel in fileSetModel.files:
-                file = File(path=fileModel.path)
-                fileSet.files.append(file)
-            dataset.fileSets.append(fileSet)
+        with DbSession() as session:
+            datasetModel = session.query(DatasetModel).filter_by(name=name).one()
+            dataset = Dataset(path=datasetModel.path, name=datasetModel.name)
+            for fileSetModel in datasetModel.fileSets:
+                fileSet = FileSet(path=fileSetModel.path, name=fileSetModel.name)
+                for fileModel in fileSetModel.files:
+                    file = File(path=fileModel.path)
+                    fileSet.files.append(file)
+                dataset.fileSets.append(fileSet)
         return dataset
 
     def delete(self, name: str):
-        datasetModel = self._session.query(DatasetModel).filter_by(name=name).one()
-        self._session.delete(datasetModel)
+        with DbSession() as session:
+            datasetModel = session.query(DatasetModel).filter_by(name=name).one()
+            session.delete(datasetModel)
