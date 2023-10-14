@@ -11,6 +11,3 @@ class FileModel(BaseModel):
     path: Mapped[str] = mapped_column('path', String(1024))
     fileSet: Mapped['FileSetModel'] = relationship(back_populates='files')
     fileSetId: Mapped[int] = mapped_column('fileset_id', ForeignKey('fileset.id'))
-
-    def __repr__(self) -> str:
-        return f'FileModel(id={self.id}, path={self.path}, fileSet={self.fileSet})'

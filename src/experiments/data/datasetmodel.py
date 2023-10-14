@@ -9,7 +9,7 @@ class DatasetModel(BaseModel):
     __tablename__ = 'dataset'
     id: Mapped[int] = mapped_column('id', primary_key=True)
     name: Mapped[str] = mapped_column('name', String(256))
-    path: Mapped[str] = mapped_column('path', String(1024))
+    path: Mapped[str] = mapped_column('path', String(1024), nullable=True)
     fileSets: Mapped[List['FileSetModel']] = relationship(back_populates='dataset', cascade='all, delete-orphan')
 
     def __repr__(self) -> str:

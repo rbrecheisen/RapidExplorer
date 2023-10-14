@@ -1,6 +1,5 @@
 import pydicom
 
-from typing import Dict
 from PySide6.QtCore import QRunnable
 
 from dataset import Dataset
@@ -14,7 +13,7 @@ class DicomFileImporter(QRunnable):
     def __init__(self, path: str) -> None:
         super(DicomFileImporter, self).__init__()
         self._path = path
-        self._data = Dataset(path=path)
+        self._data = Dataset(path=None)
         self._signal = ImporterProgressSignal()
 
     def path(self) -> str:
@@ -30,7 +29,7 @@ class DicomFileImporter(QRunnable):
         p = pydicom.dcmread(self.path())
         p.decompress('pylibjpeg')
         file = DicomFile(path=self.path(), data=p)
-        fileSet = FileSet(path=self.path())
+        fileSet = FileSet(path=None)
         fileSet.addFile(file)
         self.data().addFileSet(fileSet)
         manager = DatasetStorageManager()
