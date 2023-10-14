@@ -15,7 +15,7 @@ class DicomFileSetImporter(QRunnable):
     def __init__(self, path: str) -> None:
         super(DicomFileSetImporter, self).__init__()
         self._path = path
-        self._data = Dataset(path=path)
+        self._data = Dataset(path=None)
         self._signal = ImporterProgressSignal() 
 
     def path(self) -> str:
