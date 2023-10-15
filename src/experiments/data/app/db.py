@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine
 
-from basemodel import BaseModel
+from app.basemodel import BaseModel
 
 
 def singleton(cls):

@@ -1,6 +1,6 @@
 import pydicom
 
-from file import File
+from app.file import File
 
 
 class DicomFile(File):

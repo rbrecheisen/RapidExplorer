@@ -1,8 +1,7 @@
-import utilities
-
 from typing import List
-from fileset import FileSet
-from file import File
+from app.fileset import FileSet
+from app.file import File
+from app.utilities import create_random_name
 
 
 class Dataset:
@@ -10,7 +9,7 @@ class Dataset:
         self._path = path
         self._name = name
         if not self._name:
-            self._name = utilities.create_random_name('dataset')
+            self._name = create_random_name('dataset')
         self._fileSets = []
 
     def path(self) -> str:

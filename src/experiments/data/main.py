@@ -6,10 +6,10 @@ from PySide6.QtWidgets import (
     QFileDialog,
 )
 
-from dicomfileimporter import DicomFileImporter
-from dicomfilesetimporter import DicomFileSetImporter
-from dicomdatasetimporter import DicomDatasetImporter
-from datasettreewidget import DatasetTreeWidget
+from app.dicomfileimporter import DicomFileImporter
+from app.dicomfilesetimporter import DicomFileSetImporter
+from app.dicomdatasetimporter import DicomDatasetImporter
+from app.datasettreewidget import DatasetTreeWidget
 
 DATASET_DIR = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset')
 FILESET_DIR = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset/scan1')

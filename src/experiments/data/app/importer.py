@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from PySide6.QtCore import QRunnable
 
-from importerprogresssignal import ImporterProgressSignal
+from app.importerprogresssignal import ImporterProgressSignal
 
 
 class Importer(QRunnable, ABC):

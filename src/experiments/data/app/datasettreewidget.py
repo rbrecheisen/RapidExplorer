@@ -3,8 +3,8 @@ import os
 from PySide6.QtWidgets import QTreeView
 from PySide6.QtGui import QStandardItemModel, QStandardItem
 
-from dataset import Dataset
-from datasetitem import DatasetItem
+from app.dataset import Dataset
+from app.datasetitem import DatasetItem
 
 
 class DatasetTreeWidget(QTreeView):

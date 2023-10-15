@@ -2,11 +2,11 @@ import pydicom
 
 from PySide6.QtCore import QRunnable
 
-from dataset import Dataset
-from fileset import FileSet
-from dicomfile import DicomFile
-from datasetstoragemanager import DatasetStorageManager
-from importerprogresssignal import ImporterProgressSignal
+from app.dataset import Dataset
+from app.fileset import FileSet
+from app.dicomfile import DicomFile
+from app.datasetstoragemanager import DatasetStorageManager
+from app.importerprogresssignal import ImporterProgressSignal
 
 
 class DicomFileImporter(QRunnable):

@@ -1,7 +1,7 @@
-import utilities
-
 from typing import List
-from file import File
+
+from app.file import File
+from app.utilities import create_random_name
 
 
 class FileSet:
@@ -9,7 +9,7 @@ class FileSet:
         self._path = path
         self._name = name
         if not self._name:
-            self._name = utilities.create_random_name('fileset')
+            self._name = create_random_name('fileset')
         self._files = []
 
     def path(self) -> str:
