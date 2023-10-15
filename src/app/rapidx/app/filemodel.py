@@ -2,7 +2,7 @@ from typing import List
 from sqlalchemy import String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.basemodel import BaseModel
+from rapidx.app.basemodel import BaseModel
 
 
 class FileModel(BaseModel):

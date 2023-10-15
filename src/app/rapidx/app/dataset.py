@@ -1,11 +1,12 @@
 from typing import List
-from app.fileset import FileSet
-from app.file import File
-from app.utilities import create_random_name
+
+from rapidx.app.fileset import FileSet
+from rapidx.app.file import File
+from rapidx.app.utilities import create_random_name
 
 
 class Dataset:
-    def __init__(self, path: str, name: str=None) -> None:
+    def __init__(self, path: str=None, name: str=None) -> None:
         self._path = path
         self._name = name
         if not self._name:

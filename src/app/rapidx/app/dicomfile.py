@@ -1,6 +1,6 @@
 import pydicom
 
-from app.file import File
+from rapidx.app.file import File
 
 
 class DicomFile(File):

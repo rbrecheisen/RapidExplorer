@@ -2,18 +2,18 @@ import pydicom
 
 from PySide6.QtCore import QRunnable
 
-from app.dataset import Dataset
-from app.fileset import FileSet
-from app.dicomfile import DicomFile
-from app.datasetstoragemanager import DatasetStorageManager
-from app.importerprogresssignal import ImporterProgressSignal
+from rapidx.app.dataset import Dataset
+from rapidx.app.fileset import FileSet
+from rapidx.app.dicomfile import DicomFile
+from rapidx.app.datasetstoragemanager import DatasetStorageManager
+from rapidx.app.importerprogresssignal import ImporterProgressSignal
 
 
 class DicomFileImporter(QRunnable):
     def __init__(self, path: str) -> None:
         super(DicomFileImporter, self).__init__()
         self._path = path
-        self._data = Dataset(path=None)
+        self._data = Dataset()
         self._signal = ImporterProgressSignal()
 
     def path(self) -> str:
@@ -29,7 +29,7 @@ class DicomFileImporter(QRunnable):
         p = pydicom.dcmread(self.path())
         p.decompress('pylibjpeg')
         file = DicomFile(path=self.path(), data=p)
-        fileSet = FileSet(path=None)
+        fileSet = FileSet()
         fileSet.addFile(file)
         self.data().addFileSet(fileSet)
         manager = DatasetStorageManager()

@@ -1,12 +1,12 @@
 from sqlalchemy.orm import Session
 
-from app.dataset import Dataset
-from app.fileset import FileSet
-from app.file import File
-from app.datasetmodel import DatasetModel
-from app.filesetmodel import FileSetModel
-from app.filemodel import FileModel
-from app.db import DbSession
+from rapidx.app.dataset import Dataset
+from rapidx.app.fileset import FileSet
+from rapidx.app.file import File
+from rapidx.app.datasetmodel import DatasetModel
+from rapidx.app.filesetmodel import FileSetModel
+from rapidx.app.filemodel import FileModel
+from rapidx.app.db import DbSession
 
 
 class DatasetStorageManager:

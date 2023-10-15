@@ -1,6 +1,6 @@
 from PySide6.QtGui import QStandardItemModel, QStandardItem
 
-from app.dataset import Dataset
+from rapidx.app.dataset import Dataset
 
 
 class DatasetItem(QStandardItem):

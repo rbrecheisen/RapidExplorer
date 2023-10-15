@@ -1,14 +1,14 @@
-from app.file import File
+from rapidx.app.file import File
 
 
-class PngFile(File):
+class TextFile(File):
 
     def __init__(self, path: str, data: bytearray) -> None:
-        super(PngFile, self).__init__(path)
+        super(TextFile, self).__init__(path)
         self._data = data
 
     def data(self) -> bytearray:
         return self._data
 
     def __str__(self) -> str:
-        return f'PngFile(path={self.path()})'
+        return f'TextFile(path={self.path()})'

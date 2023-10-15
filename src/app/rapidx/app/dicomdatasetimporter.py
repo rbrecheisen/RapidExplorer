@@ -4,11 +4,11 @@ import pydicom.errors
 
 from PySide6.QtCore import QRunnable
 
-from app.dataset import Dataset
-from app.fileset import FileSet
-from app.dicomfile import DicomFile
-from app.datasetstoragemanager import DatasetStorageManager
-from app.importerprogresssignal import ImporterProgressSignal
+from rapidx.app.dataset import Dataset
+from rapidx.app.fileset import FileSet
+from rapidx.app.dicomfile import DicomFile
+from rapidx.app.datasetstoragemanager import DatasetStorageManager
+from rapidx.app.importerprogresssignal import ImporterProgressSignal
 
 
 class DicomDatasetImporter(QRunnable):

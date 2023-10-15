@@ -1,8 +1,7 @@
 import sys
 
 from PySide6.QtWidgets import QApplication
-
-from rapidx.mainwindow import MainWindow
+from mainwindow import MainWindow
 
 
 def main():

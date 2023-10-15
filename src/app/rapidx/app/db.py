@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine
 
-from app.basemodel import BaseModel
+from rapidx.app.basemodel import BaseModel
 
 
 def singleton(cls):

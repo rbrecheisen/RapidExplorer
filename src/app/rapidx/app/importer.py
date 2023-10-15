@@ -1,11 +1,11 @@
 from abc import ABC, abstractmethod
 from PySide6.QtCore import QRunnable
 
-from app.importerprogresssignal import ImporterProgressSignal
+from rapidx.app.importerprogresssignal import ImporterProgressSignal
 
 
 class Importer(QRunnable, ABC):
-    def __init__(self, path: str) -> None:
+    def __init__(self, path: str=None) -> None:
         super(Importer, self).__init__()
         self._path = path
         self._signal = ImporterProgressSignal()

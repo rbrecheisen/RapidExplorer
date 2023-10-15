@@ -3,8 +3,8 @@ import os
 from PySide6.QtWidgets import QTreeView
 from PySide6.QtGui import QStandardItemModel, QStandardItem
 
-from app.dataset import Dataset
-from app.datasetitem import DatasetItem
+from rapidx.app.dataset import Dataset
+from rapidx.app.datasetitem import DatasetItem
 
 
 class DatasetTreeWidget(QTreeView):
@@ -16,7 +16,6 @@ class DatasetTreeWidget(QTreeView):
         self.setModel(self._model)
 
     def addDataset(self, dataset: Dataset) -> None:
-        # datasetNode = QStandardItem(dataset.name())
         datasetNode = DatasetItem(model=self._model, dataset=dataset)
         for fileSet in dataset.fileSets():
             fileSetNode = QStandardItem(fileSet.name())
