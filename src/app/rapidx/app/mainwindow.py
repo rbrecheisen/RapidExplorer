@@ -24,6 +24,10 @@ class MainWindow(QMainWindow):
         self._dockWidgetTasks = None
         self._dockWidgetViews = None
         self._dockWidgetCurrentView = None
+        self._dicomFileImporter = None
+        self._dicomFileSetImporter = None
+        self._dicomDatasetImporter = None
+        self._progressBar = None
         self._initUi()
 
     def _initUi(self) -> None:
@@ -32,6 +36,8 @@ class MainWindow(QMainWindow):
         self._initDockWidgetTasks()
         self._initDockWidgetViews()
         self._initDockWidgetCurrentView()
+        self._initProgressBar()
+        self._initMain()
 
     def _initMenus(self) -> None:
         importDicomImageAction = QAction('Import DICOM Image...', self)
@@ -74,8 +80,27 @@ class MainWindow(QMainWindow):
     def _initDockWidgetCurrentView(self) -> None:
         pass
 
+    def _initProgressBar(self) -> None:
+        # TODO: make this custom dialog class!
+        self._progressBar = QProgressBar()
+        self._progressBar.setValue(0)
+
+    def _initMain(self) -> None:
+        layout = QVBoxLayout()
+        # TODO: progress should be dialog window that closes when done
+        layout.add(self._progressBar)
+        layout.
+
+    # Import handlers
+
     def _importDicomImage(self) -> None:
-        pass
+        filePath, _ = QFileDialog.getOpenFileName(self, 'Open DICOM Image', FILE_PATH)
+        if filePath:
+            self.progressBar.setValue(0)
+            self._dicomFileImporter = DicomFileImporter(path=filePath)
+            self._dicomFileImporter.signal().done.connect(self._importDicomFileFinished)
+            self._dicomFileImporter.signal().progress.connect(self._updateProgress)
+            QThreadPool.globalInstance().start(self._dicomFileImporter)
 
     def _importDicomImageSeries(self) -> None:
         pass
@@ -90,6 +115,20 @@ class MainWindow(QMainWindow):
         pass
 
     def _importPngImage(self) -> None:
+        pass
+
+    # Import finished handlers
+
+    def _importDicomFileFinished(self, value) -> None:
+        pass
+
+    def _importDicomFileSetFinished(self, value) -> None:
+        pass
+
+    def _importDicomDatasetFinished(self, value) -> None:
+        pass
+
+    def _updateProgress(self, value) -> None:
         pass
 
     def _centerWindow(self) -> None:
