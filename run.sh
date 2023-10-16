@@ -1,2 +1,2 @@
 #!/bin/bash
-./distribution/rapid-x
+./distribution/rapidx
