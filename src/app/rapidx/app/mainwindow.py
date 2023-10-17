@@ -37,7 +37,7 @@ class MainWindow(QMainWindow):
         self._initDockWidgetViews()
         self._initDockWidgetCurrentView()
         self._initProgressBar()
-        self._initMain()
+        self._initMainWindow()
 
     def _initMenus(self) -> None:
         importDicomImageAction = QAction('Import DICOM Image...', self)
@@ -85,7 +85,7 @@ class MainWindow(QMainWindow):
         self._progressBar = QProgressBar()
         self._progressBar.setValue(0)
 
-    def _initMain(self) -> None:
+    def _initMainWindow(self) -> None:
         layout = QVBoxLayout()
         # TODO: progress should be dialog window that closes when done
         layout.add(self._progressBar)
