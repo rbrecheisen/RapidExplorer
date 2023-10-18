@@ -1,16 +1,19 @@
 import os
 
-from PySide6.QtCore import QThreadPool
+from PySide6.QtCore import Qt, QThreadPool, QSize
 from PySide6.QtGui import QGuiApplication, QAction
 from PySide6.QtWidgets import (
-    QApplication, QMainWindow, QPushButton, QProgressBar, QVBoxLayout, QWidget,
-    QFileDialog, QMenu
+    QApplication, QMainWindow, QVBoxLayout, QWidget, QFileDialog, QMenu, QProgressDialog, 
 )
 
 from rapidx.app.dicomfileimporter import DicomFileImporter
 from rapidx.app.dicomfilesetimporter import DicomFileSetImporter
 from rapidx.app.dicomdatasetimporter import DicomDatasetImporter
 from rapidx.app.datasettreewidget import DatasetTreeWidget
+from rapidx.app.datasetsdockwidget import DatasetsDockWidget
+from rapidx.app.tasksdockwidget import TasksDockWidget
+from rapidx.app.viewsdockwidget import ViewsDockWidget
+from rapidx.app.mainviewdockwidget import MainViewDockWidget
 
 DATASET_DIR = os.path.join(os.environ['HOME'], 'Desktop/downimports/dataset')
 FILESET_DIR = os.path.join(os.environ['HOME'], 'Desktop/downimports/dataset/scan1')
@@ -23,11 +26,11 @@ class MainWindow(QMainWindow):
         self._dockWidgetDatasets = None
         self._dockWidgetTasks = None
         self._dockWidgetViews = None
-        self._dockWidgetCurrentView = None
+        self._dockWidgetMainView = None
         self._dicomFileImporter = None
         self._dicomFileSetImporter = None
         self._dicomDatasetImporter = None
-        self._progressBar = None
+        self._progressBarDialog = None
         self._initUi()
 
     def _initUi(self) -> None:
@@ -35,8 +38,8 @@ class MainWindow(QMainWindow):
         self._initDockWidgetDatasets()
         self._initDockWidgetTasks()
         self._initDockWidgetViews()
-        self._initDockWidgetCurrentView()
-        self._initProgressBar()
+        self._initDockWidgetMainView()
+        self._initProgressBarDialog()
         self._initMainWindow()
 
     def _initMenus(self) -> None:
@@ -69,34 +72,48 @@ class MainWindow(QMainWindow):
         self.menuBar().setNativeMenuBar(False)
 
     def _initDockWidgetDatasets(self) -> None:
-        pass
+        self._dockWidgetDatasets = DatasetsDockWidget('Dataset Explorer', self)
+        self._dockWidgetDatasets.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea)
+        self.addDockWidget(Qt.LeftDockWidgetArea, self._dockWidgetDatasets)
 
     def _initDockWidgetTasks(self) -> None:
-        pass
+        self._dockWidgetTasks = TasksDockWidget('Tasks', self)
+        self._dockWidgetTasks.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea)
+        self.addDockWidget(Qt.LeftDockWidgetArea, self._dockWidgetTasks)
 
     def _initDockWidgetViews(self) -> None:
-        pass
+        self._dockWidgetViews = ViewsDockWidget('Views', self)
+        self._dockWidgetViews.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea)
+        self.addDockWidget(Qt.RightDockWidgetArea, self._dockWidgetViews)
 
-    def _initDockWidgetCurrentView(self) -> None:
-        pass
+    def _initDockWidgetMainView(self) -> None:
+        self._dockWidgetMainView = MainViewDockWidget('Current View', self)
+        self._dockWidgetMainView.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea)
+        self.addDockWidget(Qt.RightDockWidgetArea, self._dockWidgetMainView)
 
-    def _initProgressBar(self) -> None:
-        # TODO: make this custom dialog class!
-        self._progressBar = QProgressBar()
-        self._progressBar.setValue(0)
+    def _initProgressBarDialog(self) -> None:
+        self._progressBarDialog = QProgressDialog('Importing Files...', 'Abort Import', 0, 100, self)
+        self._progressBarDialog.setWindowModality(Qt.WindowModality.WindowModal)
+        self._progressBarDialog.setAutoReset(True)
+        self._progressBarDialog.setAutoClose(True)
+        self._progressBarDialog.close()
 
     def _initMainWindow(self) -> None:
-        layout = QVBoxLayout()
-        # TODO: progress should be dialog window that closes when done
-        layout.add(self._progressBar)
-        layout.
+        self.setCentralWidget(QWidget(self))
+        self.centralWidget().hide()
+        self.splitDockWidget(self._dockWidgetDatasets, self._dockWidgetTasks, Qt.Vertical)
+        self.splitDockWidget(self._dockWidgetViews, self._dockWidgetMainView, Qt.Vertical)
+        self.setFixedSize(QSize(1024, 800))
+        self.setWindowTitle('RAPID-X')
+        self._centerWindow()
 
     # Import handlers
 
     def _importDicomImage(self) -> None:
         filePath, _ = QFileDialog.getOpenFileName(self, 'Open DICOM Image', FILE_PATH)
         if filePath:
-            self.progressBar.setValue(0)
+            self._progressBarDialog.show()
+            self._progressBarDialog.setValue(0)
             self._dicomFileImporter = DicomFileImporter(path=filePath)
             self._dicomFileImporter.signal().done.connect(self._importDicomFileFinished)
             self._dicomFileImporter.signal().progress.connect(self._updateProgress)
@@ -129,7 +146,7 @@ class MainWindow(QMainWindow):
         pass
 
     def _updateProgress(self, value) -> None:
-        pass
+        self._progressBarDialog.setValue(value)
 
     def _centerWindow(self) -> None:
         screen = QGuiApplication.primaryScreen().geometry()
