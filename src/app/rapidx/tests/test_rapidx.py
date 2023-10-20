@@ -1,4 +1,4 @@
 from rapidx.app.dataset import Dataset
 
-def test_it():
+def test_all():
     assert isinstance(Dataset(), Dataset)
