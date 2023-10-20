@@ -47,3 +47,6 @@ class Dataset:
         if len(self._fileSets) > 0:
             return self._fileSets[0]
         return None
+
+    def __str__(self) -> str:
+        return f'Dataset(name={self.name()}, path={self.path()}, nrFileSets={self.nrFiles()})'

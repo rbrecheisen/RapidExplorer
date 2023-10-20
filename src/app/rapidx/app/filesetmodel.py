@@ -13,3 +13,6 @@ class FileSetModel(BaseModel):
     dataset: Mapped['DatasetModel'] = relationship(back_populates='fileSets')
     datasetId: Mapped[int] = mapped_column('dataset_id', ForeignKey('dataset.id'))
     files: Mapped[List['FileModel']] = relationship(back_populates='fileSet', cascade='all, delete-orphan')
+
+    def __str__(self) -> str:
+        return f'FileSetModel(id={self.id}, name={self.name}, path={self.path}, nrFiles={len(self.files)})'

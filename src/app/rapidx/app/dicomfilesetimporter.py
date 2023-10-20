@@ -5,7 +5,7 @@ import pydicom.errors
 from PySide6.QtCore import QRunnable
 
 from rapidx.app.dataset import Dataset
-from rapidx.app.fileset import FileSet
+from rapidx.app.dicomfileset import DicomFileSet
 from rapidx.app.dicomfile import DicomFile
 from rapidx.app.datasetstoragemanager import DatasetStorageManager
 from rapidx.app.importerprogresssignal import ImporterProgressSignal
@@ -28,7 +28,7 @@ class DicomFileSetImporter(QRunnable):
         return self._signal
 
     def run(self):
-        fileSet = FileSet(path=self.path())
+        fileSet = DicomFileSet(path=self.path())
         files = os.listdir(self.path())
         nrFiles = len(files)
         i = 0

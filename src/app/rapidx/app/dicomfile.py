@@ -10,3 +10,6 @@ class DicomFile(File):
 
     def data(self) -> pydicom.FileDataset:
         return self._data
+
+    def __str__(self) -> str:
+        return f'DicomFile(path={self.path()})'

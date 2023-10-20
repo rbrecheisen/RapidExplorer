@@ -5,11 +5,11 @@ from rapidx.app.utilities import create_random_name
 
 
 class FileSet:
-    def __init__(self, path: str=None, name: str=None) -> None:
-        self._path = path
+    def __init__(self, name: str=None, path: str=None) -> None:
         self._name = name
         if not self._name:
             self._name = create_random_name('fileset')
+        self._path = path
         self._files = []
 
     def path(self) -> str:
@@ -32,5 +32,5 @@ class FileSet:
             return self.files()[0]
         return None
     
-    def sortByInstanceNumber(self) -> None:
-        self.files().sort(key=lambda p: int(p.data().InstanceNumber))
+    def __str__(self) -> str:
+        return f'FileSet(name={self.name()}, path={self.path()}, nrFiles={self.nrFiles()})'

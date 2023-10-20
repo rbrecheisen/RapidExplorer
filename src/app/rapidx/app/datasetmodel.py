@@ -13,4 +13,4 @@ class DatasetModel(BaseModel):
     fileSets: Mapped[List['FileSetModel']] = relationship(back_populates='dataset', cascade='all, delete-orphan')
 
     def __repr__(self) -> str:
-        return f'DatasetModel(id={self.id}, path={self.path}, name={self.name})'
+        return f'DatasetModel(id={self.id}, name={self.name}, path={self.path}, nrFileSets={len(self.fileSets)})'

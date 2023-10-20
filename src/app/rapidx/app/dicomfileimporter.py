@@ -3,7 +3,7 @@ import pydicom
 from PySide6.QtCore import QRunnable
 
 from rapidx.app.dataset import Dataset
-from rapidx.app.fileset import FileSet
+from rapidx.app.dicomfileset import DicomFileSet
 from rapidx.app.dicomfile import DicomFile
 from rapidx.app.datasetstoragemanager import DatasetStorageManager
 from rapidx.app.importerprogresssignal import ImporterProgressSignal
@@ -29,7 +29,7 @@ class DicomFileImporter(QRunnable):
         p = pydicom.dcmread(self.path())
         p.decompress('pylibjpeg')
         file = DicomFile(path=self.path(), data=p)
-        fileSet = FileSet()
+        fileSet = DicomFileSet()
         fileSet.addFile(file)
         self.data().addFileSet(fileSet)
         manager = DatasetStorageManager()
