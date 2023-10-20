@@ -1,5 +1,3 @@
-from sqlalchemy.orm import Session
-
 from rapidx.app.dataset import Dataset
 from rapidx.app.fileset import FileSet
 from rapidx.app.file import File
@@ -39,3 +37,10 @@ class DatasetStorageManager:
         with DbSession() as session:
             datasetModel = session.query(DatasetModel).filter_by(name=name).one()
             session.delete(datasetModel)
+
+    def updateDatasetName(self, oldName: str, newName: str) -> None:
+        with DbSession() as session:
+            datasetModel = session.query(DatasetModel).filter_by(name=oldName).one()
+            if datasetModel:
+                datasetModel.name = newName
+                datasetModel.save()

@@ -11,10 +11,6 @@ class DatasetsDockWidget(Dockwidget):
 
     def _initUi(self) -> None:
         self._treeWidget = DatasetTreeWidget(self)
-        # listWidget = QListWidget()
-        # listWidget.addItem(QListWidgetItem('Dataset 1'))
-        # listWidget.addItem(QListWidgetItem('Dataset 2'))
-        # listWidget.addItem(QListWidgetItem('Dataset 3'))
         self.setWidget(self._treeWidget)
 
     def addDataset(self, dataset: Dataset) -> None:

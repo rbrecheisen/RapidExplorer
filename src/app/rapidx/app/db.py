@@ -19,7 +19,7 @@ def singleton(cls):
 class DbSession:
     def __init__(self, engine=None):
         if not engine:
-            engine = create_engine('sqlite://', echo=False)
+            engine = create_engine('sqlite://', echo=True)
             BaseModel.metadata.create_all(engine)
         self._session = Session(engine)
 
