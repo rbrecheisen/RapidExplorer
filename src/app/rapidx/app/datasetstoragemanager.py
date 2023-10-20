@@ -10,42 +10,50 @@ from rapidx.app.db import DbSession
 class DatasetStorageManager:
     def save(self, dataset: Dataset):
         with DbSession() as session:
-            # Create or update dataset model
-            datasetModel = session.query(DatasetModel).filter_by(name=dataset.name()).first()
-            if not datasetModel:
+            if not dataset.id():
                 datasetModel = DatasetModel(path=dataset.path(), name=dataset.name())
                 session.add(datasetModel)
+                session.commit()
+                dataset.setId(datasetModel.id)
             else:
+                datasetModel = session.get(DatasetModel, dataset.id())  # ERROR!
                 datasetModel.name = dataset.name()
                 datasetModel.path = dataset.path()
-            # Create or update file sets
+                session.commit()
             for fileSet in dataset.fileSets():
-                fileSetModel = session.query(FileSetModel).filter_by(name=fileSet.name()).first()
-                if not fileSetModel:
+                if not fileSet.id():
                     fileSetModel = FileSetModel(path=fileSet.path(), name=fileSet.name(), dataset=datasetModel)
                     session.add(fileSetModel)
+                    session.commit()
+                    fileSet.setId(fileSetModel.id)
                 else:
+                    fileSetModel = session.get(FileSetModel, fileSet.id())
                     fileSetModel.path = fileSet.path()
                     fileSetModel.name = fileSet.name()
-                # Create or update files
+                    session.commit()
                 for file in fileSet.files():
-                    fileModel = session.query(FileModel).filter_by(path=file.path(), fileSet=fileSetModel).first()
-                    if not fileModel:
+                    if not file.id():
                         fileModel = FileModel(path=file.path(), fileSet=fileSetModel)
                         session.add(fileModel)
+                        session.commit()
+                        file.setId(fileModel.id)
                     else:
-                        fileModel = path=file.path()
-            session.commit()
-        return dataset.name()
+                        fileModel = session.get(FileModel, file.id())
+                        fileModel.path=file.path()
+                        session.commit()
+        return dataset
 
     def load(self, name: str):
         with DbSession() as session:
             datasetModel = session.query(DatasetModel).filter_by(name=name).one()
             dataset = Dataset(path=datasetModel.path, name=datasetModel.name)
+            dataset.setId(datasetModel.id)
             for fileSetModel in datasetModel.fileSets:
                 fileSet = FileSet(path=fileSetModel.path, name=fileSetModel.name)
+                fileSet.setId(fileSetModel.id)
                 for fileModel in fileSetModel.files:
                     file = File(path=fileModel.path)
+                    file.setId(fileModel.id)
                     fileSet.files.append(file)
                 dataset.fileSets.append(fileSet)
         return dataset

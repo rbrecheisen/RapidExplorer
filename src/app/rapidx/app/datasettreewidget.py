@@ -5,6 +5,7 @@ from PySide6.QtGui import QStandardItemModel, QStandardItem
 
 from rapidx.app.dataset import Dataset
 from rapidx.app.datasetitem import DatasetItem
+from rapidx.app.datasetstoragemanager import DatasetStorageManager
 
 
 class DatasetTreeWidget(QTreeView):
@@ -27,4 +28,10 @@ class DatasetTreeWidget(QTreeView):
         self._model.appendRow(datasetNode)
 
     def _itemChanged(self, item) -> None:
-        item.setName(item.text())
+        dataset = item.dataset()
+        oldName = dataset.name()        
+        newName = item.text()
+        dataset.setName(newName)
+        manager = DatasetStorageManager()
+        manager.save(dataset)
+        print(f'Updated dataset name: {oldName} > {newName}')
