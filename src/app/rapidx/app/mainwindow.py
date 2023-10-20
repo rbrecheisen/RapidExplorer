@@ -9,15 +9,14 @@ from PySide6.QtWidgets import (
 from rapidx.app.dicomfileimporter import DicomFileImporter
 from rapidx.app.dicomfilesetimporter import DicomFileSetImporter
 from rapidx.app.dicomdatasetimporter import DicomDatasetImporter
-from rapidx.app.datasettreewidget import DatasetTreeWidget
 from rapidx.app.datasetsdockwidget import DatasetsDockWidget
 from rapidx.app.tasksdockwidget import TasksDockWidget
 from rapidx.app.viewsdockwidget import ViewsDockWidget
 from rapidx.app.mainviewdockwidget import MainViewDockWidget
 
-DATASET_DIR = os.path.join(os.environ['HOME'], 'Desktop/downimports/dataset')
-FILESET_DIR = os.path.join(os.environ['HOME'], 'Desktop/downimports/dataset/scan1')
-FILE_PATH = os.path.join(os.environ['HOME'], 'Desktop/downimports/dataset/scan1/image-00000.dcm')
+DATASET_DIR = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset')
+FILESET_DIR = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset/scan1')
+FILE_PATH = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset/scan1/image-00000.dcm')
 
 
 class MainWindow(QMainWindow):
@@ -25,8 +24,8 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__()
         self._dockWidgetDatasets = None
         self._dockWidgetTasks = None
-        self._dockWidgetViews = None
         self._dockWidgetMainView = None
+        self._dockWidgetViews = None
         self._dicomFileImporter = None
         self._dicomFileSetImporter = None
         self._dicomDatasetImporter = None
@@ -37,8 +36,8 @@ class MainWindow(QMainWindow):
         self._initMenus()
         self._initDockWidgetDatasets()
         self._initDockWidgetTasks()
-        self._initDockWidgetViews()
         self._initDockWidgetMainView()
+        self._initDockWidgetViews()
         self._initProgressBarDialog()
         self._initMainWindow()
 
@@ -81,15 +80,15 @@ class MainWindow(QMainWindow):
         self._dockWidgetTasks.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea)
         self.addDockWidget(Qt.LeftDockWidgetArea, self._dockWidgetTasks)
 
+    def _initDockWidgetMainView(self) -> None:
+        self._dockWidgetMainView = MainViewDockWidget('Main View', self)
+        self._dockWidgetMainView.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea)
+        self.addDockWidget(Qt.RightDockWidgetArea, self._dockWidgetMainView)
+
     def _initDockWidgetViews(self) -> None:
         self._dockWidgetViews = ViewsDockWidget('Views', self)
         self._dockWidgetViews.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea)
         self.addDockWidget(Qt.RightDockWidgetArea, self._dockWidgetViews)
-
-    def _initDockWidgetMainView(self) -> None:
-        self._dockWidgetMainView = MainViewDockWidget('Current View', self)
-        self._dockWidgetMainView.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea)
-        self.addDockWidget(Qt.RightDockWidgetArea, self._dockWidgetMainView)
 
     def _initProgressBarDialog(self) -> None:
         self._progressBarDialog = QProgressDialog('Importing Files...', 'Abort Import', 0, 100, self)
@@ -102,7 +101,7 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(QWidget(self))
         self.centralWidget().hide()
         self.splitDockWidget(self._dockWidgetDatasets, self._dockWidgetTasks, Qt.Vertical)
-        self.splitDockWidget(self._dockWidgetViews, self._dockWidgetMainView, Qt.Vertical)
+        self.splitDockWidget(self._dockWidgetMainView, self._dockWidgetViews, Qt.Vertical)
         self.setFixedSize(QSize(1024, 800))
         self.setWindowTitle('RAPID-X')
         self._centerWindow()
@@ -150,14 +149,14 @@ class MainWindow(QMainWindow):
 
     # Import finished handlers
 
-    def _importDicomFileFinished(self, value) -> None:
-        pass
+    def _importDicomFileFinished(self, _) -> None:
+        self._dockWidgetDatasets.addDataset(self._dicomFileImporter.data())
 
-    def _importDicomFileSetFinished(self, value) -> None:
-        pass
+    def _importDicomFileSetFinished(self, _) -> None:
+        self._dockWidgetDatasets.addDataset(self._dicomFileSetImporter.data())
 
-    def _importDicomDatasetFinished(self, value) -> None:
-        pass
+    def _importDicomDatasetFinished(self, _) -> None:
+        self._dockWidgetDatasets.addDataset(self._dicomDatasetImporter.data())
 
     def _updateProgress(self, value) -> None:
         self._progressBarDialog.setValue(value)

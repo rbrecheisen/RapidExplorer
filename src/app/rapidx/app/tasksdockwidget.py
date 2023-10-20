@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QDockWidget, QListWidget, QListWidgetItem, QSizePolicy
+from PySide6.QtWidgets import QWidget
 
 from rapidx.app.dockwidget import Dockwidget
 
@@ -9,10 +9,10 @@ class TasksDockWidget(Dockwidget):
         self._initUi()
 
     def _initUi(self) -> None:
-        listWidget = QListWidget()
-        listWidget.addItem(QListWidgetItem('Task 1'))
-        listWidget.addItem(QListWidgetItem('Task 2'))
-        listWidget.addItem(QListWidgetItem('Task 3'))
-        # listWidget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.setWidget(listWidget)
-        # self.setFeatures(QDockWidget.DockWidgetMovable | QDockWidget.DockWidgetFloatable)
+        # listWidget = QListWidget()
+        # listWidget.addItem(QListWidgetItem('Task 1'))
+        # listWidget.addItem(QListWidgetItem('Task 2'))
+        # listWidget.addItem(QListWidgetItem('Task 3'))
+        # self.setWidget(listWidget)
+        self.setWidget(QWidget(self))
+        pass

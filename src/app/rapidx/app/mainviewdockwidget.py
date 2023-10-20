@@ -9,10 +9,9 @@ class MainViewDockWidget(Dockwidget):
         self._initUi()
 
     def _initUi(self) -> None:
-        listWidget = QListWidget()
-        listWidget.addItem(QListWidgetItem('Dataset 1'))
-        listWidget.addItem(QListWidgetItem('Dataset 2'))
-        listWidget.addItem(QListWidgetItem('Dataset 3'))
-        # listWidget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.setWidget(listWidget)
-        # self.setFeatures(QDockWidget.DockWidgetMovable | QDockWidget.DockWidgetFloatable)
+        # listWidget = QListWidget()
+        # listWidget.addItem(QListWidgetItem('Dataset 1'))
+        # listWidget.addItem(QListWidgetItem('Dataset 2'))
+        # listWidget.addItem(QListWidgetItem('Dataset 3'))
+        # self.setWidget(listWidget)
+        pass
