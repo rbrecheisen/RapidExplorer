@@ -3,6 +3,8 @@ from sqlalchemy import create_engine
 
 from rapidx.app.basemodel import BaseModel
 
+ECHO = False
+
 
 def singleton(cls):
     _instances = {}
@@ -19,7 +21,7 @@ def singleton(cls):
 class DbSession:
     def __init__(self, engine=None):
         if not engine:
-            engine = create_engine('sqlite://', echo=True)
+            engine = create_engine('sqlite://', echo=ECHO)
             BaseModel.metadata.create_all(engine)
         self._session = Session(engine)
 

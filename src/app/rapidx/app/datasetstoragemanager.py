@@ -10,16 +10,33 @@ from rapidx.app.db import DbSession
 class DatasetStorageManager:
     def save(self, dataset: Dataset):
         with DbSession() as session:
-            datasetModel = DatasetModel(path=dataset.path(), name=dataset.name())
+            # Create or update dataset model
+            datasetModel = session.query(DatasetModel).filter_by(name=dataset.name()).first()
+            if not datasetModel:
+                datasetModel = DatasetModel(path=dataset.path(), name=dataset.name())
+                session.add(datasetModel)
+            else:
+                datasetModel.name = dataset.name()
+                datasetModel.path = dataset.path()
+            # Create or update file sets
             for fileSet in dataset.fileSets():
-                fileSetModel = FileSetModel(path=fileSet.path(), name=fileSet.name(), dataset=datasetModel)
+                fileSetModel = session.query(FileSetModel).filter_by(name=fileSet.name()).first()
+                if not fileSetModel:
+                    fileSetModel = FileSetModel(path=fileSet.path(), name=fileSet.name(), dataset=datasetModel)
+                    session.add(fileSetModel)
+                else:
+                    fileSetModel.path = fileSet.path()
+                    fileSetModel.name = fileSet.name()
+                # Create or update files
                 for file in fileSet.files():
-                    fileModel = FileModel(path=file.path(), fileSet=fileSetModel)
-                    session.add(fileModel)
-                session.add(fileSetModel)
-            session.add(datasetModel)
+                    fileModel = session.query(FileModel).filter_by(path=file.path(), fileSet=fileSetModel).first()
+                    if not fileModel:
+                        fileModel = FileModel(path=file.path(), fileSet=fileSetModel)
+                        session.add(fileModel)
+                    else:
+                        fileModel = path=file.path()
             session.commit()
-        return dataset.name
+        return dataset.name()
 
     def load(self, name: str):
         with DbSession() as session:
@@ -37,10 +54,3 @@ class DatasetStorageManager:
         with DbSession() as session:
             datasetModel = session.query(DatasetModel).filter_by(name=name).one()
             session.delete(datasetModel)
-
-    def updateDatasetName(self, oldName: str, newName: str) -> None:
-        with DbSession() as session:
-            datasetModel = session.query(DatasetModel).filter_by(name=oldName).one()
-            if datasetModel:
-                datasetModel.name = newName
-                datasetModel.save()
