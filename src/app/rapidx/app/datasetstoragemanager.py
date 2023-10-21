@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, List
 
 from rapidx.app.dataset import Dataset
 from rapidx.app.fileset import FileSet
@@ -88,16 +88,27 @@ class DatasetStorageManager:
             dataset = Dataset(path=datasetModel.path, name=datasetModel.name)
             dataset.setId(datasetModel.id)
             for fileSetModel in datasetModel.fileSets:
-                fileSet = FileSet(path=fileSetModel.path, name=fileSetModel.name)
+                fileSet = FileSet(path=fileSetModel.path, name=fileSetModel.name)  # What about DicomFileSet?
                 fileSet.setDatasetId(datasetId=datasetId)
                 fileSet.setId(fileSetModel.id)
                 for fileModel in fileSetModel.files:
-                    file = File(path=fileModel.path)
+                    file = File(path=fileModel.path)  # Abstract type!
                     file.setFileSetId(fileSetId=fileSet.id())
                     file.setId(fileModel.id)
                     fileSet.files.append(file)
                 dataset.fileSets.append(fileSet)
         return dataset
+    
+    def loadAll(self) -> List[Dataset]:
+        with DbSession() as session:
+            if self._session:
+                session = self._session
+            datasetModels = session.query(DatasetModel).all()
+            datasets = []
+            for datasetModel in datasetModels:
+                dataset = self.load(datasetId=datasetModel.id)
+                datasets.append(dataset)
+        return datasets
 
     def delete(self, datasetId: int):
         # Support deleting Dataset, FileSet and File objects? For example, from a tree widget?

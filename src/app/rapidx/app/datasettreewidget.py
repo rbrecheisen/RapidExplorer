@@ -18,6 +18,7 @@ class DatasetTreeWidget(QTreeView):
         self._model.setHorizontalHeaderLabels(['Datasets'])
         self._model.itemChanged.connect(self._itemChanged)
         self.setModel(self._model)
+        self._loadDatasetsFromDatabase()
 
     def addDataset(self, dataset: Dataset) -> None:
         datasetNode = DatasetItem(model=self._model, dataset=dataset)
@@ -30,11 +31,15 @@ class DatasetTreeWidget(QTreeView):
                 fileSetNode.appendRow(fileNode)
         self._model.appendRow(datasetNode)
 
+    def _loadDatasetsFromDatabase(self) -> None:
+        manager = DatasetStorageManager()
+        datasets = manager.loadAll()
+        for dataset in datasets:
+            self.addDataset(dataset=dataset)
+
     def _itemChanged(self, item) -> None:
         dataObj = item.dataObj()
-        oldName = dataObj.name()        
-        newName = item.text()
-        dataObj.setName(newName)
+        dataObj.setName(item.text())
         manager = DatasetStorageManager()
         manager.save(dataObj)
-        print(f'Updated {dataObj} name: {oldName} > {newName}')
+        # print(f'Updated {dataObj} name: {oldName} > {newName}')
