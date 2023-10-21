@@ -1,11 +1,9 @@
-import os
-
 from rapidx.app.datasetstoragemanager import DatasetStorageManager
 from rapidx.app.dataset import Dataset
 
 
-def test():
-    manager = DatasetStorageManager()
+def test(session):
+    manager = DatasetStorageManager(session=session)  
     oldName = 'myDataset'
     newName = 'myNewDataset'
     # Create new dataset and save it

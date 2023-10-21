@@ -10,6 +10,9 @@ from rapidx.app.db import DbSession
 
 
 class DatasetStorageManager:
+    def __init__(self, session=None) -> None:
+        self._session = session
+
     def save(self, dataObj: Union[Dataset, FileSet, File]) -> Union[Dataset, FileSet, File]:
         if isinstance(dataObj, Dataset):
             return self._saveDataset(dataset=dataObj)
@@ -22,6 +25,8 @@ class DatasetStorageManager:
     
     def _saveDataset(self, dataset: Dataset) -> Dataset:
         with DbSession() as session:
+            if self._session:
+                session = self._session
             if not dataset.id():
                 datasetModel = DatasetModel(path=dataset.path(), name=dataset.name())
                 session.add(datasetModel)
@@ -33,12 +38,15 @@ class DatasetStorageManager:
                 datasetModel.path = dataset.path()
                 session.commit()
             for fileSet in dataset.fileSets():
-                self._saveFileSet(fileSet, session)
+                self._saveFileSet(fileSet=fileSet, datasetId=dataset.id())
         return dataset
 
-    def _saveFileSet(self, fileSet: FileSet) -> FileSet:
+    def _saveFileSet(self, fileSet: FileSet, datasetId: int) -> FileSet:
         with DbSession() as session:
+            if self._session:
+                session = self._session
             if not fileSet.id():
+                datasetModel = session.get(DatasetModel, datasetId)
                 fileSetModel = FileSetModel(path=fileSet.path(), name=fileSet.name(), dataset=datasetModel)
                 session.add(fileSetModel)
                 session.commit()
@@ -49,12 +57,15 @@ class DatasetStorageManager:
                 fileSetModel.name = fileSet.name()
                 session.commit()
             for file in fileSet.files():
-                self._saveFile(file)
+                self._saveFile(file=file, fileSetId=fileSet.id())
         return fileSet
 
-    def _saveFile(self, file: File) -> File:
+    def _saveFile(self, file: File, fileSetId: int) -> File:
         with DbSession() as session:
+            if self._session:
+                session = self._session
             if not file.id():
+                fileSetModel = session.get(FileSetModel, fileSetId)
                 fileModel = FileModel(path=file.path(), fileSet=fileSetModel)
                 session.add(fileModel)
                 session.commit()
@@ -69,6 +80,8 @@ class DatasetStorageManager:
         # TODO: Support loading of Dataset, FileSet and File objects? Perhaps support load by ID as well?
         # Add it when you actually need it.
         with DbSession() as session:
+            if self._session:
+                session = self._session
             datasetModel = session.query(DatasetModel).filter_by(name=name).one()
             dataset = Dataset(path=datasetModel.path, name=datasetModel.name)
             dataset.setId(datasetModel.id)
@@ -86,5 +99,7 @@ class DatasetStorageManager:
         # Support deleting Dataset, FileSet and File objects? For example, from a tree widget?
         # The physical underlying data is untouched
         with DbSession() as session:
+            if self._session:
+                session = self._session
             datasetModel = session.query(DatasetModel).filter_by(name=name).one()
             session.delete(datasetModel)
