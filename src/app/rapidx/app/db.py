@@ -3,7 +3,7 @@ from sqlalchemy import create_engine
 
 from rapidx.app.basemodel import BaseModel
 
-DATABASE = 'rapidx.db'
+DATABASE = 'rapidx.db'  # stored in root directory of project
 ECHO = False
 
 

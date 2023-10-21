@@ -1,3 +1,4 @@
+from PySide6.QtCore import Qt
 from PySide6.QtGui import QStandardItemModel, QStandardItem
 
 from rapidx.app.dataset import Dataset
@@ -9,12 +10,8 @@ class DatasetItem(QStandardItem):
         self._model = model
         self._dataset = dataset
 
-    def dataset(self) -> Dataset:
+    def dataObj(self) -> Dataset:
         return self._dataset
-
-    # def setName(self, name: str) -> None:
-    #     manager = DatasetStorageManager()
-    #     manager.updateDatasetName(oldName=self._dataset.name(), newName=name)
-    #     self._dataset.setName(name)
-    #     self.setText(name)
-    #     print(f'Dataset name: {self._dataset.name()}')
+    
+    def __str__(self) -> str:
+        return f'DatasetItem(dataset={self._dataset.name()})'

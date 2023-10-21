@@ -24,6 +24,9 @@ class FileSet:
     
     def name(self) -> str:
         return self._name
+    
+    def setName(self, name: str) -> None:
+        self._name = name
 
     def files(self) -> List[str]:
         return self._files
