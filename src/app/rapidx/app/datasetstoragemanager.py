@@ -38,15 +38,16 @@ class DatasetStorageManager:
                 datasetModel.path = dataset.path()
                 session.commit()
             for fileSet in dataset.fileSets():
-                self._saveFileSet(fileSet=fileSet, datasetId=dataset.id())
+                fileSet.setDatasetId(datasetId=dataset.id())
+                self._saveFileSet(fileSet=fileSet)
         return dataset
 
-    def _saveFileSet(self, fileSet: FileSet, datasetId: int) -> FileSet:
+    def _saveFileSet(self, fileSet: FileSet) -> FileSet:
         with DbSession() as session:
             if self._session:
                 session = self._session
             if not fileSet.id():
-                datasetModel = session.get(DatasetModel, datasetId)
+                datasetModel = session.get(DatasetModel, fileSet.datasetId())
                 fileSetModel = FileSetModel(path=fileSet.path(), name=fileSet.name(), dataset=datasetModel)
                 session.add(fileSetModel)
                 session.commit()
@@ -57,15 +58,16 @@ class DatasetStorageManager:
                 fileSetModel.name = fileSet.name()
                 session.commit()
             for file in fileSet.files():
-                self._saveFile(file=file, fileSetId=fileSet.id())
+                file.setFileSetId(fileSetId=fileSet.id())
+                self._saveFile(file=file)
         return fileSet
 
-    def _saveFile(self, file: File, fileSetId: int) -> File:
+    def _saveFile(self, file: File) -> File:
         with DbSession() as session:
             if self._session:
                 session = self._session
             if not file.id():
-                fileSetModel = session.get(FileSetModel, fileSetId)
+                fileSetModel = session.get(FileSetModel, file.fileSetId())
                 fileModel = FileModel(path=file.path(), fileSet=fileSetModel)
                 session.add(fileModel)
                 session.commit()
@@ -76,30 +78,32 @@ class DatasetStorageManager:
                 session.commit()
         return file
 
-    def load(self, name: str):
+    def load(self, datasetId: int) -> Dataset:
         # TODO: Support loading of Dataset, FileSet and File objects? Perhaps support load by ID as well?
         # Add it when you actually need it.
         with DbSession() as session:
             if self._session:
                 session = self._session
-            datasetModel = session.query(DatasetModel).filter_by(name=name).one()
+            datasetModel = session.get(DatasetModel, datasetId)
             dataset = Dataset(path=datasetModel.path, name=datasetModel.name)
             dataset.setId(datasetModel.id)
             for fileSetModel in datasetModel.fileSets:
                 fileSet = FileSet(path=fileSetModel.path, name=fileSetModel.name)
+                fileSet.setDatasetId(datasetId=datasetId)
                 fileSet.setId(fileSetModel.id)
                 for fileModel in fileSetModel.files:
                     file = File(path=fileModel.path)
+                    file.setFileSetId(fileSetId=fileSet.id())
                     file.setId(fileModel.id)
                     fileSet.files.append(file)
                 dataset.fileSets.append(fileSet)
         return dataset
 
-    def delete(self, name: str):
+    def delete(self, datasetId: int):
         # Support deleting Dataset, FileSet and File objects? For example, from a tree widget?
         # The physical underlying data is untouched
         with DbSession() as session:
             if self._session:
                 session = self._session
-            datasetModel = session.query(DatasetModel).filter_by(name=name).one()
+            datasetModel = session.get(DatasetModel, datasetId)
             session.delete(datasetModel)

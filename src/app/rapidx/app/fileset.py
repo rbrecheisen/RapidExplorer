@@ -7,6 +7,7 @@ from rapidx.app.utilities import create_random_name
 class FileSet:
     def __init__(self, name: str=None, path: str=None) -> None:
         self._id = None
+        self._datasetId = None
         self._name = name
         if not self._name:
             self._name = create_random_name('fileset')
@@ -18,6 +19,12 @@ class FileSet:
     
     def setId(self, id) -> None:
         self._id = id
+
+    def datasetId(self) -> None:
+        return self._datasetId
+
+    def setDatasetId(self, datasetId: int) -> None:
+        self._datasetId = datasetId
 
     def path(self) -> str:
         return self._path

@@ -31,10 +31,10 @@ class DatasetTreeWidget(QTreeView):
         self._model.appendRow(datasetNode)
 
     def _itemChanged(self, item) -> None:
-        dataObj = item.dataObj()  # This can be Dataset, (Dicom)FileSet or (Dicom)File object
+        dataObj = item.dataObj()
         oldName = dataObj.name()        
         newName = item.text()
         dataObj.setName(newName)
         manager = DatasetStorageManager()
-        manager.save(dataObj)  # This method can only save whole datasets
+        manager.save(dataObj)
         print(f'Updated {dataObj} name: {oldName} > {newName}')

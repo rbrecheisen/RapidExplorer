@@ -8,11 +8,12 @@ def test(session):
     newName = 'myNewDataset'
     # Create new dataset and save it
     dataset = Dataset(name=oldName, path='/path/to/dataset')
-    manager.save(dataset)
+    dataset = manager.save(dataset)
+    datasetId = dataset.id()
     # Load dataset and rename it
-    dataset = manager.load(oldName)
+    dataset = manager.load(datasetId)
     dataset.setName(newName)
     manager.save(dataset)
     # Load dataset again and check new name
-    dataset = manager.load(newName)
+    dataset = manager.load(datasetId)
     assert dataset.name() == newName
