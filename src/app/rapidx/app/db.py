@@ -3,6 +3,7 @@ from sqlalchemy import create_engine
 
 from rapidx.app.basemodel import BaseModel
 
+DATABASE = 'rapidx.db'
 ECHO = False
 
 
@@ -22,7 +23,7 @@ class DbSession:
     def __init__(self, engine=None):
         if not engine:
             print('Creating engine...')
-            engine = create_engine('sqlite://', echo=ECHO)
+            engine = create_engine(f'sqlite:///{DATABASE}', echo=ECHO)
             BaseModel.metadata.create_all(engine)
         self._session = Session(engine)
 
