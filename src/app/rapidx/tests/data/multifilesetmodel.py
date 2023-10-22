@@ -19,11 +19,22 @@ class MultiFileSetModel(BaseModel):
     def name(self):
         return self._name
     
+    def setName(self, name: str):
+        self._name = name
+    
     def path(self):
         return self._path
     
     def fileSetModels(self):
         return self._fileSetModels
+    
+    def nrFileSetModels(self):
+        return len(self.fileSetModels())
+    
+    def firstFileSetModel(self):
+        if self.nrFileSetModels() > 0:
+            return self.fileSetModels() [0]
+        return None
 
     def __str__(self):
         s  = f'MultiFileSetModel(id={self.id()}, '

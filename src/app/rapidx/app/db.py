@@ -1,21 +1,11 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine
 
+from rapidx.app.singleton import singleton
 from rapidx.app.basemodel import BaseModel
 
 DATABASE = 'rapidx.db'  # stored in root directory of project
 ECHO = False
-
-
-def singleton(cls):
-    _instances = {}
-
-    def instance(*args, **kwargs) -> cls:
-        if cls not in _instances:
-            _instances[cls] = cls(*args, **kwargs)
-        return _instances[cls]
-    
-    return instance
 
 
 @singleton

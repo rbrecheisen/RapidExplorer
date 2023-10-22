@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union
 from sqlalchemy import String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -33,11 +33,19 @@ class FileSetModel(BaseModel):
     
     def fileModels(self):
         return self._fileModels
+    
+    def nrFileModels(self) -> int:
+        return len(self.fileModels())
+    
+    def firstFileModel(self):
+        if self.nrFileModels() > 0:
+            return self.fileModels()[0]
+        return None
 
     def __str__(self):
         s =  f'FileSetModel(id={self.id()}, '
         s += f'name={self.name()}, '
         s += f'path={self.path()}, ' 
         s += f'multiFileSetModel={self.multiFileSetModel().id()}, '
-        s += f'fileModels={len(self.fileModels())}'
+        s += f'fileModels={self.nrFileModels()}'
         return s
