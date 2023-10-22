@@ -2,4 +2,4 @@ import pytest
 
 
 if __name__ == '__main__':
-    pytest.main(['src/app'])
+    pytest.main(['-s', 'src/app'])
