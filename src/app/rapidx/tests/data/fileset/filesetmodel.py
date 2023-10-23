@@ -5,8 +5,8 @@ from sqlalchemy import String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from rapidx.tests.data.basemodel import BaseModel
-from rapidx.tests.data.filemodel import FileModel
-from rapidx.tests.data.multifilesetmodel import MultiFileSetModel
+from rapidx.tests.data.file.filemodel import FileModel
+from rapidx.tests.data.multifileset.multifilesetmodel import MultiFileSetModel
 
 
 class FileSetModel(BaseModel):

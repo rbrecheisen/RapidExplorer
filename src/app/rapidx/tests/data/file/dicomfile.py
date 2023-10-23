@@ -1,7 +1,7 @@
 import pydicom
 
-from rapidx.tests.data.file import File
-from rapidx.tests.data.filemodel import FileModel
+from rapidx.tests.data.file.file import File
+from rapidx.tests.data.file.filemodel import FileModel
 
 
 class DicomFile(File):

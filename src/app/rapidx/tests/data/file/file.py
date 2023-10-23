@@ -1,7 +1,7 @@
 from typing import Any
 from abc import ABC, abstractmethod
 
-from rapidx.tests.data.filemodel import FileModel
+from rapidx.tests.data.file.filemodel import FileModel
 
 
 class File(ABC):

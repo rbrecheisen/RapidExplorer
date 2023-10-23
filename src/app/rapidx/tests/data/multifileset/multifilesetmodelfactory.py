@@ -1,4 +1,4 @@
-from rapidx.tests.data.multifilesetmodel import MultiFileSetModel
+from rapidx.tests.data.multifileset.multifilesetmodel import MultiFileSetModel
 
 
 class MultiFileSetModelFactory:

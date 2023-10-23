@@ -1,8 +1,9 @@
 from sqlalchemy.orm import Session
 from PySide6.QtCore import QRunnable
 
-from rapidx.tests.data.dicomfile import DicomFile
-from rapidx.tests.data.fileregistrationhelper import FileRegistrationHelper
+from rapidx.tests.data.file.dicomfile import DicomFile
+from rapidx.tests.data.file.dicomfilefactory import DicomFileFactory
+from rapidx.tests.data.file.fileregistrationhelper import FileRegistrationHelper
 from rapidx.tests.data.progresssignal import ProgressSignal
 
 
@@ -33,7 +34,7 @@ class DicomFileImporter(QRunnable):
         helper = FileRegistrationHelper(path=self.path(), session=self.session())
         multiFileSetModel = helper.execute()
         fileModel = multiFileSetModel.firstFileSetModel().firstFileModel()
-        # TODO: Use DicomFileLoader for this instead of DicomFile itself!
-        self.setData(DicomFile(fileModel=fileModel))
+        dicomFile = DicomFileFactory.create(fileModel=fileModel)
+        self.setData(dicomFile)
         self.signal().progress.emit(100)
         self.signal().done.emit(True)
