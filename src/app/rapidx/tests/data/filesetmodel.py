@@ -1,4 +1,6 @@
-from typing import List, Union
+import uuid
+
+from typing import List
 from sqlalchemy import String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -9,8 +11,8 @@ from rapidx.tests.data.multifilesetmodel import MultiFileSetModel
 
 class FileSetModel(BaseModel):
     __tablename__ = '_filesetmodel'
-    _id: Mapped[int] = mapped_column('_id', primary_key=True)
-    _name: Mapped[str] = mapped_column('_name', String(256), unique=False)
+    _id: Mapped[int] = mapped_column('_id', String, primary_key=True, default=str(uuid.uuid4()), unique=True, nullable=False)
+    _name: Mapped[str] = mapped_column('_name', String(256), nullable=True)
     _path: Mapped[str] = mapped_column('_path', String(1024), nullable=True)
     _multiFileSetModel: Mapped['MultiFileSetModel'] = relationship(back_populates='_fileSetModels')
     _multiFileSetModelId: Mapped[int] = mapped_column('_multifilesetmodel_id', ForeignKey('_multifilesetmodel._id'))

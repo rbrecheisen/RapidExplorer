@@ -8,6 +8,7 @@ from rapidx.tests.data.filesetmodel import FileSetModel
 from rapidx.tests.data.filemodelfactory import FileModelFactory
 from rapidx.tests.data.filemodel import FileModel
 from rapidx.tests.data.dicomfile import DicomFile
+from rapidx.tests.data.filecache import FileCache
 
 
 FILEMODELNAME = 'image-00000.dcm'
@@ -52,11 +53,15 @@ def test_loadDicomFile(session):
     # This loads a single DICOM file but returns a MultiFileSetModel object that contains
     # the DICOM file inside a FileSetModel object
     multiFileSetModel = registerFileModel(session)
+    # The MultiFileSetModel, FileSetModel and FileModel objects not have a UUID primary key 
+    # which you can use to do look ups in the FileCache
     # To physically load the DICOM file and do something useful with it, we need pydicom
     fileModel = multiFileSetModel.firstFileSetModel().firstFileModel()
     p = pydicom.dcmread(fileModel.path())
     # How could we make work? A DicomFile class could take a FileModel object and build 
     # a DICOM file representation from it, including its binary content
+    # DO NOT CREATE DicomFile DIRECTLY BUT USE A FACTORY OR LOADER!
+    # dicomFile = DicomFileLoader(fileModel).execute()
     dicomFile = DicomFile(fileModel)
     # The DicomFile object already contains binary data (like pixel data) so can be
     # stored in the file cache. Should we store the whole MultiFileSet object? If so, 
@@ -64,6 +69,6 @@ def test_loadDicomFile(session):
     # cache should be unique somehow. 
     # Perhaps store the DICOM file together with its corresponding MultiFileSet registration?
     cache = FileCache()
-    cache.addFile(file=dicomFile, model=multiFileSetModel)
+    cache.addFile(file=dicomFile)
     # How do we retrieve this file for use? For example, when displaying it in the CT viewer
     
