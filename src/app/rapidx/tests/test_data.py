@@ -57,18 +57,27 @@ def test_loadDicomFile(session):
     # which you can use to do look ups in the FileCache
     # To physically load the DICOM file and do something useful with it, we need pydicom
     fileModel = multiFileSetModel.firstFileSetModel().firstFileModel()
-    p = pydicom.dcmread(fileModel.path())
+    fileModelId = fileModel.id()
     # How could we make work? A DicomFile class could take a FileModel object and build 
     # a DICOM file representation from it, including its binary content
     # DO NOT CREATE DicomFile DIRECTLY BUT USE A FACTORY OR LOADER!
     # dicomFile = DicomFileLoader(fileModel).execute()
     dicomFile = DicomFile(fileModel)
+    print(dicomFile.header().SeriesDescription)
     # The DicomFile object already contains binary data (like pixel data) so can be
     # stored in the file cache. Should we store the whole MultiFileSet object? If so, 
     # how do keep track of the fact that it's DICOM file? Naming the file in the file 
     # cache should be unique somehow. 
     # Perhaps store the DICOM file together with its corresponding MultiFileSet registration?
     cache = FileCache()
-    cache.addFile(file=dicomFile)
+    cache.add(file=dicomFile)
+    cache.add(file=dicomFile) # Try adding it twice
     # How do we retrieve this file for use? For example, when displaying it in the CT viewer
-    
+    # If we have the file model, we do it like this
+    dicomFile = cache.get(fileModelId)
+    cache.remove(fileModelId)
+    assert not cache.get(fileModelId)
+    cache.add(dicomFile)
+    cache.clear()
+    dicomFile = cache.get(fileModelId)
+    assert not dicomFile

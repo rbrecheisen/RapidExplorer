@@ -7,17 +7,18 @@ class FileCache:
     def __init__(self) -> None:
         self._data = {}
 
-    def addFile(self, file) -> None:
+    def add(self, file: File) -> None:
         if file.id() not in self._data.keys():
             self._data[file.id()] = file
-        else:
-            raise RuntimeError(f'Key {file.id()} already exists')
-        
-    def file(self, id: str) -> File:
-        return self._data[id]
 
-    def clear(self, id: str=None) -> None:
-        if id: 
+    def remove(self, id: str) -> None:
+        if id in self._data.keys():
             del self._data[id]
-        else:
-            self._data = {}
+        
+    def get(self, id: str) -> File:
+        if id in self._data.keys():
+            return self._data[id]
+        return None
+
+    def clear(self) -> None:
+        self._data = {}
