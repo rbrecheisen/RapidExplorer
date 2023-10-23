@@ -10,7 +10,6 @@ class FileModel(BaseModel):
     __tablename__ = '_filemodel'
     _id: Mapped[int] = mapped_column('_id', String, primary_key=True, default=str(uuid.uuid4()), unique=True, nullable=False)
     _path: Mapped[str] = mapped_column('_path', String(1024), nullable=False)
-    _fileType: Mapped[str] = mapped_column('_filetype', String, nullable=True)
     _fileSetModel: Mapped['FileSetModel'] = relationship(back_populates='_fileModels')
     _fileSetModelId: Mapped[int] = mapped_column('_filesetmodel_id', ForeignKey('_filesetmodel._id'))
 
