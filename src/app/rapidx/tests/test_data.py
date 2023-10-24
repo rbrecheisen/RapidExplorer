@@ -63,17 +63,9 @@ def test_loadDicomFile(session):
     dicomFile = importer.data()
     assert dicomFile.fileModel().id()
 
-    # The DicomFile object already contains binary data (like pixel data) so can be
-    # stored in the file cache. Should we store the whole MultiFileSet object? If so, 
-    # how do keep track of the fact that it's DICOM file? Naming the file in the file 
-    # cache should be unique somehow. 
-    # Perhaps store the DICOM file together with its corresponding MultiFileSet registration?
-    cache = FileCache()
-    cache.add(file=dicomFile)
-    cache.add(file=dicomFile) # Try adding it twice
-
     # How do we retrieve this file for use? For example, when displaying it in the CT viewer
     # If we have the file model, we do it like this
+    cache = FileCache()
     cachedDicomFile = cache.get(dicomFile.id())
     cache.remove(dicomFile.id())
     assert not cache.get(dicomFile.id())
@@ -81,3 +73,11 @@ def test_loadDicomFile(session):
     cache.clear()
     cachedDicomFile = cache.get(dicomFile.id())
     assert not cachedDicomFile
+
+
+def test_loadDicomFileSet(session):
+    pass
+
+
+def test_loadMultiDicomFileset(session):
+    pass
