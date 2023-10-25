@@ -5,6 +5,7 @@ from typing import List
 
 from rapidx.tests.data.fileset.filesetmodel import FileSetModel
 from rapidx.tests.data.file.filemodelfactory import FileModelFactory
+from rapidx.tests.data.file.dicomfilefactory import DicomFileFactory
 from rapidx.tests.data.file.dicomfile import DicomFile
 
 
@@ -12,16 +13,16 @@ class DicomFileSetFactory:
     @staticmethod
     def create(fileSetModel: FileSetModel, session: Session) -> List[DicomFile]:
         files = os.listdir(fileSetModel.path())
-        # nrFiles = len(files)
+        nrFiles = len(files)
         i = 0
         dicomFileSet = []
         for f in files:
             fileName = f
             filePath = os.path.join(fileSetModel.path(), fileName)
-            fileModel = FileModelFactory.create(path=filePath, fileSetModel=fileSetModel)
+            fileModel = FileModelFactory.create(fileSetModel=fileSetModel, path=filePath)
             session.add(fileModel)
             try:
-                dicomFile = DicomFile(fileModel=fileModel)
+                dicomFile = DicomFileFactory.create(fileModel=fileModel)
                 dicomFileSet.append(dicomFile)
                 print('.', end='', flush=True)
             except DicomFileInvalidException:

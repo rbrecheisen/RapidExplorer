@@ -19,9 +19,9 @@ class DicomFileSetImporter(Importer):
         fileSetModel = multiFileSetModel.firstFileSetModel()
         # This step is the most time-consuming (good candidate for progress bar updates). 
         dicomFileSet = DicomFileSetFactory.create(fileSetModel=fileSetModel, session=self.session())
-        self.setData(dicomFileSet)
         cache = FileCache()
         for dicomFile in dicomFileSet:
             cache.add(file=dicomFile)
+        self.setData(dicomFileSet)
         self.signal().progress.emit(100)
         self.signal().done.emit(True)

@@ -9,7 +9,6 @@ FILESETMODELPATH = os.path.join(os.environ['HOME'], f'Desktop/downloads/dataset/
 
 
 def test_importDicomFileSetAndCheckInFileCache(session):
-    return
     importer = DicomFileSetImporter(name=FILESETMODELNAME, path=FILESETMODELPATH, session=session)
     importer.execute()
     dicomFiles = importer.data()

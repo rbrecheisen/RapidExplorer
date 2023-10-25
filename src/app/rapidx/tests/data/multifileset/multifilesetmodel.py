@@ -10,7 +10,7 @@ from rapidx.tests.data.basemodel import BaseModel
 
 class MultiFileSetModel(BaseModel):
     __tablename__ = '_multifilesetmodel'
-    _id: Mapped[int] = mapped_column('_id', String, primary_key=True, default=str(uuid.uuid4()), unique=True, nullable=False)
+    _id: Mapped[int] = mapped_column('_id', String, primary_key=True, default=lambda: str(uuid.uuid4()), unique=True, nullable=False)
     _name: Mapped[str] = mapped_column('_name', String(256), nullable=True)
     _path: Mapped[str] = mapped_column('_path', String(1024), nullable=True)
     _fileSetModels: Mapped[List['FileSetModel']] = relationship(back_populates='_multiFileSetModel', cascade='all, delete-orphan')
