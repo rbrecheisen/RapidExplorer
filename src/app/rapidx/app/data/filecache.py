@@ -1,5 +1,5 @@
-from rapidx.tests.singleton import singleton
-from rapidx.tests.data.file.file import File
+from rapidx.app.singleton import singleton
+from rapidx.app.data.file.file import File
 
 
 @singleton

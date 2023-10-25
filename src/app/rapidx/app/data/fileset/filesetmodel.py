@@ -4,9 +4,9 @@ from typing import List
 from sqlalchemy import String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from rapidx.tests.data.basemodel import BaseModel
-from rapidx.tests.data.file.filemodel import FileModel
-from rapidx.tests.data.multifileset.multifilesetmodel import MultiFileSetModel
+from rapidx.app.data.basemodel import BaseModel
+from rapidx.app.data.file.filemodel import FileModel
+from rapidx.app.data.multifileset.multifilesetmodel import MultiFileSetModel
 
 
 class FileSetModel(BaseModel):

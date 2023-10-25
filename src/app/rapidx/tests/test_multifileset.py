@@ -1,7 +1,7 @@
 import os
 
-from rapidx.tests.data.filecache import FileCache
-from rapidx.tests.data.multifileset.dicommultifilesetimporter import DicomMultiFileSetImporter
+from rapidx.app.data.filecache import FileCache
+from rapidx.app.data.multifileset.dicommultifilesetimporter import DicomMultiFileSetImporter
 
 
 MULTIFILESETMODELNAME = 'myMultiFileSet'

@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from PySide6.QtCore import QRunnable
 
-from rapidx.tests.data.progresssignal import ProgressSignal
+from rapidx.app.data.progresssignal import ProgressSignal
 
 
 class Importer(QRunnable):

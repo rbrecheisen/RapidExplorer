@@ -1,7 +1,7 @@
 import os
 
-from rapidx.tests.data.filecache import FileCache
-from rapidx.tests.data.file.dicomfileimporter import DicomFileImporter
+from rapidx.app.data.filecache import FileCache
+from rapidx.app.data.file.dicomfileimporter import DicomFileImporter
 
 
 FILEMODELNAME = 'image-00000.dcm'

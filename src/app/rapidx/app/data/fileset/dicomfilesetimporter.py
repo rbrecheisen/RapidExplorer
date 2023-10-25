@@ -1,9 +1,9 @@
 from sqlalchemy.orm import Session
 
-from rapidx.tests.data.importer import Importer
-from rapidx.tests.data.filecache import FileCache
-from rapidx.tests.data.fileset.filesetregistrationhelper import FileSetRegistrationHelper
-from rapidx.tests.data.fileset.dicomfilesetfactory import DicomFileSetFactory
+from rapidx.app.data.importer import Importer
+from rapidx.app.data.filecache import FileCache
+from rapidx.app.data.fileset.filesetregistrationhelper import FileSetRegistrationHelper
+from rapidx.app.data.fileset.dicomfilesetfactory import DicomFileSetFactory
 
 
 class DicomFileSetImporter(Importer):

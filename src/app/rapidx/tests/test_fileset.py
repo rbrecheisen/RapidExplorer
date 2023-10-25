@@ -1,7 +1,7 @@
 import os
 
-from rapidx.tests.data.filecache import FileCache
-from rapidx.tests.data.fileset.dicomfilesetimporter import DicomFileSetImporter
+from rapidx.app.data.filecache import FileCache
+from rapidx.app.data.fileset.dicomfilesetimporter import DicomFileSetImporter
 
 
 FILESETMODELNAME = 'myFileSet'

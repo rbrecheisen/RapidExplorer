@@ -1,9 +1,9 @@
 import pydicom
 import pydicom.errors
 
-from rapidx.tests.data.file.file import File
-from rapidx.tests.data.file.filemodel import FileModel
-from rapidx.tests.data.file.dicomfileinvalidexception import DicomFileInvalidException
+from rapidx.app.data.file.file import File
+from rapidx.app.data.file.filemodel import FileModel
+from rapidx.app.data.file.dicomfileinvalidexception import DicomFileInvalidException
 
 
 class DicomFile(File):

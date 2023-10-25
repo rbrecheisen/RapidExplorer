@@ -1,5 +1,5 @@
-from rapidx.tests.data.file.filemodel import FileModel
-from rapidx.tests.data.file.dicomfile import DicomFile
+from rapidx.app.data.file.filemodel import FileModel
+from rapidx.app.data.file.dicomfile import DicomFile
 
 
 class DicomFileFactory:

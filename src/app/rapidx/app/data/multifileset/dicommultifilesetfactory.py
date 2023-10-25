@@ -5,10 +5,10 @@ import pydicom.errors
 from sqlalchemy.orm import Session
 from typing import List
 
-from rapidx.tests.data.multifileset.multifilesetmodel import MultiFileSetModel
-from rapidx.tests.data.fileset.filesetmodelfactory import FileSetModelFactory
-from rapidx.tests.data.fileset.dicomfilesetfactory import DicomFileSetFactory
-from rapidx.tests.data.file.dicomfile import DicomFile
+from rapidx.app.data.multifileset.multifilesetmodel import MultiFileSetModel
+from rapidx.app.data.fileset.filesetmodelfactory import FileSetModelFactory
+from rapidx.app.data.fileset.dicomfilesetfactory import DicomFileSetFactory
+from rapidx.app.data.file.dicomfile import DicomFile
 
 
 class DicomMultiFileSetFactory:

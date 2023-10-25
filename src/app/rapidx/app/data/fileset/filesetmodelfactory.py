@@ -1,6 +1,6 @@
-from rapidx.tests.utils import create_random_name
-from rapidx.tests.data.fileset.filesetmodel import FileSetModel
-from rapidx.tests.data.multifileset.multifilesetmodel import MultiFileSetModel
+from rapidx.app.utils import create_random_name
+from rapidx.app.data.fileset.filesetmodel import FileSetModel
+from rapidx.app.data.multifileset.multifilesetmodel import MultiFileSetModel
 
 
 class FileSetModelFactory:

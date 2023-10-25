@@ -1,9 +1,9 @@
 from sqlalchemy.orm import Session
 
-from rapidx.tests.data.registrationhelper import RegistrationHelper
-from rapidx.tests.data.fileset.filesetmodelfactory import FileSetModelFactory
-from rapidx.tests.data.multifileset.multifilesetmodel import MultiFileSetModel
-from rapidx.tests.data.multifileset.multifilesetmodelfactory import MultiFileSetModelFactory
+from rapidx.app.data.registrationhelper import RegistrationHelper
+from rapidx.app.data.fileset.filesetmodelfactory import FileSetModelFactory
+from rapidx.app.data.multifileset.multifilesetmodel import MultiFileSetModel
+from rapidx.app.data.multifileset.multifilesetmodelfactory import MultiFileSetModelFactory
 
 
 class FileSetRegistrationHelper(RegistrationHelper):

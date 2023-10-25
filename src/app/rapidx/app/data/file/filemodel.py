@@ -3,7 +3,7 @@ import uuid
 from sqlalchemy import String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from rapidx.tests.data.basemodel import BaseModel
+from rapidx.app.data.basemodel import BaseModel
 
 
 class FileModel(BaseModel):

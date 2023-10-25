@@ -3,10 +3,10 @@ import os
 from sqlalchemy.orm import Session
 from typing import List
 
-from rapidx.tests.data.fileset.filesetmodel import FileSetModel
-from rapidx.tests.data.file.filemodelfactory import FileModelFactory
-from rapidx.tests.data.file.dicomfilefactory import DicomFileFactory
-from rapidx.tests.data.file.dicomfile import DicomFile
+from rapidx.app.data.fileset.filesetmodel import FileSetModel
+from rapidx.app.data.file.filemodelfactory import FileModelFactory
+from rapidx.app.data.file.dicomfilefactory import DicomFileFactory
+from rapidx.app.data.file.dicomfile import DicomFile
 
 
 class DicomFileSetFactory:

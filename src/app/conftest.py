@@ -3,7 +3,7 @@ import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
-from rapidx.tests.data.basemodel import BaseModel
+from rapidx.app.data.basemodel import BaseModel
 
 
 @pytest.fixture(scope='function')
