@@ -8,7 +8,7 @@ from rapidx.tests.data.basemodel import BaseModel
 
 @pytest.fixture(scope='function')
 def session():
-    engine = create_engine('sqlite:///:memory:')
+    engine = create_engine('sqlite:///:memory:', echo=False)
     BaseModel.metadata.create_all(bind=engine)
     session = Session(engine)
     yield session
