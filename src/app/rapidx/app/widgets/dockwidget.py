@@ -1,9 +1,11 @@
 from PySide6.QtWidgets import QDockWidget
 
+MENU_HEIGHT = 50
+
 
 class DockWidget(QDockWidget):
     def __init__(self, title: str, parent=None) -> None:
-        super(Dockwidget, self).__init__(title, parent=parent)
+        super(DockWidget, self).__init__(title, parent=parent)
         self.topLevelChanged.connect(self._toggleMaximize)
 
     def _toggleMaximize(self):
@@ -17,5 +19,5 @@ class DockWidget(QDockWidget):
         parentGeometry = self.parent().frameGeometry()
         geometry = self.frameGeometry()
         x = parentGeometry.x() + (parentGeometry.width() - geometry.width()) / 2
-        y = parentGeometry.y() + (parentGeometry.height() - geometry.height()) / 2
+        y = parentGeometry.y() + (parentGeometry.height() - geometry.height()) / 2 + MENU_HEIGHT
         self.move(x, y)
