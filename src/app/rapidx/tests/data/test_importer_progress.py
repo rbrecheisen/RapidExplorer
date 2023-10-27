@@ -11,7 +11,7 @@ FILESETMODELPATH = os.path.join(os.environ['HOME'], f'Desktop/downloads/dataset/
 progress = 0
 
 
-def test_progessDicomFileSetImpoter(session, qtbot):
+def test_importerSignalling(session, qtbot):
     importer = Importer(name=FILESETMODELNAME, path=FILESETMODELPATH, session=session)
     importer.signal().progress.connect(updateProgress)
     importer.signal().finished.connect(importFinished)
