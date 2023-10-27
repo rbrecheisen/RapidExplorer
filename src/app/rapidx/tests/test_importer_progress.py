@@ -15,7 +15,7 @@ def test_progessDicomFileSetImpoter(session, qtbot):
     importer = DicomFileSetImporter(name=FILESETMODELNAME, path=FILESETMODELPATH, session=session)
     importer.signal().progress.connect(updateProgress)
     importer.signal().finished.connect(importFinished)
-    with qtbot.waitSignal(importer.signal().finished, timeout=1000):        
+    with qtbot.waitSignals([importer.signal().progress, importer.signal().finished], timeout=1000):        
         QThreadPool.globalInstance().start(importer)
 
 def updateProgress(value) -> None:
