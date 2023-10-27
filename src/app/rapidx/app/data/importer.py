@@ -32,4 +32,5 @@ class Importer(QRunnable):
         return self._signal
     
     def run(self) -> None:
-        raise RuntimeError('Method must be overridden in derived class')
+        self.signal().progress.emit(100)
+        self.signal().finished.emit(True)

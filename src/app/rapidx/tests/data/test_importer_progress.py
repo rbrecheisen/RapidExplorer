@@ -2,7 +2,7 @@ import os
 
 from PySide6.QtCore import QThreadPool
 
-from rapidx.app.data.fileset.dicomfilesetimporter import DicomFileSetImporter
+from rapidx.app.data.importer import Importer
 
 
 FILESETMODELNAME = 'myFileSet'
@@ -12,7 +12,7 @@ progress = 0
 
 
 def test_progessDicomFileSetImpoter(session, qtbot):
-    importer = DicomFileSetImporter(name=FILESETMODELNAME, path=FILESETMODELPATH, session=session)
+    importer = Importer(name=FILESETMODELNAME, path=FILESETMODELPATH, session=session)
     importer.signal().progress.connect(updateProgress)
     importer.signal().finished.connect(importFinished)
     with qtbot.waitSignals([importer.signal().progress, importer.signal().finished], timeout=1000):        

@@ -11,13 +11,13 @@ class DicomFileSetImporter(Importer):
         super(DicomFileSetImporter, self).__init__(name=name, path=path, session=session)
     
     def run(self) -> None:    
-        # helper = FileSetRegistrationHelper(name=self.name(), path=self.path(), session=self.session())
-        # multiFileSetModel = helper.execute()
-        # fileSetModel = multiFileSetModel.firstFileSetModel()
-        # dicomFileSet = DicomFileSetFactory.create(fileSetModel=fileSetModel, session=self.session())
-        # cache = FileCache()
-        # for dicomFile in dicomFileSet:
-        #     cache.add(file=dicomFile)
-        # self.setData(dicomFileSet)
+        helper = FileSetRegistrationHelper(name=self.name(), path=self.path(), session=self.session())
+        multiFileSetModel = helper.execute()
+        fileSetModel = multiFileSetModel.firstFileSetModel()
+        dicomFileSet = DicomFileSetFactory.create(fileSetModel=fileSetModel, session=self.session())
+        cache = FileCache()
+        for dicomFile in dicomFileSet:
+            cache.add(file=dicomFile)
+        self.setData(dicomFileSet)
         self.signal().progress.emit(100)
         self.signal().finished.emit(True)
