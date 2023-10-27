@@ -1,4 +1,5 @@
 import os
+import pytest
 
 from rapidx.app.data.filecache import FileCache
 from rapidx.app.data.multifileset.dicommultifilesetimporter import DicomMultiFileSetImporter
@@ -8,9 +9,10 @@ MULTIFILESETMODELNAME = 'myMultiFileSet'
 MULTIFILESETMODELPATH = os.path.join(os.environ['HOME'], f'Desktop/downloads/dataset')
 
 
+@pytest.mark.long_running
 def test_importDicomMultiFileSetAndCheckInFileCache(session):
     importer = DicomMultiFileSetImporter(name=MULTIFILESETMODELNAME, path=MULTIFILESETMODELPATH, session=session)
-    importer.execute()
+    importer.run()
     dicomFileSets = importer.data()
     assert dicomFileSets
     assert len(dicomFileSets) > 0

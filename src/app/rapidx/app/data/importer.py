@@ -6,6 +6,7 @@ from rapidx.app.data.progresssignal import ProgressSignal
 
 class Importer(QRunnable):
     def __init__(self, name: str, path: str, session: Session) -> None:
+        super(Importer, self).__init__()
         self._name = name
         self._path = path
         self._session = session
@@ -30,5 +31,5 @@ class Importer(QRunnable):
     def signal(self) -> ProgressSignal:
         return self._signal
     
-    def execute(self) -> None:
+    def run(self) -> None:
         raise RuntimeError('Method must be overridden in derived class')

@@ -1,4 +1,5 @@
 import os
+import pytest
 
 from rapidx.app.data.filecache import FileCache
 from rapidx.app.data.fileset.dicomfilesetimporter import DicomFileSetImporter
@@ -8,9 +9,10 @@ FILESETMODELNAME = 'myFileSet'
 FILESETMODELPATH = os.path.join(os.environ['HOME'], f'Desktop/downloads/dataset/scan1')
 
 
+@pytest.mark.long_running
 def test_importDicomFileSetAndCheckInFileCache(session):
     importer = DicomFileSetImporter(name=FILESETMODELNAME, path=FILESETMODELPATH, session=session)
-    importer.execute()
+    importer.run()
     dicomFiles = importer.data()
     assert isinstance(dicomFiles, list)
     assert len(dicomFiles) > 0

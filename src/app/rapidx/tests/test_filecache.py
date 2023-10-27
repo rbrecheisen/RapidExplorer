@@ -10,7 +10,7 @@ FILEMODELPATH = os.path.join(os.environ['HOME'], f'Desktop/downloads/dataset/sca
 
 def test_importDicomFileAndCheckFileCacheAddRemoveAndClear(session):
     importer = DicomFileImporter(path=FILEMODELPATH, session=session)
-    importer.execute()
+    importer.run()
     dicomFile = importer.data()
     cache = FileCache()
     assert cache.get(dicomFile.id())

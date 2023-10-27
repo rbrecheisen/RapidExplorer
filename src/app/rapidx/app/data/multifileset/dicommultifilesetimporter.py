@@ -10,7 +10,7 @@ class DicomMultiFileSetImporter(Importer):
     def __init__(self, name: str, path: str, session: Session) -> None:
         super(DicomMultiFileSetImporter, self).__init__(name=name, path=path, session=session)
 
-    def execute(self):    
+    def run(self):    
         helper = MultiFileSetRegistrationHelper(name=self.name(), path=self.path(), session=self.session())
         multiFileSetModel = helper.execute()
         dicomMultiFileSet = DicomMultiFileSetFactory.create(multiFileSetModel=multiFileSetModel, session=self.session())
@@ -20,4 +20,4 @@ class DicomMultiFileSetImporter(Importer):
                 cache.add(file=dicomFile)
         self.setData(dicomMultiFileSet)
         self.signal().progress.emit(100)
-        self.signal().done.emit(True)
+        self.signal().finished.emit(True)

@@ -6,3 +6,4 @@ pendulum
 pylibjpeg[openjpeg]
 nuitka
 pytest
+pytest-qt
