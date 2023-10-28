@@ -33,7 +33,7 @@ class MainWindow(QMainWindow):
         importDicomMultiFileSetAction.triggered.connect(self._importDicomMultiFileSet)
         exitAction = QAction('Exit', self)
         exitAction.triggered.connect(self._exit)
-        datasetsMenu = QMenu('Datasets')
+        datasetsMenu = QMenu('Data')
         datasetsMenu.addAction(importDicomFileAction)
         datasetsMenu.addAction(importDicomFileSetAction)
         datasetsMenu.addAction(importDicomMultiFileSetAction)
