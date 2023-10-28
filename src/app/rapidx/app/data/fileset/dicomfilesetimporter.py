@@ -18,6 +18,7 @@ class DicomFileSetImporter(Importer):
         cache = FileCache()
         for dicomFile in dicomFileSet:
             cache.add(file=dicomFile)
-        self.setData(dicomFileSet)
+        # self.setData(dicomFileSet)  # TODO: Add MultiFileSetModel here?
+        self.setData(multiFileSetModel)
         self.signal().progress.emit(100)
         self.signal().finished.emit(True)

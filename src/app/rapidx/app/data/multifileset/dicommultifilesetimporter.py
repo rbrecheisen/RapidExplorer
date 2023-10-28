@@ -18,6 +18,6 @@ class DicomMultiFileSetImporter(Importer):
         for dicomFileSet in dicomMultiFileSet:
             for dicomFile in dicomFileSet:
                 cache.add(file=dicomFile)
-        self.setData(dicomMultiFileSet)
+        self.setData(multiFileSetModel)
         self.signal().progress.emit(100)
         self.signal().finished.emit(True)

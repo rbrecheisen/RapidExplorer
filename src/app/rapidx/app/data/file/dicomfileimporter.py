@@ -17,6 +17,6 @@ class DicomFileImporter(Importer):
         dicomFile = DicomFileFactory.create(fileModel=fileModel)
         cache = FileCache()
         cache.add(file=dicomFile)
-        self.setData(dicomFile)
+        self.setData(multiFileSetModel)
         self.signal().progress.emit(100)
         self.signal().finished.emit(True)
