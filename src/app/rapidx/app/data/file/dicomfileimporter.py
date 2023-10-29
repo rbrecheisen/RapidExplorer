@@ -13,6 +13,8 @@ class DicomFileImporter(Importer):
         helper = FileRegistrationHelper(path=self.path(), db=self.db())
         multiFileSetModel = helper.execute()
         fileModel = multiFileSetModel.firstFileSetModel().firstFileModel()
+        # TODO: Send progress signals from factory!
+        # Use event listener?
         dicomFile = DicomFileFactory.create(fileModel=fileModel)
         cache = FileCache()
         cache.add(file=dicomFile)

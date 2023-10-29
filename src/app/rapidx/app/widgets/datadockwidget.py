@@ -13,5 +13,5 @@ class DataDockWidget(DockWidget):
         self._treeWidget = MultiFileSetModelTreeWidget(self)
         self.setWidget(self._treeWidget)
 
-    def addDataset(self, multiFileSetModel: MultiFileSetModel) -> None:
+    def addData(self, multiFileSetModel: MultiFileSetModel) -> None:
         self._treeWidget.addData(multiFileSetModel)

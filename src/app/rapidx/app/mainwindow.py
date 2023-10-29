@@ -1,13 +1,17 @@
 import os
 
-from PySide6.QtCore import Qt, QSize
+from PySide6.QtCore import Qt, QSize, QThreadPool
 from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QFileDialog, QMenu, QProgressDialog
 from PySide6.QtGui import QAction, QGuiApplication
 
+from rapidx.app.data.db import Db
 from rapidx.app.data.fileset.dicomfilesetimporter import DicomFileSetImporter
 from rapidx.app.widgets.datadockwidget import DataDockWidget
 from rapidx.app.widgets.dockwidget import DockWidget
-from rapidx.app.data.db import Db
+
+MULTIFILESET_DIR = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset')
+FILESET_DIR = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset/scan1')
+FILE_PATH = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset/scan1/image-00000.dcm')
 
 
 class MainWindow(QMainWindow):
@@ -17,6 +21,7 @@ class MainWindow(QMainWindow):
         self._dockWidgetTasks = None
         self._dockWidgetViews = None
         self._dockWidgetMainView = None
+        self._progressBarDialog = None
         self._initUi()
 
     def _initUi(self) -> None:
@@ -25,6 +30,7 @@ class MainWindow(QMainWindow):
         self._initDockWidgetTasks()
         self._initDockWidgetViews()
         self._initDockWidgetMainView()
+        self._initProgressBarDialog()
         self._initMainWindow()
 
     def _initMenus(self) -> None:
@@ -65,6 +71,13 @@ class MainWindow(QMainWindow):
         self._dockWidgetMainView.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea)
         self.addDockWidget(Qt.RightDockWidgetArea, self._dockWidgetMainView)
 
+    def _initProgressBarDialog(self) -> None:
+        self._progressBarDialog = QProgressDialog('Importing Files...', 'Abort Import', 0, 100, self)
+        self._progressBarDialog.setWindowModality(Qt.WindowModality.WindowModal)
+        self._progressBarDialog.setAutoReset(True)
+        self._progressBarDialog.setAutoClose(True)
+        self._progressBarDialog.close()
+
     def _initMainWindow(self) -> None:
         self.setCentralWidget(QWidget(self))
         self.centralWidget().hide()
@@ -75,19 +88,29 @@ class MainWindow(QMainWindow):
         self._centerWindow()
 
     def _importDicomFile(self) -> None:
+        # TODO: implement
         pass
 
     def _importDicomFileSet(self) -> None:
-        FILESETMODELNAME = 'myFileSet'
-        FILESETMODELPATH = os.path.join(os.environ['HOME'], f'Desktop/downloads/dataset/scan1')
-        with Db() as db:
-            importer = DicomFileSetImporter(name=FILESETMODELNAME, path=FILESETMODELPATH, db=db)
-            importer.run()
-            multiFileSetModel = importer.data()
-            self._dockWidgetData.addDataset(multiFileSetModel=multiFileSetModel)
+        dirPath = QFileDialog.getExistingDirectory(self, 'Open DICOM Image Series', FILESET_DIR)
+        if dirPath:
+            with Db() as db:
+                self._progressBarDialog.show()
+                self._progressBarDialog.setValue(0)
+                self._dicomFileSetImporter = DicomFileSetImporter(path=dirPath, db=db)
+                self._dicomFileSetImporter.signal().progress.connect(self._updateProgress)
+                self._dicomFileSetImporter.signal().finished.connect(self._importDicomFileSetFinished)
+                QThreadPool.globalInstance().start(self._dicomFileSetImporter)
 
     def _importDicomMultiFileSet(self) -> None:
+        # TODO: implement
         pass
+
+    def _updateProgress(self, value) -> None:
+        self._progressBarDialog.setValue(value)
+
+    def _importDicomFileSetFinished(self, _) -> None:
+        self._dockWidgetData.addData(self._dicomFileSetImporter.data())
 
     def _centerWindow(self) -> None:
         screen = QGuiApplication.primaryScreen().geometry()
