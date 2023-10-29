@@ -18,22 +18,31 @@ class Db:
         if not engine:
             engine = create_engine(f'sqlite:///{DATABASE}', echo=ECHO)
             BaseModel.metadata.create_all(engine)
-        self._db = Session(engine)
+        self._session = Session(engine)
+
+    def add(self, obj):
+        self._session.add(obj)
+
+    def commit(self):
+        self._session.commit()
+
+    def close(self):
+        self._session.close()
 
     def loadAll(self) -> List[MultiFileSetModel]:
-        return self._db.query(MultiFileSetModel).all()
+        return self._session.query(MultiFileSetModel).all()
     
     def loadMultiFileSetModel(self, multiFileSetModelId: str) -> MultiFileSetModel:
-        return self._db.get(MultiFileSetModel, multiFileSetModelId)
+        return self._session.get(MultiFileSetModel, multiFileSetModelId)
     
     def loadFileSetModels(self, multiFileSetModelId: str) -> List[FileSetModel]:
-        return self._db.query(FileSetModel).filter(_multiFileSetModelId=multiFileSetModelId).all()
+        return self._session.query(FileSetModel).filter_by(_multiFileSetModelId=multiFileSetModelId)
     
     def loadFileModels(self, fileSetModelId: str) -> List[FileModel]:
-        return self._db.query(FileModel).filter(_fileSetModelId=fileSetModelId).all()
+        return self._session.query(FileModel).filter_by(_fileSetModelId=fileSetModelId).all()
 
     def __enter__(self):
-        return self._db
+        return self
     
     def __exit__(self, exc_type, exc_value, traceback):
-        self._db.close()
+        self._session.close()

@@ -10,8 +10,8 @@ FILESETMODELPATH = os.path.join(os.environ['HOME'], f'Desktop/downloads/dataset/
 
 
 @pytest.mark.long_running
-def test_importDicomFileSetAndCheckInFileCache(session):
-    importer = DicomFileSetImporter(name=FILESETMODELNAME, path=FILESETMODELPATH, session=session)
+def test_importDicomFileSetAndCheckInFileCache(db):
+    importer = DicomFileSetImporter(name=FILESETMODELNAME, path=FILESETMODELPATH, db=db)
     importer.run()
     # dicomFiles = importer.data()
     multiFileSetModel = importer.data()

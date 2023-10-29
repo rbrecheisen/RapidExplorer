@@ -1,5 +1,4 @@
-from sqlalchemy.orm import Session
-
+from rapidx.app.data.db import Db
 from rapidx.app.data.registrationhelper import RegistrationHelper
 from rapidx.app.data.file.filemodelfactory import FileModelFactory
 from rapidx.app.data.fileset.filesetmodelfactory import FileSetModelFactory
@@ -8,15 +7,15 @@ from rapidx.app.data.multifileset.multifilesetmodelfactory import MultiFileSetMo
 
 
 class FileRegistrationHelper(RegistrationHelper):
-    def __init__(self, path: str, session: Session) -> None:
-        super(FileRegistrationHelper, self).__init__(name=None, path=path, session=session)
+    def __init__(self, path: str, db: Db) -> None:
+        super(FileRegistrationHelper, self).__init__(name=None, path=path, db=db)
     
     def execute(self) -> MultiFileSetModel:
         multiFileSetModel = MultiFileSetModelFactory.create()
         fileSetModel = FileSetModelFactory.create(multiFileSetModel=multiFileSetModel)
         fileModel = FileModelFactory.create(fileSetModel=fileSetModel, path=self.path())
-        self.session().add(multiFileSetModel)
-        self.session().add(fileSetModel)
-        self.session().add(fileModel)
-        self.session().commit()
+        self.db().add(multiFileSetModel)
+        self.db().add(fileSetModel)
+        self.db().add(fileModel)
+        self.db().commit()
         return multiFileSetModel

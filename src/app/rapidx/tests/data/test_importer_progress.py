@@ -11,8 +11,8 @@ FILESETMODELPATH = os.path.join(os.environ['HOME'], f'Desktop/downloads/dataset/
 progress = 0
 
 
-def test_importerSignalling(session, qtbot):
-    importer = Importer(name=FILESETMODELNAME, path=FILESETMODELPATH, session=session)
+def test_importerSignalling(db, qtbot):
+    importer = Importer(name=FILESETMODELNAME, path=FILESETMODELPATH, db=db)
     importer.signal().progress.connect(updateProgress)
     importer.signal().finished.connect(importFinished)
     with qtbot.waitSignals([importer.signal().progress, importer.signal().finished], timeout=1000):        

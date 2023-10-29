@@ -4,7 +4,10 @@ from PySide6.QtCore import Qt, QSize
 from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QFileDialog, QMenu, QProgressDialog
 from PySide6.QtGui import QAction, QGuiApplication
 
+from rapidx.app.data.fileset.dicomfilesetimporter import DicomFileSetImporter
+from rapidx.app.widgets.datadockwidget import DataDockWidget
 from rapidx.app.widgets.dockwidget import DockWidget
+from rapidx.app.data.db import Db
 
 
 class MainWindow(QMainWindow):
@@ -43,7 +46,7 @@ class MainWindow(QMainWindow):
         self.menuBar().setNativeMenuBar(False)
 
     def _initDockWidgetData(self) -> None:
-        self._dockWidgetData = DockWidget('Data', self)
+        self._dockWidgetData = DataDockWidget('Data', self)
         self._dockWidgetData.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea)
         self.addDockWidget(Qt.LeftDockWidgetArea, self._dockWidgetData)
 
@@ -75,7 +78,13 @@ class MainWindow(QMainWindow):
         pass
 
     def _importDicomFileSet(self) -> None:
-        pass
+        FILESETMODELNAME = 'myFileSet'
+        FILESETMODELPATH = os.path.join(os.environ['HOME'], f'Desktop/downloads/dataset/scan1')
+        with Db() as db:
+            importer = DicomFileSetImporter(name=FILESETMODELNAME, path=FILESETMODELPATH, db=db)
+            importer.run()
+            multiFileSetModel = importer.data()
+            self._dockWidgetData.addDataset(multiFileSetModel=multiFileSetModel)
 
     def _importDicomMultiFileSet(self) -> None:
         pass

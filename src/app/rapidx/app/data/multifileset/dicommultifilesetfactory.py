@@ -2,9 +2,9 @@ import os
 import pydicom
 import pydicom.errors
 
-from sqlalchemy.orm import Session
 from typing import List
 
+from rapidx.app.data.db import Db
 from rapidx.app.data.multifileset.multifilesetmodel import MultiFileSetModel
 from rapidx.app.data.fileset.filesetmodelfactory import FileSetModelFactory
 from rapidx.app.data.fileset.dicomfilesetfactory import DicomFileSetFactory
@@ -13,7 +13,7 @@ from rapidx.app.data.file.dicomfile import DicomFile
 
 class DicomMultiFileSetFactory:
     @staticmethod
-    def create(multiFileSetModel: MultiFileSetModel, session: Session) -> List[List[DicomFile]]:
+    def create(multiFileSetModel: MultiFileSetModel, db: Db) -> List[List[DicomFile]]:
         data = {}
         nrFiles = 0
         for root, dirs, files in os.walk(multiFileSetModel.path()):
@@ -33,7 +33,7 @@ class DicomMultiFileSetFactory:
         for fileSetPath in data.keys():
             fileSetName = os.path.relpath(fileSetPath, multiFileSetModel.path())
             fileSetModel = FileSetModelFactory.create(multiFileSetModel=multiFileSetModel, name=fileSetName, path=fileSetPath)
-            session.add(fileSetModel)
-            dicomFileSet = DicomFileSetFactory.create(fileSetModel=fileSetModel, session=session)
+            db.add(fileSetModel)
+            dicomFileSet = DicomFileSetFactory.create(fileSetModel=fileSetModel, db=db)
             dicomMultiFileSets.append(dicomFileSet)
         return dicomMultiFileSets

@@ -8,8 +8,8 @@ FILEMODELNAME = 'image-00000.dcm'
 FILEMODELPATH = os.path.join(os.environ['HOME'], f'Desktop/downloads/dataset/scan1/{FILEMODELNAME}')
 
 
-def test_importDicomFileAndCheckFileCacheAddRemoveAndClear(session):
-    importer = DicomFileImporter(path=FILEMODELPATH, session=session)
+def test_importDicomFileAndCheckFileCacheAddRemoveAndClear(db):
+    importer = DicomFileImporter(path=FILEMODELPATH, db=db)
     importer.run()
     # dicomFile = importer.data()
     multiFileSetModel = importer.data()

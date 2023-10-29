@@ -1,3 +1,4 @@
+import os
 
 from typing import List
 from PySide6.QtWidgets import QTreeView
@@ -16,10 +17,10 @@ class MultiFileSetModelTreeWidget(QTreeView):
         self._model.setHorizontalHeaderLabels(['Data'])
         self._model.itemChanged.connect(self._itemChanged)
         self.setModel(self._model)
-        self._loadDatasetsFromDatabase()
+        self._loadDataFromDatabase()
 
     def addData(self, multiFileSetModel: MultiFileSetModel) -> None:
-        with Db() as db:            
+        with Db() as db:
             multiFileSetModelNode = QStandardItem(multiFileSetModel.name())
             fileSetModels = db.loadFileSetModels(multiFileSetModelId=multiFileSetModel.id())
             for fileSetModel in fileSetModels:
@@ -30,6 +31,7 @@ class MultiFileSetModelTreeWidget(QTreeView):
                     fileName = os.path.split(fileModel.path())[1]
                     fileNode = QStandardItem(fileName)
                     fileSetNode.appendRow(fileNode)
+        self._model.appendRow(multiFileSetModelNode)
 
     def _loadDataFromDatabase(self):
         with Db() as db:

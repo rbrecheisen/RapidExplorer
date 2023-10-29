@@ -10,8 +10,8 @@ MULTIFILESETMODELPATH = os.path.join(os.environ['HOME'], f'Desktop/downloads/dat
 
 
 @pytest.mark.long_running
-def test_importDicomMultiFileSetAndCheckInFileCache(session):
-    importer = DicomMultiFileSetImporter(name=MULTIFILESETMODELNAME, path=MULTIFILESETMODELPATH, session=session)
+def test_importDicomMultiFileSetAndCheckInFileCache(db):
+    importer = DicomMultiFileSetImporter(name=MULTIFILESETMODELNAME, path=MULTIFILESETMODELPATH, db=db)
     importer.run()
     # dicomFileSets = importer.data()
     multiFileSetModel = importer.data()

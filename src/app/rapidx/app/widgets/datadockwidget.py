@@ -1,9 +1,9 @@
-from rapidx.app.widgets.dockwidget import Dockwidget
+from rapidx.app.widgets.dockwidget import DockWidget
 from rapidx.app.data.multifileset.multifilesetmodel import MultiFileSetModel
 from rapidx.app.widgets.multifilesetmodeltreewidget import MultiFileSetModelTreeWidget
 
 
-class DataDockWidget(Dockwidget):
+class DataDockWidget(DockWidget):
     def __init__(self, title: str, parent=None) -> None:
         super(DataDockWidget, self).__init__(title, parent=parent)
         self._treeWidget = None
