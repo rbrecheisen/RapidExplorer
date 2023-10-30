@@ -33,4 +33,3 @@ class Importer(QRunnable):
     
     def run(self) -> None:
         self.signal().progress.emit(100)
-        self.signal().finished.emit(True)

@@ -1,8 +1,13 @@
 from rapidx.app.data.file.filemodel import FileModel
 from rapidx.app.data.file.dicomfile import DicomFile
+from rapidx.app.data.factory import Factory
 
 
-class DicomFileFactory:
-    @staticmethod
-    def create(fileModel: FileModel) -> DicomFile:
-        return DicomFile(fileModel=fileModel)
+class DicomFileFactory(Factory):
+    def __init__(self) -> None:
+        super(DicomFileFactory, self).__init__()
+
+    def create(self, fileModel: FileModel) -> DicomFile:
+        dicomFile = DicomFile(fileModel=fileModel)
+        self.signal().progress.emit(100)
+        return dicomFile

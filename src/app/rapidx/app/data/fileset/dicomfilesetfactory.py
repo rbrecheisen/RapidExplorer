@@ -6,12 +6,15 @@ from rapidx.app.data.db import Db
 from rapidx.app.data.fileset.filesetmodel import FileSetModel
 from rapidx.app.data.file.filemodelfactory import FileModelFactory
 from rapidx.app.data.file.dicomfilefactory import DicomFileFactory
+from rapidx.app.data.factory import Factory
 from rapidx.app.data.file.dicomfile import DicomFile
 
 
-class DicomFileSetFactory:
-    @staticmethod
-    def create(fileSetModel: FileSetModel, db: Db) -> List[DicomFile]:
+class DicomFileSetFactory(Factory):
+    def __init__(self) -> None:
+        super(DicomFileSetFactory, self).__init__()
+
+    def create(self, fileSetModel: FileSetModel, db: Db) -> List[DicomFile]:
         files = os.listdir(fileSetModel.path())
         nrFiles = len(files)
         i = 0
@@ -28,6 +31,9 @@ class DicomFileSetFactory:
             except DicomFileInvalidException:
                 print(f'\nFile {fileName} is not a valid DICOM file')
                 continue
+            progress = int((i + 1) / nrFiles * 100)
+            self.signal().progress.emit(progress)
+            i += 1
         db.commit()
         dicomFileSet.sort(key=lambda x: int(x.data().InstanceNumber))
         return dicomFileSet
