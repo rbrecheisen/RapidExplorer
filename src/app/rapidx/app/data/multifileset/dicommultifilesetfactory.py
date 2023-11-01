@@ -16,7 +16,6 @@ class DicomMultiFileSetFactory(Factory):
     def __init__(self) -> None:
         super(DicomMultiFileSetFactory, self).__init__()
         self._nrFiles = 0
-        self._progress = 0
 
     def create(self, multiFileSetModel: MultiFileSetModel, db: Db) -> List[List[DicomFile]]:
         data = {}
@@ -34,7 +33,6 @@ class DicomMultiFileSetFactory(Factory):
                     print(f'File {fileName} is not a valid DICOM file')
                     continue
         i = 0
-        # TODO: How to deal with progress updates?
         dicomMultiFileSets = []
         for fileSetPath in data.keys():
             fileSetName = os.path.relpath(fileSetPath, multiFileSetModel.path())
@@ -46,5 +44,5 @@ class DicomMultiFileSetFactory(Factory):
             dicomMultiFileSets.append(dicomFileSet)
         return dicomMultiFileSets
     
-    def _updateProgress(self, progress) -> None:
-        self._progress = int((i + 1) / self._nrFiles * 100)
+    # def _updateProgress(self, progress) -> None:
+    #     self._progress = int((i + 1) / self._nrFiles * 100)

@@ -1,6 +1,8 @@
+from queue import Queue
+from threading import Thread
+from typing import List
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine
-from typing import List
 
 from rapidx.app.singleton import singleton
 from rapidx.app.data.basemodel import BaseModel
@@ -12,13 +14,19 @@ DATABASE = 'db.sqlite3'
 ECHO = False
 
 
+# TODO: Use a base class instead of a decorator!
 @singleton
-class Db:
-    def __init__(self, engine=None):
+class Db(Thread):
+    def __init__(self, queue, engine=None):
+        super(Db, self).__init__()
+        self._queue = queue
         if not engine:
             engine = create_engine(f'sqlite:///{DATABASE}', echo=ECHO)
             BaseModel.metadata.create_all(engine)
         self._session = Session(engine)
+
+    def queue(self) -> Queue:
+        return self._queue
 
     def add(self, obj):
         self._session.add(obj)
