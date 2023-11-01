@@ -1,3 +1,4 @@
+from typing import Any
 from queue import Queue
 from threading import Thread
 from PySide6.QtCore import QObject, Slot
@@ -28,6 +29,20 @@ class Singleton:
         if not cls._instance:
             cls._instance = super(Singleton, cls).__new__(cls)
         return cls._instance
+    
+
+class DbResult(Future):
+    def __init__(self) -> None:
+        super(DbResult, self).__init__()
+
+    def get(self) -> Any:
+        return self.result()
+
+    def set(self, obj: Any):
+        self.set_result(obj)
+
+    def setException(self, obj: Any):
+        self.set_exception(obj)
 
 
 class Db(Singleton, Thread):
@@ -40,9 +55,12 @@ class Db(Singleton, Thread):
     DbUpdateCommand(DbCommand): Class for updating existing objects in the database
     DbDeleteCommand(DbCommand): Class for deleting objects from the database
 
-    Needed methods:
-    ---------------
-    def 
+    TODO: Add methods below to Db class itself doesn't work. They need to be defined
+    outside of the thread and used by the client. Work with Command classes, e.g.,
+        - LoadAllCommand()
+        - LoadMultiFileSetModelCommand(multiFileSetModelId)
+        - LoadFileSetModelsCommand(multiFileSetModelId)
+        - LoadFileModels(fileSetModelId)
     """
     def __init__(self, engine=None) -> None:
         super(Db, self).__init__()
@@ -60,7 +78,7 @@ class Db(Singleton, Thread):
     
     def queue(self) -> Queue:
         return self._queue
-
+    
     def run(self) -> None:
         while True:
             queueInput = self.queue().get()
@@ -97,6 +115,7 @@ class YourApp(QObject):
 
     def doFilterBy(self, id: int):
         with Db() as db:
+            # db.loadMultiFileSetModel(multiFileSetModelId=id)
             result = Future()
             db.queue().put((YourTable, result, 'filterBy', None, {'id': id}))
             for obj in result.result():
@@ -105,7 +124,7 @@ class YourApp(QObject):
     def doQueryAll(self):
         with Db() as db:
             result = Future()
-            db.queue().put((YourTable, 'queryAll', result))
+            db.queue().put((YourTable, result, 'queryAll', None, None))
             print(result.result())
 
     def stop(self):
@@ -116,4 +135,5 @@ class YourApp(QObject):
 if __name__ == "__main__":
     app = YourApp()
     app.doFilterBy(id=1)
+    app.doQueryAll()
     app.stop()
