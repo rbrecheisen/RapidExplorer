@@ -31,40 +31,18 @@ class Singleton:
 
 
 class Db(Singleton, Thread):
-    """ The Db class is a singleton. It holds a single database connection to SQLite3.
-    In order to do something with the database, you need to call some methods, e.g.,
-    loadAll(), loadMultiFileSetModel(multiFileSetModelId=?) or whatever. 
+    """
+    Needed classes:
+    ---------------
+    DbResult(Future):           Class that holds future containing results of database operation
+    DbCommand:                  Base class for database commands
+    DbInsertCommand(DbCommand): Class for insert object into the database
+    DbUpdateCommand(DbCommand): Class for updating existing objects in the database
+    DbDeleteCommand(DbCommand): Class for deleting objects from the database
 
-    The problem is you cannot directly call methods on this class. You have to use
-    the queue mechanism. So you need to find a way to convert the potentially complicated
-    session calls to something you can add to the queue. 
-
-    For example, instead of having this:
-
-        def loadFileSetModel(self, id):
-            return session.query(FileSetModel).filter_by(_multiFileSetModelId=id)
-
-    could be translated to:
-
-        with Db() as db:
-            result = Future()  # Make class DbResult(Future)?
-            db.queue().put((FileSetModel, result, 'filter_by', multiFileSetModelId=id))
-            # Alternatively: db.loadFileSetModel() that internally puts stuff to the queue? Can I access this method if Db is a running thread?
-            print(result)
-
-    where the Db class run() method would process it as follows:
-
-        model, operation, result, kwargs = self.queue().get()
-        try:
-            if operation == 'filter_by':
-                result.set_result(self.session().query(model).filter_by(**kwargs)).all()  # Becomes result.set() if you have DbResult class
-            elif operation == 'query':
-                result.set_result(self.session().query(model).all())  # Perhaps make operation "all" or "queryAll", and "queryOne", etc.
-            else:
-                pass
-        except Exception as e:  # What exceptions can Session throw?
-            result.set_exception(e)
-
+    Needed methods:
+    ---------------
+    def 
     """
     def __init__(self, engine=None) -> None:
         super(Db, self).__init__()
