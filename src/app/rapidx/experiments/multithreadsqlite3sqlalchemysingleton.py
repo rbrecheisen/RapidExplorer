@@ -115,7 +115,7 @@ class YourApp(QObject):
 
     def doFilterBy(self, id: int):
         with Db() as db:
-            # db.loadMultiFileSetModel(multiFileSetModelId=id)
+            # db.loadMultiFileSetModel(multiFileSetModelId=id)  DOESN'T WORK!
             result = Future()
             db.queue().put((YourTable, result, 'filterBy', None, {'id': id}))
             for obj in result.result():
