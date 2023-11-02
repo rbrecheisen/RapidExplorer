@@ -4,7 +4,10 @@ from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.orm import declarative_base, Session, sessionmaker
 
 from singleton import Singleton
-from dbresult import DbResult
+from dbinsertcommand import DbInsertCommand
+from dbdeletecommand import DbDeleteCommand
+from dbgetcommand import DbGetCommand
+from dbupdatecommand import DbUpdateCommand
 from dbfilterbycommand import DbFilterByCommand
 
 DATABASE = 'db.sqlite3'
@@ -20,7 +23,7 @@ class YourTable(Base):
     column2 = Column(String)
 
     def __str__(self):
-        return f'YourTable(colum1={self.column1}, column2={self.column2})'
+        return f'YourTable(id={self.id}, colum1={self.column1}, column2={self.column2})'
 
 
 class Db(Singleton, Thread):
@@ -44,25 +47,41 @@ class Db(Singleton, Thread):
     def run(self) -> None:
         while True:
             queueInput = self.queue().get()
-            if len(queueInput) == 5:
-                model, result, operation, args, kwargs = queueInput
-                try:
-                    if operation == 'filterBy':
-                        x = self.session().query(model).filter_by(**kwargs).all()
-                        result.set_result(x)
-                    elif operation == 'queryAll':
-                        result.set_result(self.session().query(model).all())
-                    elif operation == 'stop':
-                        break
-                    else:
-                        result.set_result(False)
-                except Exception as e:
-                    result.set_exception(e)
-                finally:
+            model, result, operation, args, kwargs = queueInput
+            try:
+                if operation == 'insert':
+                    obj = model(**kwargs)
+                    self.session().add(obj)
                     self.session().commit()
-                    self.queue().task_done()
-            else:
-                print(f'len(queueInput): {len(queueInput)}, queueInput: {queueInput}')
+                    result.set(obj)
+                elif operation == 'update':
+                    obj = self.session().get(model, *args)
+                    for k, v in kwargs.items():
+                        setattr(obj, k, v)
+                    self.session().commit()
+                    result.set(obj)
+                elif operation == 'delete':
+                    obj = self.session().get(model, *args)
+                    self.session().delete(obj)
+                    self.session().commit()
+                    result.set(True)
+                elif operation == 'filterBy':
+                    objs = self.session().query(model).filter_by(**kwargs).all()
+                    result.set(objs)
+                elif operation == 'get':
+                    obj = self.session().get(model, *args)
+                    result.set(obj)
+                elif operation == 'queryAll':
+                    objs = self.session().query(model).all()
+                    result.set(objs)
+                elif operation == 'stop':
+                    break
+                else:
+                    result.set(False)
+            except Exception as e:
+                result.setException(e)
+            finally:
+                self.queue().task_done()
 
     def __enter__(self):
         return self
@@ -74,8 +93,17 @@ class Db(Singleton, Thread):
 if __name__ == '__main__':
     def testDb():
         with Db() as db:
-            command = DbFilterByCommand(db, YourTable, 1)
+            command = DbInsertCommand(db, YourTable, column1='value1', column2='value2')
+            obj = command.execute()
+            command = DbGetCommand(db, YourTable, obj.id)
+            obj = command.execute()
+            assert obj.column1 == 'value1'
+            command = DbUpdateCommand(db, YourTable, obj.id, column1='value3')
+            obj = command.execute()
+            assert obj.column1 == 'value3'
+            command = DbDeleteCommand(db, YourTable, obj.id)
+            command.execute()
+            command = DbGetCommand(db, YourTable, obj.id)
             results = command.execute()
-            for result in results:
-                print(result)
+            assert not results
     testDb()

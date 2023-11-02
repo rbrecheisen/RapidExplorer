@@ -1,4 +1,4 @@
-from rapidx.app.data.db import Db
+from rapidx.app.data.db.db import Db
 
 
 class RegistrationHelper:

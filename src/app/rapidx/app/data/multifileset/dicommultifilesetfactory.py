@@ -4,7 +4,7 @@ import pydicom.errors
 
 from typing import List
 
-from rapidx.app.data.db import Db
+from rapidx.app.data.db.db import Db
 from rapidx.app.data.multifileset.multifilesetmodel import MultiFileSetModel
 from rapidx.app.data.fileset.filesetmodelfactory import FileSetModelFactory
 from rapidx.app.data.fileset.dicomfilesetfactory import DicomFileSetFactory

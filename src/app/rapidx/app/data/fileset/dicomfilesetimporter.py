@@ -1,4 +1,4 @@
-from rapidx.app.data.db import Db
+from rapidx.app.data.db.db import Db
 from rapidx.app.data.importer import Importer
 from rapidx.app.data.filecache import FileCache
 from rapidx.app.data.fileset.filesetregistrationhelper import FileSetRegistrationHelper

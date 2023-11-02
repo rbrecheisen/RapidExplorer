@@ -2,7 +2,7 @@ import os
 
 from typing import List
 
-from rapidx.app.data.db import Db
+from rapidx.app.data.db.db import Db
 from rapidx.app.data.fileset.filesetmodel import FileSetModel
 from rapidx.app.data.file.filemodelfactory import FileModelFactory
 from rapidx.app.data.file.dicomfilefactory import DicomFileFactory

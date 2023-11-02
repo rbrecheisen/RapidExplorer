@@ -1,6 +1,6 @@
 from PySide6.QtCore import QRunnable
 
-from rapidx.app.data.db import Db
+from rapidx.app.data.db.db import Db
 from rapidx.app.data.progresssignal import ProgressSignal
 
 
