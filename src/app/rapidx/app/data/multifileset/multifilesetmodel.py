@@ -35,7 +35,7 @@ class MultiFileSetModel(BaseModel):
     
     def firstFileSetModel(self):
         if self.nrFileSetModels() > 0:
-            return self.fileSetModels() [0]
+            return self.fileSetModels()[0]
         return None
 
     def __str__(self):

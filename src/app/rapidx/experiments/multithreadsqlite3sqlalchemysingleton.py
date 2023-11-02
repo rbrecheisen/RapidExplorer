@@ -61,6 +61,11 @@ class Db(Singleton, Thread):
         - LoadMultiFileSetModelCommand(multiFileSetModelId)
         - LoadFileSetModelsCommand(multiFileSetModelId)
         - LoadFileModels(fileSetModelId)
+
+    Classes affected:
+        - FileRegistrationHelper
+        - ModelFactory
+        - ModelImporter
     """
     def __init__(self, engine=None) -> None:
         super(Db, self).__init__()
