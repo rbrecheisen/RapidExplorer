@@ -1,1 +1,1 @@
-RAPID-X - Radiological Analysis and Processing for Imaging Data Explorer
+RapidX - Radiological analysis and processing for imaging data eXplorer
