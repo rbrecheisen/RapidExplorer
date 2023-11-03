@@ -9,24 +9,18 @@ FILEMODELPATH = os.path.join(os.environ['HOME'], f'Desktop/downloads/dataset/sca
 
 
 def test_importDicomFileAndCheckInFileCache(db):
+    def updateProgress(value):
+        global progress
+        progress = value
+
+    def importFinished(value):
+        assert value
+
     importer = DicomFileImporter(path=FILEMODELPATH, db=db)
+    importer.signal().progress.connect(updateProgress)
+    importer.signal().finished.connect(importFinished)
     importer.run()
-    # dicomFile = importer.data()
     multiFileSetModel = importer.data()
     assert multiFileSetModel.id()
-    
-    # TODO: How do I get at the individual FileModel objects?
-    
-    # assert dicomFile.id()
-    # assert dicomFile.data()
-    # assert dicomFile.header()
-    # assert dicomFile.header('SeriesDescription')
-    # assert dicomFile.pixelData().shape == (512, 512)
-    # fileModel = dicomFile.fileModel()
-    # assert fileModel.fileSetModel()
-    # assert fileModel.fileSetModel().name().startswith('fileset')
-    # assert fileModel.fileSetModel().multiFileSetModel()
-    # assert fileModel.fileSetModel().multiFileSetModel().name().startswith('multifileset')
-    # cache = FileCache()
-    # assert cache.get(dicomFile.id())
-    pass
+
+    # TODO: Test that file itself has been added

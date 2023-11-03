@@ -1,7 +1,6 @@
 import os
 import pytest
 
-from rapidx.app.data.filecache import FileCache
 from rapidx.app.data.multifileset.dicommultifilesetimporter import DicomMultiFileSetImporter
 
 
@@ -9,7 +8,7 @@ MULTIFILESETMODELNAME = 'myMultiFileSet'
 MULTIFILESETMODELPATH = os.path.join(os.environ['HOME'], f'Desktop/downloads/dataset')
 
 
-# @pytest.mark.long_running
+@pytest.mark.long_running
 def test_importDicomMultiFileSetAndCheckInFileCache(db):
     def updateProgress(value):
         global progress

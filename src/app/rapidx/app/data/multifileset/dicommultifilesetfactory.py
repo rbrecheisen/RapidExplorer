@@ -35,14 +35,14 @@ class DicomMultiFileSetFactory(Factory):
                 except pydicom.errors.InvalidDicomError:
                     print(f'File {fileName} is not a valid DICOM file')
                     continue
-        # self.signal().progress.connect(self._updateProgress)
+        # Connect finished signal. Don't connect the update progress signal because
+        # this signal is sent out by the DicomFileSetFactory objects
         self.signal().finished.connect(self._importFinished)
         dicomMultiFileSets = []
         for fileSetPath in data.keys():
             fileSetName = os.path.relpath(fileSetPath, multiFileSetModel.path())
             fileSetModel = FileSetModelFactory().create(multiFileSetModel=multiFileSetModel, name=fileSetName, path=fileSetPath)
             DbAddCommand(db, FileSetModel, fileSetModel)
-            # db.add(fileSetModel)
             factory = DicomFileSetFactory()
             factory.signal().progress.connect(self._updateProgress)
             dicomFileSet = factory.create(fileSetModel=fileSetModel, db=db)

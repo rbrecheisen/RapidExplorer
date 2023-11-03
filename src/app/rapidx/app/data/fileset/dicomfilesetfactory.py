@@ -27,7 +27,6 @@ class DicomFileSetFactory(Factory):
             filePath = os.path.join(fileSetModel.path(), fileName)
             fileModel = FileModelFactory().create(fileSetModel=fileSetModel, path=filePath)
             DbAddCommand(db, FileModel, fileModel).execute()
-            # db.add(fileModel)
             try:
                 dicomFile = DicomFileFactory().create(fileModel=fileModel)
                 dicomFileSet.append(dicomFile)
@@ -38,7 +37,6 @@ class DicomFileSetFactory(Factory):
             progress = int((i + 1) / nrFiles * 100)
             self.signal().progress.emit(progress)
             i += 1
-        # db.commit()
         dicomFileSet.sort(key=lambda x: int(x.data().InstanceNumber))
         self.signal().finished.emit(True)
         return dicomFileSet

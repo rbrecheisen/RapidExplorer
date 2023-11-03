@@ -12,6 +12,4 @@ class MultiFileSetRegistrationHelper(RegistrationHelper):
     def execute(self) -> MultiFileSetModel:
         multiFileSetModel = MultiFileSetModelFactory().create(name=self.name(), path=self.path())
         DbAddCommand(self.db(), MultiFileSetModel, multiFileSetModel).execute()
-        # self.db().add(multiFileSetModel)
-        # self.db().commit()
         return multiFileSetModel

@@ -16,7 +16,4 @@ class FileSetRegistrationHelper(RegistrationHelper):
         fileSetModel = FileSetModelFactory().create(name=self.name(), path=self.path(), multiFileSetModel=multiFileSetModel)
         DbAddCommand(self.db(), MultiFileSetModel, multiFileSetModel).execute()
         DbAddCommand(self.db(), FileSetModel, fileSetModel).execute()
-        # self.db().add(multiFileSetModel)
-        # self.db().add(fileSetModel)
-        # self.db().commit()
         return multiFileSetModel

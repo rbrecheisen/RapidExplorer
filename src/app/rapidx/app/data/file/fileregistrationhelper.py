@@ -20,8 +20,4 @@ class FileRegistrationHelper(RegistrationHelper):
         DbAddCommand(self.db(), MultiFileSetModel, multiFileSetModel).execute()
         DbAddCommand(self.db(), FileSetModel, fileSetModel).execute()
         DbAddCommand(self.db(), FileModel, fileModel).execute()
-        # self.db().add(multiFileSetModel)
-        # self.db().add(fileSetModel)
-        # self.db().add(fileModel)
-        # self.db().commit()
         return multiFileSetModel

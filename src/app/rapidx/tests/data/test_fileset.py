@@ -1,7 +1,6 @@
 import os
 import pytest
 
-from rapidx.app.data.filecache import FileCache
 from rapidx.app.data.fileset.dicomfilesetimporter import DicomFileSetImporter
 
 
