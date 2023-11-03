@@ -3,11 +3,14 @@ import os
 from typing import List
 
 from rapidx.app.data.db.db import Db
+from rapidx.app.data.file.filemodel import FileModel
 from rapidx.app.data.fileset.filesetmodel import FileSetModel
 from rapidx.app.data.file.filemodelfactory import FileModelFactory
 from rapidx.app.data.file.dicomfilefactory import DicomFileFactory
 from rapidx.app.data.factory import Factory
 from rapidx.app.data.file.dicomfile import DicomFile
+from rapidx.app.data.db.dbaddcommand import DbAddCommand
+from rapidx.app.data.file.dicomfileinvalidexception import DicomFileInvalidException
 
 
 class DicomFileSetFactory(Factory):
@@ -22,10 +25,11 @@ class DicomFileSetFactory(Factory):
         for f in files:
             fileName = f
             filePath = os.path.join(fileSetModel.path(), fileName)
-            fileModel = FileModelFactory.create(fileSetModel=fileSetModel, path=filePath)
-            db.add(fileModel)
+            fileModel = FileModelFactory().create(fileSetModel=fileSetModel, path=filePath)
+            DbAddCommand(db, FileModel, fileModel).execute()
+            # db.add(fileModel)
             try:
-                dicomFile = DicomFileFactory.create(fileModel=fileModel)
+                dicomFile = DicomFileFactory().create(fileModel=fileModel)
                 dicomFileSet.append(dicomFile)
                 print('.', end='', flush=True)
             except DicomFileInvalidException:
@@ -34,6 +38,7 @@ class DicomFileSetFactory(Factory):
             progress = int((i + 1) / nrFiles * 100)
             self.signal().progress.emit(progress)
             i += 1
-        db.commit()
+        # db.commit()
         dicomFileSet.sort(key=lambda x: int(x.data().InstanceNumber))
+        self.signal().finished.emit(True)
         return dicomFileSet

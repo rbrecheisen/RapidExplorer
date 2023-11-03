@@ -15,7 +15,8 @@ class DicomMultiFileSetImporter(Importer):
         helper = MultiFileSetRegistrationHelper(name=self.name(), path=self.path(), db=self.db())
         multiFileSetModel = helper.execute()
         factory = DicomMultiFileSetFactory()
-        # factory.signal().progress.connect(self._updateProgress)
+        factory.signal().progress.connect(self._updateProgress)
+        factory.signal().finished.connect(self._importFinished)
         dicomMultiFileSet = factory.create(multiFileSetModel=multiFileSetModel, db=self.db())
         cache = FileCache()
         for dicomFileSet in dicomMultiFileSet:
@@ -23,5 +24,8 @@ class DicomMultiFileSetImporter(Importer):
                 cache.add(file=dicomFile)
         self.setData(multiFileSetModel)
 
-    # def _updateProgress(self, progress) -> None:
-    #     self.signal().progress.emit(progress)
+    def _updateProgress(self, progress) -> None:
+        self.signal().progress.emit(progress)
+
+    def _importFinished(self, value) -> None:
+        self.signal().finished.emit(value)

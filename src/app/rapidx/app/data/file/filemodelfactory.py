@@ -3,6 +3,5 @@ from rapidx.app.data.fileset.filesetmodel import FileSetModel
 
 
 class FileModelFactory:
-    @staticmethod
-    def create(fileSetModel: FileSetModel, path: str) -> FileModel:
+    def create(self, fileSetModel: FileSetModel, path: str) -> FileModel:
         return FileModel(_path=path, _fileSetModel=fileSetModel)

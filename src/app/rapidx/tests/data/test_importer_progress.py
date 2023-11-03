@@ -12,12 +12,11 @@ progress = 0
 
 
 def test_importerSignalling(db, qtbot):
-    # importer = Importer(name=FILESETMODELNAME, path=FILESETMODELPATH, db=db)
-    # importer.signal().progress.connect(updateProgress)
+    importer = Importer(name=FILESETMODELNAME, path=FILESETMODELPATH, db=db)
+    importer.signal().progress.connect(updateProgress)
     # importer.signal().finished.connect(importFinished)
-    # with qtbot.waitSignals([importer.signal().progress, importer.signal().finished], timeout=1000):        
-    #     QThreadPool.globalInstance().start(importer)
-    pass
+    with qtbot.waitSignals([importer.signal().progress], timeout=1000):        
+        QThreadPool.globalInstance().start(importer)
 
 def updateProgress(value) -> None:
     global progress
