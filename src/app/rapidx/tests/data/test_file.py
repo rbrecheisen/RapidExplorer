@@ -9,10 +9,12 @@ FILEMODELPATH = os.path.join(os.environ['HOME'], f'Desktop/downloads/dataset/sca
 
 
 def test_importDicomFileAndCheckInFileCache(db):
-    # importer = DicomFileImporter(path=FILEMODELPATH, db=db)
-    # importer.run()
+    importer = DicomFileImporter(path=FILEMODELPATH, db=db)
+    importer.run()
     # dicomFile = importer.data()
-    # multiFileSetModel = importer.data()
+    multiFileSetModel = importer.data()
+    assert multiFileSetModel.id()
+    
     # TODO: How do I get at the individual FileModel objects?
     
     # assert dicomFile.id()

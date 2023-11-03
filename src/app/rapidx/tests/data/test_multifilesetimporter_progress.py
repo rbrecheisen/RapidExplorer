@@ -10,11 +10,11 @@ MULTIFILESETMODELPATH = os.path.join(os.environ['HOME'], f'Desktop/downloads/dat
 
 
 def test_dicomMultiFileSetImporterProgressSignalling(db, qtbot):
-    def updateProgress(value):
-        assert False
+    # def updateProgress(value):
+    #     assert False
 
-    def importFinished():
-        assert False
+    # def importFinished():
+    #     assert False
 
     # progress = 0
     # importer = DicomMultiFileSetImporter(path=MULTIFILESETMODELPATH, db=db)
