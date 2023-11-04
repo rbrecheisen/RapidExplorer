@@ -14,12 +14,14 @@ class MultiFileSetModel(BaseModel):
     id: Mapped[int] = mapped_column('_id', String, primary_key=True, default=lambda: str(uuid.uuid4()), unique=True, nullable=False)
     name: Mapped[str] = mapped_column('_name', String(256), nullable=True)
     path: Mapped[str] = mapped_column('_path', String(1024), nullable=True)
-    fileSetModels: Mapped[List['FileSetModel']] = relationship(back_populates='_multiFileSetModel', cascade='all, delete-orphan')
+    fileSetModels: Mapped[List['FileSetModel']] = relationship(back_populates='multiFileSetModel', cascade='all, delete-orphan')
 
     def __init__(self, name=None, path=None):
-        super(MultiFileSetModel, self).__init__(name, path)
-        if not name:
+        super(MultiFileSetModel, self).__init__()
+        self.name = name
+        if not self.name:
             self.name = create_random_name(prefix='multifileset')
+        self.path = path
 
     def firstFileSetModel(self):
         if len(self.fileSetModels) > 0:

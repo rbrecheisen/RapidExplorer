@@ -12,7 +12,7 @@ class File(ABC):
         return self._fileModel
 
     def id(self) -> str:
-        return self.fileModel().id()
+        return self.fileModel().id
 
     # @abstractmethod
     def data(self):

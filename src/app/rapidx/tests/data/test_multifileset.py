@@ -24,4 +24,4 @@ def test_importDicomMultiFileSetAndCheckInFileCache(db):
     importer.signal().finished.connect(importFinished)
     importer.run()
     multiFileSetModel = importer.data()
-    assert multiFileSetModel.id()
+    assert multiFileSetModel.id

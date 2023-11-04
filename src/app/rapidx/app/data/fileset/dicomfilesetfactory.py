@@ -5,7 +5,7 @@ from typing import List
 from rapidx.app.data.db.db import Db
 from rapidx.app.data.file.filemodel import FileModel
 from rapidx.app.data.fileset.filesetmodel import FileSetModel
-from rapidx.app.data.file.filemodelfactory import FileModelFactory
+# from rapidx.app.data.file.filemodelfactory import FileModelFactory
 from rapidx.app.data.file.dicomfilefactory import DicomFileFactory
 from rapidx.app.data.factory import Factory
 from rapidx.app.data.file.dicomfile import DicomFile
@@ -25,7 +25,8 @@ class DicomFileSetFactory(Factory):
         for f in files:
             fileName = f
             filePath = os.path.join(fileSetModel.path(), fileName)
-            fileModel = FileModelFactory().create(fileSetModel=fileSetModel, path=filePath)
+            # fileModel = FileModelFactory().create(fileSetModel=fileSetModel, path=filePath)
+            fileModel = FileModel(fileSetModel, path=path())
             DbAddCommand(db, FileModel, fileModel).execute()
             try:
                 dicomFile = DicomFileFactory().create(fileModel=fileModel)

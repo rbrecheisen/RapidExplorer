@@ -7,7 +7,7 @@ from typing import List
 from rapidx.app.data.db.db import Db
 from rapidx.app.data.fileset.filesetmodel import FileSetModel
 from rapidx.app.data.multifileset.multifilesetmodel import MultiFileSetModel
-from rapidx.app.data.fileset.filesetmodelfactory import FileSetModelFactory
+# from rapidx.app.data.fileset.filesetmodelfactory import FileSetModelFactory
 from rapidx.app.data.fileset.dicomfilesetfactory import DicomFileSetFactory
 from rapidx.app.data.factory import Factory
 from rapidx.app.data.file.dicomfile import DicomFile
@@ -41,7 +41,8 @@ class DicomMultiFileSetFactory(Factory):
         dicomMultiFileSets = []
         for fileSetPath in data.keys():
             fileSetName = os.path.relpath(fileSetPath, multiFileSetModel.path())
-            fileSetModel = FileSetModelFactory().create(multiFileSetModel=multiFileSetModel, name=fileSetName, path=fileSetPath)
+            # fileSetModel = FileSetModelFactory().create(multiFileSetModel=multiFileSetModel, name=fileSetName, path=fileSetPath)
+            fileSetModel = FileSetModel(multiFileSetModel, name=fileSetName, path=fileSetPath)
             DbAddCommand(db, FileSetModel, fileSetModel)
             factory = DicomFileSetFactory()
             factory.signal().progress.connect(self._updateProgress)

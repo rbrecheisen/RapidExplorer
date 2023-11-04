@@ -10,7 +10,7 @@ class DicomFile(File):
     def __init__(self, fileModel: FileModel) -> None:
         super(DicomFile, self).__init__(fileModel)
         try:
-            self._data = pydicom.dcmread(self.fileModel().path())
+            self._data = pydicom.dcmread(self.fileModel().path)
         except pydicom.errors.InvalidDicomError as e:
             raise DicomFileInvalidException()
         self._data.decompress()
