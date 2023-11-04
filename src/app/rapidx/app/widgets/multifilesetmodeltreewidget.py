@@ -74,8 +74,8 @@ class MultiFileSetModelTreeWidget(QTreeView):
 
     def _rightClickAction(self, item):
         with Db() as db:
-            cache = FileCache()
             multiFileSetModel = DbGetCommand(db, MultiFileSetModel, item.multiFileSetModel().id).execute()
+            cache = FileCache()
             cache.removeMultiFileSet(multiFileSetModel)
             DbDeleteCommand(db, MultiFileSetModel, multiFileSetModel.id).execute()
         self._model.clear()
