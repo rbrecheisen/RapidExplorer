@@ -20,7 +20,7 @@ class Db(Singleton, Thread):
         super(Db, self).__init__()
         if not engine:
             engine = create_engine(f'sqlite:///{DATABASE}', echo=ECHO)
-            Base.metadata.create_all(engine)
+            BaseModel.metadata.create_all(engine)
         Session = sessionmaker(bind=engine)
         self._session = Session()
         self._queue = Queue()

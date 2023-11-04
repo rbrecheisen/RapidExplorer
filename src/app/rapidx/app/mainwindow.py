@@ -4,8 +4,10 @@ from PySide6.QtCore import Qt, QSize, QThreadPool
 from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QFileDialog, QMenu, QProgressDialog
 from PySide6.QtGui import QAction, QGuiApplication
 
-from rapidx.app.data.db import Db
+from rapidx.app.data.db.db import Db
+from rapidx.app.data.file.dicomfileimporter import DicomFileImporter
 from rapidx.app.data.fileset.dicomfilesetimporter import DicomFileSetImporter
+from rapidx.app.data.multifileset.dicommultifilesetimporter import DicomMultiFileSetImporter
 from rapidx.app.widgets.datadockwidget import DataDockWidget
 from rapidx.app.widgets.dockwidget import DockWidget
 
@@ -22,6 +24,9 @@ class MainWindow(QMainWindow):
         self._dockWidgetViews = None
         self._dockWidgetMainView = None
         self._progressBarDialog = None
+        self._dicomFileImporter = None
+        self._dicomFileSetImporter = None
+        self._dicomMultiFileSetImporter = None
         self._initUi()
 
     def _initUi(self) -> None:
@@ -84,12 +89,19 @@ class MainWindow(QMainWindow):
         self.splitDockWidget(self._dockWidgetData, self._dockWidgetTasks, Qt.Vertical)
         self.splitDockWidget(self._dockWidgetMainView, self._dockWidgetViews, Qt.Vertical)
         self.setFixedSize(QSize(1024, 800))
-        self.setWindowTitle('RAPID-X')
+        self.setWindowTitle('RapidX')
         self._centerWindow()
 
     def _importDicomFile(self) -> None:
-        # TODO: implement
-        pass
+        filePath, _ = QFileDialog.getOpenFileName(self, 'Open DICOM Image', FILE_PATH)
+        if filePath:
+            with Db() as db:
+                self._progressBarDialog.show()
+                self._progressBarDialog.setValue(0)
+                self._dicomFileImporter = DicomFileImporter(path=filePath, db=db)
+                self._dicomFileImporter.signal().progress.connect(self._updateProgress)
+                self._dicomFileImporter.signal().finished.connect(self._importDicomFileFinished)
+                QThreadPool.globalInstance().start(self._dicomFileImporter)
 
     def _importDicomFileSet(self) -> None:
         dirPath = QFileDialog.getExistingDirectory(self, 'Open DICOM Image Series', FILESET_DIR)
@@ -103,14 +115,27 @@ class MainWindow(QMainWindow):
                 QThreadPool.globalInstance().start(self._dicomFileSetImporter)
 
     def _importDicomMultiFileSet(self) -> None:
-        # TODO: implement
-        pass
+        dirPath = QFileDialog.getExistingDirectory(self, 'Open Multiple DICOM Image Series', MULTIFILESET_DIR)
+        if dirPath:
+            with Db() as db:
+                self._progressBarDialog.show()
+                self._progressBarDialog.setValue(0)
+                self._dicomMultiFileSetImporter = DicomMultiFileSetImporter(path=dirPath, db=db)
+                self._dicomMultiFileSetImporter.signal().progress.connect(self._updateProgress)
+                self._dicomMultiFileSetImporter.signal().finished.connect(self._importDicomMultiFileSetFinished)
+                QThreadPool.globalInstance().start(self._dicomMultiFileSetImporter)
 
     def _updateProgress(self, value) -> None:
         self._progressBarDialog.setValue(value)
 
+    def _importDicomFileFinished(self, _) -> None:
+        self._dockWidgetData.addData(self._dicomFileImporter.data())
+
     def _importDicomFileSetFinished(self, _) -> None:
         self._dockWidgetData.addData(self._dicomFileSetImporter.data())
+
+    def _importDicomMultiFileSetFinished(self, _) -> None:
+        self._dockWidgetData.addData(self._dicomMultiFileSetImporter.data())
 
     def _centerWindow(self) -> None:
         screen = QGuiApplication.primaryScreen().geometry()
