@@ -7,6 +7,8 @@ from rapidx.app.data.multifileset.dicommultifilesetimporter import DicomMultiFil
 MULTIFILESETMODELNAME = 'myMultiFileSet'
 MULTIFILESETMODELPATH = os.path.join(os.environ['HOME'], f'Desktop/downloads/dataset')
 
+progress = 0
+
 
 @pytest.mark.long_running
 def test_importDicomMultiFileSetAndCheckInFileCache(db):
