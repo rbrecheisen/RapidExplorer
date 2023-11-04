@@ -15,10 +15,15 @@ class DicomFileImporter(Importer):
         fileModel = multiFileSetModel.firstFileSetModel().firstFileModel()
         factory = DicomFileFactory()
         factory.signal().progress.connect(self._updateProgress)
+        factory.signal().finished.connect(self._importFinished)
         dicomFile = factory.create(fileModel=fileModel)
         cache = FileCache()
         cache.add(file=dicomFile)
         self.setData(multiFileSetModel)
+        self.signal().finished.emit(True)
 
     def _updateProgress(self, progress) -> None:
         self.signal().progress.emit(progress)
+
+    def _importFinished(self, value) -> None:
+        self.signal().finished.emit(value)        

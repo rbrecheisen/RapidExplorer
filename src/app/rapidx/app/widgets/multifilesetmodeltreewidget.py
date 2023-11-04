@@ -1,6 +1,5 @@
 import os
 
-from typing import List
 from PySide6.QtWidgets import QTreeView
 from PySide6.QtGui import QStandardItemModel, QStandardItemModel, QStandardItem
 
@@ -21,7 +20,7 @@ class MultiFileSetModelTreeWidget(QTreeView):
         self.setModel(self._model)
         self._loadDataFromDatabase()
 
-    def addData(self, multiFileSetModel: MultiFileSetModel) -> None:
+    def addData(self, multiFileSetModel: MultiFileSetModel, db=None) -> None:
         with Db() as db:
             multiFileSetModelNode = QStandardItem(multiFileSetModel.name)
             fileSetModels = DbFilterByCommand(db, FileSetModel, multiFileSetModelId=multiFileSetModel.id).execute()
@@ -38,10 +37,9 @@ class MultiFileSetModelTreeWidget(QTreeView):
 
     def _loadDataFromDatabase(self):
         with Db() as db:
-            # multiFileSetModels = db.loadAll()
             multiFileSetModels = DbQueryAllCommand(db, MultiFileSetModel).execute()
-            for multiFileSetModel in multiFileSetModels:
-                self.addData(multiFileSetModel)
+        for multiFileSetModel in multiFileSetModels:
+            self.addData(multiFileSetModel)
 
     def _itemChanged(self, item) -> None:
         pass
