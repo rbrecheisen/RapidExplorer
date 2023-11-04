@@ -43,8 +43,7 @@ class Db(Singleton, Thread):
                     self.session().commit()
                     result.set(obj)
                 elif operation == 'update':
-                    objId = obj
-                    obj = self.session().get(model, objId)
+                    obj = self.session().get(model, obj.id)
                     for k, v in kwargs.items():
                         setattr(obj, k, v)
                     self.session().commit()

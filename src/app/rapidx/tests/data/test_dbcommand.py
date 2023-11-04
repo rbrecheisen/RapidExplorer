@@ -59,23 +59,23 @@ def test_queryAllCommand(db):
 
 
 def test_filterByCommand(db):
-    # multiFileSetModelId = addMultiFileSetModelObject(db)
-    # assert len(DbFilterByCommand(db, FileModel, _path='/path/to/file11').execute()) == 1
-    # deleteMultiFileSetModelObject(db, multiFileSetModelId)
-    pass
+    multiFileSetModelId = addMultiFileSetModelObject(db)
+    assert len(DbFilterByCommand(db, FileModel, path='/path/to/file11').execute()) == 1
+    deleteMultiFileSetModelObject(db, multiFileSetModelId)
 
 
 def test_updateCommand(db):
-    # Add object
-    # Get it back
-    # Update one of its fields
-    # Get it back again and check change still there
-    pass
+    multiFileSetModelId = addMultiFileSetModelObject(db)
+    multiFileSetModel = DbGetCommand(db, MultiFileSetModel, multiFileSetModelId).execute()
+    multiFileSetModel.name = 'xxx'
+    DbUpdateCommand(db, MultiFileSetModel, multiFileSetModel).execute()
+    multiFileSetModel = DbGetCommand(db, MultiFileSetModel, multiFileSetModelId).execute()
+    assert multiFileSetModel.name == 'xxx'
 
 
 def test_deleteCommand(db):
-    # Add object
-    # Get it back and check it's state
-    # Delete object
-    # Try to get it back and check nonexistence
-    pass
+    multiFileSetModelId = addMultiFileSetModelObject(db)
+    multiFileSetModel = DbGetCommand(db, MultiFileSetModel, multiFileSetModelId).execute()
+    DbDeleteCommand(db, MultiFileSetModel, multiFileSetModelId).execute()
+    multiFileSetModel = DbGetCommand(db, MultiFileSetModel, multiFileSetModelId).execute()
+    assert not multiFileSetModel
