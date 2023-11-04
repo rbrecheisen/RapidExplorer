@@ -18,15 +18,15 @@ class DicomFileSetFactory(Factory):
         super(DicomFileSetFactory, self).__init__()
 
     def create(self, fileSetModel: FileSetModel, db: Db) -> List[DicomFile]:
-        files = os.listdir(fileSetModel.path())
+        files = os.listdir(fileSetModel.path)
         nrFiles = len(files)
         i = 0
         dicomFileSet = []
         for f in files:
             fileName = f
-            filePath = os.path.join(fileSetModel.path(), fileName)
+            filePath = os.path.join(fileSetModel.path, fileName)
             # fileModel = FileModelFactory().create(fileSetModel=fileSetModel, path=filePath)
-            fileModel = FileModel(fileSetModel, path=path())
+            fileModel = FileModel(fileSetModel, path=filePath)
             DbAddCommand(db, FileModel, fileModel).execute()
             try:
                 dicomFile = DicomFileFactory().create(fileModel=fileModel)

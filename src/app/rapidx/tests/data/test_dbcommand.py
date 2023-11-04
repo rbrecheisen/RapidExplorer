@@ -7,9 +7,6 @@ from rapidx.app.data.db.dbdeletecommand import DbDeleteCommand
 from rapidx.app.data.file.filemodel import FileModel
 from rapidx.app.data.fileset.filesetmodel import FileSetModel
 from rapidx.app.data.multifileset.multifilesetmodel import MultiFileSetModel
-# from rapidx.app.data.file.filemodelfactory import FileModelFactory
-# from rapidx.app.data.fileset.filesetmodelfactory import FileSetModelFactory
-# from rapidx.app.data.multifileset.multifilesetmodelfactory import MultiFileSetModelFactory
 
 
 def assertIds(multiFileSetModel: MultiFileSetModel) -> None:
@@ -21,19 +18,12 @@ def assertIds(multiFileSetModel: MultiFileSetModel) -> None:
 
 
 def addMultiFileSetModelObject(db):
-    # multiFileSetModel = MultiFileSetModelFactory().create()
     multiFileSetModel = MultiFileSetModel()
-    # fileSetModel1 = FileSetModelFactory().create(multiFileSetModel=multiFileSetModel, name='fileSetModel1')
     fileSetModel1 = FileSetModel(multiFileSetModel, name='fileSetModel1')
-    # fileSetModel2 = FileSetModelFactory().create(multiFileSetModel=multiFileSetModel, name='fileSetModel2')
     fileSetModel2 = FileSetModel(multiFileSetModel, name='fileSetModel2')
-    # fileModel11 = FileModelFactory().create(fileSetModel=fileSetModel1, path='/path/to/file11')
     fileModel11 = FileModel(fileSetModel1, path='/path/to/file11')
-    # fileModel12 = FileModelFactory().create(fileSetModel=fileSetModel1, path='/path/to/file12')
     fileModel12 = FileModel(fileSetModel1, path='/path/to/file12')
-    # fileModel21 = FileModelFactory().create(fileSetModel=fileSetModel2, path='/path/to/file21')
     fileModel21 = FileModel(fileSetModel2, path='/path/to/file21')
-    # fileModel22 = FileModelFactory().create(fileSetModel=fileSetModel2, path='/path/to/file22')
     fileModel22 = FileModel(fileSetModel2, path='/path/to/file22')
     multiFileSetModel = DbAddCommand(db, MultiFileSetModel, multiFileSetModel).execute()
     fileSetModel1 = DbAddCommand(db, FileSetModel, fileSetModel1).execute()
@@ -55,7 +45,7 @@ def deleteMultiFileSetModelObject(db, multiFileSetModelId):
 def test_getCommand(db):
     multiFileSetModelId = addMultiFileSetModelObject(db)
     multiFileSetModel = DbGetCommand(db, MultiFileSetModel, multiFileSetModelId).execute()
-    assert multiFileSetModel.id() == multiFileSetModelId
+    assert multiFileSetModel.id == multiFileSetModelId
     assertIds(multiFileSetModel)
     deleteMultiFileSetModelObject(db, multiFileSetModelId)
 

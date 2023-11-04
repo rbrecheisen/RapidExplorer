@@ -15,9 +15,9 @@ def test_importDicomFileSetCheckFileCacheClear(db):
     multiFileSetModel = importer.data()    
     cache = FileCache()
     fileModelId = None
-    for fileSetModel in multiFileSetModel.fileSetModels():
+    for fileSetModel in multiFileSetModel.fileSetModels:
         assert fileSetModel.id
-        for fileModel in fileSetModel.fileModels():
+        for fileModel in fileSetModel.fileModels:
             assert fileModel.id
             assert cache.get(fileModel.id)
             if not fileModelId:

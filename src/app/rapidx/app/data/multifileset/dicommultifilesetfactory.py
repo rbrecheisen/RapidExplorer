@@ -23,7 +23,7 @@ class DicomMultiFileSetFactory(Factory):
     def create(self, multiFileSetModel: MultiFileSetModel, db: Db) -> List[List[DicomFile]]:
         data = {}
         self._progress = 0
-        for root, dirs, files in os.walk(multiFileSetModel.path()):
+        for root, dirs, files in os.walk(multiFileSetModel.path):
             for fileName in files:
                 filePath = os.path.join(root, fileName)
                 try:
@@ -40,8 +40,7 @@ class DicomMultiFileSetFactory(Factory):
         self.signal().finished.connect(self._importFinished)
         dicomMultiFileSets = []
         for fileSetPath in data.keys():
-            fileSetName = os.path.relpath(fileSetPath, multiFileSetModel.path())
-            # fileSetModel = FileSetModelFactory().create(multiFileSetModel=multiFileSetModel, name=fileSetName, path=fileSetPath)
+            fileSetName = os.path.relpath(fileSetPath, multiFileSetModel.path)
             fileSetModel = FileSetModel(multiFileSetModel, name=fileSetName, path=fileSetPath)
             DbAddCommand(db, FileSetModel, fileSetModel)
             factory = DicomFileSetFactory()
