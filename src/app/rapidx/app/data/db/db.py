@@ -38,7 +38,7 @@ class Db(Singleton, Thread):
             queueInput = self.queue().get()
             model, result, operation, obj, kwargs = queueInput
             try:
-                if operation == 'insert':
+                if operation == 'add':
                     self.session().add(obj)
                     self.session().commit()
                     result.set(obj)

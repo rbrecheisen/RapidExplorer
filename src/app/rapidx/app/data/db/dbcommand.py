@@ -13,6 +13,10 @@ class DbCommand:
     def setCmd(self, cmd: str):
         self._cmd = cmd
 
-    def execute(self):
-        self._db.queue().put((self._model, self._result, self._cmd, self._obj, self._kwargs))
+    def result(self):
         return self._result.get()
+
+    def execute(self):
+        # TODO: add optionally verbose logging?
+        self._db.queue().put((self._model, self._result, self._cmd, self._obj, self._kwargs))
+        return self.result()
