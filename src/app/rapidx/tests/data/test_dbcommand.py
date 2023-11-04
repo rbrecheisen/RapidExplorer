@@ -62,9 +62,9 @@ def test_queryAllCommand(db):
 
 
 def test_filterByCommand(db):
-    # TODO: I WAS HERE!!!!!!!!
-    # Add two objects with different field values
-    # Filter object with specific field value and check it's state
+    # multiFileSetModelId = addMultiFileSetModelObject(db)
+    # assert len(DbFilterByCommand(db, FileModel, _path='/path/to/file11').execute()) == 1
+    # deleteMultiFileSetModelObject(db, multiFileSetModelId)
     pass
 
 
