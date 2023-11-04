@@ -38,4 +38,3 @@ echo "</plist>" >> RapidX.app/Contents/Info.plist
 
 # Build installable DMG for this app (and delete app itself)
 hdiutil create -volname "RapidX" -srcfolder ./RapidX.app -ov -format UDZO RapidX.dmg
-rm -rf ./RapidX.app
