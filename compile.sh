@@ -17,8 +17,10 @@ for plugin in $(cat ${PLUGINLIST}); do
     pluginPath=${PLUGINDIR}/${plugin}
     mkdir -p ${pluginPath}
     cp -r ${PLUGINREPOSITORY}/${plugin}/* ${pluginPath}/
+    echo "Added plugin: ${pluginPath}"
 done
-exit 0
+mv ${PLUGINREPOSITORY} src/     # Move plugin repository temporarily out of code base
+                                # so it doesn't get included in Nuitka build
 
 # Build executable. This is the same command on MacOS or Windows. If you want to disable the console
 # use the flag --disable-console on MacOS or --windows-disable-console on Windows. For MacOS or 
@@ -26,6 +28,7 @@ exit 0
 ~/.venv/rapidx/bin/python -m nuitka --standalone --include-package=pydicom --enable-plugin=pyside6 src/app/main.py
 
 # Reorganize
+mv src/pluginrepository src/app/rapidx
 mv main.dist/main.bin main.dist/RapidX
 mv main.dist RapidX
 
