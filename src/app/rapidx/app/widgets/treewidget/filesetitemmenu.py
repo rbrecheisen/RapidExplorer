@@ -11,16 +11,12 @@ class FileSetItemMenu(QMenu):
         self._item = item
         self._position = position
         renameAction = self.addAction('Rename')
-        showInMainViewAction = self.addAction('Show in Main View')
         renameAction.triggered.connect(self._handleRenameAction)
-        showInMainViewAction.triggered.connect(self._handleShowInMainViewAction)
 
     def _handleRenameAction(self):
-        # self._item.setEditable(True)
+        self._item.setEditable(True)
         self._treeView.edit(self._treeView.model().indexFromItem(self._item))
-
-    def _handleShowInMainViewAction(self):
-        pass
+        self._item.setEditable(False)
 
     def show(self):
         self.exec_(self._position)
