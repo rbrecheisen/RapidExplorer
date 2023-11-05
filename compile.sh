@@ -4,7 +4,7 @@
 ~/.venv/rapidx/bin/pyside6-rcc -o src/app/rapidx/resources.py src/app/rapidx/resources.qrc
 
 # Collect plugins for this build
-PLUGINREPOSITORY="src/pluginrepository"
+PLUGINREPOSITORY="src/app/rapidx/pluginrepository"
 PLUGINLIST="plugins.txt"
 PLUGINDIR="src/app/rapidx/plugins"
 rm -rf ${PLUGINDIR}
