@@ -1,11 +1,13 @@
 distribution/
+bin/
 main.build/
 main.dist/
 
 db.sqlite3
 db.test.sqlite3
 
-RapidX.app/
+*.app/
+*.zip
 *.dmg
 
 # Byte-compiled / optimized / DLL files
