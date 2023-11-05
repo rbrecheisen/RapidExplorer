@@ -1,6 +1,6 @@
 from rapidx.app.widgets.dockwidget import DockWidget
 from rapidx.app.data.multifileset.multifilesetmodel import MultiFileSetModel
-from rapidx.app.widgets.treewidget.multifilesetmodeltreewidget import MultiFileSetModelTreeWidget
+from rapidx.app.widgets.tree.multifilesetmodeltreewidget import MultiFileSetModelTreeWidget
 
 
 class DataDockWidget(DockWidget):

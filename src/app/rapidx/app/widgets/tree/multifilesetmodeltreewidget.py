@@ -12,12 +12,12 @@ from rapidx.app.data.filecache import FileCache
 from rapidx.app.data.file.filemodel import FileModel
 from rapidx.app.data.fileset.filesetmodel import FileSetModel
 from rapidx.app.data.multifileset.multifilesetmodel import MultiFileSetModel
-from rapidx.app.widgets.treewidget.fileitem import FileItem
-from rapidx.app.widgets.treewidget.filesetitem import FileSetItem
-from rapidx.app.widgets.treewidget.multifilesetitem import MultiFileSetItem
-from rapidx.app.widgets.treewidget.fileitemmenu import FileItemMenu
-from rapidx.app.widgets.treewidget.filesetitemmenu import FileSetItemMenu
-from rapidx.app.widgets.treewidget.multifilesetitemmenu import MultiFileSetItemMenu
+from rapidx.app.widgets.tree.fileitem import FileItem
+from rapidx.app.widgets.tree.filesetitem import FileSetItem
+from rapidx.app.widgets.tree.multifilesetitem import MultiFileSetItem
+from rapidx.app.widgets.tree.fileitemmenu import FileItemMenu
+from rapidx.app.widgets.tree.filesetitemmenu import FileSetItemMenu
+from rapidx.app.widgets.tree.multifilesetitemmenu import MultiFileSetItemMenu
 
 
 class MultiFileSetModelTreeWidget(QTreeView):
@@ -82,12 +82,3 @@ class MultiFileSetModelTreeWidget(QTreeView):
             menu.show()
         else:
             pass
-
-    def _rightClickDeleteAction(self, item):
-        with Db() as db:
-            multiFileSetModel = DbGetCommand(db, MultiFileSetModel, item.multiFileSetModel().id).execute()
-            cache = FileCache()
-            cache.removeMultiFileSet(multiFileSetModel)
-            DbDeleteCommand(db, MultiFileSetModel, multiFileSetModel.id).execute()
-        self._model.clear()
-        self.loadDataFromDatabase()
