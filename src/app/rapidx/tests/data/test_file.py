@@ -22,5 +22,3 @@ def test_importDicomFileAndCheckInFileCache(db):
     importer.run()
     multiFileSetModel = importer.data()
     assert multiFileSetModel.id
-
-    # TODO: Test that file itself has been added

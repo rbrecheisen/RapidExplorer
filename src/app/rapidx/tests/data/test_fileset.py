@@ -10,7 +10,7 @@ FILESETMODELPATH = os.path.join(os.environ['HOME'], f'Desktop/downloads/dataset/
 progress = 0
 
 
-@pytest.mark.long_running
+# @pytest.mark.long_running
 def test_importDicomFileSetAndCheckInFileCache(db):
     def updateProgress(value):
         global progress

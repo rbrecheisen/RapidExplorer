@@ -100,32 +100,35 @@ class MainWindow(QMainWindow):
     def _importDicomFile(self) -> None:
         filePath, _ = QFileDialog.getOpenFileName(self, 'Open DICOM Image', FILE_PATH)
         if filePath:
-            self._progressBarDialog.show()
-            self._progressBarDialog.setValue(0)
-            self._dicomFileImporter = DicomFileImporter(path=filePath)
-            self._dicomFileImporter.signal().progress.connect(self._updateProgress)
-            self._dicomFileImporter.signal().finished.connect(self._importDicomFileFinished)
-            QThreadPool.globalInstance().start(self._dicomFileImporter)
+            with Db() as db:
+                self._progressBarDialog.show()
+                self._progressBarDialog.setValue(0)
+                self._dicomFileImporter = DicomFileImporter(path=filePath, db=db)
+                self._dicomFileImporter.signal().progress.connect(self._updateProgress)
+                self._dicomFileImporter.signal().finished.connect(self._importDicomFileFinished)
+                QThreadPool.globalInstance().start(self._dicomFileImporter)
 
     def _importDicomFileSet(self) -> None:
         dirPath = QFileDialog.getExistingDirectory(self, 'Open DICOM Image Series', FILESET_DIR)
         if dirPath:
-            self._progressBarDialog.show()
-            self._progressBarDialog.setValue(0)
-            self._dicomFileSetImporter = DicomFileSetImporter(path=dirPath)
-            self._dicomFileSetImporter.signal().progress.connect(self._updateProgress)
-            self._dicomFileSetImporter.signal().finished.connect(self._importDicomFileSetFinished)
-            QThreadPool.globalInstance().start(self._dicomFileSetImporter)
+            with Db() as db:
+                self._progressBarDialog.show()
+                self._progressBarDialog.setValue(0)
+                self._dicomFileSetImporter = DicomFileSetImporter(path=dirPath, db=db)
+                self._dicomFileSetImporter.signal().progress.connect(self._updateProgress)
+                self._dicomFileSetImporter.signal().finished.connect(self._importDicomFileSetFinished)
+                QThreadPool.globalInstance().start(self._dicomFileSetImporter)
 
     def _importDicomMultiFileSet(self) -> None:
         dirPath = QFileDialog.getExistingDirectory(self, 'Open Multiple DICOM Image Series', MULTIFILESET_DIR)
-        if dirPath:
-            self._progressBarDialog.show()
-            self._progressBarDialog.setValue(0)
-            self._dicomMultiFileSetImporter = DicomMultiFileSetImporter(path=dirPath)
-            self._dicomMultiFileSetImporter.signal().progress.connect(self._updateProgress)
-            self._dicomMultiFileSetImporter.signal().finished.connect(self._importDicomMultiFileSetFinished)
-            QThreadPool.globalInstance().start(self._dicomMultiFileSetImporter)
+        if dirPath:            
+            with Db() as db:
+                self._progressBarDialog.show()
+                self._progressBarDialog.setValue(0)
+                self._dicomMultiFileSetImporter = DicomMultiFileSetImporter(path=dirPath, db=db)
+                self._dicomMultiFileSetImporter.signal().progress.connect(self._updateProgress)
+                self._dicomMultiFileSetImporter.signal().finished.connect(self._importDicomMultiFileSetFinished)
+                QThreadPool.globalInstance().start(self._dicomMultiFileSetImporter)
 
     def _printFileCacheToConsole(self) -> None:
         cache = FileCache()

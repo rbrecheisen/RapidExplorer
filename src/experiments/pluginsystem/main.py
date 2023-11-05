@@ -64,9 +64,7 @@ def discoverAdvancedPluginCategories(pluginRootDirectory, baseClass):
             itemPath = os.path.join(categoryDirectoryPath, item)
             
             if os.path.isdir(itemPath) and not item.startswith('__'):
-                spec = importlib.util.spec_from_file_location(
-                    item, os.path.join(itemPath, '__init__.py')
-                )
+                spec = importlib.util.spec_from_file_location(item, os.path.join(itemPath, '__init__.py'))
                 if spec and spec.loader:
                     module = importlib.util.module_from_spec(spec)
                     spec.loader.exec_module(module)

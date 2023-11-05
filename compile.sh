@@ -39,7 +39,7 @@ mv main.dist RapidX
 
 # Build a ZIP file for the application's distribution
 # TODO: Add a README explaining how to get it running if errors about signing occur?
-zip -r RapiX.zip RapidX
+zip -r RapidX.zip RapidX
 
 # Clean up
 rm -rf main.build RapidX
