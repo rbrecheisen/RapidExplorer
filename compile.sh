@@ -1,8 +1,5 @@
 #!/bin/bash
 
-#Clean up left overs of previous builds
-rm -rf ./RapidX
-
 # Compile Qt resources (if any)
 ~/.venv/rapidx/bin/pyside6-rcc -o src/app/rapidx/resources.py src/app/rapidx/resources.qrc
 
