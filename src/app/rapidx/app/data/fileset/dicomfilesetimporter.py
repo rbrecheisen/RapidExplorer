@@ -7,22 +7,23 @@ from rapidx.app.utils import create_random_name
 
 
 class DicomFileSetImporter(Importer):
-    def __init__(self, path: str, db: Db) -> None:
+    def __init__(self, path: str) -> None:
         name = create_random_name('fileset')
-        super(DicomFileSetImporter, self).__init__(name=name, path=path, db=db)
+        super(DicomFileSetImporter, self).__init__(name=name, path=path)
     
     def run(self) -> None:    
-        helper = FileSetRegistrationHelper(name=self.name(), path=self.path(), db=self.db())
-        multiFileSetModel = helper.execute()
-        fileSetModel = multiFileSetModel.firstFileSetModel()
-        factory = DicomFileSetFactory()
-        factory.signal().progress.connect(self._updateProgress)
-        factory.signal().finished.connect(self._importFinished)
-        dicomFileSet = factory.create(fileSetModel=fileSetModel, db=self.db())
-        cache = FileCache()
-        for dicomFile in dicomFileSet:
-            cache.add(file=dicomFile)
-        self.setData(multiFileSetModel)        
+        with Db() as db:
+            helper = FileSetRegistrationHelper(name=self.name(), path=self.path(), db=db)
+            multiFileSetModel = helper.execute()
+            self.setData(multiFileSetModel)
+            fileSetModel = multiFileSetModel.firstFileSetModel()
+            factory = DicomFileSetFactory()
+            factory.signal().progress.connect(self._updateProgress)
+            factory.signal().finished.connect(self._importFinished)
+            dicomFileSet = factory.create(fileSetModel=fileSetModel, db=db)
+            cache = FileCache()
+            for dicomFile in dicomFileSet:
+                cache.add(file=dicomFile)
 
     def _updateProgress(self, progress) -> None:
         self.signal().progress.emit(progress)

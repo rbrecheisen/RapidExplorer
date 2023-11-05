@@ -12,9 +12,9 @@ class FileRegistrationHelper(RegistrationHelper):
     
     def execute(self) -> MultiFileSetModel:
         multiFileSetModel = MultiFileSetModel()
+        multiFileSetModel = DbAddCommand(self.db(), MultiFileSetModel, multiFileSetModel).execute()
         fileSetModel = FileSetModel(multiFileSetModel)
+        fileSetModel = DbAddCommand(self.db(), FileSetModel, fileSetModel).execute()
         fileModel = FileModel(fileSetModel, path=self.path())
-        DbAddCommand(self.db(), MultiFileSetModel, multiFileSetModel).execute()
-        DbAddCommand(self.db(), FileSetModel, fileSetModel).execute()
-        DbAddCommand(self.db(), FileModel, fileModel).execute()
+        fileModel = DbAddCommand(self.db(), FileModel, fileModel).execute()
         return multiFileSetModel

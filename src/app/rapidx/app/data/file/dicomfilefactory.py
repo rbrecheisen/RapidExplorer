@@ -10,4 +10,5 @@ class DicomFileFactory(Factory):
     def create(self, fileModel: FileModel) -> DicomFile:
         dicomFile = DicomFile(fileModel=fileModel)
         self.signal().progress.emit(100)
+        self.signal().finished.emit(True)
         return dicomFile
