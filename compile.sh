@@ -9,23 +9,15 @@ PLUGINLIST="plugins.txt"
 PLUGINDIR="src/app/rapidx/plugins"
 rm -rf ${PLUGINDIR}
 mkdir ${PLUGINDIR}
-while IFS= read -r plugin; do
-    if [[ $plugin =~ ^\#.* ]]; then
-        echo "Skipping commented out plugin: ${plugin}"
+cp ${PLUGINREPOSITORY}/__init__.py ${PLUGINDIR}
+for plugin in $(cat ${PLUGINLIST}); do
+    if [[ ${plugin} =~ ^\#.* ]]; then
         continue
     fi
-    plugin=$(echo "${plugin}" | xargs)
-    pluginPath=${PLUGINREPOSITORY}/${plugin}
-    if [ -d "${pluginPath}" ]; then
-        cp -r ${pluginPath} ${PLUGINDIR}/
-    else
-        echo "Plugin ${plugin} does not exist in repository"
-    fi
-done < ${PLUGINLIST}
-if [ "$?" -ne 0 ]; then
-    echo "Error occurred while copying plugins"
-    exit 1
-fi
+    pluginPath=${PLUGINDIR}/${plugin}
+    mkdir -p ${pluginPath}
+    cp -r ${PLUGINREPOSITORY}/${plugin}/* ${pluginPath}/
+done
 exit 0
 
 # Build executable. This is the same command on MacOS or Windows. If you want to disable the console

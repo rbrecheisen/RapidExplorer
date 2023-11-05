@@ -1,0 +1,1 @@
+from rapidx.plugins.tasks.processdicomfiletask.processdicomfiletaskplugin import ProcessDicomFileTaskPlugin

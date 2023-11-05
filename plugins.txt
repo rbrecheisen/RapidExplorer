@@ -1,2 +1,4 @@
-#views/dicomfileview
+tasks/deletedicomfiletask
+tasks/processdicomfiletask
+views/dicomfileview
 views/dicomfilesetview

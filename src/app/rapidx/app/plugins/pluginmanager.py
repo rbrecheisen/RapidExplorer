@@ -1,4 +1,5 @@
 import os
+import importlib
 
 from rapidx.app.plugins.viewplugin import ViewPlugin
 from rapidx.app.plugins.taskplugin import TaskPlugin
@@ -32,12 +33,12 @@ class PluginManager:
                     for attributeName in dir(module):
                         attribute = getattr(module, attributeName)
                         if isinstance(attribute, type) and issubclass(attribute, baseClass) and attribute is not baseClass:
-                            plugins[category].append(attribute)
+                            plugins['views'].append(attribute)
         return plugins
 
     def loadTaskPlugins(self, pluginDirectory, baseClass, plugins):
         if not 'tasks' in plugins.keys():
-            plugins['views'] = []
+            plugins['tasks'] = []
         taskPluginDirectory = os.path.join(pluginDirectory, 'tasks')
         for pluginModule in os.listdir(taskPluginDirectory):
             pluginModulePath = os.path.join(taskPluginDirectory, pluginModule)
@@ -49,5 +50,5 @@ class PluginManager:
                     for attributeName in dir(module):
                         attribute = getattr(module, attributeName)
                         if isinstance(attribute, type) and issubclass(attribute, baseClass) and attribute is not baseClass:
-                            plugins[category].append(attribute)
+                            plugins['tasks'].append(attribute)
         return plugins

@@ -1,0 +1,1 @@
+from rapidx.plugins.tasks.deletedicomfiletask.deletedicomfiletaskplugin import DeleteDicomFileTaskPlugin
