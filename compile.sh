@@ -1,6 +1,6 @@
 #!/bin/bash
 
-rm -rf distribution
+rm -rf ./RapidX
 
 cd src/app/rapidx
 ~/.venv/rapidx/bin/pyside6-rcc -o resources.py resources.qrc
@@ -9,11 +9,11 @@ cd ../../../
 ~/.venv/rapidx/bin/python -m nuitka --include-package=pydicom --enable-plugin=pyside6 --standalone src/app/main.py
 
 mv main.dist/main.bin main.dist/RapidX
-mv main.dist bin
+mv main.dist RapidX
 
-rm -rf main.build
+zip -r RapiX.zip RapidX
 
-zip -r RapiX.zip bin
+rm -rf main.build RapidX
 
 # mkdir RapidX.app
 # mkdir RapidX.app/Contents
