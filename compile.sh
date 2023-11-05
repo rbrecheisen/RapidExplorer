@@ -3,6 +3,31 @@
 # Compile Qt resources (if any)
 ~/.venv/rapidx/bin/pyside6-rcc -o src/app/rapidx/resources.py src/app/rapidx/resources.qrc
 
+# Collect plugins for this build
+PLUGINREPOSITORY="src/pluginrepository"
+PLUGINLIST="plugins.txt"
+PLUGINDIR="src/app/rapidx/plugins"
+rm -rf ${PLUGINDIR}
+mkdir ${PLUGINDIR}
+while IFS= read -r plugin; do
+    if [[ $plugin =~ ^\#.* ]]; then
+        echo "Skipping commented out plugin: ${plugin}"
+        continue
+    fi
+    plugin=$(echo "${plugin}" | xargs)
+    pluginPath=${PLUGINREPOSITORY}/${plugin}
+    if [ -d "${pluginPath}" ]; then
+        cp -r ${pluginPath} ${PLUGINDIR}/
+    else
+        echo "Plugin ${plugin} does not exist in repository"
+    fi
+done < ${PLUGINLIST}
+if [ "$?" -ne 0 ]; then
+    echo "Error occurred while copying plugins"
+    exit 1
+fi
+exit 0
+
 # Build executable. This is the same command on MacOS or Windows. If you want to disable the console
 # use the flag --disable-console on MacOS or --windows-disable-console on Windows. For MacOS or 
 # Windows you do need to create different startup scripts
