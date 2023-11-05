@@ -5,6 +5,7 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QFileDialog, Q
 from PySide6.QtGui import QAction, QGuiApplication
 
 from rapidx.app.data.db.db import Db
+from rapidx.app.data.filecache import FileCache
 from rapidx.app.data.file.dicomfileimporter import DicomFileImporter
 from rapidx.app.data.fileset.dicomfilesetimporter import DicomFileSetImporter
 from rapidx.app.data.multifileset.dicommultifilesetimporter import DicomMultiFileSetImporter
@@ -40,17 +41,21 @@ class MainWindow(QMainWindow):
 
     def _initMenus(self) -> None:
         importDicomFileAction = QAction('Import DICOM Image...', self)
-        importDicomFileAction.triggered.connect(self._importDicomFile)
         importDicomFileSetAction = QAction('Import DICOM Image Series...', self)
-        importDicomFileSetAction.triggered.connect(self._importDicomFileSet)
         importDicomMultiFileSetAction = QAction('Import Multiple DICOM Image Series...', self)
+        printFileCacheToConsoleAction = QAction('Print File Cache to Console', self)
+        importDicomFileAction.triggered.connect(self._importDicomFile)
+        importDicomFileSetAction.triggered.connect(self._importDicomFileSet)
         importDicomMultiFileSetAction.triggered.connect(self._importDicomMultiFileSet)
+        printFileCacheToConsoleAction.triggered.connect(self._printFileCacheToConsole)
         exitAction = QAction('Exit', self)
         exitAction.triggered.connect(self._exit)
         datasetsMenu = QMenu('Data')
         datasetsMenu.addAction(importDicomFileAction)
         datasetsMenu.addAction(importDicomFileSetAction)
         datasetsMenu.addAction(importDicomMultiFileSetAction)
+        datasetsMenu.addSeparator()
+        datasetsMenu.addAction(printFileCacheToConsoleAction)
         datasetsMenu.addSeparator()
         datasetsMenu.addAction(exitAction)
         self.menuBar().addMenu(datasetsMenu)
@@ -124,6 +129,14 @@ class MainWindow(QMainWindow):
                 self._dicomMultiFileSetImporter.signal().progress.connect(self._updateProgress)
                 self._dicomMultiFileSetImporter.signal().finished.connect(self._importDicomMultiFileSetFinished)
                 QThreadPool.globalInstance().start(self._dicomMultiFileSetImporter)
+
+    def _printFileCacheToConsole(self) -> None:
+        cache = FileCache()
+        if len(cache.data().keys()) == 0:
+            print('{}')
+        else:
+            for k, v in cache.data().items():
+                print(f'{k}: {v}')
 
     def _updateProgress(self, value) -> None:
         self._progressBarDialog.setValue(value)
