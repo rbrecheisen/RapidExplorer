@@ -17,6 +17,25 @@ displaying the original PNG image and its enhanced version side to side.
 
 ## 3. For developers
 
-### 3.1 Understanding the RapidX code base
-### 3.2 Understanding RapidX plugin management
-### 3.3 Writing your own plugins
+### 3.1 General remarks
+RapidX is written with a certain style similar to Java. I'm not sure why I did this but somehow it
+feels uncomfortable to have PySide's camel case mixed with Python's snake case. I decided to write
+everything in camel case. Also, I stuck to the one class per file approach as well and I have to 
+say it makes my code much more understandable. Typical Python module files often contain so much
+code that it can be hard to navigate a code base without additional tools. It is much more verbose
+of course, like Java is, but that verbosity somehow makes the code based feel more stable and
+scalable. I'm going to stick to this way of programming for the moment. Of course, when you write
+your own plugins, please feel free to return to snake case and writing dozens of clases in a single
+file. If you enjoy keeping everything in your head while working on thousands of lines of code, be 
+my guest.
+
+As a second remark, I decided to adapt and "almost" TDD approach when building RapidX. It's not
+very strict though. I didn't start with a failing test as the first line of code I wrote. I first
+created a sort of minimal skeleton with a PySide6 main window that showed nothing. But after that,
+I did try to grow my code using tests like suggested in [REF]. Especially the more complicated
+classes that have not UI associated with them are pretty well tested. I will explain where the
+tests are in this project and how to run them.
+
+### 3.2 Understanding the RapidX source and test code bases
+### 3.3 Understanding RapidX plugin management
+### 3.4 Writing your own plugins
