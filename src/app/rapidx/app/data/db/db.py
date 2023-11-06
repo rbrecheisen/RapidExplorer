@@ -4,13 +4,15 @@ from typing import List
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy import create_engine
 
-from rapidx.app.singleton import Singleton
+from rapidx.app.singleton import Singleton, singleton
 from rapidx.app.data.basemodel import BaseModel
 
 DATABASE = 'db.sqlite3'
 ECHO = False
 
 
+# @singleton
+# class Db(Thread):
 class Db(Singleton, Thread):
     def __init__(self, engine=None) -> None:
         super(Db, self).__init__()

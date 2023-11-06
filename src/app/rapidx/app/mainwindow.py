@@ -4,12 +4,14 @@ from PySide6.QtCore import Qt, QSize, QThreadPool
 from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QFileDialog, QMenu, QProgressDialog
 from PySide6.QtGui import QAction, QGuiApplication
 
+from rapidx.app.plugins.pluginmanager import PluginManager
 from rapidx.app.data.db.db import Db
 from rapidx.app.data.filecache import FileCache
 from rapidx.app.data.file.dicomfileimporter import DicomFileImporter
 from rapidx.app.data.fileset.dicomfilesetimporter import DicomFileSetImporter
 from rapidx.app.data.multifileset.dicommultifilesetimporter import DicomMultiFileSetImporter
 from rapidx.app.widgets.datadockwidget import DataDockWidget
+from rapidx.app.widgets.viewsdockwidget import ViewsDockWidget
 from rapidx.app.widgets.dockwidget import DockWidget
 
 MULTIFILESET_DIR = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset')
@@ -28,7 +30,12 @@ class MainWindow(QMainWindow):
         self._dicomFileImporter = None
         self._dicomFileSetImporter = None
         self._dicomMultiFileSetImporter = None
+        self._loadPlugins()
         self._initUi()
+
+    def _loadPlugins(self) -> None:
+        manager = PluginManager()
+        manager.loadAll()
 
     def _initUi(self) -> None:
         self._initMenus()
@@ -72,7 +79,7 @@ class MainWindow(QMainWindow):
         self.addDockWidget(Qt.LeftDockWidgetArea, self._dockWidgetTasks)
 
     def _initDockWidgetViews(self) -> None:
-        self._dockWidgetViews = DockWidget('Views', self)
+        self._dockWidgetViews = ViewsDockWidget('Views', self)
         self._dockWidgetViews.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea)
         self.addDockWidget(Qt.RightDockWidgetArea, self._dockWidgetViews)
 
@@ -142,16 +149,13 @@ class MainWindow(QMainWindow):
         self._progressBarDialog.setValue(value)
 
     def _importDicomFileFinished(self, _) -> None:
-        data = self._dicomFileImporter.data()
-        self._dockWidgetData.addData(data)
+        self._dockWidgetData.addData(self._dicomFileImporter.data())
 
     def _importDicomFileSetFinished(self, _) -> None:
-        data = self._dicomFileSetImporter.data()
-        self._dockWidgetData.addData(data)
+        self._dockWidgetData.addData(self._dicomFileSetImporter.data())
 
     def _importDicomMultiFileSetFinished(self, _) -> None:
-        data = self._dicomMultiFileSetImporter.data()
-        self._dockWidgetData.addData(data)
+        self._dockWidgetData.addData(self._dicomMultiFileSetImporter.data())
 
     def _centerWindow(self) -> None:
         screen = QGuiApplication.primaryScreen().geometry()

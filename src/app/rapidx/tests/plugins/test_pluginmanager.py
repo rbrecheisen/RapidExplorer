@@ -10,6 +10,6 @@ PLUGINDIR = 'src/app/rapidx/plugins'
 def test_loadTaskPlugins():
     manager = PluginManager()
     assert manager
-    plugins = manager.loadTaskPlugins(PLUGINDIR, TaskPlugin, {})
+    plugins = manager.loadTaskPlugins(PLUGINDIR, TaskPlugin)
     for plugin in plugins['tasks']:
-        print(plugin().name())
+        print(plugin.name())

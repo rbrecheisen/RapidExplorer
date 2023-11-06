@@ -6,4 +6,4 @@ class DicomFileSetViewPlugin(ViewPlugin):
         super(DicomFileSetViewPlugin, self).__init__(parent)
 
     def name(self) -> str:
-        return 'DicomFileSetViewPlugin'
+        return 'DICOM Image Series View'
