@@ -29,11 +29,11 @@ your own plugins, please feel free to return to snake case and writing dozens of
 file. If you enjoy keeping everything in your head while working on thousands of lines of code, be 
 my guest.
 
-As a second remark, I decided to adapt and "almost" TDD approach when building RapidX. It's not
+As a second remark, I decided to adapt an "almost" TDD approach when building RapidX. It's not
 very strict though. I didn't start with a failing test as the first line of code I wrote. I first
 created a sort of minimal skeleton with a PySide6 main window that showed nothing. But after that,
 I did try to grow my code using tests like suggested in [REF]. Especially the more complicated
-classes that have not UI associated with them are pretty well tested. I will explain where the
+classes that have no UI associated with them are pretty well tested. I will explain where the
 tests are in this project and how to run them.
 
 ### 3.2 Understanding the RapidX source and test code bases
