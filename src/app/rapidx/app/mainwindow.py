@@ -12,6 +12,7 @@ from rapidx.app.data.fileset.dicomfilesetimporter import DicomFileSetImporter
 from rapidx.app.data.multifileset.dicommultifilesetimporter import DicomMultiFileSetImporter
 from rapidx.app.widgets.datadockwidget import DataDockWidget
 from rapidx.app.widgets.viewsdockwidget import ViewsDockWidget
+from rapidx.app.widgets.mainviewdockwidget import MainViewDockWidget
 from rapidx.app.widgets.dockwidget import DockWidget
 
 MULTIFILESET_DIR = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset')
@@ -84,7 +85,7 @@ class MainWindow(QMainWindow):
         self.addDockWidget(Qt.RightDockWidgetArea, self._dockWidgetViews)
 
     def _initDockWidgetMainView(self) -> None:
-        self._dockWidgetMainView = DockWidget('Main View', self)
+        self._dockWidgetMainView = MainViewDockWidget('Main View', self)
         self._dockWidgetMainView.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea)
         self.addDockWidget(Qt.RightDockWidgetArea, self._dockWidgetMainView)
 

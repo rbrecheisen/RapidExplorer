@@ -12,10 +12,8 @@ PLUGINDIR = 'src/app/rapidx/plugins'
 
 
 @singleton
-class PluginManager: #(Singleton):
+class PluginManager:
     def __init__(self) -> None:
-        # super(PluginManager, self).__init__()
-        print('Executing PluginManager.__init__()')
         if not os.path.isdir(PLUGINDIR):
             raise PluginManagerException(f'Plugin directory {PLUGINDIR} not found')
         self._plugins = {}
