@@ -3,9 +3,13 @@ import importlib
 
 from typing import Dict
 
+from PySide6.QtCore import Signal
+from PySide6.QtWidgets import QWidget
+
 from rapidx.app.singleton import Singleton, singleton
 from rapidx.app.plugins.taskplugin import TaskPlugin
 from rapidx.app.plugins.viewplugin import ViewPlugin
+from rapidx.app.plugins.pluginsignal import PluginSignal
 from rapidx.app.plugins.pluginmanagerexception import PluginManagerException
 
 PLUGINDIR = 'src/app/rapidx/plugins'
@@ -17,6 +21,8 @@ class PluginManager:
         if not os.path.isdir(PLUGINDIR):
             raise PluginManagerException(f'Plugin directory {PLUGINDIR} not found')
         self._plugins = {}
+        self._currentPlugin = None
+        self._signal = PluginSignal()
 
     def plugins(self):
         return self._plugins
@@ -26,10 +32,30 @@ class PluginManager:
             return self.plugins()['tasks']
         return {}
     
+    def taskPlugin(self, name):
+        if name in self.taskPlugins().keys():
+            return self.taskPlugins()[name]
+        return None
+    
     def viewPlugins(self) -> Dict:
         if 'views' in self.plugins().keys():
             return self.plugins()['views']
         return {}
+    
+    def viewPlugin(self, name):
+        if name in self.viewPlugins().keys():
+            return self.viewPlugins()[name]
+        return None
+    
+    def currentPlugin(self):
+        self._currentPlugin
+
+    def signal(self):
+        return self._signal
+
+    def setCurrentPlugin(self, plugin):
+        self._currentPlugin = plugin
+        self.signal().pluginChanged.emit(plugin)
 
     def loadAll(self):
         self._plugins = {}
@@ -39,7 +65,7 @@ class PluginManager:
 
     def loadTaskPlugins(self, pluginDirectory, baseClass):
         if not 'tasks' in self._plugins.keys():
-            self._plugins['tasks'] = []
+            self._plugins['tasks'] = {}
         taskPluginDirectory = os.path.join(pluginDirectory, 'tasks')
         for pluginModule in os.listdir(taskPluginDirectory):
             pluginModulePath = os.path.join(taskPluginDirectory, pluginModule)
@@ -51,12 +77,13 @@ class PluginManager:
                     for attributeName in dir(module):
                         attribute = getattr(module, attributeName)
                         if isinstance(attribute, type) and issubclass(attribute, baseClass) and attribute is not baseClass:
-                            self._plugins['tasks'].append(attribute())
+                            plugin = attribute()
+                            self._plugins['tasks'][plugin.name()] = plugin
         return self._plugins
     
     def loadViewPlugins(self, pluginDirectory, baseClass):
         if not 'views' in self._plugins.keys():
-            self._plugins['views'] = []
+            self._plugins['views'] = {}
         viewPluginDirectory = os.path.join(pluginDirectory, 'views')
         for pluginModule in os.listdir(viewPluginDirectory):
             pluginModulePath = os.path.join(viewPluginDirectory, pluginModule)
@@ -68,5 +95,6 @@ class PluginManager:
                     for attributeName in dir(module):
                         attribute = getattr(module, attributeName)
                         if isinstance(attribute, type) and issubclass(attribute, baseClass) and attribute is not baseClass:
-                            self._plugins['views'].append(attribute())
+                            plugin = attribute()
+                            self._plugins['views'][plugin.name()] = plugin
         return self._plugins

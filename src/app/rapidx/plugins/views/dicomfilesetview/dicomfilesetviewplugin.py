@@ -13,11 +13,12 @@ class DicomFileSetViewPlugin(ViewPlugin):
         super(DicomFileSetViewPlugin, self).__init__(parent)
         self._graphicsView = QGraphicsView(self)
         self._scene = QGraphicsScene(self)
+        item = self._scene.addText(self.name())
+        item.setDefaultTextColor(Qt.white)
         self._graphicsView.setScene(self._scene)
         layout = QVBoxLayout()
         layout.addWidget(self._graphicsView)
         self.setLayout(layout)
-
 
     def name(self) -> str:
         return 'DICOM Image Series View'
