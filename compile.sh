@@ -4,23 +4,7 @@
 ~/.venv/rapidx/bin/pyside6-rcc -o src/app/rapidx/resources.py src/app/rapidx/resources.qrc
 
 # Collect plugins for this build
-PLUGINREPOSITORY="src/app/rapidx/pluginrepository"
-PLUGINLIST="plugins.txt"
-PLUGINDIR="src/app/rapidx/plugins"
-rm -rf ${PLUGINDIR}
-mkdir ${PLUGINDIR}
-cp ${PLUGINREPOSITORY}/__init__.py ${PLUGINDIR}
-for plugin in $(cat ${PLUGINLIST}); do
-    if [[ ${plugin} =~ ^\#.* ]]; then
-        continue
-    fi
-    pluginPath=${PLUGINDIR}/${plugin}
-    mkdir -p ${pluginPath}
-    cp -r ${PLUGINREPOSITORY}/${plugin}/* ${pluginPath}/
-    echo "Added plugin: ${pluginPath}"
-done
-mv ${PLUGINREPOSITORY} src/     # Move plugin repository temporarily out of code base
-                                # so it doesn't get included in Nuitka build
+./collectplugins.sh
 
 # Build executable. This is the same command on MacOS or Windows. If you want to disable the console
 # use the flag --disable-console on MacOS or --windows-disable-console on Windows. For MacOS or 
@@ -28,7 +12,6 @@ mv ${PLUGINREPOSITORY} src/     # Move plugin repository temporarily out of code
 ~/.venv/rapidx/bin/python -m nuitka --standalone --include-package=pydicom --enable-plugin=pyside6 src/app/main.py
 
 # Reorganize
-mv src/pluginrepository src/app/rapidx
 mv main.dist/main.bin main.dist/RapidX
 mv main.dist RapidX
 
