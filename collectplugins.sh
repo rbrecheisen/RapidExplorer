@@ -3,8 +3,9 @@
 PLUGINREPOSITORY="src/app/rapidx/pluginrepository"
 PLUGINLIST="plugins.txt"
 PLUGINDIR="src/app/rapidx/plugins"
-rm -rf ${PLUGINDIR}
-mkdir ${PLUGINDIR}
+
+rm -rf ${PLUGINDIR} && mkdir ${PLUGINDIR}
+
 cp ${PLUGINREPOSITORY}/__init__.py ${PLUGINDIR}
 for plugin in $(cat ${PLUGINLIST}); do
     if [[ ${plugin} =~ ^\#.* ]]; then

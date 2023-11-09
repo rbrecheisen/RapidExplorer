@@ -14,7 +14,7 @@ class DicomFileViewPlugin(ViewPlugin):
         self._graphicsView = QGraphicsView(self)
         self._scene = QGraphicsScene(self)
         item = self._scene.addText(self.name())
-        item.setDefaultTextColor(Qt.white)
+        item.setDefaultTextColor(Qt.blue)
         self._graphicsView.setScene(self._scene)
         layout = QVBoxLayout()
         layout.addWidget(self._graphicsView)
