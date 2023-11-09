@@ -27,11 +27,11 @@ class MultiFileSetModelTreeWidget(QTreeView):
         self._model.setHorizontalHeaderLabels(['Data'])
         self._model.itemChanged.connect(self._itemChanged)
         self.setModel(self._model)
-        self.loadDataFromDatabase()
+        self.loadModelsDataFromDatabase()
 
-    def addData(self, multiFileSetModel: MultiFileSetModel) -> None:
+    def addData(self, multiFileSetModel: MultiFileSetModel, loaded: bool=True) -> None:
         with Db() as db:
-            multiFileSetModelItem = MultiFileSetItem(multiFileSetModel)
+            multiFileSetModelItem = MultiFileSetItem(multiFileSetModel, loaded)
             multiFileSetModelItem.setEditable(False)
             fileSetModels = DbFilterByCommand(db, FileSetModel, multiFileSetModelId=multiFileSetModel.id).execute()
             for fileSetModel in fileSetModels:
@@ -45,11 +45,11 @@ class MultiFileSetModelTreeWidget(QTreeView):
                     fileSetItem.appendRow(fileItem)
         self._model.appendRow(multiFileSetModelItem)
 
-    def loadDataFromDatabase(self):
+    def loadModelsDataFromDatabase(self):
         with Db() as db:
             multiFileSetModels = DbQueryAllCommand(db, MultiFileSetModel).execute()
         for multiFileSetModel in multiFileSetModels:
-            self.addData(multiFileSetModel)
+            self.addData(multiFileSetModel, loaded=False)
 
     def _itemChanged(self, item) -> None:
         with Db() as db:
@@ -61,10 +61,10 @@ class MultiFileSetModelTreeWidget(QTreeView):
                 pass
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
-        if event.button() == Qt.RightButton:
-            index = self.indexAt(event.pos())
-            if index.isValid():
-                globalPos = self.viewport().mapToGlobal(event.pos())
+        index = self.indexAt(event.pos())
+        if index.isValid():
+            globalPos = self.viewport().mapToGlobal(event.pos())
+            if event.button() == Qt.RightButton:
                 self._handleRightClickEvent(index, globalPos)
                 return
         super(MultiFileSetModelTreeWidget, self).mousePressEvent(event)
@@ -79,6 +79,7 @@ class MultiFileSetModelTreeWidget(QTreeView):
             menu.show()
         elif isinstance(item, MultiFileSetItem):
             menu = MultiFileSetItemMenu(self, item, globalPos)
+
             menu.show()
         else:
             pass

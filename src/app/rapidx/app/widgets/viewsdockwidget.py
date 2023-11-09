@@ -9,7 +9,6 @@ class ViewsDockWidget(DockWidget):
     def __init__(self, title: str, parent=None) -> None:
         super(ViewsDockWidget, self).__init__(title, parent=parent)
         self._comboBoxViews = None
-        self._pluginManager = PluginManager()
         self._initUi()
         self._loadViewPlugins()
 
@@ -25,12 +24,14 @@ class ViewsDockWidget(DockWidget):
 
     def _currentIndexChanged(self, index):
         selectedText = self._comboBoxViews.itemText(index)
-        plugin = self._pluginManager.viewPlugin(selectedText)
+        manager = PluginManager()
+        plugin = manager.viewPlugin(selectedText)
         if plugin:
-            self._pluginManager.setCurrentPlugin(plugin)
+            manager.setCurrentPlugin(plugin)
 
     def _loadViewPlugins(self):
         self._comboBoxViews.clear()
-        self._comboBoxViews.addItem('')
-        for pluginName in self._pluginManager.viewPlugins().keys():
+        self._comboBoxViews.addItem(None)
+        manager = PluginManager()
+        for pluginName in manager.viewPlugins().keys():
             self._comboBoxViews.addItem(pluginName)

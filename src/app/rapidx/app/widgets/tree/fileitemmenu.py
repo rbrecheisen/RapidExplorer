@@ -2,6 +2,7 @@ from PySide6.QtCore import QPoint
 from PySide6.QtWidgets import QMenu
 
 from rapidx.app.widgets.tree.fileitem import FileItem
+from rapidx.app.plugins.pluginmanager import PluginManager
 
 
 class FileItemMenu(QMenu):
@@ -14,7 +15,10 @@ class FileItemMenu(QMenu):
         showInMainViewAction.triggered.connect(self._handleShowInMainViewAction)
 
     def _handleShowInMainViewAction(self):
-        pass
-
+        manager = PluginManager()
+        plugin = manager.currentPlugin()
+        if plugin.supportsMethod('setFileModel'):
+            plugin.setFileModel(self._item.fileModel())
+            
     def show(self):
         self.exec_(self._position)

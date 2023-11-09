@@ -9,6 +9,9 @@ from rapidx.plugins.views.dicomfilesetview.dicomfilesetviewplugin import DicomFi
 class MainViewDockWidget(DockWidget):
     def __init__(self, title: str, parent=None) -> None:
         super(MainViewDockWidget, self).__init__(title, parent=parent)
+        # Dock widget listens to plugin manager's plugin changed signal
+        # so when a different plugin is selected in the plugin manager
+        # the main view gets updated with this view plugin
         self._pluginManager = PluginManager()
         self._pluginManager.signal().pluginChanged.connect(self._currentPluginChanged)
         self._pluginLayout = None

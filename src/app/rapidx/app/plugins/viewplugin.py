@@ -1,9 +1,6 @@
-from PySide6.QtWidgets import QWidget
+from rapidx.app.plugins.plugin import Plugin
 
 
-class ViewPlugin(QWidget):
+class ViewPlugin(Plugin):
     def __init__(self, parent=None):
         super(ViewPlugin, self).__init__(parent)
-
-    def name(self) -> str:
-        raise NotImplementedError('Not implemented')

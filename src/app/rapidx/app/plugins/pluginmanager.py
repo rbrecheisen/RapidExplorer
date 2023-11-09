@@ -45,14 +45,17 @@ class PluginManager:
         return None
     
     def currentPlugin(self):
-        self._currentPlugin
+        return self._currentPlugin
 
     def signal(self):
         return self._signal
 
     def setCurrentPlugin(self, plugin):
+        # This method is called by other components in RapidExplorer
+        # For example, the views dock widget has a menu where the user
+        # can select a view plugin
         self._currentPlugin = plugin
-        self.signal().pluginChanged.emit(plugin)
+        self.signal().pluginChanged.emit(self._currentPlugin)
 
     def loadAll(self):
         self._plugins = {}

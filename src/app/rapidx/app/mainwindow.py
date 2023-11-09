@@ -128,7 +128,8 @@ class MainWindow(QMainWindow):
                 QThreadPool.globalInstance().start(self._dicomFileSetImporter)
 
     def _importDicomMultiFileSet(self) -> None:
-        dirPath = QFileDialog.getExistingDirectory(self, 'Open Multiple DICOM Image Series', MULTIFILESET_DIR)
+        if not dirPath:
+            dirPath = QFileDialog.getExistingDirectory(self, 'Open Multiple DICOM Image Series', MULTIFILESET_DIR)
         if dirPath:            
             with Db() as db:
                 self._progressBarDialog.show()

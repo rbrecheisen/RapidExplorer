@@ -52,7 +52,7 @@ def test_getCommand(db):
 
 def test_queryAllCommand(db):
     multiFileSetModelId = addMultiFileSetModelObject(db)
-    assert len(DbQueryAllCommand(db, FileModel).execute()) ==4
+    assert len(DbQueryAllCommand(db, FileModel).execute()) == 4
     assert len(DbQueryAllCommand(db, FileSetModel).execute()) == 2
     assert len(DbQueryAllCommand(db, MultiFileSetModel).execute()) == 1
     deleteMultiFileSetModelObject(db, multiFileSetModelId)
