@@ -3,10 +3,7 @@ import importlib
 
 from typing import Dict
 
-from PySide6.QtCore import Signal
-from PySide6.QtWidgets import QWidget
-
-from rapidx.app.singleton import Singleton, singleton
+from rapidx.app.singleton import singleton
 from rapidx.app.plugins.taskplugin import TaskPlugin
 from rapidx.app.plugins.viewplugin import ViewPlugin
 from rapidx.app.plugins.pluginsignal import PluginSignal
