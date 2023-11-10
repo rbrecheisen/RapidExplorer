@@ -5,24 +5,25 @@ from typing import List
 from rapidx.app.data.db.db import Db
 from rapidx.app.data.file.filemodel import FileModel
 from rapidx.app.data.fileset.filesetmodel import FileSetModel
-from app.rapidx.app.data.file.dicomfileloader import DicomFileLoader
-from rapidx.app.data.factory import Factory
+from rapidx.app.data.file.dicomfileloader import DicomFileLoader
+from rapidx.app.data.loader import Loader
 from rapidx.app.data.file.dicomfile import DicomFile
 from rapidx.app.data.db.dbaddcommand import DbAddCommand
 from rapidx.app.data.file.dicomfileinvalidexception import DicomFileInvalidException
 
 
-class DicomFileSetLoader(Factory):
-    def __init__(self) -> None:
+class DicomFileSetLoader(Loader):
+    def __init__(self, fileSetModel: FileSetModel) -> None:
         super(DicomFileSetLoader, self).__init__()
+        self._fileSetModel = fileSetModel
 
-    def execute(self, fileSetModel: FileSetModel, db: Db) -> List[DicomFile]:
-        nrFiles = len(fileSetModel.fileModels)
+    def execute(self) -> List[DicomFile]:
+        nrFiles = len(self._fileSetModel.fileModels)
         i = 0
         dicomFileSet = []
-        for fileModel in fileSetModel.fileModels:
-            loader = DicomFileLoader()
-            dicomFile = loader.execute(fileModel.path)
+        for fileModel in self._fileSetModel.fileModels:
+            loader = DicomFileLoader(fileModel)
+            dicomFile = loader.execute()
             dicomFileSet.append(dicomFile)
             progress = int((i + 1) / nrFiles * 100)
             self.signal().progress.emit(progress)

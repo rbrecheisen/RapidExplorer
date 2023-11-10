@@ -17,10 +17,10 @@ class DicomMultiFileSetImporter(Importer):
         multiFileSetModel = helper.execute()
         self.setData(multiFileSetModel)
         
-        loader = DicomMultiFileSetLoader()
+        loader = DicomMultiFileSetLoader(multiFileSetModel=multiFileSetModel)
         loader.signal().progress.connect(self._updateProgress)
         loader.signal().finished.connect(self._importFinished)
-        dicomMultiFileSet = loader.execute(multiFileSetModel=multiFileSetModel, db=self.db())
+        dicomMultiFileSet = loader.execute()
 
         cache = FileCache()
         for dicomFileSet in dicomMultiFileSet:

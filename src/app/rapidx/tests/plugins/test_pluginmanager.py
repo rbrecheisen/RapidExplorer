@@ -11,5 +11,5 @@ def test_loadTaskPlugins():
     manager = PluginManager()
     assert manager
     plugins = manager.loadTaskPlugins(PLUGINDIR, TaskPlugin)
-    for plugin in plugins['tasks']:
-        print(plugin.name())
+    for pluginName in plugins['tasks'].keys():
+        print(pluginName)

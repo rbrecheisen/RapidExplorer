@@ -16,10 +16,10 @@ class DicomFileImporter(Importer):
         self.setData(multiFileSetModel)
         
         fileModel = multiFileSetModel.firstFileSetModel().firstFileModel()
-        loader = DicomFileLoader()
+        loader = DicomFileLoader(fileModel)
         loader.signal().progress.connect(self._updateProgress)
         loader.signal().finished.connect(self._importFinished)
-        dicomFile = loader.execute(fileModel=fileModel)
+        dicomFile = loader.execute()
         
         cache = FileCache()
         cache.add(file=dicomFile)

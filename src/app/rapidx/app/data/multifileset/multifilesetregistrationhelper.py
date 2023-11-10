@@ -1,5 +1,10 @@
+import os
+import pydicom
+
 from rapidx.app.data.db.db import Db
 from rapidx.app.data.registrationhelper import RegistrationHelper
+from rapidx.app.data.file.filemodel import FileModel
+from rapidx.app.data.fileset.filesetmodel import FileSetModel
 from rapidx.app.data.multifileset.multifilesetmodel import MultiFileSetModel
 from rapidx.app.data.db.dbaddcommand import DbAddCommand
 
@@ -10,7 +15,7 @@ class MultiFileSetRegistrationHelper(RegistrationHelper):
     
     def execute(self) -> MultiFileSetModel:
         data = {}
-        for root, dirs, files in os.walk(multiFileSetModel.path):
+        for root, dirs, files in os.walk(self.path()):
             for fileName in files:
                 filePath = os.path.join(root, fileName)
                 try:
@@ -18,7 +23,6 @@ class MultiFileSetRegistrationHelper(RegistrationHelper):
                     if root not in data.keys():
                         data[root] = []
                     data[root].append(filePath)
-                    self._nrFiles += 1
                 except pydicom.errors.InvalidDicomError:
                     print(f'File {fileName} is not a valid DICOM file')
                     continue
@@ -26,6 +30,6 @@ class MultiFileSetRegistrationHelper(RegistrationHelper):
         for fileSetPath in data.keys():
             fileSetName = os.path.relpath(fileSetPath, multiFileSetModel.path)
             fileSetModel = FileSetModel(multiFileSetModel, name=fileSetName, path=fileSetPath)
-            fileSetModel = DbAddCommand(db, FileSetModel, fileSetModel).execute()
+            fileSetModel = DbAddCommand(self.db(), FileSetModel, fileSetModel).execute()
         multiFileSetModel = DbAddCommand(self.db(), MultiFileSetModel, multiFileSetModel).execute()
         return multiFileSetModel

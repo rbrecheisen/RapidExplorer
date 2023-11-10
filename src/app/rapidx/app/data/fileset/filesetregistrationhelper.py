@@ -1,5 +1,8 @@
+import os
+
 from rapidx.app.data.db.db import Db
 from rapidx.app.data.registrationhelper import RegistrationHelper
+from rapidx.app.data.file.filemodel import FileModel
 from rapidx.app.data.fileset.filesetmodel import FileSetModel
 from rapidx.app.data.multifileset.multifilesetmodel import MultiFileSetModel
 from rapidx.app.data.db.dbaddcommand import DbAddCommand
@@ -19,5 +22,5 @@ class FileSetRegistrationHelper(RegistrationHelper):
             fileName = f
             filePath = os.path.join(fileSetModel.path, fileName)
             fileModel = FileModel(fileSetModel, path=filePath)
-            DbAddCommand(db, FileModel, fileModel).execute()
+            DbAddCommand(self.db(), FileModel, fileModel).execute()
         return multiFileSetModel
