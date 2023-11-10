@@ -22,11 +22,7 @@ class DicomFileSetViewPlugin(ViewPlugin):
         self._graphicsView = None
         self._scene = None
         self._dicomImages = []
-        self._initSupportedMethods()
         self._initUi()
-
-    def _initSupportedMethods(self):
-        self.supportedMethods().append('setFileSetModel')
 
     def _initUi(self):
         self._initGraphicsView()

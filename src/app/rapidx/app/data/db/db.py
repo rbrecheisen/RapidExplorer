@@ -11,8 +11,6 @@ DATABASE = 'db.sqlite3'
 ECHO = False
 
 
-# @singleton
-# class Db(Thread):
 class Db(Singleton, Thread):
     def __init__(self, engine=None) -> None:
         super(Db, self).__init__()
@@ -75,8 +73,11 @@ class Db(Singleton, Thread):
             finally:
                 self.queue().task_done()
 
-    def __enter__(self):
-        return self
-    
-    def __exit__(self, exc_type, exc_value, traceback):
+    def close(self):
         self.session().close()
+
+    # def __enter__(self):
+    #     return self
+    
+    # def __exit__(self, exc_type, exc_value, traceback):
+    #     self.session().close()

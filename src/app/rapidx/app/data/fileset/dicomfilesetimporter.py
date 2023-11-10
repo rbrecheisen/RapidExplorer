@@ -12,17 +12,15 @@ class DicomFileSetImporter(Importer):
         super(DicomFileSetImporter, self).__init__(name=name, path=path, db=db)
     
     def run(self) -> None:    
-
         helper = FileSetRegistrationHelper(name=self.name(), path=self.path(), db=self.db())
         multiFileSetModel = helper.execute()
+        # Set data here and not after import finished signal is triggered
         self.setData(multiFileSetModel)
-        
         fileSetModel = multiFileSetModel.firstFileSetModel()
         loader = DicomFileSetLoader(fileSetModel)
         loader.signal().progress.connect(self._updateProgress)
         loader.signal().finished.connect(self._importFinished)
         dicomFileSet = loader.execute()
-        
         cache = FileCache()
         for dicomFile in dicomFileSet:
             cache.add(file=dicomFile)

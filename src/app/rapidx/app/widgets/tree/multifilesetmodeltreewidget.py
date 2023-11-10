@@ -21,8 +21,9 @@ from rapidx.app.widgets.tree.multifilesetitemmenu import MultiFileSetItemMenu
 
 
 class MultiFileSetModelTreeWidget(QTreeView):
-    def __init__(self, parent) -> None:
-        super(MultiFileSetModelTreeWidget, self).__init__(parent)
+    def __init__(self, db: Db) -> None:
+        super(MultiFileSetModelTreeWidget, self).__init__()
+        self._db = db
         self._model = QStandardItemModel()
         self._model.setHorizontalHeaderLabels(['Data'])
         self._model.itemChanged.connect(self._itemChanged)
@@ -30,35 +31,32 @@ class MultiFileSetModelTreeWidget(QTreeView):
         self.loadModelsDataFromDatabase()
 
     def addData(self, multiFileSetModel: MultiFileSetModel, loaded: bool=True) -> None:
-        with Db() as db:
-            multiFileSetModelItem = MultiFileSetItem(multiFileSetModel, loaded)
-            multiFileSetModelItem.setEditable(False)
-            fileSetModels = DbFilterByCommand(db, FileSetModel, multiFileSetModelId=multiFileSetModel.id).execute()
-            for fileSetModel in fileSetModels:
-                fileSetItem = FileSetItem(fileSetModel)
-                fileSetItem.setEditable(False)
-                multiFileSetModelItem.appendRow(fileSetItem)
-                fileModels = DbFilterByCommand(db, FileModel, fileSetModelId=fileSetModel.id).execute()
-                for fileModel in fileModels:
-                    fileItem = FileItem(fileModel)
-                    fileItem.setEditable(False)
-                    fileSetItem.appendRow(fileItem)
+        multiFileSetModelItem = MultiFileSetItem(multiFileSetModel, loaded)
+        multiFileSetModelItem.setEditable(False)
+        fileSetModels = DbFilterByCommand(self._db, FileSetModel, multiFileSetModelId=multiFileSetModel.id).execute()
+        for fileSetModel in fileSetModels:
+            fileSetItem = FileSetItem(fileSetModel)
+            fileSetItem.setEditable(False)
+            multiFileSetModelItem.appendRow(fileSetItem)
+            fileModels = DbFilterByCommand(self._db, FileModel, fileSetModelId=fileSetModel.id).execute()
+            for fileModel in fileModels:
+                fileItem = FileItem(fileModel)
+                fileItem.setEditable(False)
+                fileSetItem.appendRow(fileItem)
         self._model.appendRow(multiFileSetModelItem)
 
     def loadModelsDataFromDatabase(self):
-        with Db() as db:
-            multiFileSetModels = DbQueryAllCommand(db, MultiFileSetModel).execute()
+        multiFileSetModels = DbQueryAllCommand(self._db, MultiFileSetModel).execute()
         for multiFileSetModel in multiFileSetModels:
             self.addData(multiFileSetModel, loaded=False)
 
     def _itemChanged(self, item) -> None:
-        with Db() as db:
-            if isinstance(item, FileSetItem):
-                DbUpdateCommand(db, FileSetModel, item.fileSetModel(), name=item.text()).execute()
-            elif isinstance(item, MultiFileSetItem):
-                DbUpdateCommand(db, MultiFileSetModel, item.multiFileSetModel(), name=item.text()).execute()
-            else:
-                pass
+        if isinstance(item, FileSetItem):
+            DbUpdateCommand(self._db, FileSetModel, item.fileSetModel(), name=item.text()).execute()
+        elif isinstance(item, MultiFileSetItem):
+            DbUpdateCommand(self._db, MultiFileSetModel, item.multiFileSetModel(), name=item.text()).execute()
+        else:
+            pass
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
         index = self.indexAt(event.pos())
@@ -78,7 +76,7 @@ class MultiFileSetModelTreeWidget(QTreeView):
             menu = FileSetItemMenu(self, item, globalPos)
             menu.show()
         elif isinstance(item, MultiFileSetItem):
-            menu = MultiFileSetItemMenu(self, item, globalPos)
+            menu = MultiFileSetItemMenu(self, item, globalPos, db=self._db)
 
             menu.show()
         else:

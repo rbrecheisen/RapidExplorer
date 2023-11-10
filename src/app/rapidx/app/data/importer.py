@@ -5,7 +5,7 @@ from rapidx.app.data.progresssignal import ProgressSignal
 
 
 class Importer(QRunnable):
-    def __init__(self, name: str, path: str, db: Db=None) -> None:
+    def __init__(self, name: str, path: str, db: Db) -> None:
         super(Importer, self).__init__()
         self._name = name
         self._path = path
@@ -19,7 +19,7 @@ class Importer(QRunnable):
     def path(self) -> str:
         return self._path
     
-    def db(self):
+    def db(self) -> Db:
         return self._db
     
     def data(self):
@@ -32,4 +32,5 @@ class Importer(QRunnable):
         return self._signal
     
     def run(self) -> None:
-        self.signal().progress.emit(100)
+        # self.signal().progress.emit(100)
+        pass

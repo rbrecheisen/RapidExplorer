@@ -12,9 +12,14 @@ from rapidx.app.data.db.dbaddcommand import DbAddCommand
 class MultiFileSetRegistrationHelper(RegistrationHelper):
     def __init__(self, name: str, path: str, db: Db) -> None:
         super(MultiFileSetRegistrationHelper, self).__init__(name=name, path=path, db=db)
+        self._nrFiles = 0
+
+    def nrFiles(self) -> int:
+        return self._nrFiles
     
     def execute(self) -> MultiFileSetModel:
         data = {}
+        self._nrFiles = 0
         for root, dirs, files in os.walk(self.path()):
             for fileName in files:
                 filePath = os.path.join(root, fileName)
@@ -23,6 +28,7 @@ class MultiFileSetRegistrationHelper(RegistrationHelper):
                     if root not in data.keys():
                         data[root] = []
                     data[root].append(filePath)
+                    self._nrFiles += 1
                 except pydicom.errors.InvalidDicomError:
                     print(f'File {fileName} is not a valid DICOM file')
                     continue

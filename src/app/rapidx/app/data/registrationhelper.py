@@ -12,6 +12,6 @@ class RegistrationHelper:
 
     def path(self) -> str:
         return self._path
-    
+
     def db(self) -> Db:
         return self._db

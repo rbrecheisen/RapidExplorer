@@ -6,17 +6,18 @@ from rapidx.app.data.db.dbdeletecommand import DbDeleteCommand
 from rapidx.app.data.db.dbgetcommand import DbGetCommand
 from rapidx.app.data.filecache import FileCache
 from rapidx.app.data.multifileset.multifilesetmodel import MultiFileSetModel
-from app.rapidx.app.data.multifileset.dicommultifilesetloader import DicomMultiFileSetLoader
+from rapidx.app.data.multifileset.dicommultifilesetloader import DicomMultiFileSetLoader
 from rapidx.app.widgets.tree.multifilesetitem import MultiFileSetItem
 
 
 
 class MultiFileSetItemMenu(QMenu):
-    def __init__(self, treeWidget, item: MultiFileSetItem, position: QPoint, parent=None) -> None:
-        super(MultiFileSetItemMenu, self).__init__(parent)
+    def __init__(self, treeWidget, item: MultiFileSetItem, position: QPoint, db: Db) -> None:
+        super(MultiFileSetItemMenu, self).__init__()
         self._treeWidget = treeWidget
         self._item = item
         self._position = position
+        self._db = db
         if not item.loaded():
             loadAction = self.addAction('Load')
             loadAction.triggered.connect(self._handleLoadAction)
@@ -42,11 +43,10 @@ class MultiFileSetItemMenu(QMenu):
         pass
 
     def _handleDeleteAction(self):
-        with Db() as db:
-            multiFileSetModel = DbGetCommand(db, MultiFileSetModel, self._item.multiFileSetModel().id).execute()
-            cache = FileCache()
-            cache.removeMultiFileSet(multiFileSetModel)
-            DbDeleteCommand(db, MultiFileSetModel, multiFileSetModel.id).execute()
+        multiFileSetModel = DbGetCommand(self._db, MultiFileSetModel, self._item.multiFileSetModel().id).execute()
+        cache = FileCache()
+        cache.removeMultiFileSet(multiFileSetModel)
+        DbDeleteCommand(self._db, MultiFileSetModel, multiFileSetModel.id).execute()
         self._treeWidget.model().clear()
         self._treeWidget.loadModelsDataFromDatabase()
 

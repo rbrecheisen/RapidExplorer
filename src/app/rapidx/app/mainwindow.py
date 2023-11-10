@@ -70,7 +70,9 @@ class MainWindow(QMainWindow):
         self.menuBar().setNativeMenuBar(False)
 
     def _initDockWidgetData(self) -> None:
-        self._dockWidgetData = DataDockWidget('Data', self)
+        db = Db()
+        self._dockWidgetData = DataDockWidget('Data', db=db)
+        db.close()
         self._dockWidgetData.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea)
         self.addDockWidget(Qt.LeftDockWidgetArea, self._dockWidgetData)
 
@@ -128,16 +130,17 @@ class MainWindow(QMainWindow):
                 QThreadPool.globalInstance().start(self._dicomFileSetImporter)
 
     def _importDicomMultiFileSet(self) -> None:
-        if not dirPath:
-            dirPath = QFileDialog.getExistingDirectory(self, 'Open Multiple DICOM Image Series', MULTIFILESET_DIR)
+        dirPath = QFileDialog.getExistingDirectory(self, 'Open Multiple DICOM Image Series', MULTIFILESET_DIR)
         if dirPath:            
-            with Db() as db:
-                self._progressBarDialog.show()
-                self._progressBarDialog.setValue(0)
-                self._dicomMultiFileSetImporter = DicomMultiFileSetImporter(path=dirPath, db=db)
-                self._dicomMultiFileSetImporter.signal().progress.connect(self._updateProgress)
-                self._dicomMultiFileSetImporter.signal().finished.connect(self._importDicomMultiFileSetFinished)
-                QThreadPool.globalInstance().start(self._dicomMultiFileSetImporter)
+            db = Db()
+            # self._progressBarDialog.show()
+            # self._progressBarDialog.setValue(0)
+            self._dicomMultiFileSetImporter = DicomMultiFileSetImporter(path=dirPath, db=db)
+            self._dicomMultiFileSetImporter.signal().progress.connect(self._updateProgress)
+            self._dicomMultiFileSetImporter.signal().finished.connect(self._importDicomMultiFileSetFinished)
+            self._dicomMultiFileSetImporter.run()
+            db.close()
+            # QThreadPool.globalInstance().start(self._dicomMultiFileSetImporter)
 
     def _printFileCacheToConsole(self) -> None:
         cache = FileCache()
@@ -157,6 +160,7 @@ class MainWindow(QMainWindow):
         self._dockWidgetData.addData(self._dicomFileSetImporter.data())
 
     def _importDicomMultiFileSetFinished(self, _) -> None:
+        print(f'MainWindow.importDicomMultiFileSetFinished: {self._dicomMultiFileSetImporter.data()}')
         self._dockWidgetData.addData(self._dicomMultiFileSetImporter.data())
 
     def _centerWindow(self) -> None:

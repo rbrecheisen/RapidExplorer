@@ -17,6 +17,5 @@ class DbCommand:
         return self._result.get()
 
     def execute(self):
-        # TODO: add optionally verbose logging?
         self._db.queue().put((self._model, self._result, self._cmd, self._obj, self._kwargs))
         return self.result()
