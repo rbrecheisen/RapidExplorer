@@ -14,4 +14,10 @@ class FileSetRegistrationHelper(RegistrationHelper):
         multiFileSetModel = DbAddCommand(self.db(), MultiFileSetModel, multiFileSetModel).execute()
         fileSetModel = FileSetModel(multiFileSetModel, name=self.name(), path=self.path())
         fileSetModel = DbAddCommand(self.db(), FileSetModel, fileSetModel).execute()
+        files = os.listdir(fileSetModel.path)
+        for f in files:
+            fileName = f
+            filePath = os.path.join(fileSetModel.path, fileName)
+            fileModel = FileModel(fileSetModel, path=filePath)
+            DbAddCommand(db, FileModel, fileModel).execute()
         return multiFileSetModel

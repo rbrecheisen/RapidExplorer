@@ -6,7 +6,9 @@ from rapidx.app.data.db.dbdeletecommand import DbDeleteCommand
 from rapidx.app.data.db.dbgetcommand import DbGetCommand
 from rapidx.app.data.filecache import FileCache
 from rapidx.app.data.multifileset.multifilesetmodel import MultiFileSetModel
+from app.rapidx.app.data.multifileset.dicommultifilesetloader import DicomMultiFileSetLoader
 from rapidx.app.widgets.tree.multifilesetitem import MultiFileSetItem
+
 
 
 class MultiFileSetItemMenu(QMenu):
@@ -26,8 +28,9 @@ class MultiFileSetItemMenu(QMenu):
         deleteAction.triggered.connect(self._handleDeleteAction)
 
     def _handleLoadAction(self):
-        # Use DicomMultiFileSetFactory to physically load the DICOM files
-        # but show the progress bar in MainWindow as well!
+        # unboundId = self._item.multiFileSetModel().unboundId
+        # with Db() as db:
+        #     multiFileSetModel = DbGetCommand(db, MultiFileSetModel, objId=unboundId).execute()
         pass
 
     def _handleRenameAction(self):

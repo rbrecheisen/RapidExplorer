@@ -1,7 +1,7 @@
 from rapidx.app.data.db.db import Db
 from rapidx.app.data.importer import Importer
 from rapidx.app.data.filecache import FileCache
-from rapidx.app.data.file.dicomfilefactory import DicomFileFactory
+from rapidx.app.data.file.dicomfileloader import DicomFileLoader
 from rapidx.app.data.file.fileregistrationhelper import FileRegistrationHelper
 
 
@@ -10,14 +10,17 @@ class DicomFileImporter(Importer):
         super(DicomFileImporter, self).__init__(name=None, path=path, db=db)
 
     def run(self) -> None:
+
         helper = FileRegistrationHelper(path=self.path(), db=self.db())
         multiFileSetModel = helper.execute()
         self.setData(multiFileSetModel)
+        
         fileModel = multiFileSetModel.firstFileSetModel().firstFileModel()
-        factory = DicomFileFactory()
-        factory.signal().progress.connect(self._updateProgress)
-        factory.signal().finished.connect(self._importFinished)
-        dicomFile = factory.create(fileModel=fileModel)
+        loader = DicomFileLoader()
+        loader.signal().progress.connect(self._updateProgress)
+        loader.signal().finished.connect(self._importFinished)
+        dicomFile = loader.execute(fileModel=fileModel)
+        
         cache = FileCache()
         cache.add(file=dicomFile)
 
