@@ -5,10 +5,15 @@ from PySide6.QtWidgets import (
     QMainWindow, QWidget, QProgressDialog, QVBoxLayout,QPushButton)
 from PySide6.QtGui import QGuiApplication
 
+from data.engine import Engine
 from data.filecache import FileCache
+from data.databasesession import DatabaseSession
 from data.fileregistrar import FileRegistrar
 from data.filesetregistrar import FileSetRegistrar
 from data.multifilesetregistrar import MultiFileSetRegistrar
+from data.multifilesetmodel import MultiFileSetModel
+from data.registeredmultifilesetmodel import RegisteredMultiFileSetModel
+from data.registeredmultifilesetmodelloader import RegisteredMultiFileSetModelLoader
 from data.registeredmultifilesetcontentloader import RegisteredMultiFileSetContentLoader
 from data.dicomfiletype import DicomFileType
 from widgets.registeredmultifilesetmodeltreeview import RegisteredMultiFileSetModelTreeView
@@ -32,18 +37,21 @@ class MainWindow(QMainWindow):
         importDicomFileSetButton = QPushButton('Import DICOM Image Series..')
         importDicomMultiFileSetButton = QPushButton('Import Multiple DICOM Image Series..')
         printFileCacheButton = QPushButton('Print File Cache')        
+        clearDatabaseButton = QPushButton('Clear DB')  
         importDicomFileButton.clicked.connect(self._importDicomFile)
         importDicomFileSetButton.clicked.connect(self._importDicomFileSet)
         importDicomMultiFileSetButton.clicked.connect(self._importDicomMultiFileSet)
-        printFileCacheButton.clicked.connect(self._printFileCache)
-        # Create tree view
-        self._treeView = RegisteredMultiFileSetModelTreeView()
+        printFileCacheButton.clicked.connect(self._printFileCache)      
+        clearDatabaseButton.clicked.connect(self._clearDataBase)
+        # Create tree view 
+        self._treeView = RegisteredMultiFileSetModelTreeView()        
         # Create layout
         layout = QVBoxLayout()
         layout.addWidget(importDicomFileButton)
         layout.addWidget(importDicomFileSetButton)
         layout.addWidget(importDicomMultiFileSetButton)
         layout.addWidget(printFileCacheButton)
+        layout.addWidget(clearDatabaseButton)
         layout.addWidget(self._treeView)
         widget = QWidget()
         widget.setLayout(layout)
@@ -57,6 +65,14 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(widget)
         self.setWindowTitle('RapidExplorer')
         self._centerWindow()
+        # Load any models already registered
+        self._loadModels()
+
+    def _loadModels(self):
+        modelLoader = RegisteredMultiFileSetModelLoader()
+        registeredMultiFileSetModels = modelLoader.loadAll()
+        for registeredMultiFileSetModel in registeredMultiFileSetModels:
+            self._treeView.addRegisteredMultiFileSetModel(registeredMultiFileSetModel)
 
     def _importDicomFile(self):
         registrar = FileRegistrar(path=FILEPATH)
@@ -89,6 +105,21 @@ class MainWindow(QMainWindow):
 
     def _printFileCache(self):
         FileCache().printFiles()
+
+    def _clearDataBase(self):
+        # TODO: Move this to a class?
+        cache = FileCache()
+        session = DatabaseSession(Engine().get()).get()
+        try:
+            multiFileSetModels = session.query(MultiFileSetModel).all()
+            for multiFileSetModel in multiFileSetModels:
+                registeredMultiFileSetModel = RegisteredMultiFileSetModel(multiFileSetModel)
+                cache.removeMultiFileSet(registeredMultiFileSetModel)
+                session.delete(multiFileSetModel)
+            session.commit()
+            self._treeView.model().clear()
+        finally:
+            session.close()
 
     def _centerWindow(self) -> None:
         screen = QGuiApplication.primaryScreen().geometry()
