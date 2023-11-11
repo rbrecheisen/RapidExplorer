@@ -11,6 +11,7 @@ from data.filesetregistrar import FileSetRegistrar
 from data.multifilesetregistrar import MultiFileSetRegistrar
 from data.registeredmultifilesetcontentloader import RegisteredMultiFileSetContentLoader
 from data.dicomfiletype import DicomFileType
+from widgets.registeredmultifilesetmodeltreeview import RegisteredMultiFileSetModelTreeView
 
 MULTIFILESETPATH = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset')
 FILESETPATH = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset/scan1')
@@ -21,6 +22,8 @@ class MainWindow(QMainWindow):
     def __init__(self) -> None:
         super(MainWindow, self).__init__()
         self._progressBarDialog = None
+        self._contentLoader = None
+        self._treeView = None
         self._initUi()
 
     def _initUi(self) -> None:
@@ -33,11 +36,15 @@ class MainWindow(QMainWindow):
         importDicomFileSetButton.clicked.connect(self._importDicomFileSet)
         importDicomMultiFileSetButton.clicked.connect(self._importDicomMultiFileSet)
         printFileCacheButton.clicked.connect(self._printFileCache)
+        # Create tree view
+        self._treeView = RegisteredMultiFileSetModelTreeView()
+        # Create layout
         layout = QVBoxLayout()
         layout.addWidget(importDicomFileButton)
         layout.addWidget(importDicomFileSetButton)
         layout.addWidget(importDicomMultiFileSetButton)
         layout.addWidget(printFileCacheButton)
+        layout.addWidget(self._treeView)
         widget = QWidget()
         widget.setLayout(layout)
         # Setup progress bar
@@ -57,30 +64,28 @@ class MainWindow(QMainWindow):
         # Run content loader in background
         self._progressBarDialog.show()
         self._progressBarDialog.setValue(0)
-        contentLoader = RegisteredMultiFileSetContentLoader(registeredMultiFileSetModel, fileType=DicomFileType)
-        contentLoader.signal().progress.connect(self._contentLoaderProgress)
-        QThreadPool.globalInstance().start(contentLoader)
+        self._contentLoader = RegisteredMultiFileSetContentLoader(registeredMultiFileSetModel, fileType=DicomFileType)
+        self._contentLoader.signal().progress.connect(self._contentLoaderProgress)
+        QThreadPool.globalInstance().start(self._contentLoader)
 
     def _importDicomFileSet(self):
         registrar = FileSetRegistrar(path=FILESETPATH, fileType=DicomFileType())        
         registeredMultiFileSetModel = registrar.execute()
-        contentLoader = RegisteredMultiFileSetContentLoader(registeredMultiFileSetModel, fileType=DicomFileType)
-        contentLoader.signal().progress.connect(self._contentLoaderProgress)
-        QThreadPool.globalInstance().start(contentLoader)
+        self._contentLoader = RegisteredMultiFileSetContentLoader(registeredMultiFileSetModel, fileType=DicomFileType)
+        self._contentLoader.signal().progress.connect(self._contentLoaderProgress)
+        QThreadPool.globalInstance().start(self._contentLoader)
 
     def _importDicomMultiFileSet(self):
         registrar = MultiFileSetRegistrar(path=MULTIFILESETPATH, fileType=DicomFileType())
         registeredMultiFileSetModel = registrar.execute()
-        contentLoader = RegisteredMultiFileSetContentLoader(registeredMultiFileSetModel, fileType=DicomFileType)
-        contentLoader.signal().progress.connect(self._contentLoaderProgress)
-        QThreadPool.globalInstance().start(contentLoader)
+        self._contentLoader = RegisteredMultiFileSetContentLoader(registeredMultiFileSetModel, fileType=DicomFileType)
+        self._contentLoader.signal().progress.connect(self._contentLoaderProgress)
+        QThreadPool.globalInstance().start(self._contentLoader)
 
     def _contentLoaderProgress(self, progress):
         self._progressBarDialog.setValue(progress)
         if progress == 100:
-            # Add registered multi-fileset to tree widget
-            # Use a global content loader so you can access it here and get its data
-            pass
+            self._treeView.addRegisteredMultiFileSetModel(self._contentLoader.data())
 
     def _printFileCache(self):
         FileCache().printFiles()

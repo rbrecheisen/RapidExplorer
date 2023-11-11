@@ -14,6 +14,9 @@ class RegisteredMultiFileSetContentLoader(QRunnable):
         self._fileType = fileType
         self._signal = ProgressSignal()
 
+    def data(self) -> RegisteredMultiFileSetModel:
+        return self._registeredMultiFileSetModel
+
     def signal(self) -> ProgressSignal:
         return self._signal
 
