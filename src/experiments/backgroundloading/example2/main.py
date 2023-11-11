@@ -40,7 +40,6 @@ class MultiFileSetModel(BaseModel):
     name: Mapped[str] = mapped_column('_name', String(256), nullable=True)
     path: Mapped[str] = mapped_column('_path', String(1024), nullable=True)
     fileSetModels: Mapped[List['FileSetModel']] = relationship(back_populates='multiFileSetModel', cascade='all, delete-orphan')
-    pass
 
 class LoadedMultiFileSetModel:
     def __init__(self, multiFileSetModel: MultiFileSetModel):
