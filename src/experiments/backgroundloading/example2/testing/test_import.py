@@ -1,9 +1,11 @@
 import os
 
+from data.filecache import FileCache
 from data.fileregistrar import FileRegistrar
 from data.filesetregistrar import FileSetRegistrar
 from data.multifilesetregistrar import MultiFileSetRegistrar
 from data.registeredmultifilesetmodelloader import RegisteredMultiFileSetModelLoader
+from data.registeredmultifilesetcontentloader import RegisteredMultiFileSetContentLoader
 from data.dicomfiletype import DicomFileType
 
 MULTIFILESETPATH = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset')
@@ -16,12 +18,15 @@ def test_FileImport():
     registrar = FileRegistrar(path=FILEPATH)
     registeredMultiFileSetModel = registrar.execute()
     assert registeredMultiFileSetModel.id
+
     # Load registered models from SQL database
     modelLoader = RegisteredMultiFileSetModelLoader()
     registeredMultiFileSetModels = modelLoader.loadAll()
     assert len(registeredMultiFileSetModels) == 1
 
-    # for registeredMultiFileSetModel in registeredMultiFileSetModels:
-    #     # Load physical files and store in file cache
-    #     loader = RegisteredMultiFileSetLoader(registeredMultiFileSetModel)
-    #     loader.run()  # Will be called by thread later on
+    for registeredMultiFileSetModel in registeredMultiFileSetModels:
+        loader = RegisteredMultiFileSetContentLoader(registeredMultiFileSetModel, fileType=DicomFileType)
+        loader.run()
+
+    cache = FileCache()
+    assert cache.nrFiles() == 1

@@ -1,15 +1,15 @@
 import os
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QThreadPool
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QProgressDialog, QVBoxLayout,QPushButton)
 from PySide6.QtGui import QGuiApplication
 
+from data.filecache import FileCache
 from data.fileregistrar import FileRegistrar
 from data.filesetregistrar import FileSetRegistrar
 from data.multifilesetregistrar import MultiFileSetRegistrar
-from data.registeredmodelprinter import RegisteredModelPrinter
-from data.filecache import FileCache
+from data.registeredmultifilesetcontentloader import RegisteredMultiFileSetContentLoader
 from data.dicomfiletype import DicomFileType
 
 MULTIFILESETPATH = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset')
@@ -52,29 +52,35 @@ class MainWindow(QMainWindow):
         self._centerWindow()
 
     def _importDicomFile(self):
-        # Register file
         registrar = FileRegistrar(path=FILEPATH)
         registeredMultiFileSetModel = registrar.execute()
-        printer = RegisteredModelPrinter()
-        printer.printMultiFileSet(registeredMultiFileSetModel)
-        # cache = FileCache()
-        # cache.addMultiFileSet(registeredMultiFileSetModel)
+        # Run content loader in background
+        self._progressBarDialog.show()
+        self._progressBarDialog.setValue(0)
+        contentLoader = RegisteredMultiFileSetContentLoader(registeredMultiFileSetModel, fileType=DicomFileType)
+        contentLoader.signal().progress.connect(self._contentLoaderProgress)
+        QThreadPool.globalInstance().start(contentLoader)
 
     def _importDicomFileSet(self):
         registrar = FileSetRegistrar(path=FILESETPATH, fileType=DicomFileType())        
         registeredMultiFileSetModel = registrar.execute()
-        printer = RegisteredModelPrinter()
-        printer.printMultiFileSet(registeredMultiFileSetModel)
-        # cache = FileCache()
-        # cache.addMultiFileSet(registeredMultiFileSetModel)
+        contentLoader = RegisteredMultiFileSetContentLoader(registeredMultiFileSetModel, fileType=DicomFileType)
+        contentLoader.signal().progress.connect(self._contentLoaderProgress)
+        QThreadPool.globalInstance().start(contentLoader)
 
     def _importDicomMultiFileSet(self):
         registrar = MultiFileSetRegistrar(path=MULTIFILESETPATH, fileType=DicomFileType())
         registeredMultiFileSetModel = registrar.execute()
-        printer = RegisteredModelPrinter()
-        printer.printMultiFileSet(registeredMultiFileSetModel)
-        # cache = FileCache()
-        # cache.addMultiFileSet(registeredMultiFileSetModel)
+        contentLoader = RegisteredMultiFileSetContentLoader(registeredMultiFileSetModel, fileType=DicomFileType)
+        contentLoader.signal().progress.connect(self._contentLoaderProgress)
+        QThreadPool.globalInstance().start(contentLoader)
+
+    def _contentLoaderProgress(self, progress):
+        self._progressBarDialog.setValue(progress)
+        if progress == 100:
+            # Add registered multi-fileset to tree widget
+            # Use a global content loader so you can access it here and get its data
+            pass
 
     def _printFileCache(self):
         FileCache().printFiles()

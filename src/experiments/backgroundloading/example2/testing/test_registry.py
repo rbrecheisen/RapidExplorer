@@ -81,17 +81,17 @@ def test_fileRegistrar():
 
 
 def test_fileSetRegistrar():
-    registrar = FileSetRegistrar(path=FILESETPATH, fileType=DicomFileType())
+    registrar = FileSetRegistrar(path=FILESETPATH, fileType=DicomFileType)
     registeredMultiFileSetModel = registrar.execute()
     assert registeredMultiFileSetModel.id 
     # Test with wrong file type (results in empty dataset)
-    registrar = FileSetRegistrar(path=FILESETPATH, fileType=PngFileType())
+    registrar = FileSetRegistrar(path=FILESETPATH, fileType=PngFileType)
     registeredMultiFileSetModel = registrar.execute()
     assert len(registeredMultiFileSetModel.registeredFileSetModels[0].registeredFileModels) == 0
 
 
 def test_MultiFileSetRegistrar():
-    registrar = MultiFileSetRegistrar(path=MULTIFILESETPATH, fileType=DicomFileType())
+    registrar = MultiFileSetRegistrar(path=MULTIFILESETPATH, fileType=DicomFileType)
     registeredMultiFileSetModel = registrar.execute()
     assert registeredMultiFileSetModel.id
     assert registeredMultiFileSetModel.nrFiles() == NRTESTFILES
