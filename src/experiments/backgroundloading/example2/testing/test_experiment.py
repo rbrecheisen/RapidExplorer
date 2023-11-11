@@ -7,6 +7,10 @@ from data.filesetmodel import FileSetModel
 from data.multifilesetmodel import MultiFileSetModel
 from data.databasesession import DatabaseSession
 from data.fileregistrar import FileRegistrar
+from data.filesetregistrar import FileSetRegistrar
+from data.multifilesetregistrar import MultiFileSetRegistrar
+from data.dicomfiletype import DicomFileType
+from data.pngfiletype import PngFileType
 
 MULTIFILESETPATH = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset')
 FILESETPATH = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset/scan1')
@@ -67,11 +71,25 @@ def test_fileRegistrar():
     registrar = FileRegistrar(path=FILEPATH)
     registeredMultiFileSetModel = registrar.execute()
     assert registeredMultiFileSetModel.id
+    assert registeredMultiFileSetModel.registeredFileSetModels[0].id
+    assert registeredMultiFileSetModel.registeredFileSetModels[0].registeredFileModels[0].id
+    # Test back-references as well
+    assert registeredMultiFileSetModel.registeredFileSetModels[0].registeredMultiFileSetModel
+    assert registeredMultiFileSetModel.registeredFileSetModels[0].registeredFileModels[0].registeredFileSetModel
 
 
 def test_fileSetRegistrar():
-    pass
+    registrar = FileSetRegistrar(path=FILESETPATH, fileType=DicomFileType())
+    registeredMultiFileSetModel = registrar.execute()
+    assert registeredMultiFileSetModel.id
+
+    # Test with wrong file type (results in zero files found)
+    registrar = FileSetRegistrar(path=FILESETPATH, fileType=PngFileType())
+    registeredMultiFileSetModel = registrar.execute()
+    assert not registeredMultiFileSetModel
 
 
 def test_MultiFileSetRegistrar():
-    pass
+    registrar = MultiFileSetRegistrar(path=MULTIFILESETPATH, fileType=DicomFileType())
+    registeredMultiFileSetModel = registrar.execute()
+    assert registeredMultiFileSetModel.id
