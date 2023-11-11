@@ -16,7 +16,9 @@ class FileSetItemMenu(QMenu):
         action2.triggered.connect(self._handleShowInMainViewAction)
 
     def _handleRenameAction(self):
-        pass
+        self._item.setEditable(True)
+        self._treeView.edit(self._treeView.model().indexFromItem(self._item))
+        self._item.setEditable(False)
 
     def _handleShowInMainViewAction(self):
         pass
