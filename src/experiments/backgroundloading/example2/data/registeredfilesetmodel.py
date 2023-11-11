@@ -9,3 +9,6 @@ class RegisteredFileSetModel:
         self.path = fileSetModel.path
         self.registeredMultiFileSetModel = registeredMultiFileSetModel
         self.registeredFileModels = []
+
+    def nrFiles(self) -> int:
+        return len(self.registeredFileModels)

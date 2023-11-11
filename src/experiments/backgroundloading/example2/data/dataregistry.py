@@ -43,18 +43,13 @@ class DataRegistry:
             fileModels = []
             for root, dirs, files in os.walk(path):
                 for f in files:
-                    fName = f
-                    fPath = os.path.join(root, fName)
-                    if fileType.check(fPath):
-                        # We have found the right file!
-                        fileModel = FileModel(path=fPath, fileSetModel=fileSetModel)
+                    fileName = f
+                    filePath = os.path.join(root, fileName)
+                    if fileType.check(filePath):
+                        fileModel = FileModel(path=filePath, fileSetModel=fileSetModel)
                         fileModels.append(fileModel)
                         session.add(fileModel)                        
             session.commit()
-
-            # If no files have been found, the file type was likely wrong so return None
-            if len(fileModels) == 0:
-                return None
 
             # Build registered data objects
             registeredMultiFileSetModel = RegisteredMultiFileSetModel(multiFileSetModel=multiFileSetModel)
@@ -72,11 +67,35 @@ class DataRegistry:
         try:
             multiFileSetModel = MultiFileSetModel(path=path)
             session.add(multiFileSetModel)
-            # Search filesets and files!
+            data = {}
+            for root, dirs, files in os.walk(path):
+                for f in files:
+                    fileName = f
+                    filePath = os.path.join(root, fileName)
+                    if fileType.check(filePath):
+                        fileSetPath = root
+                        if fileSetPath not in data.keys():
+                            data[fileSetPath] = []
+                        data[fileSetPath].append(filePath)
+            for fileSetPath in data.keys():
+                fileSetName = os.path.relpath(fileSetPath, path)
+                fileSetModel = FileSetModel(name=fileSetName, path=fileSetPath, multiFileSetModel=multiFileSetModel)
+                session.add(fileSetModel)
+                for filePath in data[fileSetPath]:
+                    fileModel = FileModel(path=filePath, fileSetModel=fileSetModel)
+                    session.add(fileModel)
             session.commit()
 
             # Build registered data objects
             registeredMultiFileSetModel = RegisteredMultiFileSetModel(multiFileSetModel=multiFileSetModel)
+            fileSetModels = session.query(FileSetModel).filter_by(multiFileSetModel=multiFileSetModel).all()
+            for fileSetModel in fileSetModels:
+                registeredFileSetModel = RegisteredFileSetModel(fileSetModel=fileSetModel, registeredMultiFileSetModel=registeredMultiFileSetModel)
+                registeredMultiFileSetModel.registeredFileSetModels.append(registeredFileSetModel)
+                fileModels = session.query(FileModel).filter_by(fileSetModel=fileSetModel).all()
+                for fileModel in fileModels:
+                    registeredFileModel = RegisteredFileModel(fileModel=fileModel, registeredFileSetModel=registeredFileSetModel)
+                    registeredFileSetModel.registeredFileModels.append(registeredFileModel)
             return registeredMultiFileSetModel
         finally:
             session.close()

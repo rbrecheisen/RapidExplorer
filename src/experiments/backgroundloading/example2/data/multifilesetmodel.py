@@ -18,6 +18,7 @@ class MultiFileSetModel(BaseModel):
 
 @event.listens_for(MultiFileSetModel, 'after_insert')
 def afterInsert(_, connection, target):
-    target.name = create_random_name(prefix='multifileset')
-    connection.execute(
-        MultiFileSetModel.__table__.update().where(MultiFileSetModel.id == target.id).values(name=target.name))
+    if not target.name:
+        target.name = create_random_name(prefix='multifileset')
+        connection.execute(
+            MultiFileSetModel.__table__.update().where(MultiFileSetModel.id == target.id).values(name=target.name))
