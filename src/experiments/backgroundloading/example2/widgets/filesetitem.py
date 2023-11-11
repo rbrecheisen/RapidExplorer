@@ -8,5 +8,5 @@ class FileSetItem(QStandardItem):
         super(FileSetItem, self).__init__(registeredFileSetModel.name)
         self._registeredFileSetModel = registeredFileSetModel
 
-    # def fileSetModel(self) -> FileSetModel:
-    #     return self._fileSetModel
+    def model(self) -> RegisteredFileSetModel:
+        return self._registeredFileSetModel

@@ -17,6 +17,6 @@ class MultiFileSetItem(QStandardItem):
     def loaded(self) -> bool:
         return self._loaded
 
-    # def multiFileSetModel(self) -> MultiFileSetModel:
-    #     return self._multiFileSetModel
+    def model(self) -> RegisteredMultiFileSetModel:
+        return self._registeredMultiFileSetModel
     
