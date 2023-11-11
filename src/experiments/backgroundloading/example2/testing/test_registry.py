@@ -29,30 +29,31 @@ def test_engineIsSingleton():
 def test_session():
 
     # Test singleton nature of engine and non-singleton nature session
-    ds1 = DatabaseSession(Engine().get())
+    ds1 = DatabaseSession(Engine().get())    
     session1 = ds1.get()
     assert session1
     ds2 = DatabaseSession(Engine().get())
     session2 = ds2.get()
     assert session1 != session2
-    assert ds1.engine() == ds2.engine()
     session1.close()
     session2.close()
 
     # Save and delete some objects
     session = DatabaseSession(Engine().get()).get()
-    multiFileSetModel = MultiFileSetModel()
-    session.add(multiFileSetModel)
-    fileSetModel = FileSetModel(multiFileSetModel=multiFileSetModel)
-    session.add(fileSetModel)
-    fileModel = FileModel(path=FILEPATH, fileSetModel=fileSetModel)
-    session.add(fileModel)
-    session.commit()
-    assert multiFileSetModel.id
-    assert fileSetModel.id
-    assert fileModel.id
-    multiFileSetModelId = multiFileSetModel.id
-    session.close()
+    try:
+        multiFileSetModel = MultiFileSetModel()
+        session.add(multiFileSetModel)
+        fileSetModel = FileSetModel(multiFileSetModel=multiFileSetModel)
+        session.add(fileSetModel)
+        fileModel = FileModel(path=FILEPATH, fileSetModel=fileSetModel)
+        session.add(fileModel)
+        session.commit()
+        assert multiFileSetModel.id
+        assert fileSetModel.id
+        assert fileModel.id
+        multiFileSetModelId = multiFileSetModel.id
+    finally:
+        session.close()
 
     # Test SQLite3 in different threads
     def doOperationInSeparateThread(engine, multiFileSetModelId):

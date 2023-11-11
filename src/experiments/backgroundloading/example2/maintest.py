@@ -1,7 +1,7 @@
 import os
 import pytest
 
-DATABASE = 'db.experiments.sqlite3'
+DATABASE = 'db.sqlite3'
 
 
 if __name__ == '__main__':

@@ -8,6 +8,7 @@ from data.multifilesetmodel import MultiFileSetModel
 from data.registeredfilemodel import RegisteredFileModel
 from data.registeredfilesetmodel import RegisteredFileSetModel
 from data.registeredmultifilesetmodel import RegisteredMultiFileSetModel
+from data.registeredmultifilesetmodelloader import RegisteredMultiFileSetModelLoader
 from data.filetype import FileType
 
 
@@ -24,11 +25,8 @@ class DataRegistry:
             session.commit()
 
             # Build registered data objects
-            registeredMultiFileSetModel = RegisteredMultiFileSetModel(multiFileSetModel=multiFileSetModel)
-            registeredFileSetModel = RegisteredFileSetModel(fileSetModel=fileSetModel, registeredMultiFileSetModel=registeredMultiFileSetModel)
-            registeredFileModel = RegisteredFileModel(fileModel=fileModel, registeredFileSetModel=registeredFileSetModel)
-            registeredMultiFileSetModel.registeredFileSetModels.append(registeredFileSetModel)
-            registeredFileSetModel.registeredFileModels.append(registeredFileModel)
+            modelLoader = RegisteredMultiFileSetModelLoader()
+            registeredMultiFileSetModel = modelLoader.load(multiFileSetModel.id)
             return registeredMultiFileSetModel
         finally:
             session.close()
@@ -52,12 +50,8 @@ class DataRegistry:
             session.commit()
 
             # Build registered data objects
-            registeredMultiFileSetModel = RegisteredMultiFileSetModel(multiFileSetModel=multiFileSetModel)
-            registeredFileSetModel = RegisteredFileSetModel(fileSetModel=fileSetModel, registeredMultiFileSetModel=registeredMultiFileSetModel)
-            for fileModel in fileModels:
-                registeredFileModel = RegisteredFileModel(fileModel=fileModel, registeredFileSetModel=registeredFileSetModel)
-                registeredFileSetModel.registeredFileModels.append(registeredFileModel)
-            registeredMultiFileSetModel.registeredFileSetModels.append(registeredFileSetModel)
+            modelLoader = RegisteredMultiFileSetModelLoader()
+            registeredMultiFileSetModel = modelLoader.load(multiFileSetModel.id)
             return registeredMultiFileSetModel
         finally:
             session.close()
@@ -87,15 +81,8 @@ class DataRegistry:
             session.commit()
 
             # Build registered data objects
-            registeredMultiFileSetModel = RegisteredMultiFileSetModel(multiFileSetModel=multiFileSetModel)
-            fileSetModels = session.query(FileSetModel).filter_by(multiFileSetModel=multiFileSetModel).all()
-            for fileSetModel in fileSetModels:
-                registeredFileSetModel = RegisteredFileSetModel(fileSetModel=fileSetModel, registeredMultiFileSetModel=registeredMultiFileSetModel)
-                registeredMultiFileSetModel.registeredFileSetModels.append(registeredFileSetModel)
-                fileModels = session.query(FileModel).filter_by(fileSetModel=fileSetModel).all()
-                for fileModel in fileModels:
-                    registeredFileModel = RegisteredFileModel(fileModel=fileModel, registeredFileSetModel=registeredFileSetModel)
-                    registeredFileSetModel.registeredFileModels.append(registeredFileModel)
+            modelLoader = RegisteredMultiFileSetModelLoader()
+            registeredMultiFileSetModel = modelLoader.load(multiFileSetModel.id)
             return registeredMultiFileSetModel
         finally:
             session.close()

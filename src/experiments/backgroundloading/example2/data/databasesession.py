@@ -9,8 +9,5 @@ class DatabaseSession:
         Session = sessionmaker(bind=self._engine)
         self._session = Session()
 
-    def engine(self):
-        return self._engine
-
     def get(self):
         return self._session
