@@ -7,6 +7,7 @@ from data.multifilesetmodel import MultiFileSetModel
 from data.registeredfilemodel import RegisteredFileModel
 from data.registeredfilesetmodel import RegisteredFileSetModel
 from data.registeredmultifilesetmodel import RegisteredMultiFileSetModel
+from data.filetype import FileType
 
 
 class RegisteredMultiFileSetModelLoader:
@@ -15,7 +16,6 @@ class RegisteredMultiFileSetModelLoader:
         with DbSession() as session:
             multiFileSetModels = session.query(MultiFileSetModel).all()
             for multiFileSetModel in multiFileSetModels:
-                # Looks like load() can create its own session without issues (same engine anyway)
                 registeredMultiFileSetModels.append(self.load(multiFileSetModel.id))
             return registeredMultiFileSetModels
 

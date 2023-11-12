@@ -1,5 +1,5 @@
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QTreeView
+from PySide6.QtWidgets import QTreeView, QProgressDialog
 from PySide6.QtGui import QStandardItemModel, QStandardItemModel, QMouseEvent
 
 from data.dbsession import DbSession
@@ -18,11 +18,27 @@ from widgets.fileitemmenu import FileItemMenu
 class RegisteredMultiFileSetModelTreeView(QTreeView):
     def __init__(self) -> None:
         super(RegisteredMultiFileSetModelTreeView, self).__init__()
+        self._model = None
+        self._progressDialog = None
+        self._initModel()
+        self._initProgressDialog()
+        self.loadModelsFromDatabase()
+
+    def _initModel(self) -> None:
         self._model = QStandardItemModel()
         self._model.setHorizontalHeaderLabels(['Data'])
         self._model.itemChanged.connect(self._itemChanged)
         self.setModel(self._model)
-        self.loadModelsFromDatabase()
+
+    def _initProgressDialog(self) -> None:
+        self._progressDialog = QProgressDialog('Importing Files...', 'Abort Import', 0, 100, self)
+        self._progressDialog.setWindowModality(Qt.WindowModality.WindowModal)
+        self._progressDialog.setAutoReset(True)
+        self._progressDialog.setAutoClose(True)
+        self._progressDialog.close()
+
+    def progressDialog(self) -> QProgressDialog:
+        return self._progressDialog
 
     def addRegisteredMultiFileSetModel(self, registeredMultiFileSetModel: RegisteredMultiFileSetModel, loaded: bool=True) -> None:
         multiFileSetItem = MultiFileSetItem(registeredMultiFileSetModel, loaded)

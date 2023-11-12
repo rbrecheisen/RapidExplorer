@@ -3,12 +3,14 @@ from PySide6.QtWidgets import QMenu, QTreeView
 
 from data.dbsession import DbSession
 from data.filecache import FileCache
+from data.registeredmultifilesetcontentloader import RegisteredMultiFileSetContentLoader
 from data.multifilesetmodel import MultiFileSetModel
+# from widgets.registeredmultifilesetmodeltreeview import RegisteredMultiFileSetModelTreeView
 from widgets.multifilesetitem import MultiFileSetItem
 
 
 class MultiFileSetItemMenu(QMenu):
-    def __init__(self, treeView: QTreeView, multiFileSetItem: MultiFileSetItem, position: QPoint, parent=None) -> None:
+    def __init__(self, treeView, multiFileSetItem: MultiFileSetItem, position: QPoint, parent=None) -> None:
         super(MultiFileSetItemMenu, self).__init__(parent)
         self._treeView = treeView
         self._multiFileSetItem = multiFileSetItem
@@ -24,7 +26,10 @@ class MultiFileSetItemMenu(QMenu):
         action4.triggered.connect(self._handleDeleteAction)
 
     def _handleLoadAction(self):
-        pass
+        registeredMultiFileSetModel = self._multiFileSetItem.registeredMultiFileSetModel()
+        loader = RegisteredMultiFileSetContentLoader(registeredMultiFileSetModel)
+        loader.signal().progress.connect(self._contentLoaderProgress)
+        loader.execute()
 
     def _handleRenameAction(self):
         self._multiFileSetItem.setEditable(True)
@@ -44,6 +49,11 @@ class MultiFileSetItemMenu(QMenu):
             session.commit()
         self._treeView.model().clear()
         self._treeView.loadModelsFromDatabase()
+    
+    def _contentLoaderProgress(self, progress):
+        self._treeView.progressDialog().setValue(progress)
+        if progress == 100:
+            pass
 
     def show(self):
         self.exec_(self._position)

@@ -23,7 +23,7 @@ class MultiFileSetRegistrar(Registrar):
                 for f in files:
                     fileName = f
                     filePath = os.path.join(root, fileName)
-                    if self._fileType.check(filePath):
+                    if self.fileType().check(filePath):
                         fileSetPath = root
                         if fileSetPath not in data.keys():
                             data[fileSetPath] = []
@@ -38,6 +38,6 @@ class MultiFileSetRegistrar(Registrar):
             session.commit()
 
             # Build registered data objects
-            modelLoader = RegisteredMultiFileSetModelLoader()
+            modelLoader = RegisteredMultiFileSetModelLoader(self.fileType())
             registeredMultiFileSetModel = modelLoader.load(multiFileSetModel.id)
             return registeredMultiFileSetModel
