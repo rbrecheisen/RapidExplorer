@@ -1,7 +1,14 @@
+import os
+
 from utils import create_random_name
 from data.registrar import Registrar
-from data.dataregistry import DataRegistry
+from data.dbsession import DbSession
+# from data.dataregistry import DataRegistry
+from data.filemodel import FileModel
+from data.filesetmodel import FileSetModel
 from data.multifilesetmodel import MultiFileSetModel
+from data.registeredmultifilesetmodel import RegisteredMultiFileSetModel
+from data.registeredmultifilesetmodelloader import RegisteredMultiFileSetModelLoader
 from data.filetype import FileType
 
 
@@ -11,7 +18,35 @@ class MultiFileSetRegistrar(Registrar):
         self._path = path
         self._fileType = fileType
 
-    def execute(self) -> MultiFileSetModel:
-        registry = DataRegistry()
-        registeredMultiFileSetModel = registry.registerMultiFileSetModelForMultiFileSet(self._path, self._fileType)
-        return registeredMultiFileSetModel
+    def execute(self) -> RegisteredMultiFileSetModel:
+        with DbSession() as session:
+            multiFileSetModel = MultiFileSetModel(path=self._path)
+            session.add(multiFileSetModel)
+            data = {}
+            for root, dirs, files in os.walk(self._path):
+                for f in files:
+                    fileName = f
+                    filePath = os.path.join(root, fileName)
+                    if self._fileType.check(filePath):
+                        fileSetPath = root
+                        if fileSetPath not in data.keys():
+                            data[fileSetPath] = []
+                        data[fileSetPath].append(filePath)
+            for fileSetPath in data.keys():
+                fileSetName = os.path.relpath(fileSetPath, self._path)
+                fileSetModel = FileSetModel(name=fileSetName, path=fileSetPath, multiFileSetModel=multiFileSetModel)
+                session.add(fileSetModel)
+                for filePath in data[fileSetPath]:
+                    fileModel = FileModel(path=filePath, fileSetModel=fileSetModel)
+                    session.add(fileModel)
+            session.commit()
+
+            # Build registered data objects
+            modelLoader = RegisteredMultiFileSetModelLoader()
+            registeredMultiFileSetModel = modelLoader.load(multiFileSetModel.id)
+            return registeredMultiFileSetModel
+
+    # def execute(self) -> MultiFileSetModel:
+    #     registry = DataRegistry()
+    #     registeredMultiFileSetModel = registry.registerMultiFileSetModelForMultiFileSet(self._path, self._fileType)
+    #     return registeredMultiFileSetModel
