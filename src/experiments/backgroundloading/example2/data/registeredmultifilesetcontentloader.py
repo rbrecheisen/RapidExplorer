@@ -1,15 +1,14 @@
 from data.registeredmultifilesetmodel import RegisteredMultiFileSetModel
 from data.progresssignal import ProgressSignal
 from data.filecache import FileCache
-from data.filetype import FileType
+from data.filetypefactory import FileTypeFactory
 
 
 class RegisteredMultiFileSetContentLoader:
-    def __init__(self, registeredMultiFileSetModel: RegisteredMultiFileSetModel, fileType: FileType) -> None:
+    def __init__(self, registeredMultiFileSetModel: RegisteredMultiFileSetModel) -> None:
         super(RegisteredMultiFileSetContentLoader, self).__init__()
         self._registeredMultiFileSetModel = registeredMultiFileSetModel
         self._nrFiles = self._registeredMultiFileSetModel.nrFiles()
-        self._fileType = fileType
         self._signal = ProgressSignal()
 
     def signal(self) -> ProgressSignal:
@@ -21,7 +20,8 @@ class RegisteredMultiFileSetContentLoader:
         for registeredFileSetModel in self._registeredMultiFileSetModel.registeredFileSetModels:
             for registeredFileModel in registeredFileSetModel.registeredFileModels:
                 if not cache.has(registeredFileModel.id):
-                    file = self._fileType.read(registeredFileModel)
+                    fileType = FileTypeFactory.forName(registeredFileModel.fileType)
+                    file = fileType.read(registeredFileModel)
                     cache.add(file)
                     progress = int((i + 1) / self._nrFiles * 100)
                     self._signal.progress.emit(progress)

@@ -53,11 +53,11 @@ class RegisteredMultiFileSetModelTreeView(QTreeView):
                 fileSetItem.appendRow(fileItem)
         self._model.appendRow(multiFileSetItem)
 
-    def loadModelsFromDatabase(self) -> None:
+    def loadModelsFromDatabase(self, loaded=False) -> None:
         modelLoader = RegisteredMultiFileSetModelLoader()
         registeredMultiFileSetModels = modelLoader.loadAll()
         for registeredMultiFileSetModel in registeredMultiFileSetModels:
-            self.addRegisteredMultiFileSetModel(registeredMultiFileSetModel, loaded=False)
+            self.addRegisteredMultiFileSetModel(registeredMultiFileSetModel, loaded=loaded)
 
     def _itemChanged(self, item) -> None:
         with DbSession() as session:

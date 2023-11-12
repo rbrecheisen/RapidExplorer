@@ -19,7 +19,7 @@ class FileRegistrar(Registrar):
             fileSetModel = FileSetModel(multiFileSetModel=multiFileSetModel)
             session.add(fileSetModel)
             if self.fileType().check(self.path()):
-                fileModel = FileModel(path=self.path(), fileSetModel=fileSetModel)
+                fileModel = FileModel(path=self.path(), fileSetModel=fileSetModel, fileType=self.fileType().name)
                 session.add(fileModel)
                 session.commit()
 

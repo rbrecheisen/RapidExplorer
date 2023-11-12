@@ -7,4 +7,5 @@ class RegisteredFileModel:
         self.id = fileModel.id
         self.name = None
         self.path = fileModel.path
+        self.fileType = fileModel.fileType
         self.registeredFileSetModel = registeredFileSetModel    

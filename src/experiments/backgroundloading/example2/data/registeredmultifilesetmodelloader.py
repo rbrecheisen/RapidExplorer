@@ -7,7 +7,6 @@ from data.multifilesetmodel import MultiFileSetModel
 from data.registeredfilemodel import RegisteredFileModel
 from data.registeredfilesetmodel import RegisteredFileSetModel
 from data.registeredmultifilesetmodel import RegisteredMultiFileSetModel
-from data.filetype import FileType
 
 
 class RegisteredMultiFileSetModelLoader:

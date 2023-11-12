@@ -26,7 +26,7 @@ class FileSetRegistrar(Registrar):
                     fileName = f
                     filePath = os.path.join(root, fileName)
                     if self.fileType().check(filePath):
-                        fileModel = FileModel(path=filePath, fileSetModel=fileSetModel)
+                        fileModel = FileModel(path=filePath, fileSetModel=fileSetModel, fileType=self.fileType().name)
                         fileModels.append(fileModel)
                         session.add(fileModel)                        
             session.commit()

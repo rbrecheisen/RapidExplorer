@@ -1,6 +1,5 @@
 from data.registeredfilemodel import RegisteredFileModel
 from data.registeredfilesetmodel import RegisteredFileSetModel
-from data.registeredmultifilesetmodel import RegisteredMultiFileSetModel
 
 
 class RegisteredModelPrinter:

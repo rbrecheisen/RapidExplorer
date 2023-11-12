@@ -11,7 +11,7 @@ class FileSetImporter(Importer):
     def run(self):
         registrar = FileSetRegistrar(path=self.path(), fileType=self.fileType())
         registeredMultiFileSetModel = registrar.execute()
-        loader = RegisteredMultiFileSetContentLoader(registeredMultiFileSetModel, fileType=self.fileType())
+        loader = RegisteredMultiFileSetContentLoader(registeredMultiFileSetModel)
         loader.signal().progress.connect(self._updateLoaderProgress)
         data = loader.execute()
         self.setData(data)

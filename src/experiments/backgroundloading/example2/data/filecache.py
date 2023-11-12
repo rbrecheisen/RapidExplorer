@@ -1,6 +1,5 @@
 from singleton import singleton
 from data.file import File
-from data.registeredfilemodel import RegisteredFileModel
 from data.registeredfilesetmodel import RegisteredFileSetModel
 from data.registeredmultifilesetmodel import RegisteredMultiFileSetModel
 

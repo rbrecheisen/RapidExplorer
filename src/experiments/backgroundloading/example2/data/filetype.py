@@ -3,10 +3,11 @@ from data.registeredfilemodel import RegisteredFileModel
 
 
 class FileType:
-    @staticmethod
-    def check(path: str) -> bool:
+    def __init__(self, name: str) -> None:
+        self.name = name
+
+    def check(self, path: str) -> bool:
         raise NotImplementedError('Not implemented')
     
-    @staticmethod
-    def read(registeredFileModel: RegisteredFileModel) -> File:
+    def read(self, registeredFileModel: RegisteredFileModel) -> File:
         raise NotImplementedError('Not implemented')

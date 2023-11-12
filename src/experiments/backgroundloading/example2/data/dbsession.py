@@ -1,9 +1,5 @@
-import os
-
 from sqlalchemy.orm import sessionmaker
-import os
 
-from data import engine
 from data.engine import Engine
 
 

@@ -26,6 +26,8 @@ class MultiFileSetItemMenu(QMenu):
         action4.triggered.connect(self._handleDeleteAction)
 
     def _handleLoadAction(self):
+        self._treeView.progressDialog().show()
+        self._treeView.progressDialog().setValue(0)
         registeredMultiFileSetModel = self._multiFileSetItem.registeredMultiFileSetModel()
         loader = RegisteredMultiFileSetContentLoader(registeredMultiFileSetModel)
         loader.signal().progress.connect(self._contentLoaderProgress)
@@ -48,12 +50,13 @@ class MultiFileSetItemMenu(QMenu):
             session.delete(model)
             session.commit()
         self._treeView.model().clear()
-        self._treeView.loadModelsFromDatabase()
+        self._treeView.loadModelsFromDatabase(loaded=True)
     
     def _contentLoaderProgress(self, progress):
         self._treeView.progressDialog().setValue(progress)
         if progress == 100:
-            pass
+            self._treeView.model().clear()
+            self._treeView.loadModelsFromDatabase(loaded=True)
 
     def show(self):
         self.exec_(self._position)
