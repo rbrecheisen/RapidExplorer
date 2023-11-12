@@ -2,8 +2,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QTreeView
 from PySide6.QtGui import QStandardItemModel, QStandardItemModel, QMouseEvent
 
-from data.engine import Engine
-from data.databasesession import DatabaseSession
+from data.dbsession import DbSession
 from data.registeredmultifilesetmodel import RegisteredMultiFileSetModel
 from widgets.multifilesetitem import MultiFileSetItem
 from widgets.multifilesetitemmenu import MultiFileSetItemMenu
@@ -35,14 +34,11 @@ class RegisteredMultiFileSetModelTreeView(QTreeView):
         self._model.appendRow(multiFileSetItem)
 
     def _itemChanged(self, item) -> None:
-        session = DatabaseSession(Engine().get()).get()
-        try:
+        with DbSession() as session:
             # TODO: Item has a registered model, not an SQL model to how do
             # we update it using the session?
             # Perhaps implement Saver and Deleter classes (next to Loader)?
             pass
-        finally:
-            session.close()
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
         index = self.indexAt(event.pos())

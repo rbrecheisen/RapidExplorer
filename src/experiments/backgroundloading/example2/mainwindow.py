@@ -5,9 +5,8 @@ from PySide6.QtWidgets import (
     QMainWindow, QWidget, QProgressDialog, QVBoxLayout,QPushButton)
 from PySide6.QtGui import QGuiApplication
 
-from data.engine import Engine
 from data.filecache import FileCache
-from data.databasesession import DatabaseSession
+from data.dbsession import DbSession
 from data.fileregistrar import FileRegistrar
 from data.filesetregistrar import FileSetRegistrar
 from data.multifilesetregistrar import MultiFileSetRegistrar
@@ -109,8 +108,7 @@ class MainWindow(QMainWindow):
     def _clearDataBase(self):
         # TODO: Move this to a class?
         cache = FileCache()
-        session = DatabaseSession(Engine().get()).get()
-        try:
+        with DbSession() as session:
             multiFileSetModels = session.query(MultiFileSetModel).all()
             for multiFileSetModel in multiFileSetModels:
                 registeredMultiFileSetModel = RegisteredMultiFileSetModel(multiFileSetModel)
@@ -118,8 +116,6 @@ class MainWindow(QMainWindow):
                 session.delete(multiFileSetModel)
             session.commit()
             self._treeView.model().clear()
-        finally:
-            session.close()
 
     def _centerWindow(self) -> None:
         screen = QGuiApplication.primaryScreen().geometry()

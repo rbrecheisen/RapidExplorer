@@ -2,10 +2,10 @@ import os
 import threading
 
 from data.engine import Engine
+from data.dbsession import DbSession
 from data.filemodel import FileModel
 from data.filesetmodel import FileSetModel
 from data.multifilesetmodel import MultiFileSetModel
-from data.databasesession import DatabaseSession
 from data.fileregistrar import FileRegistrar
 from data.filesetregistrar import FileSetRegistrar
 from data.multifilesetregistrar import MultiFileSetRegistrar
@@ -26,21 +26,10 @@ def test_engineIsSingleton():
     assert engine1.get() == engine2.get()
 
 
-def test_session():
-
-    # Test singleton nature of engine and non-singleton nature session
-    ds1 = DatabaseSession(Engine().get())    
-    session1 = ds1.get()
-    assert session1
-    ds2 = DatabaseSession(Engine().get())
-    session2 = ds2.get()
-    assert session1 != session2
-    session1.close()
-    session2.close()
+def test_sessionInSeparateThread():
 
     # Save and delete some objects
-    session = DatabaseSession(Engine().get()).get()
-    try:
+    with DbSession() as session:
         multiFileSetModel = MultiFileSetModel()
         session.add(multiFileSetModel)
         fileSetModel = FileSetModel(multiFileSetModel=multiFileSetModel)
@@ -52,17 +41,12 @@ def test_session():
         assert fileSetModel.id
         assert fileModel.id
         multiFileSetModelId = multiFileSetModel.id
-    finally:
-        session.close()
 
     # Test SQLite3 in different threads
     def doOperationInSeparateThread(engine, multiFileSetModelId):
-        try:
-            session = DatabaseSession(engine).get()
+        with DbSession(engine=engine) as session:
             multiFileSetModel = session.get(MultiFileSetModel, multiFileSetModelId)
             assert multiFileSetModel.id
-        finally:
-            session.close()
 
     thread1 = threading.Thread(target=doOperationInSeparateThread, args=(Engine().get(), multiFileSetModelId))
     thread1.start()
