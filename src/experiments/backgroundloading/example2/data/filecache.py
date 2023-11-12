@@ -10,6 +10,9 @@ class FileCache:
     def __init__(self) -> None:
         self._data = {}
 
+    def data(self):
+        return self._data
+
     def nrFiles(self) -> None:
         return len(self._data.keys())
     
@@ -20,13 +23,16 @@ class FileCache:
             for k, v in self._data.items():
                 print(f'{k}: {v}')
 
+    def has(self, id: str) -> bool:
+        return id in self._data.keys()
+
     def add(self, file: File) -> None:
         if file.id not in self._data.keys():
             self._data[file.id] = file
 
     def remove(self, id: str) -> None:
         if id in self._data.keys():
-            del self._data[id]
+            del self._data[id]    
 
     def removeFileSet(self, registeredFileSetModel: RegisteredFileSetModel) -> None:
         for registeredFileModel in registeredFileSetModel.registeredFileModels:
@@ -42,4 +48,5 @@ class FileCache:
         return None
 
     def clear(self) -> None:
+        print('Clearing cache...')
         self._data = {}

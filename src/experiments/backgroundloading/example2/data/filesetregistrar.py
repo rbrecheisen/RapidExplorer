@@ -12,22 +12,20 @@ from data.filetype import FileType
 
 class FileSetRegistrar(Registrar):
     def __init__(self, path: str, fileType: FileType) -> None:
-        super(FileSetRegistrar, self).__init__()
-        self._path = path
-        self._fileType = fileType
+        super(FileSetRegistrar, self).__init__(path=path, fileType=fileType)
 
     def execute(self) -> RegisteredMultiFileSetModel:
         with DbSession() as session:
             multiFileSetModel = MultiFileSetModel()
             session.add(multiFileSetModel)
-            fileSetModel = FileSetModel(path=self._path, multiFileSetModel=multiFileSetModel)
+            fileSetModel = FileSetModel(path=self.path(), multiFileSetModel=multiFileSetModel)
             session.add(fileSetModel)
             fileModels = []
-            for root, dirs, files in os.walk(self._path):
+            for root, dirs, files in os.walk(self.path()):
                 for f in files:
                     fileName = f
                     filePath = os.path.join(root, fileName)
-                    if self._fileType.check(filePath):
+                    if self.fileType().check(filePath):
                         fileModel = FileModel(path=filePath, fileSetModel=fileSetModel)
                         fileModels.append(fileModel)
                         session.add(fileModel)                        

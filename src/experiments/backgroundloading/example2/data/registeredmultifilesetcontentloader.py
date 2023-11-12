@@ -1,12 +1,10 @@
-from PySide6.QtCore import QRunnable
-
 from data.registeredmultifilesetmodel import RegisteredMultiFileSetModel
 from data.progresssignal import ProgressSignal
 from data.filecache import FileCache
 from data.filetype import FileType
 
 
-class RegisteredMultiFileSetContentLoader(QRunnable):
+class RegisteredMultiFileSetContentLoader:
     def __init__(self, registeredMultiFileSetModel: RegisteredMultiFileSetModel, fileType: FileType) -> None:
         super(RegisteredMultiFileSetContentLoader, self).__init__()
         self._registeredMultiFileSetModel = registeredMultiFileSetModel
@@ -14,20 +12,21 @@ class RegisteredMultiFileSetContentLoader(QRunnable):
         self._fileType = fileType
         self._signal = ProgressSignal()
 
-    def data(self) -> RegisteredMultiFileSetModel:
-        return self._registeredMultiFileSetModel
-
     def signal(self) -> ProgressSignal:
         return self._signal
 
-    def run(self):
+    def execute(self) -> RegisteredMultiFileSetModel:
         i = 0
         cache = FileCache()
         for registeredFileSetModel in self._registeredMultiFileSetModel.registeredFileSetModels:
             for registeredFileModel in registeredFileSetModel.registeredFileModels:
-                file = self._fileType.read(registeredFileModel)
-                cache.add(file)
-                progress = int((i + 1) / self._nrFiles * 100)
-                self._signal.progress.emit(progress)
-                print('.', end='', flush=True)
-                i += 1
+                if not cache.has(registeredFileModel.id):
+                    file = self._fileType.read(registeredFileModel)
+                    cache.add(file)
+                    progress = int((i + 1) / self._nrFiles * 100)
+                    self._signal.progress.emit(progress)
+                    print('.', end='', flush=True)
+                    i += 1
+                else:
+                    print(f'File {registeredFileModel.path} already in cache (skipping)')
+        return self._registeredMultiFileSetModel

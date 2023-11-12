@@ -5,12 +5,12 @@ from data.filesetmodel import FileSetModel
 from data.multifilesetmodel import MultiFileSetModel
 from data.registeredmultifilesetmodel import RegisteredMultiFileSetModel
 from data.registeredmultifilesetmodelloader import RegisteredMultiFileSetModelLoader
+from data.filetype import FileType
 
 
 class FileRegistrar(Registrar):
-    def __init__(self, path: str) -> None:
-        super(FileRegistrar, self).__init__()
-        self._path = path
+    def __init__(self, path: str, fileType: FileType) -> None:
+        super(FileRegistrar, self).__init__(path=path, fileType=fileType)
 
     def execute(self) -> RegisteredMultiFileSetModel:
         with DbSession() as session:
@@ -18,9 +18,10 @@ class FileRegistrar(Registrar):
             session.add(multiFileSetModel)
             fileSetModel = FileSetModel(multiFileSetModel=multiFileSetModel)
             session.add(fileSetModel)
-            fileModel = FileModel(path=self._path, fileSetModel=fileSetModel)
-            session.add(fileModel)
-            session.commit()
+            if self.fileType().check(self.path()):
+                fileModel = FileModel(path=self.path(), fileSetModel=fileSetModel)
+                session.add(fileModel)
+                session.commit()
 
             # Build registered data objects
             modelLoader = RegisteredMultiFileSetModelLoader()

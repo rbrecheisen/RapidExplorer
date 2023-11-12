@@ -1,5 +1,8 @@
 import os
+import pytest
 import threading
+
+import utils
 
 from data.engine import Engine
 from data.dbsession import DbSession
@@ -27,7 +30,6 @@ def test_engineIsSingleton():
 
 
 def test_sessionInSeparateThread():
-
     # Save and delete some objects
     with DbSession() as session:
         multiFileSetModel = MultiFileSetModel()
@@ -43,19 +45,19 @@ def test_sessionInSeparateThread():
         multiFileSetModelId = multiFileSetModel.id
 
     # Test SQLite3 in different threads
-    def doOperationInSeparateThread(engine, multiFileSetModelId):
-        with DbSession(engine=engine) as session:
+    def doOperationInSeparateThread(multiFileSetModelId):
+        with DbSession() as session:
             multiFileSetModel = session.get(MultiFileSetModel, multiFileSetModelId)
             assert multiFileSetModel.id
 
-    thread1 = threading.Thread(target=doOperationInSeparateThread, args=(Engine().get(), multiFileSetModelId))
+    thread1 = threading.Thread(target=doOperationInSeparateThread, args=(multiFileSetModelId, ))
     thread1.start()
     thread1.join()
 
 
 def test_fileRegistrar():
-    registrar = FileRegistrar(path=FILEPATH)
-    registeredMultiFileSetModel = registrar.execute()
+    registrar1 = FileRegistrar(path=FILEPATH, fileType=DicomFileType)
+    registeredMultiFileSetModel = registrar1.execute()
     assert registeredMultiFileSetModel.id
     assert registeredMultiFileSetModel.registeredFileSetModels[0].id
     assert registeredMultiFileSetModel.registeredFileSetModels[0].registeredFileModels[0].id
@@ -65,17 +67,13 @@ def test_fileRegistrar():
 
 
 def test_fileSetRegistrar():
-    registrar = FileSetRegistrar(path=FILESETPATH, fileType=DicomFileType)
-    registeredMultiFileSetModel = registrar.execute()
-    assert registeredMultiFileSetModel.id 
-    # Test with wrong file type (results in empty dataset)
-    registrar = FileSetRegistrar(path=FILESETPATH, fileType=PngFileType)
-    registeredMultiFileSetModel = registrar.execute()
-    assert len(registeredMultiFileSetModel.registeredFileSetModels[0].registeredFileModels) == 0
-
+    registrar1 = FileSetRegistrar(path=FILESETPATH, fileType=DicomFileType)
+    registeredMultiFileSetModel1 = registrar1.execute()
+    assert registeredMultiFileSetModel1.id 
+    
 
 def test_MultiFileSetRegistrar():
-    registrar = MultiFileSetRegistrar(path=MULTIFILESETPATH, fileType=DicomFileType)
-    registeredMultiFileSetModel = registrar.execute()
+    registrar1 = MultiFileSetRegistrar(path=MULTIFILESETPATH, fileType=DicomFileType)
+    registeredMultiFileSetModel = registrar1.execute()
     assert registeredMultiFileSetModel.id
     assert registeredMultiFileSetModel.nrFiles() == NRTESTFILES

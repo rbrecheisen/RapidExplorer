@@ -5,7 +5,7 @@ from sqlalchemy import String, event
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from data.basemodel import BaseModel
-from utils import create_random_name
+from utils import createRandomName
 
 
 class MultiFileSetModel(BaseModel):
@@ -19,6 +19,6 @@ class MultiFileSetModel(BaseModel):
 @event.listens_for(MultiFileSetModel, 'after_insert')
 def afterInsert(_, connection, target):
     if not target.name:
-        target.name = create_random_name(prefix='multifileset')
+        target.name = createRandomName(prefix='multifileset')
         connection.execute(
             MultiFileSetModel.__table__.update().where(MultiFileSetModel.id == target.id).values(name=target.name))

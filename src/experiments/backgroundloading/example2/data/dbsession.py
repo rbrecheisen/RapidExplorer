@@ -1,17 +1,17 @@
-from sqlalchemy.orm import sessionmaker
+import os
 
+from sqlalchemy.orm import sessionmaker
+import os
+
+from data import engine
 from data.engine import Engine
 
 
 class DbSession:
-    def __init__(self, engine=None) -> None:
-        if engine:
-            Session = sessionmaker(bind=engine)
-            self._session = Session()
-        else:
-            Session = sessionmaker(bind=Engine().get())
-            self._session = Session()
-    
+    def __init__(self) -> None:
+        Session = sessionmaker(bind=Engine().get())
+        self._session = Session()
+
     def __enter__(self):
         return self._session
     

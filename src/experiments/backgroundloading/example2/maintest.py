@@ -1,10 +1,13 @@
 import os
 import pytest
 
-DATABASE = 'db.sqlite3'
+from data import engine
+
+engine.DATABASE = 'db.test.sqlite3'
+engine.ECHO = False
 
 
 if __name__ == '__main__':
-    if os.path.isfile(DATABASE):
-        os.remove(DATABASE)
+    if os.path.isfile(engine.DATABASE):
+        os.remove(engine.DATABASE)
     pytest.main(['-s', 'src/experiments/backgroundloading/example2'])
