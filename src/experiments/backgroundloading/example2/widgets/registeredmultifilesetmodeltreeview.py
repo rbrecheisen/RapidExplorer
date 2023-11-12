@@ -4,6 +4,9 @@ from PySide6.QtGui import QStandardItemModel, QStandardItemModel, QMouseEvent
 
 from data.dbsession import DbSession
 from data.registeredmultifilesetmodel import RegisteredMultiFileSetModel
+from data.registeredmultifilesetmodelloader import RegisteredMultiFileSetModelLoader
+from data.filesetmodel import FileSetModel
+from data.multifilesetmodel import MultiFileSetModel
 from widgets.multifilesetitem import MultiFileSetItem
 from widgets.multifilesetitemmenu import MultiFileSetItemMenu
 from widgets.filesetitem import FileSetItem
@@ -19,26 +22,39 @@ class RegisteredMultiFileSetModelTreeView(QTreeView):
         self._model.setHorizontalHeaderLabels(['Data'])
         self._model.itemChanged.connect(self._itemChanged)
         self.setModel(self._model)
+        self.loadModelsFromDatabase()
 
     def addRegisteredMultiFileSetModel(self, registeredMultiFileSetModel: RegisteredMultiFileSetModel, loaded: bool=True) -> None:
         multiFileSetItem = MultiFileSetItem(registeredMultiFileSetModel, loaded)
         multiFileSetItem.setEditable(False)
         for registeredFileSetModel in registeredMultiFileSetModel.registeredFileSetModels:
-            fileSetItem = FileSetItem(registeredFileSetModel)
+            fileSetItem = FileSetItem(registeredFileSetModel, loaded)
             fileSetItem.setEditable(False)
             multiFileSetItem.appendRow(fileSetItem)
             for registeredFileModel in registeredFileSetModel.registeredFileModels:
-                fileItem = FileItem(registeredFileModel)
+                fileItem = FileItem(registeredFileModel, loaded)
                 fileItem.setEditable(False)
                 fileSetItem.appendRow(fileItem)
         self._model.appendRow(multiFileSetItem)
 
+    def loadModelsFromDatabase(self) -> None:
+        modelLoader = RegisteredMultiFileSetModelLoader()
+        registeredMultiFileSetModels = modelLoader.loadAll()
+        for registeredMultiFileSetModel in registeredMultiFileSetModels:
+            self.addRegisteredMultiFileSetModel(registeredMultiFileSetModel, loaded=False)
+
     def _itemChanged(self, item) -> None:
         with DbSession() as session:
-            # TODO: Item has a registered model, not an SQL model to how do
-            # we update it using the session?
-            # Perhaps implement Saver and Deleter classes (next to Loader)?
-            pass
+            if isinstance(item, FileSetItem):
+                fileSetModel = session.get(FileSetModel, item.id)
+                fileSetModel.name = item.text()
+                session.commit()
+            elif isinstance(item, MultiFileSetItem):
+                multiFileSetModel = session.get(MultiFileSetModel, item.id)
+                multiFileSetModel.name = item.text()
+                session.commit()
+            else:
+                pass
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
         index = self.indexAt(event.pos())
