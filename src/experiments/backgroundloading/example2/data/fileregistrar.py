@@ -1,6 +1,5 @@
 from data.registrar import Registrar
 from data.dbsession import DbSession
-# from data.dataregistry import DataRegistry
 from data.filemodel import FileModel
 from data.filesetmodel import FileSetModel
 from data.multifilesetmodel import MultiFileSetModel
@@ -27,7 +26,3 @@ class FileRegistrar(Registrar):
             modelLoader = RegisteredMultiFileSetModelLoader()
             registeredMultiFileSetModel = modelLoader.load(multiFileSetModel.id)
             return registeredMultiFileSetModel
-
-        # registry = DataRegistry()
-        # registeredMultiFileSetModel = registry.registerMultiFileSetModelForFile(self._path)
-        # return registeredMultiFileSetModel

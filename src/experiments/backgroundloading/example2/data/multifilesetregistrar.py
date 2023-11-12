@@ -1,9 +1,7 @@
 import os
 
-from utils import create_random_name
 from data.registrar import Registrar
 from data.dbsession import DbSession
-# from data.dataregistry import DataRegistry
 from data.filemodel import FileModel
 from data.filesetmodel import FileSetModel
 from data.multifilesetmodel import MultiFileSetModel
@@ -45,8 +43,3 @@ class MultiFileSetRegistrar(Registrar):
             modelLoader = RegisteredMultiFileSetModelLoader()
             registeredMultiFileSetModel = modelLoader.load(multiFileSetModel.id)
             return registeredMultiFileSetModel
-
-    # def execute(self) -> MultiFileSetModel:
-    #     registry = DataRegistry()
-    #     registeredMultiFileSetModel = registry.registerMultiFileSetModelForMultiFileSet(self._path, self._fileType)
-    #     return registeredMultiFileSetModel
