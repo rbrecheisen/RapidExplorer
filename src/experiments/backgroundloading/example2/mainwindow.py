@@ -107,6 +107,7 @@ class MainWindow(QMainWindow):
         self._progressBarDialog.setValue(0)
         self._fileImporter = FileImporter(path=FILEPATH, fileType=DicomFileType())
         self._fileImporter.signal().progress.connect(self._fileImporterProgress)
+        self._fileImporter.signal().success.connect(self._importerSuccess)
         QThreadPool.globalInstance().start(self._fileImporter)
 
     def _importDicomFileSet(self):
@@ -115,6 +116,7 @@ class MainWindow(QMainWindow):
         self._progressBarDialog.setValue(0)
         self._fileSetImporter = FileSetImporter(path=FILESETPATH, fileType=DicomFileType())
         self._fileSetImporter.signal().progress.connect(self._fileSetImporterProgress)
+        self._fileSetImporter.signal().success.connect(self._importerSuccess)
         QThreadPool.globalInstance().start(self._fileSetImporter)
 
     def _importDicomMultiFileSet(self):
@@ -123,6 +125,7 @@ class MainWindow(QMainWindow):
         self._progressBarDialog.setValue(0)
         self._multiFileSetImporter = MultiFileSetImporter(path=MULTIFILESETPATH, fileType=DicomFileType())
         self._multiFileSetImporter.signal().progress.connect(self._multiFileSetImporterProgress)
+        self._multiFileSetImporter.signal().success.connect(self._importerSuccess)
         QThreadPool.globalInstance().start(self._multiFileSetImporter)
 
     def _fileImporterProgress(self, progress):
@@ -139,6 +142,12 @@ class MainWindow(QMainWindow):
         self._progressBarDialog.setValue(progress)
         if progress == 100:
             self._dataDockWidget.treeView().addRegisteredMultiFileSetModel(self._multiFileSetImporter.data())
+
+    def _importerSuccess(self, success):
+        if success:
+            print('success')
+        else:
+            print('failure')
 
     def _printFileCache(self):
         FileCache().printFiles()

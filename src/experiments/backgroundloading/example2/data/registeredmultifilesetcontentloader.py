@@ -21,12 +21,17 @@ class RegisteredMultiFileSetContentLoader:
             for registeredFileModel in registeredFileSetModel.registeredFileModels:
                 if not cache.has(registeredFileModel.id):
                     fileType = FileTypeFactory.forName(registeredFileModel.fileType)
-                    file = fileType.read(registeredFileModel)
-                    cache.add(file)
-                    progress = int((i + 1) / self._nrFiles * 100)
-                    self._signal.progress.emit(progress)
-                    print('.', end='', flush=True)
-                    i += 1
+                    try:
+                        raise RuntimeError('Check how to handle when file does not exist')
+                        file = fileType.read(registeredFileModel)
+                        cache.add(file)
+                        progress = int((i + 1) / self._nrFiles * 100)
+                        self._signal.progress.emit(progress)
+                        print('.', end='', flush=True)
+                        i += 1
+                    except FileNotFoundError:
+                        self._signal.progress.emit(100)
+                        self._signal.success.emit(False)
                 else:
                     print(f'File {registeredFileModel.path} already in cache (skipping)')
         return self._registeredMultiFileSetModel
