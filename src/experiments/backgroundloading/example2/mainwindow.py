@@ -1,7 +1,7 @@
 import os
 
 from PySide6.QtCore import Qt, QSize, QThreadPool
-from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QFileDialog, QMenu, QProgressDialog, QMessageBox
+from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QFileDialog, QMenu, QProgressDialog
 from PySide6.QtGui import QAction, QGuiApplication
 
 from data.filecache import FileCache
