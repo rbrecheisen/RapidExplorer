@@ -1,1 +1,0 @@
-from plugins.views.dicomfilesetview.dicomfilesetviewplugin import DicomFileSetViewPlugin
