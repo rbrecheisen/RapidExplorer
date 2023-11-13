@@ -38,6 +38,6 @@ class MultiFileSetRegistrar(Registrar):
             session.commit()
 
             # Build registered data objects
-            modelLoader = RegisteredMultiFileSetModelLoader(self.fileType())
+            modelLoader = RegisteredMultiFileSetModelLoader()
             registeredMultiFileSetModel = modelLoader.load(multiFileSetModel.id)
             return registeredMultiFileSetModel
