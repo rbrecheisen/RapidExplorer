@@ -3,6 +3,7 @@ from PySide6.QtWidgets import QTreeView, QProgressDialog
 from PySide6.QtGui import QStandardItemModel, QStandardItemModel, QMouseEvent
 
 from data.dbsession import DbSession
+from data.filecache import FileCache
 from data.registeredmultifilesetmodel import RegisteredMultiFileSetModel
 from data.registeredmultifilesetmodelloader import RegisteredMultiFileSetModelLoader
 from data.filesetmodel import FileSetModel
@@ -53,11 +54,22 @@ class RegisteredMultiFileSetModelTreeView(QTreeView):
                 fileSetItem.appendRow(fileItem)
         self._model.appendRow(multiFileSetItem)
 
-    def loadModelsFromDatabase(self, loaded=False) -> None:
+    def loadModelsFromDatabase(self) -> None:
         modelLoader = RegisteredMultiFileSetModelLoader()
         registeredMultiFileSetModels = modelLoader.loadAll()
         for registeredMultiFileSetModel in registeredMultiFileSetModels:
-            self.addRegisteredMultiFileSetModel(registeredMultiFileSetModel, loaded=loaded)
+            if self._loadedFromFile(registeredMultiFileSetModel):
+                self.addRegisteredMultiFileSetModel(registeredMultiFileSetModel, loaded=True)
+            else:
+                self.addRegisteredMultiFileSetModel(registeredMultiFileSetModel, loaded=False)
+
+    def _loadedFromFile(self, registeredMultiFileSetModel: RegisteredMultiFileSetModel) -> bool:
+        cache = FileCache()
+        for registeredFileSetModel in registeredMultiFileSetModel.registeredFileSetModels:
+            for registeredFileModel in registeredFileSetModel.registeredFileModels:
+                if not cache.has(registeredFileModel.id):
+                    return False
+        return True
 
     def _itemChanged(self, item) -> None:
         with DbSession() as session:

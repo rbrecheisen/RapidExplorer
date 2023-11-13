@@ -22,6 +22,7 @@ class RegisteredMultiFileSetContentLoader:
                 if not cache.has(registeredFileModel.id):
                     fileType = FileTypeFactory.forName(registeredFileModel.fileType)
                     file = fileType.read(registeredFileModel)
+                    registeredFileModel.loaded = True
                     cache.add(file)
                     progress = int((i + 1) / self._nrFiles * 100)
                     self._signal.progress.emit(progress)

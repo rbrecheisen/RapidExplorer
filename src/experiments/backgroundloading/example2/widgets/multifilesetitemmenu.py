@@ -5,7 +5,6 @@ from data.dbsession import DbSession
 from data.filecache import FileCache
 from data.registeredmultifilesetcontentloader import RegisteredMultiFileSetContentLoader
 from data.multifilesetmodel import MultiFileSetModel
-# from widgets.registeredmultifilesetmodeltreeview import RegisteredMultiFileSetModelTreeView
 from widgets.multifilesetitem import MultiFileSetItem
 
 
@@ -50,13 +49,13 @@ class MultiFileSetItemMenu(QMenu):
             session.delete(model)
             session.commit()
         self._treeView.model().clear()
-        self._treeView.loadModelsFromDatabase(loaded=True)
+        self._treeView.loadModelsFromDatabase()
     
     def _contentLoaderProgress(self, progress):
         self._treeView.progressDialog().setValue(progress)
         if progress == 100:
             self._treeView.model().clear()
-            self._treeView.loadModelsFromDatabase(loaded=True)
+            self._treeView.loadModelsFromDatabase()
 
     def show(self):
         self.exec_(self._position)
