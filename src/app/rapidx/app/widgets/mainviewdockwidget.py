@@ -3,7 +3,6 @@ from PySide6.QtWidgets import QWidget, QComboBox, QVBoxLayout
 
 from rapidx.app.widgets.dockwidget import DockWidget
 from rapidx.app.plugins.pluginmanager import PluginManager
-from rapidx.plugins.views.dicomfilesetview.dicomfilesetviewplugin import DicomFileSetViewPlugin
 
 
 class MainViewDockWidget(DockWidget):
@@ -28,9 +27,11 @@ class MainViewDockWidget(DockWidget):
         self._pluginContainerWidget.setLayout(self._pluginLayout)
         self.setWidget(self._pluginContainerWidget)
 
-    def _currentPluginChanged(self, plugin):
+    def _currentPluginChanged(self, plugin):        
         self._pluginLayout.removeWidget(self._pluginLayoutCurrentWidget)
         self._pluginLayoutCurrentWidget = plugin
+        if not self._pluginLayoutCurrentWidget:
+            self._pluginLayoutCurrentWidget = QWidget()
         self._pluginLayout.addWidget(self._pluginLayoutCurrentWidget)
         self._pluginContainerWidget.setLayout(self._pluginLayout)
         self.setWidget(self._pluginContainerWidget)

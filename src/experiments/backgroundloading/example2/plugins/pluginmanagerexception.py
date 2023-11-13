@@ -1,0 +1,2 @@
+class PluginManagerException(Exception):
+    pass

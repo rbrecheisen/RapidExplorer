@@ -3,13 +3,13 @@ import importlib
 
 from typing import Dict
 
-from rapidx.app.singleton import singleton
-from rapidx.app.plugins.taskplugin import TaskPlugin
-from rapidx.app.plugins.viewplugin import ViewPlugin
-from rapidx.app.plugins.pluginsignal import PluginSignal
-from rapidx.app.plugins.pluginmanagerexception import PluginManagerException
+from singleton import singleton
+from plugins.taskplugin import TaskPlugin
+from plugins.viewplugin import ViewPlugin
+from plugins.pluginsignal import PluginSignal
+from plugins.pluginmanagerexception import PluginManagerException
 
-PLUGINDIR = 'src/app/rapidx/plugins'
+PLUGINDIR = 'src/experiments/backgroundloading/example2/plugins'
 
 
 @singleton
@@ -47,15 +47,15 @@ class PluginManager:
     def currentPlugin(self):
         return self._currentPlugin
 
+    def signal(self):
+        return self._signal
+
     def setCurrentPlugin(self, plugin):
         # This method is called by other components in RapidExplorer
         # For example, the views dock widget has a menu where the user
         # can select a view plugin
         self._currentPlugin = plugin
         self.signal().pluginChanged.emit(self._currentPlugin)
-
-    def signal(self):
-        return self._signal
 
     def loadAll(self):
         self._plugins = {}

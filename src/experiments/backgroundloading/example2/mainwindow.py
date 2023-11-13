@@ -4,6 +4,7 @@ from PySide6.QtCore import Qt, QSize, QThreadPool
 from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QFileDialog, QMenu, QProgressDialog
 from PySide6.QtGui import QAction, QGuiApplication
 
+from plugins.pluginmanager import PluginManager
 from data.filecache import FileCache
 from data.dicomfiletype import DicomFileType
 from data.fileimporter import FileImporter
@@ -31,8 +32,12 @@ class MainWindow(QMainWindow):
         self._fileSetImporter = None
         self._multiFileSetImporter = None
         self._treeView = None
-        # self._loadPlugins()
+        self._loadPlugins()
         self._initUi()
+
+    def _loadPlugins(self) -> None:
+        manager = PluginManager()
+        manager.loadAll()
 
     def _initUi(self) -> None:
         self._initMenus()
