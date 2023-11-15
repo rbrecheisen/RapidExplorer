@@ -42,12 +42,6 @@ class MultiFileSetItemMenu(QMenu):
     def _handleDeleteAction(self):
         registeredMultiFileSetModel = self._multiFileSetItem.registeredMultiFileSetModel()
         self._databaseManager.deleteData(registeredMultiFileSetModel)
-        # cache = FileCache()
-        # cache.removeMultiFileSet(registeredMultiFileSetModel)
-        # with DbSession() as session:
-        #     model = session.get(MultiFileSetModel, registeredMultiFileSetModel.id)
-        #     session.delete(model)
-        #     session.commit()
         self._treeView.model().clear()
         self._treeView.loadModelsFromDatabase()
     

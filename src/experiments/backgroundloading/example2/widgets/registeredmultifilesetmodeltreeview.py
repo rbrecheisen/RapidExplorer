@@ -58,21 +58,6 @@ class RegisteredMultiFileSetModelTreeView(QTreeView):
         registeredMultiFileSetModels = self._databaseManager.loadModels()
         for registeredMultiFileSetModel in registeredMultiFileSetModels:
             self.addRegisteredMultiFileSetModel(registeredMultiFileSetModel)
-        # modelLoader = RegisteredMultiFileSetModelLoader()
-        # registeredMultiFileSetModels = modelLoader.loadAll()
-        # for registeredMultiFileSetModel in registeredMultiFileSetModels:
-        #     if self._loadedFromFile(registeredMultiFileSetModel):
-        #         self.addRegisteredMultiFileSetModel(registeredMultiFileSetModel, loaded=True)
-        #     else:
-        #         self.addRegisteredMultiFileSetModel(registeredMultiFileSetModel, loaded=False)
-
-    # def _loadedFromFile(self, registeredMultiFileSetModel: RegisteredMultiFileSetModel) -> bool:
-    #     cache = FileCache()
-    #     for registeredFileSetModel in registeredMultiFileSetModel.registeredFileSetModels:
-    #         for registeredFileModel in registeredFileSetModel.registeredFileModels:
-    #             if not cache.has(registeredFileModel.id):
-    #                 return False
-    #     return True
 
     def clearData(self) -> None:
         self.model().clear()
