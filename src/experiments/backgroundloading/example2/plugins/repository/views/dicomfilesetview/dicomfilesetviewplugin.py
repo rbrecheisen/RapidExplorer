@@ -48,14 +48,18 @@ class DicomFileSetViewPlugin(ViewPlugin):
         registeredFileSetModel = data
         fileModels = self._databaseManager.getFileSetModelFileModels(registeredFileSetModel)
         # for fileModel in fileSetModel.fileModels:
+        x = []
         for fileModel in fileModels:
             # if isinstance(fileModel.fileType, DicomFileType):
             if fileModel.fileType == DicomFileType.name:
                 dicomFile = self._databaseManager.getFileFromCache(fileModel.id)
-                self._dicomImages.append(self._convertToQImage(dicomFile))
+                x.append(dicomFile)
+                # self._dicomImages.append(self._convertToQImage(dicomFile))
             else:
                 raise RuntimeError(f'File {fileModel.path} is not a DICOM file')
-        self._dicomImages = sorted(self._dicomImages, key=lambda p: p.InstanceNumber)
+        x = sorted(x, key=lambda image: image.data().InstanceNumber)
+        for item in x:
+            self._dicomImages.append(self._convertToQImage(item))
         self._displayDicomImage(self._currentImageIndex)
 
     def _convertToQImage(self, dicomFile: DicomFile):
@@ -88,7 +92,10 @@ class DicomFileSetViewPlugin(ViewPlugin):
     def _displayDicomImage(self, index) -> None:
         image = self._dicomImages[index]
         pixmap = QPixmap.fromImage(image)
-        pixmap_item = QGraphicsPixmapItem(pixmap)
+        pixmapItem = QGraphicsPixmapItem(pixmap)
         self._scene.clear()
-        self._scene.addItem(pixmap_item)
+        self._scene.addItem(pixmapItem)
+        # TODO: Fix this. There's an annoying scrollbar when you do this
+        self._scene.setSceneRect(pixmapItem.boundingRect())
+        self._graphicsView.setFixedSize(pixmapItem.boundingRect().size().toSize())
         self._currentImageIndex = index

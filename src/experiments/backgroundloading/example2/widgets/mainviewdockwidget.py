@@ -25,7 +25,8 @@ class MainViewDockWidget(DockWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self._pluginWidget)
         widget = QWidget()
-        widget.setFixedHeight(DOCKWIDGETHEIGHT)
+        # widget.setMaximumSize(DOCKWIDGETHEIGHT, DOCKWIDGETHEIGHT)
+        # widget.setFixedHeight(DOCKWIDGETHEIGHT)
         widget.setLayout(layout)
         self.setWidget(widget)
 
