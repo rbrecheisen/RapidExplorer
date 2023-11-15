@@ -3,9 +3,8 @@ from PySide6.QtWidgets import QTreeView, QProgressDialog
 from PySide6.QtGui import QStandardItemModel, QStandardItemModel, QMouseEvent
 
 from data.dbsession import DbSession
-from data.filecache import FileCache
+from data.databasemanager import DatabaseManager
 from data.registeredmultifilesetmodel import RegisteredMultiFileSetModel
-from data.registeredmultifilesetmodelloader import RegisteredMultiFileSetModelLoader
 from data.filesetmodel import FileSetModel
 from data.multifilesetmodel import MultiFileSetModel
 from widgets.multifilesetitem import MultiFileSetItem
@@ -21,6 +20,7 @@ class RegisteredMultiFileSetModelTreeView(QTreeView):
         super(RegisteredMultiFileSetModelTreeView, self).__init__()
         self._model = None
         self._progressDialog = None
+        self._databaseManager = DatabaseManager()
         self._initModel()
         self._initProgressDialog()
         self.loadModelsFromDatabase()
@@ -41,35 +41,41 @@ class RegisteredMultiFileSetModelTreeView(QTreeView):
     def progressDialog(self) -> QProgressDialog:
         return self._progressDialog
 
-    def addRegisteredMultiFileSetModel(self, registeredMultiFileSetModel: RegisteredMultiFileSetModel, loaded: bool=True) -> None:
-        multiFileSetItem = MultiFileSetItem(registeredMultiFileSetModel, loaded)
+    def addRegisteredMultiFileSetModel(self, registeredMultiFileSetModel: RegisteredMultiFileSetModel) -> None:
+        multiFileSetItem = MultiFileSetItem(registeredMultiFileSetModel)
         multiFileSetItem.setEditable(False)
         for registeredFileSetModel in registeredMultiFileSetModel.registeredFileSetModels:
-            fileSetItem = FileSetItem(registeredFileSetModel, loaded)
+            fileSetItem = FileSetItem(registeredFileSetModel)
             fileSetItem.setEditable(False)
             multiFileSetItem.appendRow(fileSetItem)
             for registeredFileModel in registeredFileSetModel.registeredFileModels:
-                fileItem = FileItem(registeredFileModel, loaded)
+                fileItem = FileItem(registeredFileModel)
                 fileItem.setEditable(False)
                 fileSetItem.appendRow(fileItem)
         self._model.appendRow(multiFileSetItem)
 
     def loadModelsFromDatabase(self) -> None:
-        modelLoader = RegisteredMultiFileSetModelLoader()
-        registeredMultiFileSetModels = modelLoader.loadAll()
+        registeredMultiFileSetModels = self._databaseManager.loadModels()
         for registeredMultiFileSetModel in registeredMultiFileSetModels:
-            if self._loadedFromFile(registeredMultiFileSetModel):
-                self.addRegisteredMultiFileSetModel(registeredMultiFileSetModel, loaded=True)
-            else:
-                self.addRegisteredMultiFileSetModel(registeredMultiFileSetModel, loaded=False)
+            self.addRegisteredMultiFileSetModel(registeredMultiFileSetModel)
+        # modelLoader = RegisteredMultiFileSetModelLoader()
+        # registeredMultiFileSetModels = modelLoader.loadAll()
+        # for registeredMultiFileSetModel in registeredMultiFileSetModels:
+        #     if self._loadedFromFile(registeredMultiFileSetModel):
+        #         self.addRegisteredMultiFileSetModel(registeredMultiFileSetModel, loaded=True)
+        #     else:
+        #         self.addRegisteredMultiFileSetModel(registeredMultiFileSetModel, loaded=False)
 
-    def _loadedFromFile(self, registeredMultiFileSetModel: RegisteredMultiFileSetModel) -> bool:
-        cache = FileCache()
-        for registeredFileSetModel in registeredMultiFileSetModel.registeredFileSetModels:
-            for registeredFileModel in registeredFileSetModel.registeredFileModels:
-                if not cache.has(registeredFileModel.id):
-                    return False
-        return True
+    # def _loadedFromFile(self, registeredMultiFileSetModel: RegisteredMultiFileSetModel) -> bool:
+    #     cache = FileCache()
+    #     for registeredFileSetModel in registeredMultiFileSetModel.registeredFileSetModels:
+    #         for registeredFileModel in registeredFileSetModel.registeredFileModels:
+    #             if not cache.has(registeredFileModel.id):
+    #                 return False
+    #     return True
+
+    def clearData(self) -> None:
+        self.model().clear()
 
     def _itemChanged(self, item) -> None:
         with DbSession() as session:

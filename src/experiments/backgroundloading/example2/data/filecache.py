@@ -40,6 +40,10 @@ class FileCache:
     def removeMultiFileSet(self, registeredMultiFileSetModel: RegisteredMultiFileSetModel) -> None:
         for registeredFileSetModel in registeredMultiFileSetModel.registeredFileSetModels:
             self.removeFileSet(registeredFileSetModel)
+
+    def removeAllData(self) -> None:
+        self._data.clear()
+        self._data = {}
         
     def get(self, id: str) -> File:
         if id in self._data.keys():

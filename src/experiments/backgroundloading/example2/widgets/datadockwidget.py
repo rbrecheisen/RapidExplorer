@@ -15,3 +15,6 @@ class DataDockWidget(DockWidget):
 
     def treeView(self) -> RegisteredMultiFileSetModelTreeView:
         return self._treeView
+    
+    def clearData(self) -> None:
+        self._treeView.clearData()

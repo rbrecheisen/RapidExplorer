@@ -4,11 +4,11 @@ from data.registeredmultifilesetmodel import RegisteredMultiFileSetModel
 
 
 class MultiFileSetItem(QStandardItem):
-    def __init__(self, registeredMultiFileSetModel: RegisteredMultiFileSetModel, loaded: bool) -> None:
+    def __init__(self, registeredMultiFileSetModel: RegisteredMultiFileSetModel) -> None:
         super(MultiFileSetItem, self).__init__(registeredMultiFileSetModel.name)
         self._registeredMultiFileSetModel = registeredMultiFileSetModel
         self.id = self._registeredMultiFileSetModel.id
-        self._loaded = loaded
+        self._loaded = self._registeredMultiFileSetModel.loaded
         if not self._loaded:
             font = QFont()
             font.setItalic(True)

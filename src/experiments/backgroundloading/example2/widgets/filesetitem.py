@@ -4,11 +4,11 @@ from data.registeredfilesetmodel import RegisteredFileSetModel
 
 
 class FileSetItem(QStandardItem):
-    def __init__(self, registeredFileSetModel: RegisteredFileSetModel, loaded=True) -> None:
+    def __init__(self, registeredFileSetModel: RegisteredFileSetModel) -> None:
         super(FileSetItem, self).__init__(registeredFileSetModel.name)
         self._registeredFileSetModel = registeredFileSetModel
         self.id = self._registeredFileSetModel.id
-        self._loaded = loaded
+        self._loaded = self._registeredFileSetModel.loaded
         if not self._loaded:
             font = QFont()
             font.setItalic(True)

@@ -17,6 +17,7 @@ class RegisteredMultiFileSetContentLoader:
     def execute(self) -> RegisteredMultiFileSetModel:
         i = 0
         cache = FileCache()
+        self._registeredMultiFileSetModel.loaded = False
         for registeredFileSetModel in self._registeredMultiFileSetModel.registeredFileSetModels:
             for registeredFileModel in registeredFileSetModel.registeredFileModels:
                 if not cache.has(registeredFileModel.id):
@@ -30,4 +31,7 @@ class RegisteredMultiFileSetContentLoader:
                     i += 1
                 else:
                     print(f'File {registeredFileModel.path} already in cache (skipping)')
+                registeredFileModel.loaded = True
+            registeredFileSetModel.loaded = True
+        self._registeredMultiFileSetModel.loaded = True
         return self._registeredMultiFileSetModel

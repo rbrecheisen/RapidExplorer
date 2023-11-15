@@ -7,6 +7,7 @@ class RegisteredMultiFileSetModel:
         self.name = multiFileSetModel.name
         self.path = multiFileSetModel.path
         self.registeredFileSetModels = []
+        self.loaded = False
 
     def nrFileSets(self) -> int:
         return len(self.registeredFileSetModels)

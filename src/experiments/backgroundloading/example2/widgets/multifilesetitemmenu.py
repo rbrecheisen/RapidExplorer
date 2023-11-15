@@ -1,10 +1,8 @@
 from PySide6.QtCore import QPoint
-from PySide6.QtWidgets import QMenu, QTreeView
+from PySide6.QtWidgets import QMenu
 
-from data.dbsession import DbSession
-from data.filecache import FileCache
+from data.databasemanager import DatabaseManager
 from data.registeredmultifilesetcontentloader import RegisteredMultiFileSetContentLoader
-from data.multifilesetmodel import MultiFileSetModel
 from widgets.multifilesetitem import MultiFileSetItem
 
 
@@ -14,6 +12,7 @@ class MultiFileSetItemMenu(QMenu):
         self._treeView = treeView
         self._multiFileSetItem = multiFileSetItem
         self._position = position
+        self._databaseManager = DatabaseManager()
         if not self._multiFileSetItem.loaded():
             action1 = self.addAction('Load')
             action1.triggered.connect(self._handleLoadAction)
@@ -42,12 +41,13 @@ class MultiFileSetItemMenu(QMenu):
 
     def _handleDeleteAction(self):
         registeredMultiFileSetModel = self._multiFileSetItem.registeredMultiFileSetModel()
-        cache = FileCache()
-        cache.removeMultiFileSet(registeredMultiFileSetModel)
-        with DbSession() as session:
-            model = session.get(MultiFileSetModel, registeredMultiFileSetModel.id)
-            session.delete(model)
-            session.commit()
+        self._databaseManager.deleteData(registeredMultiFileSetModel)
+        # cache = FileCache()
+        # cache.removeMultiFileSet(registeredMultiFileSetModel)
+        # with DbSession() as session:
+        #     model = session.get(MultiFileSetModel, registeredMultiFileSetModel.id)
+        #     session.delete(model)
+        #     session.commit()
         self._treeView.model().clear()
         self._treeView.loadModelsFromDatabase()
     

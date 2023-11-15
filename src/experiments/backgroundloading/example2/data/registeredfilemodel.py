@@ -8,4 +8,5 @@ class RegisteredFileModel:
         self.name = None
         self.path = fileModel.path
         self.fileType = fileModel.fileType
-        self.registeredFileSetModel = registeredFileSetModel    
+        self.registeredFileSetModel = registeredFileSetModel
+        self.loaded = False
