@@ -5,8 +5,8 @@ from widgets.filesetitem import FileSetItem
 
 
 class FileSetItemMenu(QMenu):
-    def __init__(self, treeView: QTreeView, fileSetItem: FileSetItem, position: QPoint, parent=None) -> None:
-        super(FileSetItemMenu, self).__init__(parent)
+    def __init__(self, treeView: QTreeView, fileSetItem: FileSetItem, position: QPoint) -> None:
+        super(FileSetItemMenu, self).__init__()
         self._treeView = treeView
         self._fileSetItem = fileSetItem
         self._position = position

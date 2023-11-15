@@ -2,15 +2,14 @@ import numpy as np
 
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap, QImage
-from PySide6.QtWidgets import QApplication, QGraphicsView, QGraphicsScene, QGraphicsPixmapItem
-from PySide6.QtWidgets import QVBoxLayout, QWidget, QSlider, QLabel, QHBoxLayout
+from PySide6.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsPixmapItem
+from PySide6.QtWidgets import QVBoxLayout
 
-# from rapidx.app.data.db.db import Db
-# from rapidx.app.data.db.dbgetcommand import DbGetCommand
-# from rapidx.app.data.filecache import FileCache
-# from rapidx.app.data.file.dicomfile import DicomFile
-# from rapidx.app.data.fileset.filesetmodel import FileSetModel
 from plugins.viewplugin import ViewPlugin
+from data.databasemanager import DatabaseManager
+from data.dicomfiletype import DicomFileType
+from data.dicomfile import DicomFile
+from data.registeredfilesetmodel import RegisteredFileSetModel
 
 WINDOWCENTER = 400
 WINDOWWIDTH = 50
@@ -18,11 +17,13 @@ PLUGINNAME = 'DICOM Image Series View'
 
 
 class DicomFileSetViewPlugin(ViewPlugin):
-    def __init__(self, parent=None):
-        super(DicomFileSetViewPlugin, self).__init__(parent)
+    def __init__(self):
+        super(DicomFileSetViewPlugin, self).__init__()
         self._graphicsView = None
         self._scene = None
         self._dicomImages = []
+        self._currentImageIndex = 0
+        self._databaseManager = DatabaseManager()
         self._initUi()
 
     def name(self) -> str:
@@ -41,32 +42,47 @@ class DicomFileSetViewPlugin(ViewPlugin):
         layout.addWidget(self._graphicsView)
         self.setLayout(layout)
 
-#     def setFileSetModel(self, fileSetModel: FileSetModel) -> None:
-#         with Db() as db:
-#             fileSetModel = DbGetCommand(db, FileSetModel, fileSetModel.unboundId).execute()
-#             for fileModel in fileSetModel.fileModels:
-#                 cache = FileCache()
-#                 self._dicomImages.append(self._convertToQImage(cache.get(fileModel.id)))
-#                 print(f'Converted file: {fileModel.id}')
+    def setRegisteredFileSetModel(self, registeredFileSetModel: RegisteredFileSetModel) -> None:
+        fileSetModel = self._databaseManager.getFileSetModel(registeredFileSetModel)
+        for fileModel in fileSetModel.fileModels:
+            if isinstance(fileModel.fileType, DicomFileType):
+                dicomFile = self._databaseManager.getFileFromCache(fileModel.id)
+                self._dicomImages.append(self._convertToQImage(dicomFile))
+            else:
+                raise RuntimeError(f'File {fileModel.path} is not a DICOM file')
+        self._displayDicomImage(self._currentImageIndex)
 
-#     def _convertToQImage(self, dicomFile: DicomFile):
-#         p = dicomFile.data()
-#         pixelArray = p.pixel_array
-#         if 'RescaleSlope' in p and 'RescaleIntercept' in p:
-#             pixelArray = pixelArray * p.RescaleSlope + p.RescaleIntercept
-#         pixelArray = self.applyWindowCenterAndWidth(pixelArray, WINDOWCENTER, WINDOWWIDTH)
-#         if pixelArray.dtype != np.uint8:
-#             pixelArray = pixelArray.astype(np.uint8)
-#         height, width = pixelArray.shape
-#         bytes_per_line = width
-#         return QImage(pixelArray.data, width, height, bytes_per_line, QImage.Format_Grayscale8)
+    def _convertToQImage(self, dicomFile: DicomFile):
+        p = dicomFile.data()
+        pixelArray = p.pixel_array
+        if 'RescaleSlope' in p and 'RescaleIntercept' in p:
+            pixelArray = pixelArray * p.RescaleSlope + p.RescaleIntercept
+        pixelArray = self.applyWindowCenterAndWidth(pixelArray, WINDOWCENTER, WINDOWWIDTH)
+        if pixelArray.dtype != np.uint8:
+            pixelArray = pixelArray.astype(np.uint8)
+        height, width = pixelArray.shape
+        bytes_per_line = width
+        return QImage(pixelArray.data, width, height, bytes_per_line, QImage.Format_Grayscale8)
  
-#     def applyWindowCenterAndWidth(self, image, center, width):
-#         imgMin = center - width // 2
-#         imgMax = center + width // 2
-#         windowedImg = np.clip(image, imgMin, imgMax)
-#         windowedImg = ((windowedImg - imgMin) / (imgMax - imgMin)) * 255.0
-#         return windowedImg.astype(np.uint8)
+    def applyWindowCenterAndWidth(self, image, center, width):
+        imageMin = center - width // 2
+        imageMax = center + width // 2
+        windowedImage = np.clip(image, imageMin, imageMax)
+        windowedImage = ((windowedImage - imageMin) / (imageMax - imageMin)) * 255.0
+        return windowedImage.astype(np.uint8)
+    
+    def wheelEvent(self, event):
+        delta = event.angleDelta().y()
+        if delta > 0 and self._currentImageIndex > 0:
+            self._currentImageIndex -= 1
+        elif delta < 0 and self._currentImageIndex < len(self._dicomImages) - 1:
+            self._currentImageIndex += 1
+        self._displayDicomImage(self._currentImageIndex)
 
-#     def name(self) -> str:
-#         return 'DICOM Image Series View'
+    def _displayDicomImage(self, index) -> None:
+        image = self._dicomImages[index]
+        pixmap = QPixmap.fromImage(image)
+        pixmap_item = QGraphicsPixmapItem(pixmap)
+        self._scene.clear()
+        self._scene.addItem(pixmap_item)
+        self._currentImageIndex = index

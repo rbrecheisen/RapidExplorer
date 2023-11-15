@@ -12,14 +12,14 @@ PLUGINNAME = 'DICOM Image View'
 
 class DicomFileViewPlugin(ViewPlugin):
     def __init__(self, parent=None):
-        super(DicomFileViewPlugin, self).__init__(parent)
+        super(DicomFileViewPlugin, self).__init__()
         self._graphicsView = None
         self._scene = None
         self._initUi()
 
     def name(self) -> str:
         return PLUGINNAME
-    
+
     def _initUi(self):
         self._initGraphicsView()
 

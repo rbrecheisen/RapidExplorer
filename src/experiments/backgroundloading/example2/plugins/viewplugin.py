@@ -2,8 +2,8 @@ from PySide6.QtWidgets import QWidget
 
 
 class ViewPlugin(QWidget):
-    def __init__(self, parent=None):
-        super(ViewPlugin, self).__init__(parent)
+    def __init__(self):
+        super(ViewPlugin, self).__init__()
 
     def name(self) -> str:
         raise NotImplementedError('Not implemented')

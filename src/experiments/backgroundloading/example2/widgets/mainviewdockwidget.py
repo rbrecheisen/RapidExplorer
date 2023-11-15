@@ -26,3 +26,5 @@ class MainViewDockWidget(DockWidget):
         widget.setFixedHeight(500)
         widget.setLayout(layout)
         self.setWidget(widget)
+
+    # def setData(self, )

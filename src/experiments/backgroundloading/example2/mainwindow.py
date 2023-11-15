@@ -114,9 +114,6 @@ class MainWindow(QMainWindow):
             self._progressBarDialog.setValue(0)
             self._databaseManager.signal().progress.connect(self._databaseManagerFileImportProgress)
             self._databaseManager.importFile(filePath=filePath, fileType=DicomFileType())
-            # self._fileImporter = FileImporter(path=filePath, fileType=DicomFileType())
-            # self._fileImporter.signal().progress.connect(self._fileImporterProgress)
-            # QThreadPool.globalInstance().start(self._fileImporter)
 
     def _importDicomFileSet(self):
         dirPath = QFileDialog.getExistingDirectory(self, 'Open DICOM Image Series', FILESETPATH)
@@ -125,9 +122,6 @@ class MainWindow(QMainWindow):
             self._progressBarDialog.setValue(0)
             self._databaseManager.signal().progress.connect(self._databaseManagerFileSetImportProgress)
             self._databaseManager.importFileSet(dirPath=dirPath, fileType=DicomFileType())
-            # self._fileSetImporter = FileSetImporter(path=dirPath, fileType=DicomFileType())
-            # self._fileSetImporter.signal().progress.connect(self._fileSetImporterProgress)
-            # QThreadPool.globalInstance().start(self._fileSetImporter)
 
     def _importDicomMultiFileSet(self):
         dirPath = QFileDialog.getExistingDirectory(self, 'Open Multiple DICOM Image Series', MULTIFILESETPATH)
@@ -136,9 +130,6 @@ class MainWindow(QMainWindow):
             self._progressBarDialog.setValue(0)
             self._databaseManager.signal().progress.connect(self._databaseManagerMultiFileSetImportProgress)
             self._databaseManager.importMultiFileSet(dirPath=dirPath, fileType=DicomFileType())
-            # self._multiFileSetImporter = MultiFileSetImporter(path=dirPath, fileType=DicomFileType())
-            # self._multiFileSetImporter.signal().progress.connect(self._multiFileSetImporterProgress)
-            # QThreadPool.globalInstance().start(self._multiFileSetImporter)
 
     def _databaseManagerFileImportProgress(self, progress):
         self._progressBarDialog.setValue(progress)
@@ -146,32 +137,17 @@ class MainWindow(QMainWindow):
             self._dataDockWidget.treeView().addRegisteredMultiFileSetModel(self._databaseManager.data())
             self._databaseManager.signal().progress.disconnect(self._databaseManagerFileImportProgress)
 
-    # def _fileImporterProgress(self, progress):
-    #     self._progressBarDialog.setValue(progress)
-    #     if progress == 100:
-    #         self._dataDockWidget.treeView().addRegisteredMultiFileSetModel(self._fileImporter.data())
-
     def _databaseManagerFileSetImportProgress(self, progress):
         self._progressBarDialog.setValue(progress)            
         if progress == 100:
             self._dataDockWidget.treeView().addRegisteredMultiFileSetModel(self._databaseManager.data())
             self._databaseManager.signal().progress.disconnect(self._databaseManagerFileSetImportProgress)
 
-    # def _fileSetImporterProgress(self, progress):
-    #     self._progressBarDialog.setValue(progress)            
-    #     if progress == 100:
-    #         self._dataDockWidget.treeView().addRegisteredMultiFileSetModel(self._fileSetImporter.data())
-
     def _databaseManagerMultiFileSetImportProgress(self, progress):
         self._progressBarDialog.setValue(progress)
         if progress == 100:
             self._dataDockWidget.treeView().addRegisteredMultiFileSetModel(self._databaseManager.data())
             self._databaseManager.signal().progress.disconnect(self._databaseManagerMultiFileSetImportProgress)
-
-    # def _multiFileSetImporterProgress(self, progress):
-    #     self._progressBarDialog.setValue(progress)
-    #     if progress == 100:
-    #         self._dataDockWidget.treeView().addRegisteredMultiFileSetModel(self._multiFileSetImporter.data())
 
     def _printFileCache(self):
         self._databaseManager.printFileCache()

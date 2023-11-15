@@ -5,8 +5,8 @@ from widgets.fileitem import FileItem
 
 
 class FileItemMenu(QMenu):
-    def __init__(self, fileItem: FileItem, position: QPoint, parent=None) -> None:
-        super(FileItemMenu, self).__init__(parent)
+    def __init__(self, fileItem: FileItem, position: QPoint) -> None:
+        super(FileItemMenu, self).__init__()
         self._item = fileItem
         self._position = position
         action1 = self.addAction('Show in Main View')

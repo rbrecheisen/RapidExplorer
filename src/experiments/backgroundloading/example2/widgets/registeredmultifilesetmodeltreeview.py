@@ -87,7 +87,7 @@ class RegisteredMultiFileSetModelTreeView(QTreeView):
     def _handleRightClickEvent(self, index, globalPos) -> None:
         item = self._model.itemFromIndex(index)
         if isinstance(item, FileItem):
-            menu = FileItemMenu(self, item, globalPos)
+            menu = FileItemMenu(item, globalPos)
             menu.show()
         elif isinstance(item, FileSetItem):
             menu = FileSetItemMenu(self, item, globalPos)
