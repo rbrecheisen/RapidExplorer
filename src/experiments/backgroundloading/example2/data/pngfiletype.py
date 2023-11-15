@@ -3,8 +3,10 @@ from data.registeredfilemodel import RegisteredFileModel
 
 
 class PngFileType(FileType):
+    name = 'png'
+
     def __init__(self) -> None:
-        super(DicomFileType, self).__init__(name='png')
+        super(DicomFileType, self).__init__()
 
     def check(self, path: str) -> bool:
         if path.endswith('.png'):

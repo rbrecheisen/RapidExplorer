@@ -15,6 +15,7 @@ from widgets.mainviewdockwidget import MainViewDockWidget
 MULTIFILESETPATH = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset')
 FILESETPATH = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset/scan1')
 FILEPATH = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset/scan1/image-00000.dcm')
+MAINWINDOWSIZE = (1500, 1000)
 
 
 class MainWindow(QMainWindow):
@@ -103,7 +104,7 @@ class MainWindow(QMainWindow):
         self.centralWidget().hide()
         self.splitDockWidget(self._dataDockWidget, self._tasksDockWidget, Qt.Vertical)
         self.splitDockWidget(self._mainViewDockWidget, self._viewsDockWidget, Qt.Vertical)
-        self.setFixedSize(QSize(1024, 800))
+        self.setFixedSize(QSize(MAINWINDOWSIZE[0], MAINWINDOWSIZE[1]))
         self.setWindowTitle('RapidExplorer v1.0')
         self._centerWindow()
 

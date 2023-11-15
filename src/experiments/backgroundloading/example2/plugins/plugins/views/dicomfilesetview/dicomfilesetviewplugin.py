@@ -11,8 +11,8 @@ from data.dicomfiletype import DicomFileType
 from data.dicomfile import DicomFile
 from data.registeredfilesetmodel import RegisteredFileSetModel
 
-WINDOWCENTER = 400
-WINDOWWIDTH = 50
+WINDOWCENTER = 50
+WINDOWWIDTH = 400
 PLUGINNAME = 'DICOM Image Series View'
 
 
@@ -42,14 +42,20 @@ class DicomFileSetViewPlugin(ViewPlugin):
         layout.addWidget(self._graphicsView)
         self.setLayout(layout)
 
-    def setRegisteredFileSetModel(self, registeredFileSetModel: RegisteredFileSetModel) -> None:
-        fileSetModel = self._databaseManager.getFileSetModel(registeredFileSetModel)
-        for fileModel in fileSetModel.fileModels:
-            if isinstance(fileModel.fileType, DicomFileType):
+    def setData(self, data: RegisteredFileSetModel) -> None:
+        # if isinstance(data, RegisteredFileSetModel):
+        # fileSetModel = self._databaseManager.getFileSetModel(registeredFileSetModel)
+        registeredFileSetModel = data
+        fileModels = self._databaseManager.getFileSetModelFileModels(registeredFileSetModel)
+        # for fileModel in fileSetModel.fileModels:
+        for fileModel in fileModels:
+            # if isinstance(fileModel.fileType, DicomFileType):
+            if fileModel.fileType == DicomFileType.name:
                 dicomFile = self._databaseManager.getFileFromCache(fileModel.id)
                 self._dicomImages.append(self._convertToQImage(dicomFile))
             else:
                 raise RuntimeError(f'File {fileModel.path} is not a DICOM file')
+        self._dicomImages = sorted(self._dicomImages, key=lambda p: p.InstanceNumber)
         self._displayDicomImage(self._currentImageIndex)
 
     def _convertToQImage(self, dicomFile: DicomFile):

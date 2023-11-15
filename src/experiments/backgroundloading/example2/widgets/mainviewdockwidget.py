@@ -4,6 +4,8 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout
 from widgets.dockwidget import DockWidget
 from plugins.pluginmanager import PluginManager
 
+DOCKWIDGETHEIGHT = 700
+
 
 class MainViewDockWidget(DockWidget):
     def __init__(self, title: str) -> None:
@@ -23,7 +25,7 @@ class MainViewDockWidget(DockWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self._pluginWidget)
         widget = QWidget()
-        widget.setFixedHeight(500)
+        widget.setFixedHeight(DOCKWIDGETHEIGHT)
         widget.setLayout(layout)
         self.setWidget(widget)
 

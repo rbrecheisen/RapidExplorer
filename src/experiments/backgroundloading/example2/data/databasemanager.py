@@ -3,6 +3,7 @@ from PySide6.QtCore import QThreadPool
 from data.progresssignal import ProgressSignal
 from data.dbsession import DbSession
 from data.filecache import FileCache
+from data.file import File
 from data.filetype import FileType
 from data.fileimporter import FileImporter
 from data.filesetimporter import FileSetImporter
@@ -118,6 +119,23 @@ class DatabaseManager:
 
     def _updateLoadProgress(self, progress) -> None:
         self._signal.progress.emit(progress)
+
+    # Getting data
+
+    def getFileFromCache(self, id: str) -> File:
+        return FileCache().get(id)
+
+    def getFileModel(self, registeredFileModel: RegisteredFileModel) -> FileModel:
+        pass
+
+    def getFileSetModelFileModels(self, registeredFileSetModel: RegisteredFileSetModel) -> FileSetModel:
+        with DbSession() as session:
+            fileSetModel = session.get(FileSetModel, registeredFileSetModel.id)
+            fileModels = session.query(FileModel).filter_by(fileSetModel=fileSetModel).all()
+            return fileModels
+        
+    def getMultiFileSetModel(self, registeredMultiFileSetModel: RegisteredMultiFileSetModel) -> MultiFileSetModel:
+        pass
 
     # Updating names
 

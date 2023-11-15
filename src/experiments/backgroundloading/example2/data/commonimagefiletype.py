@@ -4,8 +4,10 @@ from data.jpegfiletype import JpegFileType
 
 
 class CommonImageFileType(FileType):
+    name = 'png/jpeg'
+
     def __init__(self) -> None:
-        super(CommonImageFileType, self).__init__(name='png/jpeg')
+        super(CommonImageFileType, self).__init__()
         
     def check(self, path: str) -> bool:
         pngFileType = PngFileType()

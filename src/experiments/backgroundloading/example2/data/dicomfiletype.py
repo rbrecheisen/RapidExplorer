@@ -7,8 +7,10 @@ from data.registeredfilemodel import RegisteredFileModel
 
 
 class DicomFileType(FileType):
+    name = 'dicom'
+
     def __init__(self) -> None:
-        super(DicomFileType, self).__init__(name='dicom')
+        super(DicomFileType, self).__init__()
 
     def check(self, path: str) -> bool:
         try:
