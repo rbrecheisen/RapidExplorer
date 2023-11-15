@@ -118,3 +118,17 @@ class DatabaseManager:
 
     def _updateLoadProgress(self, progress) -> None:
         self._signal.progress.emit(progress)
+
+    # Updating names
+
+    def updateFileSetName(self, id: str, name: str) -> None:
+        with DbSession() as session:
+            fileSetModel = session.get(FileSetModel, id)
+            fileSetModel.name = name
+            session.commit()
+
+    def updateMultiFileSetName(self, id: str, name: str) -> None:
+        with DbSession() as session:
+            multiFileSetModel = session.get(MultiFileSetModel, id)
+            multiFileSetModel.name = name
+            session.commit()

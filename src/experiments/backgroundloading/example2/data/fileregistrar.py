@@ -12,7 +12,7 @@ class FileRegistrar(Registrar):
     def __init__(self, path: str, fileType: FileType) -> None:
         super(FileRegistrar, self).__init__(path=path, fileType=fileType)
 
-    def execute(self) -> RegisteredMultiFileSetModel:
+    def execute(self) -> RegisteredMultiFileSetModel:        
         with DbSession() as session:
             multiFileSetModel = MultiFileSetModel()
             session.add(multiFileSetModel)

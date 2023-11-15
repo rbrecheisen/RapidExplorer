@@ -2,11 +2,8 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QTreeView, QProgressDialog
 from PySide6.QtGui import QStandardItemModel, QStandardItemModel, QMouseEvent
 
-from data.dbsession import DbSession
 from data.databasemanager import DatabaseManager
 from data.registeredmultifilesetmodel import RegisteredMultiFileSetModel
-from data.filesetmodel import FileSetModel
-from data.multifilesetmodel import MultiFileSetModel
 from widgets.multifilesetitem import MultiFileSetItem
 from widgets.multifilesetitemmenu import MultiFileSetItemMenu
 from widgets.filesetitem import FileSetItem
@@ -63,17 +60,23 @@ class RegisteredMultiFileSetModelTreeView(QTreeView):
         self.model().clear()
 
     def _itemChanged(self, item) -> None:
-        with DbSession() as session:
-            if isinstance(item, FileSetItem):
-                fileSetModel = session.get(FileSetModel, item.id)
-                fileSetModel.name = item.text()
-                session.commit()
-            elif isinstance(item, MultiFileSetItem):
-                multiFileSetModel = session.get(MultiFileSetModel, item.id)
-                multiFileSetModel.name = item.text()
-                session.commit()
-            else:
-                pass
+        if isinstance(item, FileSetItem):
+            self._databaseManager.updateFileSetName(item.id, item.text())
+        elif isinstance(item, MultiFileSetItem):
+            self._databaseManager.updateMultiFileSetName(item.id, item.text())
+        else:
+            pass
+        # with DbSession() as session:
+        #     if isinstance(item, FileSetItem):
+        #         fileSetModel = session.get(FileSetModel, item.id)
+        #         fileSetModel.name = item.text()
+        #         session.commit()
+        #     elif isinstance(item, MultiFileSetItem):
+        #         multiFileSetModel = session.get(MultiFileSetModel, item.id)
+        #         multiFileSetModel.name = item.text()
+        #         session.commit()
+        #     else:
+        #         pass
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
         index = self.indexAt(event.pos())
