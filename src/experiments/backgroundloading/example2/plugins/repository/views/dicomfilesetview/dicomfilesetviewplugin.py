@@ -45,6 +45,7 @@ class DicomFileSetViewPlugin(ViewPlugin):
     def setData(self, data: RegisteredFileSetModel) -> None:
         # if isinstance(data, RegisteredFileSetModel):
         # fileSetModel = self._databaseManager.getFileSetModel(registeredFileSetModel)
+        self._dicomImages = []
         registeredFileSetModel = data
         fileModels = self._databaseManager.getFileSetModelFileModels(registeredFileSetModel)
         # for fileModel in fileSetModel.fileModels:
