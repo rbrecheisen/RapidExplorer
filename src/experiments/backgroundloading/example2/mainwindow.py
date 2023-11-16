@@ -15,7 +15,7 @@ from widgets.mainviewdockwidget import MainViewDockWidget
 MULTIFILESETPATH = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset')
 FILESETPATH = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset/scan1')
 FILEPATH = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset/scan1/image-00000.dcm')
-MAINWINDOWSIZE = (1500, 1000)
+MAINWINDOWSIZE = (1024, 800)
 
 
 class MainWindow(QMainWindow):

@@ -43,18 +43,14 @@ class DicomFileSetViewPlugin(ViewPlugin):
         self.setLayout(layout)
 
     def setData(self, data: RegisteredFileSetModel) -> None:
-        # if isinstance(data, RegisteredFileSetModel):
-        # fileSetModel = self._databaseManager.getFileSetModel(registeredFileSetModel)
+        self._dicomImages = []
         registeredFileSetModel = data
         fileModels = self._databaseManager.getFileSetModelFileModels(registeredFileSetModel)
-        # for fileModel in fileSetModel.fileModels:
         x = []
         for fileModel in fileModels:
-            # if isinstance(fileModel.fileType, DicomFileType):
             if fileModel.fileType == DicomFileType.name:
                 dicomFile = self._databaseManager.getFileFromCache(fileModel.id)
                 x.append(dicomFile)
-                # self._dicomImages.append(self._convertToQImage(dicomFile))
             else:
                 raise RuntimeError(f'File {fileModel.path} is not a DICOM file')
         x = sorted(x, key=lambda image: image.data().InstanceNumber)
@@ -95,6 +91,4 @@ class DicomFileSetViewPlugin(ViewPlugin):
         pixmapItem = QGraphicsPixmapItem(pixmap)
         self._scene.clear()
         self._scene.addItem(pixmapItem)
-        self._scene.setSceneRect(pixmapItem.boundingRect())
-        self._graphicsView.setFixedSize(pixmapItem.boundingRect().size().toSize())
         self._currentImageIndex = index

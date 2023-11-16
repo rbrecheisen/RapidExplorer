@@ -4,7 +4,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout
 from widgets.dockwidget import DockWidget
 from plugins.pluginmanager import PluginManager
 
-DOCKWIDGETHEIGHT = 700
+DOCKWIDGETSIZE = (600, 600)
 
 
 class MainViewDockWidget(DockWidget):
@@ -25,9 +25,7 @@ class MainViewDockWidget(DockWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self._pluginWidget)
         widget = QWidget()
-        # TODO: Can we do expansion here?
-        # widget.setMaximumSize(DOCKWIDGETHEIGHT, DOCKWIDGETHEIGHT)
-        # widget.setFixedHeight(DOCKWIDGETHEIGHT)
+        widget.setFixedSize(DOCKWIDGETSIZE[0], DOCKWIDGETSIZE[1])
         widget.setLayout(layout)
         self.setWidget(widget)
 
