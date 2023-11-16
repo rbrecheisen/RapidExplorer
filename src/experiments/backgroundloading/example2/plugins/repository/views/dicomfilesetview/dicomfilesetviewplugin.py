@@ -96,6 +96,8 @@ class DicomFileSetViewPlugin(ViewPlugin):
         self._scene.clear()
         self._scene.addItem(pixmapItem)
         # TODO: Fix this. There's an annoying scrollbar when you do this
+        # May do not expand the widget at this position in the code but try to detect earlier
+        # that an expansion is needed?
         self._scene.setSceneRect(pixmapItem.boundingRect())
         self._graphicsView.setFixedSize(pixmapItem.boundingRect().size().toSize())
         self._currentImageIndex = index
