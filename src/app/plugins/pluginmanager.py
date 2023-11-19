@@ -9,7 +9,7 @@ from plugins.viewplugin import ViewPlugin
 from plugins.pluginsignal import PluginSignal
 from plugins.pluginmanagerexception import PluginManagerException
 
-PLUGINDIR = 'src/experiments/backgroundloading/example2/plugins/plugins'
+PLUGINDIR = 'src/app/plugins/plugins'
 
 
 @singleton

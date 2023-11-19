@@ -1,6 +1,6 @@
 from plugins.taskplugin import TaskPlugin
 
-PLUGINNAME = 'Process DICOM File Task'
+PLUGINNAME = 'ProcessDicomFileTaskPlugin'
 
 
 class ProcessDicomFileTaskPlugin(TaskPlugin):

@@ -1,6 +1,6 @@
 import os
 
-from PySide6.QtCore import Qt, QSize
+from PySide6.QtCore import Qt, QSize, QSettings
 from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QFileDialog, QMenu, QProgressDialog
 from PySide6.QtGui import QAction, QGuiApplication
 
@@ -16,11 +16,14 @@ MULTIFILESETPATH = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset')
 FILESETPATH = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset/scan1')
 FILEPATH = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset/scan1/image-00000.dcm')
 MAINWINDOWSIZE = (1024, 800)
+ORGANISATION = 'Rbeesoft'
+APPLICATIONNAME = 'RapidExplorer'
 
 
 class MainWindow(QMainWindow):
     def __init__(self) -> None:
         super(MainWindow, self).__init__()
+        # self._settings = QSettings(ORGANISATION, APPLICATIONNAME)
         self._dataDockWidget = None
         self._tasksDockWidget = None
         self._viewsDockWidget = None
