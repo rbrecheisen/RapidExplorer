@@ -1,5 +1,5 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
-    <file>images/cachexia.png</file>
+    <file>resources/images/cachexia.png</file>
 </qresource>
 </RCC>
