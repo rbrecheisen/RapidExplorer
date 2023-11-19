@@ -1,6 +1,5 @@
 import os
 
-import utils
 from data.filecache import FileCache
 from data.fileimporter import FileImporter
 from data.filesetimporter import FileSetImporter
@@ -13,7 +12,7 @@ FILEPATH = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset/scan1/ima
 
 
 def test_FileImporter():
-    importer = FileImporter(path=FILEPATH, fileType=DicomFileType)
+    importer = FileImporter(path=FILEPATH, fileType=DicomFileType())
     importer.run()
     cache = FileCache()
     assert cache.nrFiles() == 1
@@ -24,7 +23,7 @@ def test_FileImporter():
 
 
 def test_FileSetImporter():
-    importer = FileSetImporter(path=FILESETPATH, fileType=DicomFileType)
+    importer = FileSetImporter(path=FILESETPATH, fileType=DicomFileType())
     importer.run()
     cache = FileCache()
     assert cache.nrFiles() == 361
@@ -32,7 +31,7 @@ def test_FileSetImporter():
 
 
 def test_MultiFileSetImporter():
-    importer = MultiFileSetImporter(path=MULTIFILESETPATH, fileType=DicomFileType)
+    importer = MultiFileSetImporter(path=MULTIFILESETPATH, fileType=DicomFileType())
     importer.run()
     cache = FileCache()
     assert cache.nrFiles() == 1083

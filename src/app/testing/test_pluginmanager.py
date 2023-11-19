@@ -3,10 +3,10 @@ import pytest
 from plugins.pluginmanager import PluginManager
 from plugins.taskplugin import TaskPlugin
 
-PLUGINDIR = 'src/experiments/backgroundloading/example2/plugins'
+PLUGINDIR = 'src/app/plugins/plugins'
 
 
-@pytest.mark.plugins
+@pytest.mark.plugin
 def test_loadTaskPlugins():
     manager = PluginManager()
     assert manager

@@ -10,5 +10,6 @@ engine.ECHO = False
 if __name__ == '__main__':
     if os.path.isfile(engine.DATABASE):
         os.remove(engine.DATABASE)
-    # pytest.main(['-s', 'src/experiments/backgroundloading/example2'])
-    pytest.main(['-m', 'plugins', '-s', 'src/experiments/backgroundloading/example2'])
+    pytest.main(['-s', 'src/app'])
+    # pytest.main(['-m', 'plugins', '-s', 'src/app'])
+    # pytest.main(['-m', 'not long_running', '-s', 'src/app'])

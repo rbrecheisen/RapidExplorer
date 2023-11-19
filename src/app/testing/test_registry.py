@@ -1,8 +1,5 @@
 import os
-import pytest
 import threading
-
-import utils
 
 from data.engine import Engine
 from data.dbsession import DbSession
@@ -13,7 +10,6 @@ from data.fileregistrar import FileRegistrar
 from data.filesetregistrar import FileSetRegistrar
 from data.multifilesetregistrar import MultiFileSetRegistrar
 from data.dicomfiletype import DicomFileType
-from data.pngfiletype import PngFileType
 
 MULTIFILESETPATH = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset')
 FILESETPATH = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset/scan1')
@@ -36,7 +32,7 @@ def test_sessionInSeparateThread():
         session.add(multiFileSetModel)
         fileSetModel = FileSetModel(multiFileSetModel=multiFileSetModel)
         session.add(fileSetModel)
-        fileModel = FileModel(path=FILEPATH, fileSetModel=fileSetModel)
+        fileModel = FileModel(path=FILEPATH, fileSetModel=fileSetModel, fileType='dicom')
         session.add(fileModel)
         session.commit()
         assert multiFileSetModel.id
@@ -56,7 +52,7 @@ def test_sessionInSeparateThread():
 
 
 def test_fileRegistrar():
-    registrar1 = FileRegistrar(path=FILEPATH, fileType=DicomFileType)
+    registrar1 = FileRegistrar(path=FILEPATH, fileType=DicomFileType())
     registeredMultiFileSetModel = registrar1.execute()
     assert registeredMultiFileSetModel.id
     assert registeredMultiFileSetModel.registeredFileSetModels[0].id
@@ -67,13 +63,13 @@ def test_fileRegistrar():
 
 
 def test_fileSetRegistrar():
-    registrar1 = FileSetRegistrar(path=FILESETPATH, fileType=DicomFileType)
+    registrar1 = FileSetRegistrar(path=FILESETPATH, fileType=DicomFileType())
     registeredMultiFileSetModel1 = registrar1.execute()
     assert registeredMultiFileSetModel1.id 
     
 
 def test_MultiFileSetRegistrar():
-    registrar1 = MultiFileSetRegistrar(path=MULTIFILESETPATH, fileType=DicomFileType)
+    registrar1 = MultiFileSetRegistrar(path=MULTIFILESETPATH, fileType=DicomFileType())
     registeredMultiFileSetModel = registrar1.execute()
     assert registeredMultiFileSetModel.id
     assert registeredMultiFileSetModel.nrFiles() == NRTESTFILES
