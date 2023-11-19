@@ -1,4 +1,3 @@
 tasks/deletedicomfiletask
 tasks/processdicomfiletask
-views/dicomfileview
-views/dicomfilesetview
+views/dicomview

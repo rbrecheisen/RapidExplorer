@@ -13,12 +13,12 @@ from data.registeredfilesetmodel import RegisteredFileSetModel
 
 WINDOWCENTER = 50
 WINDOWWIDTH = 400
-PLUGINNAME = 'DICOM Image Series View'
+PLUGINNAME = 'DicomViewPlugin'
 
 
-class DicomFileSetViewPlugin(ViewPlugin):
+class DicomViewPlugin(ViewPlugin):
     def __init__(self):
-        super(DicomFileSetViewPlugin, self).__init__()
+        super(DicomViewPlugin, self).__init__()
         self._graphicsView = None
         self._scene = None
         self._dicomImages = []
