@@ -9,6 +9,7 @@ from plugins.viewplugin import ViewPlugin
 from plugins.pluginsignal import PluginSignal
 from plugins.pluginmanagerexception import PluginManagerException
 
+# TODO: Put in QSettings
 PLUGINDIR = 'src/app/plugins/plugins'
 
 

@@ -1,6 +1,6 @@
 from plugins.taskplugin import TaskPlugin
 
-PLUGINNAME = 'Delete DICOM File Task'
+PLUGINNAME = 'DeleteDicomFileTaskPlugin'
 
 
 class DeleteDicomFileTaskPlugin(TaskPlugin):
