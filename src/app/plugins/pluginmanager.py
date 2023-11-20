@@ -47,6 +47,12 @@ class PluginManager:
     
     def currentPlugin(self):
         return self._currentPlugin
+    
+    def isTaskPlugin(self, plugin) -> bool:
+        return isinstance(plugin, TaskPlugin)
+    
+    def isViewPlugin(self, plugin) -> bool:
+        return isinstance(plugin, ViewPlugin)
 
     def signal(self):
         return self._signal

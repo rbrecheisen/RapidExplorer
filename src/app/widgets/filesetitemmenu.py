@@ -26,7 +26,7 @@ class FileSetItemMenu(QMenu):
     def _handleShowInMainViewAction(self):
         currentPlugin = self._pluginManager.currentPlugin()
         if currentPlugin:
-            if isinstance(currentPlugin, ViewPlugin):
+            if self._pluginManager.isViewPlugin(currentPlugin):
                 data = self._fileSetItem.registeredFileSetModel()
                 currentPlugin.setData(data)
                 return

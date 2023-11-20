@@ -2,6 +2,8 @@ from PySide6.QtCore import QPoint
 from PySide6.QtWidgets import QMenu
 
 from data.databasemanager import DatabaseManager
+from plugins.pluginmanager import PluginManager
+from plugins.viewplugin import ViewPlugin
 from widgets.multifilesetitem import MultiFileSetItem
 
 
@@ -42,6 +44,11 @@ class MultiFileSetItemMenu(QMenu):
         self._databaseManager.deleteData(registeredMultiFileSetModel)
         self._treeView.model().clear()
         self._treeView.loadModelsFromDatabase()
+        pluginManager = PluginManager()
+        currentPlugin = pluginManager.currentPlugin()
+        if currentPlugin:
+            if pluginManager.isViewPlugin(currentPlugin):
+                currentPlugin.clearData()
     
     def _databaseManagerLoadProgress(self, progress):
         self._treeView.progressDialog().setValue(progress)

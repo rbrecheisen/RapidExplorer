@@ -20,7 +20,7 @@ class MainViewDockWidget(DockWidget):
         self._currentPluginChanged(QWidget())
 
     def _currentPluginChanged(self, plugin):
-        if isinstance(plugin, ViewPlugin):        
+        if self._pluginManager.isViewPlugin(plugin):
             self._pluginWidget = plugin.widget()
             layout = QVBoxLayout()
             layout.setAlignment(Qt.AlignTop)

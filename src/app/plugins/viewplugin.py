@@ -15,3 +15,6 @@ class ViewPlugin(QWidget):
     
     def setData(self) -> None:
         raise NotImplementedError('Not implemented')
+    
+    def clearData(self) -> None:
+        raise NotImplementedError('Not implemented')

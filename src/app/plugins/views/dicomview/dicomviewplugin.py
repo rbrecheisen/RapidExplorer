@@ -12,3 +12,6 @@ class DicomViewPlugin(ViewPlugin):
         
     def setData(self, data) -> None:
         self.widget().setData(data)
+
+    def clearData(self) -> None:
+        self.widget().clearData()

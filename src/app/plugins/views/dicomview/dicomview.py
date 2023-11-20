@@ -57,6 +57,10 @@ class DicomView(View):
             self._dicomImages.append(self._convertToQImage(item))
         self._displayDicomImage(self._currentImageIndex)
 
+    def clearData(self) -> None:
+        self._dicomImages = []
+        self._scene.clear()
+
     def _convertToQImage(self, dicomFile: DicomFile) -> QImage:
         p = dicomFile.data()
         pixelArray = p.pixel_array
