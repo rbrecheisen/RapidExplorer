@@ -30,7 +30,7 @@ class FileSetItemMenu(QMenu):
                 data = self._fileSetItem.registeredFileSetModel()
                 currentPlugin.setData(data)
                 return
-        QMessageBox.critical(self, 'Error', 'No view plugin selected')
+        QMessageBox.critical(self, 'Error', 'Please select a view first!')
 
     def show(self):
         self.exec_(self._position)

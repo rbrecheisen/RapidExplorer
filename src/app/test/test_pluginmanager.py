@@ -3,7 +3,7 @@ import pytest
 from plugins.pluginmanager import PluginManager
 from plugins.taskplugin import TaskPlugin
 
-PLUGINDIR = 'src/app/plugins/plugins'
+PLUGINDIR = 'src/app/plugins'
 
 
 @pytest.mark.plugin

@@ -1,1 +1,0 @@
-from plugins.plugins.views.dicomview.dicomviewplugin import DicomViewPlugin

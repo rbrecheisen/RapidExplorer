@@ -5,20 +5,21 @@ from PySide6.QtGui import QPixmap, QImage
 from PySide6.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsPixmapItem
 from PySide6.QtWidgets import QVBoxLayout
 
-from plugins.viewplugin import ViewPlugin
+from plugins.view import View
 from data.databasemanager import DatabaseManager
 from data.dicomfiletype import DicomFileType
 from data.dicomfile import DicomFile
 from data.registeredfilesetmodel import RegisteredFileSetModel
 
+
 WINDOWCENTER = 50
 WINDOWWIDTH = 400
-PLUGINNAME = 'DicomViewPlugin'
+VIEWNAME = 'DICOM Viewer'
 
 
-class DicomViewPlugin(ViewPlugin):
-    def __init__(self):
-        super(DicomViewPlugin, self).__init__()
+class DicomView(View):
+    def __init__(self) -> None:
+        super(DicomView, self).__init__()
         self._graphicsView = None
         self._scene = None
         self._dicomImages = []
@@ -26,22 +27,20 @@ class DicomViewPlugin(ViewPlugin):
         self._databaseManager = DatabaseManager()
         self._initUi()
 
-    def name(self) -> str:
-        return PLUGINNAME
-
-    def _initUi(self):
+    def _initUi(self) -> None:
         self._initGraphicsView()
 
-    def _initGraphicsView(self):
+    def _initGraphicsView(self) -> None:
         self._graphicsView = QGraphicsView(self)
         self._scene = QGraphicsScene(self)
-        item = self._scene.addText(self.name())
+        item = self._scene.addText(VIEWNAME)
         item.setDefaultTextColor(Qt.blue)
         self._graphicsView.setScene(self._scene)
         layout = QVBoxLayout()
         layout.addWidget(self._graphicsView)
         self.setLayout(layout)
 
+    # Inherited from View
     def setData(self, data: RegisteredFileSetModel) -> None:
         self._dicomImages = []
         registeredFileSetModel = data
@@ -58,7 +57,7 @@ class DicomViewPlugin(ViewPlugin):
             self._dicomImages.append(self._convertToQImage(item))
         self._displayDicomImage(self._currentImageIndex)
 
-    def _convertToQImage(self, dicomFile: DicomFile):
+    def _convertToQImage(self, dicomFile: DicomFile) -> QImage:
         p = dicomFile.data()
         pixelArray = p.pixel_array
         if 'RescaleSlope' in p and 'RescaleIntercept' in p:
@@ -70,14 +69,14 @@ class DicomViewPlugin(ViewPlugin):
         bytes_per_line = width
         return QImage(pixelArray.data, width, height, bytes_per_line, QImage.Format_Grayscale8)
  
-    def applyWindowCenterAndWidth(self, image, center, width):
+    def applyWindowCenterAndWidth(self, image, center, width) -> np.array:
         imageMin = center - width // 2
         imageMax = center + width // 2
         windowedImage = np.clip(image, imageMin, imageMax)
         windowedImage = ((windowedImage - imageMin) / (imageMax - imageMin)) * 255.0
         return windowedImage.astype(np.uint8)
     
-    def wheelEvent(self, event):
+    def wheelEvent(self, event) -> None:
         delta = event.angleDelta().y()
         if delta > 0 and self._currentImageIndex > 0:
             self._currentImageIndex -= 1

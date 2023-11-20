@@ -3,6 +3,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout
 
 from widgets.dockwidget import DockWidget
 from plugins.pluginmanager import PluginManager
+from plugins.viewplugin import ViewPlugin
 
 DOCKWIDGETSIZE = (600, 600)
 
@@ -18,15 +19,14 @@ class MainViewDockWidget(DockWidget):
     def _initUi(self) -> None:
         self._currentPluginChanged(QWidget())
 
-    def _currentPluginChanged(self, plugin):        
-        self._pluginWidget = plugin
-        layout = QVBoxLayout()
-        layout.setAlignment(Qt.AlignTop)
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.addWidget(self._pluginWidget)
-        widget = QWidget()
-        widget.setFixedSize(DOCKWIDGETSIZE[0], DOCKWIDGETSIZE[1])
-        widget.setLayout(layout)
-        self.setWidget(widget)
-
-    # def setData(self, )
+    def _currentPluginChanged(self, plugin):
+        if isinstance(plugin, ViewPlugin):        
+            self._pluginWidget = plugin.widget()
+            layout = QVBoxLayout()
+            layout.setAlignment(Qt.AlignTop)
+            layout.setContentsMargins(0, 0, 0, 0)
+            layout.addWidget(self._pluginWidget)
+            widget = QWidget()
+            widget.setFixedSize(DOCKWIDGETSIZE[0], DOCKWIDGETSIZE[1])
+            widget.setLayout(layout)
+            self.setWidget(widget)
