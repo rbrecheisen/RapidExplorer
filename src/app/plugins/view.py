@@ -8,5 +8,6 @@ class View(QWidget):
     def addData(self, data, name) -> None:
         raise NotImplementedError('Not implemented')
     
+    # TODO: Remove this method
     def setData(self, data) -> None:
         raise NotImplementedError('Not implemented')
