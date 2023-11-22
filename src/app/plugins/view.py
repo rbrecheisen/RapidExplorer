@@ -5,5 +5,8 @@ class View(QWidget):
     def __init__(self) -> None:
         super(View, self).__init__()
 
+    def addData(self, data, name) -> None:
+        raise NotImplementedError('Not implemented')
+    
     def setData(self, data) -> None:
         raise NotImplementedError('Not implemented')

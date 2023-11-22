@@ -22,6 +22,7 @@ class DicomView(View):
         super(DicomView, self).__init__()
         self._graphicsView = None
         self._scene = None
+        self._sceneLayers = {}
         self._dicomImages = []
         self._currentImageIndex = 0
         self._databaseManager = DatabaseManager()
@@ -40,7 +41,30 @@ class DicomView(View):
         layout.addWidget(self._graphicsView)
         self.setLayout(layout)
 
-    # Inherited from View
+    def addData(self, data: RegisteredFileSetModel, name: str) -> None:
+        """ 
+        If scene layer dictionary already contains this name, replace the dataset
+        and refresh the display
+        If the dataset is new, create a new layer and add it on top of the last
+        one with a default opacity of 1.0 / (Nr. of layers), so if there are two
+        layers, the bottom has opacity 1.0. The one on top of it, has opacity 0.5
+        When adding layer info to dictionary use the following structure:
+        
+        self._sceneLayers = {
+            'layerName': {
+                'index': <index of corresponding base image>,
+                'name': <registered file model name>,
+                'opacity': 0.5,
+                'visible': True/False,
+            }
+        }
+
+        The index should correspond to the underlying base image the layer corresponds
+        to so if the user scrolls to another image, the layer is not visible. You can
+        set the layer to invisible by setting 'visible' to False.
+        """
+        pass
+
     def setData(self, data: RegisteredFileSetModel) -> None:
         self._dicomImages = []
         registeredFileSetModel = data
