@@ -1,4 +1,4 @@
-# RapidX - Radiological analysis and processing for imaging data eXplorer
+# RapidExplorer
 
 ## 1. Introduction
 
