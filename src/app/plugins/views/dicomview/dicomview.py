@@ -61,7 +61,8 @@ class DicomView(View):
 
         The index should correspond to the underlying base image the layer corresponds
         to so if the user scrolls to another image, the layer is not visible. You can
-        set the layer to invisible by setting 'visible' to False.
+        set the layer to invisible by setting 'visible' to False. An index of -1 means
+        the layer is always active (but could be invisible).
         """
         pass
 
