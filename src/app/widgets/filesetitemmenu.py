@@ -27,7 +27,7 @@ class FileSetItemMenu(QMenu):
         if currentPlugin:
             if self._pluginManager.isViewPlugin(currentPlugin):
                 data = self._fileSetItem.registeredFileSetModel()
-                currentPlugin.addData(data)
+                currentPlugin.setData(data)
                 return
         QMessageBox.critical(self, 'Error', 'Please select a viewer first!')
 

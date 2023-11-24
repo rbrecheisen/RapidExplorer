@@ -1,16 +1,9 @@
+from PySide6.QtWidgets import QGraphicsItemGroup
+
+
 class Layer:
-    """ This is a 2D layer to be overlaid on top of the base image
-    or other layers beneath it. You can have different types of
-    layers, e.g., a DicomAttributeLayer with basic DICOM attribute
-    info, or a SegmentationMaskLayer with a binary mask. The latter
-    should also have a readable name, e.g., "muscle", "SAT", "VAT,
-    etc. Question is where do you set these names? Perhaps a layer
-    AlbertaProtocolSegmentationMaskLayer where these names are 
-    already predefined?
-    The viewer should have a combobox for selecting the layer and
-    setting its properties (remember these in QSettings!)
-    """
     def __init__(self, name: str, index: int=-1, opacity: float=0.5, visible: bool=True) -> None:
+        super(Layer, self).__init__()
         self._name = name
         self._index = index
         self._opacity = opacity
@@ -36,3 +29,6 @@ class Layer:
     
     def setVisible(self, visible) -> None:
         self._visible = visible
+
+    def createGraphicsItem(self) -> QGraphicsItemGroup:
+        raise NotImplementedError('Not implemented')

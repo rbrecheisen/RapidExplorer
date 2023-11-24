@@ -9,7 +9,7 @@ class Viewer(QWidget):
     def name(self) -> str:
         return self._name
     
-    def addData(self, data) -> None:
+    def setData(self, data) -> None:
         raise NotImplementedError('Not implemented')
     
     def clearData(self) -> None:

@@ -6,6 +6,7 @@ from PySide6.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsPixmapItem
 from PySide6.QtWidgets import QVBoxLayout
 
 from plugins.viewers.viewer import Viewer
+from plugins.viewers.dicomviewer.dicomattributelayer import DicomAttributeLayer
 from data.databasemanager import DatabaseManager
 from data.dicomfiletype import DicomFileType
 from data.dicomfile import DicomFile
@@ -20,7 +21,8 @@ class DicomViewer(Viewer):
         super(DicomViewer, self).__init__(name='DICOM Viewer')
         self._graphicsView = None
         self._scene = None
-        self._dicomImages = []
+        self._dicomImagesSorted = []
+        self._dicomAttributeLayersSorted = []
         self._currentImageIndex = 0
         self._databaseManager = DatabaseManager()
         self._initUi()
@@ -38,24 +40,32 @@ class DicomViewer(Viewer):
         layout.addWidget(self._graphicsView)
         self.setLayout(layout)
 
-    def addData(self, data: RegisteredFileSetModel) -> None:
-        self._dicomImages = []
+    def setData(self, data: RegisteredFileSetModel) -> None:
+        """
+        In viewers that inherit from DicomViewer you can allow registered filesets with different file
+        types, e.g., the fileset might contain both L3 images and TAG files. 
+        """
+        self._dicomImagesSorted = []
+        self._dicomAttributeLayersSorted = []
         registeredFileSetModel = data
         fileModels = self._databaseManager.getFileSetModelFileModels(registeredFileSetModel)
-        x = []
+        dicomImages = []
         for fileModel in fileModels:
             if fileModel.fileType == DicomFileType.name:
                 dicomFile = self._databaseManager.getFileFromCache(fileModel.id)
-                x.append(dicomFile)
+                dicomImages.append(dicomFile)
             else:
                 raise RuntimeError(f'File {fileModel.path} is not a DICOM file')
-        x = sorted(x, key=lambda image: image.data().InstanceNumber)
-        for item in x:
-            self._dicomImages.append(self._convertToQImage(item))
-        self._displayDicomImage(self._currentImageIndex)
+        dicomImages = sorted(dicomImages, key=lambda image: image.data().InstanceNumber)
+        i = 0
+        for item in dicomImages:
+            self._dicomImagesSorted.append(self._convertToQImage(item))
+            self._dicomAttributeLayersSorted.append(self._createDicomAttributeLayer(item, i))
+            i += 1
+        self._displayDicomImageAndAttributeLayer(self._currentImageIndex)
 
     def clearData(self) -> None:
-        self._dicomImages = []
+        self._dicomImagesSorted = []
         self._scene.clear()
 
     def _convertToQImage(self, dicomFile: DicomFile) -> QImage:
@@ -69,6 +79,12 @@ class DicomViewer(Viewer):
         height, width = pixelArray.shape
         bytes_per_line = width
         return QImage(pixelArray.data, width, height, bytes_per_line, QImage.Format_Grayscale8)
+    
+    def _createDicomAttributeLayer(self, dicomFile: DicomFile, index: int) -> DicomAttributeLayer:
+        layer = DicomAttributeLayer(dicomFile.id, index)
+        p = dicomFile.data()
+        layer.setInstanceNumber(p.InstanceNumber)
+        return layer
  
     def applyWindowCenterAndWidth(self, image, center, width) -> np.array:
         imageMin = center - width // 2
@@ -81,14 +97,17 @@ class DicomViewer(Viewer):
         delta = event.angleDelta().y()
         if delta > 0 and self._currentImageIndex > 0:
             self._currentImageIndex -= 1
-        elif delta < 0 and self._currentImageIndex < len(self._dicomImages) - 1:
+        elif delta < 0 and self._currentImageIndex < len(self._dicomImagesSorted) - 1:
             self._currentImageIndex += 1
-        self._displayDicomImage(self._currentImageIndex)
+        self._displayDicomImageAndAttributeLayer(self._currentImageIndex)
 
-    def _displayDicomImage(self, index) -> None:
-        image = self._dicomImages[index]
+    def _displayDicomImageAndAttributeLayer(self, index) -> None:
+        image = self._dicomImagesSorted[index]
+        attributeLayer = self._dicomAttributeLayersSorted[index]
         pixmap = QPixmap.fromImage(image)
         pixmapItem = QGraphicsPixmapItem(pixmap)
         self._scene.clear()
         self._scene.addItem(pixmapItem)
+        # WARNING: do not add layer itself because it will be destroyed on scene.clear()
+        self._scene.addItem(attributeLayer.createGraphicsItem())
         self._currentImageIndex = index
