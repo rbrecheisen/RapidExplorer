@@ -28,6 +28,7 @@ class RegisteredMultiFileSetContentLoader:
                     progress = int((i + 1) / self._nrFiles * 100)
                     self._signal.progress.emit(progress)
                     print('.', end='', flush=True)
+                    print(f'RegisteredMultiFileSetContentLoader.execute() {file.registeredFileModel().path}')
                     i += 1
                 else:
                     print(f'File {registeredFileModel.path} already in cache (skipping)')

@@ -9,5 +9,5 @@ class TaskPlugin:
     def name(self) -> str:
         return self._name
     
-    def implementation(self) -> Task:
+    def task(self) -> Task:
         return self._task

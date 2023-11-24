@@ -1,3 +1,4 @@
+import os
 import pydicom
 import pydicom.errors
 
@@ -16,7 +17,9 @@ class DicomFileType(FileType):
         try:
             pydicom.dcmread(path, stop_before_pixels=True)
             return True
-        except pydicom.errors.InvalidDicomError:
+        except pydicom.errors.InvalidDicomError as e:
+            if os.path.splitext(path)[1] == '' or path.endswith('.dcm'):
+                print(f'{path} is not a valid DICOM file ({e})')
             return False
         
     def read(self, registeredFileModel: RegisteredFileModel) -> DicomFile:

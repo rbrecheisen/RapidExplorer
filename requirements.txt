@@ -4,6 +4,7 @@ pyside6
 sqlalchemy
 pendulum 
 pylibjpeg[openjpeg]
+pylibjpeg-libjpeg
 nuitka
 pytest
 pytest-qt

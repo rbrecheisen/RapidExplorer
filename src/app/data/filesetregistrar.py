@@ -28,7 +28,7 @@ class FileSetRegistrar(Registrar):
                     if self.fileType().check(filePath):
                         fileModel = FileModel(path=filePath, fileSetModel=fileSetModel, fileType=self.fileType().name)
                         fileModels.append(fileModel)
-                        session.add(fileModel)                        
+                        session.add(fileModel)      
             session.commit()
 
             # Build registered data objects
