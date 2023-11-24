@@ -1,8 +1,10 @@
 import os
 
 from PySide6.QtCore import Qt, QSize, QSettings
-from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QFileDialog, QMenu, QProgressDialog
+from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QFileDialog, QMenu, QProgressDialog, QMessageBox
 from PySide6.QtGui import QAction, QGuiApplication
+
+import data.engine
 
 from plugins.pluginmanager import PluginManager
 from data.dicomfiletype import DicomFileType
@@ -34,7 +36,7 @@ class MainWindow(QMainWindow):
         self._fileImporter = None
         self._fileSetImporter = None
         self._multiFileSetImporter = None
-        self._defaultLayout = None
+        self._defaultLayout = None        
         self._loadPlugins()
         self._initUi()
 
@@ -179,6 +181,18 @@ class MainWindow(QMainWindow):
         x = (screen.width() - self.geometry().width()) / 2
         y = (screen.height() - self.geometry().height()) / 2
         self.move(int(x), int(y))
+
+    def show(self):
+        super(MainWindow, self).show()
+        if not os.path.isfile('db.sqlite3'):
+            QMessageBox.critical(self, 'Error', 'Please choose a directory for the SQLite3 database')
+            dirPath = QFileDialog.getExistingDirectory(self, '', '.')
+            if dirPath:
+                # First time use of the database
+                data.engine.DATABASE = os.path.join(dirPath, 'db.sqlite3')
+                self._dataDockWidget.loadModelsFromDatabase()
+            else:
+                self._exit()
 
     def _exit(self) -> None:
         QApplication.exit()

@@ -3,7 +3,7 @@ from sqlalchemy import create_engine
 from singleton import singleton
 from data.basemodel import BaseModel
 
-DATABASE = 'db.sqlite3'
+DATABASE = '../db.sqlite3'
 ECHO = False
 TEST = False
 
