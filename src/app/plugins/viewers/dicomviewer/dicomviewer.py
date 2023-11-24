@@ -84,6 +84,7 @@ class DicomViewer(Viewer):
         layer = DicomAttributeLayer(dicomFile.id, index)
         p = dicomFile.data()
         layer.setInstanceNumber(p.InstanceNumber)
+        layer.setPatientId(p.PatientID)
         return layer
  
     def applyWindowCenterAndWidth(self, image, center, width) -> np.array:

@@ -8,17 +8,24 @@ class DicomAttributeLayer(Layer):
     def __init__(self, name: str, index: int, opacity: float=1.0, visible: bool=True) -> None:
         super(DicomAttributeLayer, self).__init__(name, index, opacity, visible)
         self._instanceNumber = -1
+        self._patientId = None
 
-    def instanceNumber(self) -> int:
-        return self._instanceNumber
-    
     def setInstanceNumber(self, instanceNumber: int) -> None:
         self._instanceNumber = instanceNumber
 
+    def setPatientId(self, patientId: str) -> None:
+        self._patientId = patientId
+
     def createGraphicsItem(self) -> QGraphicsItemGroup:
-        textItem = QGraphicsTextItem('Instance number: ' + str(self._instanceNumber))
-        textItem.setDefaultTextColor(Qt.white)
-        textItem.setPos(10, 10)
         group = QGraphicsItemGroup()
-        group.addToGroup(textItem)
+        if self._instanceNumber > 0:
+            instanceNumberItem = QGraphicsTextItem('Instance number: ' + str(self._instanceNumber))
+            instanceNumberItem.setDefaultTextColor(Qt.white)
+            instanceNumberItem.setPos(10, 10)   # QSettings!
+            group.addToGroup(instanceNumberItem)
+        if self._patientId:
+            patientIdItem = QGraphicsTextItem('Patient ID: ' + self._patientId)
+            patientIdItem.setDefaultTextColor(Qt.white)
+            patientIdItem.setPos(10, 30)        # QSettings!
+            group.addToGroup(patientIdItem)
         return group
