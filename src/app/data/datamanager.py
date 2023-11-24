@@ -18,7 +18,7 @@ from data.registeredmultifilesetmodelloader import RegisteredMultiFileSetModelLo
 from data.registeredmultifilesetcontentloader import RegisteredMultiFileSetContentLoader
 
 
-class DatabaseManager:
+class DataManager:
     def __init__(self) -> None:
         self._signal = ProgressSignal()
         self._importer = None
@@ -75,10 +75,6 @@ class DatabaseManager:
                 if not fileSetLoaded:
                     multiFileSetLoaded = False
             registeredMultiFileSetModel.loaded = multiFileSetLoaded
-            # if self._fileInCache(registeredMultiFileSetModel):
-            #     registeredMultiFileSetModel.loaded = True
-            # else:
-            #     registeredMultiFileSetModel.loaded = False
         return registeredMultiFileSetModels
 
     def _fileInCache(self, registeredFileModel: RegisteredFileModel) -> bool:
@@ -128,7 +124,7 @@ class DatabaseManager:
     def getFileModel(self, registeredFileModel: RegisteredFileModel) -> FileModel:
         pass
 
-    def getFileSetModelFileModels(self, registeredFileSetModel: RegisteredFileSetModel) -> FileSetModel:
+    def getFileModelsFor(self, registeredFileSetModel: RegisteredFileSetModel) -> FileSetModel:
         with DbSession() as session:
             fileSetModel = session.get(FileSetModel, registeredFileSetModel.id)
             fileModels = session.query(FileModel).filter_by(fileSetModel=fileSetModel).all()

@@ -7,7 +7,7 @@ from PySide6.QtWidgets import QVBoxLayout
 
 from plugins.viewers.viewer import Viewer
 from plugins.viewers.dicomviewer.dicomattributelayer import DicomAttributeLayer
-from data.databasemanager import DatabaseManager
+from data.datamanager import DataManager
 from data.dicomfiletype import DicomFileType
 from data.dicomfile import DicomFile
 from data.registeredfilesetmodel import RegisteredFileSetModel
@@ -24,7 +24,7 @@ class DicomViewer(Viewer):
         self._dicomImagesSorted = []
         self._dicomAttributeLayersSorted = []
         self._currentImageIndex = 0
-        self._databaseManager = DatabaseManager()
+        self._databaseManager = DataManager()
         self._initUi()
 
     def _initUi(self) -> None:
@@ -48,7 +48,7 @@ class DicomViewer(Viewer):
         self._dicomImagesSorted = []
         self._dicomAttributeLayersSorted = []
         registeredFileSetModel = data
-        fileModels = self._databaseManager.getFileSetModelFileModels(registeredFileSetModel)
+        fileModels = self._databaseManager.getFileModelsFor(registeredFileSetModel)
         dicomImages = []
         for fileModel in fileModels:
             if fileModel.fileType == DicomFileType.name:

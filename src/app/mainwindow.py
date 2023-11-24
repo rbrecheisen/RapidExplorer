@@ -6,7 +6,7 @@ from PySide6.QtGui import QAction, QGuiApplication
 
 from plugins.pluginmanager import PluginManager
 from data.dicomfiletype import DicomFileType
-from data.databasemanager import DatabaseManager
+from data.datamanager import DataManager
 from widgets.datadockwidget import DataDockWidget
 from widgets.viewdockwidget import ViewsDockWidget
 from widgets.taskdockwidget import TaskDockWidget
@@ -29,7 +29,8 @@ class MainWindow(QMainWindow):
         self._viewsDockWidget = None
         self._mainViewDockWidget = None
         self._progressBarDialog = None
-        self._databaseManager = DatabaseManager()
+        self._databaseManager = DataManager()
+        self._pluginManager = PluginManager()
         self._fileImporter = None
         self._fileSetImporter = None
         self._multiFileSetImporter = None
@@ -38,8 +39,7 @@ class MainWindow(QMainWindow):
         self._initUi()
 
     def _loadPlugins(self) -> None:
-        manager = PluginManager()
-        manager.loadAll()
+        self._pluginManager.loadAll()
 
     def _initUi(self) -> None:
         self._initMenus()
@@ -165,7 +165,11 @@ class MainWindow(QMainWindow):
 
     def _deleteAllData(self):
         self._databaseManager.deleteAllData()
-        self._dataDockWidget.clearData()
+        currentPlugin = self._pluginManager.currentPlugin()
+        if currentPlugin:
+            if self._pluginManager.isViewPlugin(currentPlugin):
+                currentPlugin.clearData()
+        self._dataDockWidget.clearData()        
 
     def _resetLayout(self):
         self.restoreState(self._defaultLayout)

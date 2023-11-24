@@ -1,1 +1,1 @@
-from plugins.tasks.copyfilesettask.copyfilesettaskplugin import CopyFileSetTaskPlugin
+from plugins.tasks.copyfilesettask.copyfilesettask import CopyFileSetTask

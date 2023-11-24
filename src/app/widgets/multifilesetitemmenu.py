@@ -1,9 +1,8 @@
 from PySide6.QtCore import QPoint
 from PySide6.QtWidgets import QMenu
 
-from data.databasemanager import DatabaseManager
+from data.datamanager import DataManager
 from plugins.pluginmanager import PluginManager
-from plugins.viewplugin import ViewPlugin
 from widgets.multifilesetitem import MultiFileSetItem
 
 
@@ -13,7 +12,7 @@ class MultiFileSetItemMenu(QMenu):
         self._treeView = treeView
         self._multiFileSetItem = multiFileSetItem
         self._position = position
-        self._databaseManager = DatabaseManager()
+        self._databaseManager = DataManager()
         if not self._multiFileSetItem.loaded():
             action1 = self.addAction('Load')
             action1.triggered.connect(self._handleLoadAction)

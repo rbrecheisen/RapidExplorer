@@ -2,7 +2,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QTreeView, QProgressDialog
 from PySide6.QtGui import QStandardItemModel, QStandardItemModel, QMouseEvent
 
-from data.databasemanager import DatabaseManager
+from data.datamanager import DataManager
 from data.registeredmultifilesetmodel import RegisteredMultiFileSetModel
 from widgets.multifilesetitem import MultiFileSetItem
 from widgets.multifilesetitemmenu import MultiFileSetItemMenu
@@ -17,7 +17,7 @@ class RegisteredMultiFileSetModelTreeView(QTreeView):
         super(RegisteredMultiFileSetModelTreeView, self).__init__()
         self._model = None
         self._progressDialog = None
-        self._databaseManager = DatabaseManager()
+        self._databaseManager = DataManager()
         self._initModel()
         self._initProgressDialog()
         self.loadModelsFromDatabase()

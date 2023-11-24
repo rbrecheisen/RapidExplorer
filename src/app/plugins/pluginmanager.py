@@ -4,8 +4,9 @@ import importlib
 from typing import Dict
 
 from singleton import singleton
-from plugins.taskplugin import TaskPlugin
+# from plugins.taskplugin import TaskPlugin
 # from plugins.viewplugin import ViewPlugin
+from plugins.tasks.task import Task
 from plugins.viewers.viewer import Viewer
 from plugins.pluginsignal import PluginSignal
 from plugins.pluginmanagerexception import PluginManagerException
@@ -50,7 +51,7 @@ class PluginManager:
         return self._currentPlugin
     
     def isTaskPlugin(self, plugin) -> bool:
-        return isinstance(plugin, TaskPlugin)
+        return isinstance(plugin, Task)
     
     def isViewPlugin(self, plugin) -> bool:
         # return isinstance(plugin, ViewPlugin)
@@ -68,7 +69,7 @@ class PluginManager:
 
     def loadAll(self):
         self._plugins = {}
-        self.loadTaskPlugins(PLUGINDIR, TaskPlugin)
+        self.loadTaskPlugins(PLUGINDIR, Task)
         # self.loadViewPlugins(PLUGINDIR, ViewPlugin)
         self.loadViewPlugins(PLUGINDIR, Viewer)
         return self._plugins

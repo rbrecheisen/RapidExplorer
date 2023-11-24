@@ -3,7 +3,6 @@ from PySide6.QtWidgets import QGraphicsItemGroup
 
 class Layer:
     def __init__(self, name: str, index: int=-1, opacity: float=0.5, visible: bool=True) -> None:
-        super(Layer, self).__init__()
         self._name = name
         self._index = index
         self._opacity = opacity
