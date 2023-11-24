@@ -1,3 +1,5 @@
+import uuid
+
 from PySide6.QtWidgets import QDockWidget
 
 MENU_HEIGHT = 50
@@ -7,6 +9,7 @@ class DockWidget(QDockWidget):
     def __init__(self, title: str, parent=None) -> None:
         super(DockWidget, self).__init__(title, parent=parent)
         self.topLevelChanged.connect(self._toggleMaximize)
+        self.setObjectName(str(uuid.uuid4()))
 
     def _toggleMaximize(self):
         if self.isFloating():

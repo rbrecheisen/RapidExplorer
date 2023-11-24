@@ -33,6 +33,7 @@ class MainWindow(QMainWindow):
         self._fileImporter = None
         self._fileSetImporter = None
         self._multiFileSetImporter = None
+        self._defaultLayout = None
         self._loadPlugins()
         self._initUi()
 
@@ -55,12 +56,14 @@ class MainWindow(QMainWindow):
         importDicomMultiFileSetAction = QAction('Import Multiple DICOM Image Series...', self)
         printFileCacheAction = QAction('Print File Cache', self)
         deleteAllDataAction = QAction('Delete All Data from Database', self)
+        resetLayoutAction = QAction('Reset Layout', self)
+        exitAction = QAction('Exit', self)
         importDicomFileAction.triggered.connect(self._importDicomFile)
         importDicomFileSetAction.triggered.connect(self._importDicomFileSet)
         importDicomMultiFileSetAction.triggered.connect(self._importDicomMultiFileSet)
         printFileCacheAction.triggered.connect(self._printFileCache)
         deleteAllDataAction.triggered.connect(self._deleteAllData)
-        exitAction = QAction('Exit', self)
+        resetLayoutAction.triggered.connect(self._resetLayout)
         exitAction.triggered.connect(self._exit)
         datasetsMenu = QMenu('Data')
         datasetsMenu.addAction(importDicomFileAction)
@@ -72,7 +75,10 @@ class MainWindow(QMainWindow):
         datasetsMenu.addAction(deleteAllDataAction)
         datasetsMenu.addSeparator()
         datasetsMenu.addAction(exitAction)
+        viewMenu = QMenu('View')
+        viewMenu.addAction(resetLayoutAction)
         self.menuBar().addMenu(datasetsMenu)
+        self.menuBar().addMenu(viewMenu)
         self.menuBar().setNativeMenuBar(False)
 
     def _initDataDockWidget(self) -> None:
@@ -110,6 +116,7 @@ class MainWindow(QMainWindow):
         self.setFixedSize(QSize(MAINWINDOWSIZE[0], MAINWINDOWSIZE[1]))
         self.setWindowTitle('RapidExplorer v1.0')
         self._centerWindow()
+        self._defaultLayout = self.saveState()
 
     def _importDicomFile(self):
         filePath, _ = QFileDialog.getOpenFileName(self, 'Open DICOM Image', FILEPATH)
@@ -159,6 +166,9 @@ class MainWindow(QMainWindow):
     def _deleteAllData(self):
         self._databaseManager.deleteAllData()
         self._dataDockWidget.clearData()
+
+    def _resetLayout(self):
+        self.restoreState(self._defaultLayout)
 
     def _centerWindow(self) -> None:
         screen = QGuiApplication.primaryScreen().geometry()
