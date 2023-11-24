@@ -5,7 +5,8 @@ from typing import Dict
 
 from singleton import singleton
 from plugins.taskplugin import TaskPlugin
-from plugins.viewplugin import ViewPlugin
+# from plugins.viewplugin import ViewPlugin
+from plugins.viewers.viewer import Viewer
 from plugins.pluginsignal import PluginSignal
 from plugins.pluginmanagerexception import PluginManagerException
 
@@ -36,8 +37,8 @@ class PluginManager:
         return None
     
     def viewPlugins(self) -> Dict:
-        if 'views' in self.plugins().keys():
-            return self.plugins()['views']
+        if 'viewers' in self.plugins().keys():
+            return self.plugins()['viewers']
         return {}
     
     def viewPlugin(self, name):
@@ -52,7 +53,8 @@ class PluginManager:
         return isinstance(plugin, TaskPlugin)
     
     def isViewPlugin(self, plugin) -> bool:
-        return isinstance(plugin, ViewPlugin)
+        # return isinstance(plugin, ViewPlugin)
+        return isinstance(plugin, Viewer)
 
     def signal(self):
         return self._signal
@@ -67,7 +69,8 @@ class PluginManager:
     def loadAll(self):
         self._plugins = {}
         self.loadTaskPlugins(PLUGINDIR, TaskPlugin)
-        self.loadViewPlugins(PLUGINDIR, ViewPlugin)
+        # self.loadViewPlugins(PLUGINDIR, ViewPlugin)
+        self.loadViewPlugins(PLUGINDIR, Viewer)
         return self._plugins
 
     def loadTaskPlugins(self, pluginDirectory, baseClass):
@@ -89,9 +92,9 @@ class PluginManager:
         return self._plugins
     
     def loadViewPlugins(self, pluginDirectory, baseClass):
-        if not 'views' in self._plugins.keys():
-            self._plugins['views'] = {}
-        viewPluginDirectory = os.path.join(pluginDirectory, 'views')
+        if not 'viewers' in self._plugins.keys():
+            self._plugins['viewers'] = {}
+        viewPluginDirectory = os.path.join(pluginDirectory, 'viewers')
         for pluginModule in os.listdir(viewPluginDirectory):
             pluginModulePath = os.path.join(viewPluginDirectory, pluginModule)
             if os.path.isdir(pluginModulePath) and not pluginModule.startswith('__'):
@@ -103,5 +106,5 @@ class PluginManager:
                         attribute = getattr(module, attributeName)
                         if isinstance(attribute, type) and issubclass(attribute, baseClass) and attribute is not baseClass:
                             plugin = attribute()
-                            self._plugins['views'][plugin.name()] = plugin
+                            self._plugins['viewers'][plugin.name()] = plugin
         return self._plugins

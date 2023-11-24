@@ -1,5 +1,5 @@
 from plugins.viewplugin import ViewPlugin
-from plugins.views.dicomview.dicomview import DicomView
+from plugins.viewers.dicomview.dicomview import DicomView
 
 WINDOWCENTER = 50
 WINDOWWIDTH = 400

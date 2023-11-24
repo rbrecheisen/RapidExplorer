@@ -3,7 +3,6 @@ from PySide6.QtWidgets import QMenu, QTreeView, QMessageBox
 
 from widgets.filesetitem import FileSetItem
 from plugins.pluginmanager import PluginManager
-from plugins.viewplugin import ViewPlugin
 
 
 class FileSetItemMenu(QMenu):
@@ -28,9 +27,9 @@ class FileSetItemMenu(QMenu):
         if currentPlugin:
             if self._pluginManager.isViewPlugin(currentPlugin):
                 data = self._fileSetItem.registeredFileSetModel()
-                currentPlugin.setData(data)
+                currentPlugin.addData(data)
                 return
-        QMessageBox.critical(self, 'Error', 'Please select a view first!')
+        QMessageBox.critical(self, 'Error', 'Please select a viewer first!')
 
     def show(self):
         self.exec_(self._position)
