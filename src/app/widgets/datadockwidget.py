@@ -10,8 +10,8 @@ class DataDockWidget(DockWidget):
 
     def _initUi(self) -> None:
         self._treeView = RegisteredMultiFileSetModelTreeView()
-        self._treeView.setFixedHeight(500)
         self.setWidget(self._treeView)
+        self.setMinimumHeight(200)
 
     def treeView(self) -> RegisteredMultiFileSetModelTreeView:
         return self._treeView

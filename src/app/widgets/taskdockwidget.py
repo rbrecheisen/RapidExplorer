@@ -10,3 +10,4 @@ class TaskDockWidget(DockWidget):
 
     def _initUi(self) -> None:
         self.setWidget(QWidget())
+        self.setMinimumHeight(200)

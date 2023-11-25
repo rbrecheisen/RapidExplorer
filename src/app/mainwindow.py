@@ -14,6 +14,7 @@ from widgets.viewdockwidget import ViewsDockWidget
 from widgets.taskdockwidget import TaskDockWidget
 from widgets.mainviewdockwidget import MainViewDockWidget
 
+SETTINGSPATH = 'settings.ini'
 MULTIFILESETPATH = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset')
 FILESETPATH = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset/scan1')
 FILEPATH = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset/scan1/image-00000.dcm')
@@ -25,11 +26,12 @@ APPLICATIONNAME = 'RapidExplorer'
 class MainWindow(QMainWindow):
     def __init__(self) -> None:
         super(MainWindow, self).__init__()
-        # self._settings = QSettings(ORGANISATION, APPLICATIONNAME)
+        QSettings.setDefaultFormat(QSettings.Format.IniFormat)
+        self._settings = QSettings(SETTINGSPATH, QSettings.Format.IniFormat)
         self._dataDockWidget = None
         self._tasksDockWidget = None
-        self._viewsDockWidget = None
         self._mainViewDockWidget = None
+        self._viewsDockWidget = None
         self._progressBarDialog = None
         self._databaseManager = DataManager()
         self._pluginManager = PluginManager()
@@ -47,12 +49,13 @@ class MainWindow(QMainWindow):
         self._initMenus()
         self._initDataDockWidget()
         self._initTaskDockWidget()
-        self._initViewDockWidget()
         self._initMainViewDockWidget()
+        self._initViewDockWidget()
         self._initProgressBarDialog()
         self._initMainWindow()
 
     def _initMenus(self) -> None:
+        # TODO: Make this language-independent using QSettings or another singleton object
         importDicomFileAction = QAction('Import DICOM Image...', self)
         importDicomFileSetAction = QAction('Import DICOM Image Series...', self)
         importDicomMultiFileSetAction = QAction('Import Multiple DICOM Image Series...', self)
@@ -65,7 +68,7 @@ class MainWindow(QMainWindow):
         importDicomMultiFileSetAction.triggered.connect(self._importDicomMultiFileSet)
         printFileCacheAction.triggered.connect(self._printFileCache)
         deleteAllDataAction.triggered.connect(self._deleteAllData)
-        resetLayoutAction.triggered.connect(self._resetLayout)
+        resetLayoutAction.triggered.connect(self._resetToDefaultLayout)
         exitAction.triggered.connect(self._exit)
         datasetsMenu = QMenu('Data')
         datasetsMenu.addAction(importDicomFileAction)
@@ -85,23 +88,23 @@ class MainWindow(QMainWindow):
 
     def _initDataDockWidget(self) -> None:
         self._dataDockWidget = DataDockWidget('Data')
-        self._dataDockWidget.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea)
+        self._dataDockWidget.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.TopDockWidgetArea)
         self.addDockWidget(Qt.LeftDockWidgetArea, self._dataDockWidget)
 
     def _initTaskDockWidget(self) -> None:
         self._tasksDockWidget = TaskDockWidget('Tasks')
-        self._tasksDockWidget.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea)
+        self._tasksDockWidget.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.BottomDockWidgetArea)
         self.addDockWidget(Qt.LeftDockWidgetArea, self._tasksDockWidget)
-
-    def _initViewDockWidget(self) -> None:
-        self._viewsDockWidget = ViewsDockWidget('Views')
-        self._viewsDockWidget.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea)
-        self.addDockWidget(Qt.RightDockWidgetArea, self._viewsDockWidget)
 
     def _initMainViewDockWidget(self) -> None:
         self._mainViewDockWidget = MainViewDockWidget('Main View')
-        self._mainViewDockWidget.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea)
+        self._mainViewDockWidget.setAllowedAreas(Qt.RightDockWidgetArea | Qt.TopDockWidgetArea)
         self.addDockWidget(Qt.RightDockWidgetArea, self._mainViewDockWidget)
+
+    def _initViewDockWidget(self) -> None:
+        self._viewsDockWidget = ViewsDockWidget('Views')
+        self._viewsDockWidget.setAllowedAreas(Qt.RightDockWidgetArea | Qt.BottomDockWidgetArea)
+        self.addDockWidget(Qt.RightDockWidgetArea, self._viewsDockWidget)
 
     def _initProgressBarDialog(self) -> None:
         self._progressBarDialog = QProgressDialog('Importing Files...', 'Abort Import', 0, 100, self)
@@ -115,12 +118,12 @@ class MainWindow(QMainWindow):
         self.centralWidget().hide()
         self.splitDockWidget(self._dataDockWidget, self._tasksDockWidget, Qt.Vertical)
         self.splitDockWidget(self._mainViewDockWidget, self._viewsDockWidget, Qt.Vertical)
-        self.setFixedSize(QSize(MAINWINDOWSIZE[0], MAINWINDOWSIZE[1]))
-        self.setWindowTitle('RapidExplorer v1.0')
+        self.setWindowTitle('Mosamatic 2.0')  # QSettings!
+        self._setSize()
         self._centerWindow()
-        self._defaultLayout = self.saveState()
+        self._saveDefaultLayout()
 
-    def _importDicomFile(self):
+    def _importDicomFile(self) -> None:
         filePath, _ = QFileDialog.getOpenFileName(self, 'Open DICOM Image', FILEPATH)
         if filePath:
             self._progressBarDialog.show()
@@ -128,7 +131,7 @@ class MainWindow(QMainWindow):
             self._databaseManager.signal().progress.connect(self._databaseManagerFileImportProgress)
             self._databaseManager.importFile(filePath=filePath, fileType=DicomFileType())
 
-    def _importDicomFileSet(self):
+    def _importDicomFileSet(self) -> None:
         dirPath = QFileDialog.getExistingDirectory(self, 'Open DICOM Image Series', FILESETPATH)
         if dirPath:
             self._progressBarDialog.show()
@@ -136,7 +139,7 @@ class MainWindow(QMainWindow):
             self._databaseManager.signal().progress.connect(self._databaseManagerFileSetImportProgress)
             self._databaseManager.importFileSet(dirPath=dirPath, fileType=DicomFileType())
 
-    def _importDicomMultiFileSet(self):
+    def _importDicomMultiFileSet(self) -> None:
         dirPath = QFileDialog.getExistingDirectory(self, 'Open Multiple DICOM Image Series', MULTIFILESETPATH)
         if dirPath:            
             self._progressBarDialog.show()
@@ -144,28 +147,28 @@ class MainWindow(QMainWindow):
             self._databaseManager.signal().progress.connect(self._databaseManagerMultiFileSetImportProgress)
             self._databaseManager.importMultiFileSet(dirPath=dirPath, fileType=DicomFileType())
 
-    def _databaseManagerFileImportProgress(self, progress):
+    def _databaseManagerFileImportProgress(self, progress) -> None:
         self._progressBarDialog.setValue(progress)
         if progress == 100:
             self._dataDockWidget.treeView().addRegisteredMultiFileSetModel(self._databaseManager.data())
             self._databaseManager.signal().progress.disconnect(self._databaseManagerFileImportProgress)
 
-    def _databaseManagerFileSetImportProgress(self, progress):
+    def _databaseManagerFileSetImportProgress(self, progress) -> None:
         self._progressBarDialog.setValue(progress)            
         if progress == 100:
             self._dataDockWidget.treeView().addRegisteredMultiFileSetModel(self._databaseManager.data())
             self._databaseManager.signal().progress.disconnect(self._databaseManagerFileSetImportProgress)
 
-    def _databaseManagerMultiFileSetImportProgress(self, progress):
+    def _databaseManagerMultiFileSetImportProgress(self, progress) -> None:
         self._progressBarDialog.setValue(progress)
         if progress == 100:
             self._dataDockWidget.treeView().addRegisteredMultiFileSetModel(self._databaseManager.data())
             self._databaseManager.signal().progress.disconnect(self._databaseManagerMultiFileSetImportProgress)
 
-    def _printFileCache(self):
+    def _printFileCache(self) -> None:
         self._databaseManager.printFileCache()
 
-    def _deleteAllData(self):
+    def _deleteAllData(self) -> None:
         self._databaseManager.deleteAllData()
         currentPlugin = self._pluginManager.currentPlugin()
         if currentPlugin:
@@ -173,8 +176,18 @@ class MainWindow(QMainWindow):
                 currentPlugin.clearData()
         self._dataDockWidget.clearData()        
 
-    def _resetLayout(self):
+    def _saveDefaultLayout(self) -> None:
+        self._defaultLayout = self.saveState()
+
+    def _resetToDefaultLayout(self) -> None:
         self.restoreState(self._defaultLayout)
+
+    def _setSize(self) -> None:
+        size = self._settings.value('mainWindowSize', None)
+        if not size:
+            size = QSize(970, 760)
+            self._settings.setValue('mainWindowSize', size)
+        self.resize(size)
 
     def _centerWindow(self) -> None:
         screen = QGuiApplication.primaryScreen().geometry()
@@ -182,7 +195,8 @@ class MainWindow(QMainWindow):
         y = (screen.height() - self.geometry().height()) / 2
         self.move(int(x), int(y))
 
-    def show(self):
+    def show(self) -> None:
+        # TODO: Move db.sqlite3 location to QSettings
         super(MainWindow, self).show()
         if not os.path.isfile('db.sqlite3'):
             QMessageBox.critical(self, 'Error', 'Please choose a directory for the SQLite3 database')
@@ -195,4 +209,5 @@ class MainWindow(QMainWindow):
                 self._exit()
 
     def _exit(self) -> None:
+        self._settings.setValue('mainWindowSize', self.size())
         QApplication.exit()
