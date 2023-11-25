@@ -72,7 +72,8 @@ class PluginManager:
         if 'tasks' not in self._plugins.keys():
             self._plugins['tasks'] = {}
         plugin1 = CopyFileSetTask()
-        self._plugins['tasks'][plugin1.name()] = plugin1        
+        self._plugins['tasks'][plugin1.name()] = plugin1     
+        return self._plugins   
     
     # def loadTaskPlugins(self, pluginDirectory, baseClass):
     #     if 'tasks' not in self._plugins.keys():
@@ -121,6 +122,7 @@ class PluginManager:
             self._plugins['viewers'] = {}
         plugin1 = DicomViewer()
         self._plugins['viewers'][plugin1.name()] = plugin1
+        return self._plugins
     
     # def loadViewerPlugins(self, pluginDirectory, baseClass):
     #     if 'viewers' not in self._plugins.keys():
