@@ -5,7 +5,7 @@ from data.registeredfilesetmodel import RegisteredFileSetModel
 class RegisteredFileModel:
     def __init__(self, fileModel: FileModel, registeredFileSetModel: RegisteredFileSetModel) -> None:
         self.id = fileModel.id
-        self.name = None
+        self.name = fileModel.name
         self.path = fileModel.path
         self.fileType = fileModel.fileType
         self.registeredFileSetModel = registeredFileSetModel

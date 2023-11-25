@@ -1,3 +1,5 @@
+import os
+
 from data.registrar import Registrar
 from data.dbsession import DbSession
 from data.filemodel import FileModel
@@ -19,7 +21,8 @@ class FileRegistrar(Registrar):
             fileSetModel = FileSetModel(multiFileSetModel=multiFileSetModel)
             session.add(fileSetModel)
             if self.fileType().check(self.path()):
-                fileModel = FileModel(path=self.path(), fileSetModel=fileSetModel, fileType=self.fileType().name)
+                fileName = os.path.split(self.path())[1]
+                fileModel = FileModel(path=self.path(), name=fileName, fileSetModel=fileSetModel, fileType=self.fileType().name)
                 session.add(fileModel)
                 session.commit()
 

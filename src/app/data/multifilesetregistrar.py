@@ -33,7 +33,8 @@ class MultiFileSetRegistrar(Registrar):
                 fileSetModel = FileSetModel(name=fileSetName, path=fileSetPath, multiFileSetModel=multiFileSetModel)
                 session.add(fileSetModel)
                 for filePath in data[fileSetPath]:
-                    fileModel = FileModel(path=filePath, fileSetModel=fileSetModel, fileType=self.fileType().name)
+                    fileName = os.path.split(filePath)[1]
+                    fileModel = FileModel(path=filePath, name=fileName, fileSetModel=fileSetModel, fileType=self.fileType().name)
                     session.add(fileModel)
             session.commit()
 

@@ -59,8 +59,7 @@ class DicomViewer(Viewer):
         i = 0
         for item in dicomImages:
             self._dicomImagesSorted.append(self._convertToQImage(item))
-            layer = self._createDicomAttributeLayer(item, i)
-            self._dicomAttributeLayersSorted.append(layer)
+            self._dicomAttributeLayersSorted.append(self._createDicomAttributeLayer(item, i))
             i += 1
         self._displayDicomImageAndAttributeLayer(self._currentImageIndex)
 
@@ -83,9 +82,8 @@ class DicomViewer(Viewer):
     def _createDicomAttributeLayer(self, dicomFile: DicomFile, index: int) -> DicomAttributeLayer:
         layer = DicomAttributeLayer(dicomFile.id, index)
         p = dicomFile.data()
-        layer.setInstanceNumber(p.InstanceNumber)
-        layer.setPatientId(p.PatientID)
         layer.setFileName(dicomFile.name)
+        layer.setInstanceNumber(p.InstanceNumber)
         return layer
  
     def applyWindowCenterAndWidth(self, image, center, width) -> np.array:
