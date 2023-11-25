@@ -28,6 +28,9 @@ class Task:
     
     def parameter(self, name: str):
         return self._parameters[name]
+    
+    def showSettingsDialog(self) -> None:
+        raise NotImplementedError('Not implemented')
 
     def run(self) -> None:
         # To be run in the background using QThreadPool

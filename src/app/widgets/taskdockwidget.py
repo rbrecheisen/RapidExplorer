@@ -1,5 +1,5 @@
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QWidget, QComboBox, QVBoxLayout, QPushButton
+from PySide6.QtWidgets import QWidget, QComboBox, QVBoxLayout, QHBoxLayout, QPushButton
 
 from widgets.dockwidget import DockWidget
 from plugins.pluginmanager import PluginManager
@@ -16,9 +16,16 @@ class TaskDockWidget(DockWidget):
         self._comboBoxTaskPlugins = QComboBox(self)
         self._comboBoxTaskPlugins.currentIndexChanged.connect(self._currentIndexChanged)
         showDetailsDialogButton = QPushButton('Show Details...')
+        showDetailsDialogButton.setFixedWidth(200)
         showDetailsDialogButton.clicked.connect(self._showDetailsDialog)
+        buttonLayout = QHBoxLayout()
+        buttonLayout.addWidget(showDetailsDialogButton)
+        buttonLayout.setAlignment(Qt.AlignRight)
+        buttonWidget = QWidget()
+        buttonWidget.setLayout(buttonLayout)
         layout = QVBoxLayout()
         layout.addWidget(self._comboBoxTaskPlugins)
+        layout.addWidget(buttonWidget)
         layout.setAlignment(Qt.AlignTop)
         widget = QWidget()
         widget.setLayout(layout)    
@@ -33,7 +40,11 @@ class TaskDockWidget(DockWidget):
             manager.setCurrentTaskPlugin(plugin)
 
     def _showDetailsDialog(self) -> None:
-        pass
+        selectedText = self._comboBoxTaskPlugins.currentText()
+        if selectedText:
+            manager = PluginManager()
+            plugin = manager.taskPlugin(selectedText)
+            plugin.showSettingsDialog()
 
     def _loadTaskPlugins(self) -> None:
         self._comboBoxTaskPlugins.clear()
