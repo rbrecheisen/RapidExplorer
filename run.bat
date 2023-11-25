@@ -1,0 +1,9 @@
+@echo off
+
+SET "SCRIPTDIR=%~dp0"
+SET "SCRIPTDIR=%SCRIPTDIR:~0,-1%"
+SET "SETTINGSPATH=%SCRIPTDIR%\settings.ini"
+SET "DATABASE=%SCRIPTDIR%\db.sqlite3"
+SET "DATABASEECHO=0"
+
+"%SCRIPT_DIR%\MyAppExecutable.exe"

@@ -14,11 +14,10 @@ rm -rf main.build RapidExplorer
 ~/.venv/RapidExplorer/bin/python -m nuitka --standalone --include-package=pydicom --enable-plugin=pyside6 src/app/main.py
 
 # Reorganize
-# Update settings to store db.sqlite3 database in parent directory. Perhaps
-# you can copy a default deployment settings file to the RapidExplorer
-# directory
-mv main.dist/main.bin main.dist/RapidExplorer
 mv main.dist RapidExplorer
+cp settings.ini RapidExplorer
+cp run.sh RapidExplorer
+mv RapidExplorer/run.sh RapidExplorer/RapidExplorer
 
 # Build a ZIP file for the application's distribution
 zip -r RapidExplorer.zip RapidExplorer

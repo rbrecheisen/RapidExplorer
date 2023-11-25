@@ -24,16 +24,16 @@ APPLICATIONNAME = 'RapidExplorer'
 
 
 class MainWindow(QMainWindow):
-    def __init__(self) -> None:
+    def __init__(self, settingsPath: str) -> None:
         super(MainWindow, self).__init__()
         QSettings.setDefaultFormat(QSettings.Format.IniFormat)
-        self._settings = QSettings(SETTINGSPATH, QSettings.Format.IniFormat)
+        self._settings = QSettings(settingsPath, QSettings.Format.IniFormat)
         self._dataDockWidget = None
         self._tasksDockWidget = None
         self._mainViewDockWidget = None
         self._viewsDockWidget = None
         self._progressBarDialog = None
-        self._databaseManager = DataManager()
+        self._dataManager = DataManager()
         self._pluginManager = PluginManager()
         self._fileImporter = None
         self._fileSetImporter = None
@@ -128,48 +128,48 @@ class MainWindow(QMainWindow):
         if filePath:
             self._progressBarDialog.show()
             self._progressBarDialog.setValue(0)
-            self._databaseManager.signal().progress.connect(self._databaseManagerFileImportProgress)
-            self._databaseManager.importFile(filePath=filePath, fileType=DicomFileType())
+            self._dataManager.signal().progress.connect(self._dataManagerFileImportProgress)
+            self._dataManager.importFile(filePath=filePath, fileType=DicomFileType())
 
     def _importDicomFileSet(self) -> None:
         dirPath = QFileDialog.getExistingDirectory(self, 'Open DICOM Image Series', FILESETPATH)
         if dirPath:
             self._progressBarDialog.show()
             self._progressBarDialog.setValue(0)
-            self._databaseManager.signal().progress.connect(self._databaseManagerFileSetImportProgress)
-            self._databaseManager.importFileSet(dirPath=dirPath, fileType=DicomFileType())
+            self._dataManager.signal().progress.connect(self._dataManagerFileSetImportProgress)
+            self._dataManager.importFileSet(dirPath=dirPath, fileType=DicomFileType())
 
     def _importDicomMultiFileSet(self) -> None:
         dirPath = QFileDialog.getExistingDirectory(self, 'Open Multiple DICOM Image Series', MULTIFILESETPATH)
         if dirPath:            
             self._progressBarDialog.show()
             self._progressBarDialog.setValue(0)
-            self._databaseManager.signal().progress.connect(self._databaseManagerMultiFileSetImportProgress)
-            self._databaseManager.importMultiFileSet(dirPath=dirPath, fileType=DicomFileType())
+            self._dataManager.signal().progress.connect(self._dataManagerMultiFileSetImportProgress)
+            self._dataManager.importMultiFileSet(dirPath=dirPath, fileType=DicomFileType())
 
-    def _databaseManagerFileImportProgress(self, progress) -> None:
+    def _dataManagerFileImportProgress(self, progress) -> None:
         self._progressBarDialog.setValue(progress)
         if progress == 100:
-            self._dataDockWidget.treeView().addRegisteredMultiFileSetModel(self._databaseManager.data())
-            self._databaseManager.signal().progress.disconnect(self._databaseManagerFileImportProgress)
+            self._dataDockWidget.treeView().addRegisteredMultiFileSetModel(self._dataManager.data())
+            self._dataManager.signal().progress.disconnect(self._dataManagerFileImportProgress)
 
-    def _databaseManagerFileSetImportProgress(self, progress) -> None:
+    def _dataManagerFileSetImportProgress(self, progress) -> None:
         self._progressBarDialog.setValue(progress)            
         if progress == 100:
-            self._dataDockWidget.treeView().addRegisteredMultiFileSetModel(self._databaseManager.data())
-            self._databaseManager.signal().progress.disconnect(self._databaseManagerFileSetImportProgress)
+            self._dataDockWidget.treeView().addRegisteredMultiFileSetModel(self._dataManager.data())
+            self._dataManager.signal().progress.disconnect(self._dataManagerFileSetImportProgress)
 
-    def _databaseManagerMultiFileSetImportProgress(self, progress) -> None:
+    def _dataManagerMultiFileSetImportProgress(self, progress) -> None:
         self._progressBarDialog.setValue(progress)
         if progress == 100:
-            self._dataDockWidget.treeView().addRegisteredMultiFileSetModel(self._databaseManager.data())
-            self._databaseManager.signal().progress.disconnect(self._databaseManagerMultiFileSetImportProgress)
+            self._dataDockWidget.treeView().addRegisteredMultiFileSetModel(self._dataManager.data())
+            self._dataManager.signal().progress.disconnect(self._dataManagerMultiFileSetImportProgress)
 
     def _printFileCache(self) -> None:
-        self._databaseManager.printFileCache()
+        self._dataManager.printFileCache()
 
     def _deleteAllData(self) -> None:
-        self._databaseManager.deleteAllData()
+        self._dataManager.deleteAllData()
         currentPlugin = self._pluginManager.currentPlugin()
         if currentPlugin:
             if self._pluginManager.isViewPlugin(currentPlugin):
@@ -194,19 +194,6 @@ class MainWindow(QMainWindow):
         x = (screen.width() - self.geometry().width()) / 2
         y = (screen.height() - self.geometry().height()) / 2
         self.move(int(x), int(y))
-
-    def show(self) -> None:
-        # TODO: Move db.sqlite3 location to QSettings
-        super(MainWindow, self).show()
-        if not os.path.isfile('db.sqlite3'):
-            QMessageBox.critical(self, 'Error', 'Please choose a directory for the SQLite3 database')
-            dirPath = QFileDialog.getExistingDirectory(self, '', '.')
-            if dirPath:
-                # First time use of the database
-                data.engine.DATABASE = os.path.join(dirPath, 'db.sqlite3')
-                self._dataDockWidget.loadModelsFromDatabase()
-            else:
-                self._exit()
 
     def _exit(self) -> None:
         self._settings.setValue('mainWindowSize', self.size())

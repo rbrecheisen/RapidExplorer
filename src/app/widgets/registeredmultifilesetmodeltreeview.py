@@ -20,7 +20,7 @@ class RegisteredMultiFileSetModelTreeView(QTreeView):
         self._databaseManager = DataManager()
         self._initModel()
         self._initProgressDialog()
-        # self.loadModelsFromDatabase()
+        self.loadModelsFromDatabase()
 
     def _initModel(self) -> None:
         self._model = QStandardItemModel()
