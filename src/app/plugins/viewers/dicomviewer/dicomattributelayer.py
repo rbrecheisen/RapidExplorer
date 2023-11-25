@@ -9,12 +9,16 @@ class DicomAttributeLayer(Layer):
         super(DicomAttributeLayer, self).__init__(name, index, opacity, visible)
         self._instanceNumber = -1
         self._patientId = None
+        self._fileName = None
 
     def setInstanceNumber(self, instanceNumber: int) -> None:
         self._instanceNumber = instanceNumber
 
     def setPatientId(self, patientId: str) -> None:
         self._patientId = patientId
+
+    def setFileName(self, fileName: str) -> None:
+        self._fileName = fileName
 
     def createGraphicsItem(self) -> QGraphicsItemGroup:
         group = QGraphicsItemGroup()
@@ -28,4 +32,9 @@ class DicomAttributeLayer(Layer):
             patientIdItem.setDefaultTextColor(Qt.white)
             patientIdItem.setPos(10, 30)        # QSettings!
             group.addToGroup(patientIdItem)
+        if self._fileName:
+            fileNameItem = QGraphicsTextItem('Filename: ' + self._fileName)
+            fileNameItem.setDefaultTextColor(Qt.white)
+            fileNameItem.setPos(10, 50)        # QSettings!
+            group.addToGroup(fileNameItem)
         return group

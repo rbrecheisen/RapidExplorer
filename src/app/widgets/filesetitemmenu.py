@@ -23,12 +23,11 @@ class FileSetItemMenu(QMenu):
         self._fileSetItem.setEditable(False)
 
     def _handleShowInMainViewAction(self):
-        currentPlugin = self._pluginManager.currentPlugin()
+        currentPlugin = self._pluginManager.currentViewerPlugin()
         if currentPlugin:
-            if self._pluginManager.isViewPlugin(currentPlugin):
-                data = self._fileSetItem.registeredFileSetModel()
-                currentPlugin.setData(data)
-                return
+            data = self._fileSetItem.registeredFileSetModel()
+            currentPlugin.setData(data)
+            return
         QMessageBox.critical(self, 'Error', 'Please select a viewer first!')
 
     def show(self):

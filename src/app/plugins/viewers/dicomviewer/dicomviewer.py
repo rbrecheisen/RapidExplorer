@@ -41,8 +41,7 @@ class DicomViewer(Viewer):
         self.setLayout(layout)
 
     def setData(self, data: RegisteredFileSetModel) -> None:
-        """
-        In viewers that inherit from DicomViewer you can allow registered filesets with different file
+        """ In viewers that inherit from DicomViewer you can allow registered filesets with different file
         types, e.g., the fileset might contain both L3 images and TAG files. 
         """
         self._dicomImagesSorted = []
@@ -60,7 +59,8 @@ class DicomViewer(Viewer):
         i = 0
         for item in dicomImages:
             self._dicomImagesSorted.append(self._convertToQImage(item))
-            self._dicomAttributeLayersSorted.append(self._createDicomAttributeLayer(item, i))
+            layer = self._createDicomAttributeLayer(item, i)
+            self._dicomAttributeLayersSorted.append(layer)
             i += 1
         self._displayDicomImageAndAttributeLayer(self._currentImageIndex)
 
@@ -85,6 +85,7 @@ class DicomViewer(Viewer):
         p = dicomFile.data()
         layer.setInstanceNumber(p.InstanceNumber)
         layer.setPatientId(p.PatientID)
+        layer.setFileName(dicomFile.name)
         return layer
  
     def applyWindowCenterAndWidth(self, image, center, width) -> np.array:

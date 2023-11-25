@@ -172,7 +172,7 @@ class MainWindow(QMainWindow):
         self._dataManager.deleteAllData()
         currentPlugin = self._pluginManager.currentPlugin()
         if currentPlugin:
-            if self._pluginManager.isViewPlugin(currentPlugin):
+            if self._pluginManager.isViewerPlugin(currentPlugin):
                 currentPlugin.clearData()
         self._dataDockWidget.clearData()        
 

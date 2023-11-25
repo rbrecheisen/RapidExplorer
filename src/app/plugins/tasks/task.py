@@ -29,7 +29,8 @@ class Task:
     def parameter(self, name: str):
         return self._parameters[name]
 
-    def execute(self) -> None:
+    def run(self) -> None:
+        # To be run in the background using QThreadPool
         raise NotImplementedError('Not implemented')
     
     def outputData(self):

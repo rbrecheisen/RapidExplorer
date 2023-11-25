@@ -15,7 +15,7 @@ class CopyFileSetTask(Task):
         self._dataManager.signal().progress.connect(self._updateProgress)
         self._outputData = None
 
-    def execute(self) -> None:
+    def run(self) -> None:
         # Copies fileset including SQL registration
         if self.hasData('source'):
             source = self.data('source')

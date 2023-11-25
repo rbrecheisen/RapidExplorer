@@ -44,10 +44,9 @@ class MultiFileSetItemMenu(QMenu):
         self._treeView.model().clear()
         self._treeView.loadModelsFromDatabase()
         pluginManager = PluginManager()
-        currentPlugin = pluginManager.currentPlugin()
+        currentPlugin = pluginManager.currentViewerPlugin()
         if currentPlugin:
-            if pluginManager.isViewPlugin(currentPlugin):
-                currentPlugin.clearData()
+            currentPlugin.clearData()
     
     def _databaseManagerLoadProgress(self, progress):
         self._treeView.progressDialog().setValue(progress)

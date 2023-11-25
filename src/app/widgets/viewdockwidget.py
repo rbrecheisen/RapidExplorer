@@ -8,30 +8,30 @@ from plugins.pluginmanager import PluginManager
 class ViewsDockWidget(DockWidget):
     def __init__(self, title: str) -> None:
         super(ViewsDockWidget, self).__init__(title)
-        self._comboBoxViewPlugins = None
+        self._comboBoxViewerPlugins = None
         self._initUi()
         self._loadViewPlugins()
 
     def _initUi(self) -> None:
-        self._comboBoxViewPlugins = QComboBox(self)
-        self._comboBoxViewPlugins.currentIndexChanged.connect(self._currentIndexChanged)
+        self._comboBoxViewerPlugins = QComboBox(self)
+        self._comboBoxViewerPlugins.currentIndexChanged.connect(self._currentIndexChanged)
         layout = QVBoxLayout()
-        layout.addWidget(self._comboBoxViewPlugins)
+        layout.addWidget(self._comboBoxViewerPlugins)
         layout.setAlignment(Qt.AlignTop)
         widget = QWidget()
         widget.setLayout(layout)    
         self.setWidget(widget)
 
     def _currentIndexChanged(self, index):
-        selectedText = self._comboBoxViewPlugins.itemText(index)
+        selectedText = self._comboBoxViewerPlugins.itemText(index)
         manager = PluginManager()        
-        plugin = manager.viewPlugin(selectedText)
+        plugin = manager.viewerPlugin(selectedText)
         if plugin:
-            manager.setCurrentPlugin(plugin)
+            manager.setCurrentViewerPlugin(plugin)
 
     def _loadViewPlugins(self):
-        self._comboBoxViewPlugins.clear()
-        self._comboBoxViewPlugins.addItem(None)
+        self._comboBoxViewerPlugins.clear()
+        self._comboBoxViewerPlugins.addItem(None)
         manager = PluginManager()
-        for pluginName in manager.viewPlugins().keys():
-            self._comboBoxViewPlugins.addItem(pluginName)
+        for pluginName in manager.viewerPlugins().keys():
+            self._comboBoxViewerPlugins.addItem(pluginName)

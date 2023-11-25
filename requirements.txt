@@ -5,6 +5,7 @@ sqlalchemy
 pendulum 
 pylibjpeg[openjpeg]
 pylibjpeg-libjpeg
+barbell2_bodycomp
 nuitka
 pytest
 pytest-qt

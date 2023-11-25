@@ -1,6 +1,9 @@
 from PySide6.QtCore import QObject, Signal
-from PySide6.QtWidgets import QWidget
+
+from plugins.tasks.task import Task
+from plugins.viewers.viewer import Viewer
 
 
 class PluginSignal(QObject):
-    pluginChanged = Signal(QWidget)
+    taskPluginChanged = Signal(Task)
+    viewerPluginChanged = Signal(Viewer)
