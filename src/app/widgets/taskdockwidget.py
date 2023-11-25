@@ -15,11 +15,11 @@ class TaskDockWidget(DockWidget):
     def _initUi(self) -> None:
         self._comboBoxTaskPlugins = QComboBox(self)
         self._comboBoxTaskPlugins.currentIndexChanged.connect(self._currentIndexChanged)
-        showDetailsDialogButton = QPushButton('Show Details...')
-        showDetailsDialogButton.setFixedWidth(200)
-        showDetailsDialogButton.clicked.connect(self._showDetailsDialog)
+        showSettingsDialogButton = QPushButton('Edit Settings...')
+        showSettingsDialogButton.setFixedWidth(200)
+        showSettingsDialogButton.clicked.connect(self._showSettingsDialog)
         buttonLayout = QHBoxLayout()
-        buttonLayout.addWidget(showDetailsDialogButton)
+        buttonLayout.addWidget(showSettingsDialogButton)
         buttonLayout.setAlignment(Qt.AlignRight)
         buttonWidget = QWidget()
         buttonWidget.setLayout(buttonLayout)
@@ -39,7 +39,7 @@ class TaskDockWidget(DockWidget):
         if plugin:
             manager.setCurrentTaskPlugin(plugin)
 
-    def _showDetailsDialog(self) -> None:
+    def _showSettingsDialog(self) -> None:
         selectedText = self._comboBoxTaskPlugins.currentText()
         if selectedText:
             manager = PluginManager()

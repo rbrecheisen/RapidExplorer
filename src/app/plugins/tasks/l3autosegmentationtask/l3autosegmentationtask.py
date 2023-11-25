@@ -13,8 +13,8 @@ class L3AutoSegmentationTask(Task):
         self._outputData = None
 
     def showSettingsDialog(self) -> None:
-        dialog = L3AutoSegmentationTaskSettingsDialog(self)
-        dialog.show()
+        dialog = L3AutoSegmentationTaskSettingsDialog(task=self)
+        dialog.exec_()
 
     def run(self) -> None:
         inputData = self.data(name='inputData')
