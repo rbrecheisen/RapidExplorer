@@ -18,6 +18,7 @@ class L3AutoSegmentationTask(Task):
         self._outputData = None
 
     def showSettingsDialog(self) -> None:
+        # TODO: Move this to parent task
         dialog = L3AutoSegmentationTaskSettingsDialog(task=self)
         resultCode = dialog.exec_()
         if resultCode == QDialog.Accepted:

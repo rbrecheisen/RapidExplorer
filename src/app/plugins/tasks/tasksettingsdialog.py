@@ -14,4 +14,4 @@ class TaskSettingsDialog(QDialog):
         return self._task
     
     def _buildTaskSettingsForm(self, task) -> None:
-        pass
+        taskSettings = task.settings()

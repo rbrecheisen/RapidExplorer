@@ -4,7 +4,6 @@ from singleton import singleton
 from plugins.tasks.task import Task
 from plugins.viewers.viewer import Viewer
 from plugins.pluginsignal import PluginSignal
-from plugins.tasks.copyfilesettask.copyfilesettask import CopyFileSetTask
 from plugins.tasks.l3autosegmentationtask.l3autosegmentationtask import L3AutoSegmentationTask
 from plugins.viewers.dicomviewer.dicomviewer import DicomViewer
 
