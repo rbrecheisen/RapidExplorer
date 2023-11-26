@@ -50,23 +50,7 @@ class TaskSettingsDialog(QDialog):
                 # Create line edit
                 lineEdit = QLineEdit(self)
                 self._formFieldWidgets[name] = (lineEdit, QLabel(setting.displayName()))
-            # elif task.checkSettingTypeIsMultiFileSet(setting):
-            #     # For this widget we retrieve all multi-filesets
-            #     comboBox = QComboBox(self)
-            #     comboBox.addItem(None)
-            #     multiFileSetModels = self._dataManager.getMultiFileSetModels()
-            #     for multiFileSetModel in multiFileSetModels:
-            #         comboBox.addItem(multiFileSetModel.name)
-            #     comboBox.currentIndexChanged.connect(self._multiFileSetSelected)
-            #     self._formFieldWidgets[name] = (comboBox, QLabel(setting.displayName()))            
-            # elif task.checkSettingTypeIsFileSet(setting):
-            #     # For this widget we need to retrieve all filesets of a given multi-fileset
-            #     # but we can only do that after a multi-fileset has been selected
-            #     comboBox = QComboBox(self)
-            #     comboBox.addItem(None)
-            #     comboBox.currentIndexChanged.connect(self._fileSetSelected)
-            #     self._formFieldWidgets[name] = (comboBox, QLabel(setting.displayName()))            
-            elif task.checkSettingTypeIsFile(setting):
+            elif task.checkSettingTypeIsFileSelector(setting):
                 # for this widget we retrieve all files of a given fileset. This implies
                 # that a fileset has been selected
                 selectorWidget = TaskFileSelectorWidget(name)
@@ -87,15 +71,6 @@ class TaskSettingsDialog(QDialog):
         buttonsWidget = QWidget()
         buttonsWidget.setLayout(buttonsLayout)
         return buttonsWidget
-    
-    # def _multiFileSetSelected(self, index) -> None:
-    #     # What should happen here? Both the fileset and file comboboxes should
-    #     # be cleared and repopulated
-    #     multiFileSetModelName = self._formFieldWidgets['multiFileSet'][0].currentText()
-    #     print(multiFileSetModelName)
-
-    # def _fileSetSelected(self, index) -> None:
-    #     pass
     
     def _cancel(self) -> None:
         self.reject()

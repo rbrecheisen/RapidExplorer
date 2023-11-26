@@ -8,9 +8,7 @@ from plugins.tasks.taskintegersetting import TaskIntegerSetting
 from plugins.tasks.taskfloatingpointsetting import TaskFloatingPointSetting
 from plugins.tasks.tasktextsetting import TaskTextSetting
 from plugins.tasks.taskoptionssetting import TaskOptionsSetting
-from plugins.tasks.taskfilesetting import TaskFileSetting
-from plugins.tasks.taskfilesetsetting import TaskFileSetSetting
-from plugins.tasks.taskmultifilesetsetting import TaskMultiFileSetSetting
+from app.plugins.tasks.taskfileselectorsetting import TaskFileSelectorSetting
 from plugins.tasks.tasksettingsdialog import TaskSettingsDialog
 
 
@@ -51,23 +49,16 @@ class Task:
     def checkSettingTypeIsOptions(self, setting: TaskSetting) -> bool:
         return isinstance(setting, TaskOptionsSetting)
     
-    def checkSettingTypeIsFile(self, setting: TaskSetting) -> bool:
-        return isinstance(setting, TaskFileSetting)
-    
-    def checkSettingTypeIsFileSet(self, setting: TaskSetting) -> bool:
-        return isinstance(setting, TaskFileSetSetting)
-    
-    def checkSettingTypeIsMultiFileSet(self, setting: TaskSetting) -> bool:
-        return isinstance(setting, TaskMultiFileSetSetting)
+    def checkSettingTypeIsFileSelector(self, setting: TaskSetting) -> bool:
+        return isinstance(setting, TaskFileSelectorSetting)
     
     def showSettingsDialog(self) -> None:
         settingsDialog = TaskSettingsDialog(task=self)
         resultCode = settingsDialog.show()
         if resultCode == QDialog.Accepted:
-            print('Input data: {}'.format(self.setting('inputData').value()))
-            print('TensorFlow model files: {}'.format(self.setting('tensorFlowModelFiles').value()))
+            pass
         elif resultCode == QDialog.Rejected:
-            print('Dialog rejected')
+            pass
         else:
             raise RuntimeError(f'Unknown return code {resultCode}')
 
