@@ -19,7 +19,7 @@ class CopyFileSetTask(Task):
         # Copies fileset including SQL registration
         if self.hasData('source'):
             source = self.data('source')
-            targetDirectory = self.parameter('targetDirectory')
+            targetDirectory = self.setting('targetDirectory')
             if os.path.isdir(targetDirectory):
                 raise RuntimeError(f'Target directory {targetDirectory} already exists')
             os.makedirs(targetDirectory, exist_ok=False)

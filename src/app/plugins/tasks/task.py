@@ -2,7 +2,7 @@ class Task:
     def __init__(self, name: str) -> None:
         self._name = name
         self._data = {}
-        self._parameters = {}
+        self._settings = {}
 
     def name(self) -> str:
         return self._name
@@ -18,16 +18,16 @@ class Task:
     def data(self, name: str):
         return self._data[name]
     
-    def addParameter(self, name: str, value) -> None:
-        if name in self._parameters.keys():
-            raise RuntimeError(f'Parameter with name {name} already added to task')
-        self._parameters[name] = value
+    def addSetting(self, name: str, value) -> None:
+        if name in self._settings.keys():
+            raise RuntimeError(f'Setting with name {name} already added to task')
+        self._settings[name] = value
 
-    def hasParameter(self, name) -> bool:
-        return name in self._parameters.keys()
+    def hasSetting(self, name) -> bool:
+        return name in self._settings.keys()
     
-    def parameter(self, name: str):
-        return self._parameters[name]
+    def setting(self, name: str):
+        return self._settings[name]
     
     def showSettingsDialog(self) -> None:
         raise NotImplementedError('Not implemented')
