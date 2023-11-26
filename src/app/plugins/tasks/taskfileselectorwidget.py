@@ -1,3 +1,5 @@
+import os
+
 from PySide6.QtWidgets import QGroupBox, QComboBox, QLabel, QVBoxLayout
 
 from data.datamanager import DataManager
@@ -38,15 +40,25 @@ class TaskFileSelectorWidget(QGroupBox):
         self.setLayout(layout)
 
     def _multiFileSetSelected(self, index) -> None:
-        # Use only registered models!!!
+        self._fileComboBox.clear()
+        self._fileComboBox.addItem(None)
+        self._fileSetComboBox.clear()
+        self._fileSetComboBox.addItem(None)
         multiFileSetName = self._multiFileSetComboBox.currentText()
-        # multiFileSetModel = self._dataManager.getMultiFileSetModelByName(multiFileSetName)
-        # fileSetModels = self._dataManager.getFileSetModelsFromMultiFileSetModel(multiFileSetModel)
-        # for fileSetModel in fileSetModels:
-        #     print(f'FileSetModel: {fileSetModel.id}')
+        registeredMultiFileSetModel = self._dataManager.getRegisteredMultiFileSetModelByName(name=multiFileSetName)
+        for registeredFileSetModel in registeredMultiFileSetModel.registeredFileSetModels:
+            self._fileSetComboBox.addItem(registeredFileSetModel.name)
 
     def _fileSetSelected(self, index) -> None:
-        pass
+        self._fileComboBox.clear()
+        self._fileComboBox.addItem(None)
+        fileSetName = self._fileSetComboBox.currentText()
+        multiFileSetName = self._multiFileSetComboBox.currentText()
+        registeredMultiFileSetModel = self._dataManager.getRegisteredMultiFileSetModelByName(name=multiFileSetName)
+        for registeredFileSetModel in registeredMultiFileSetModel.registeredFileSetModels:
+            if registeredFileSetModel.name == fileSetName:
+                for registeredFileModel in registeredFileSetModel.registeredFileModels:
+                    self._fileComboBox.addItem(os.path.split(registeredFileModel.path)[1])
 
     def selectedMultiFileSetName(self) -> str:
         return self._multiFileSetComboBox.currentText()

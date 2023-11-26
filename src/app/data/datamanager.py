@@ -131,6 +131,14 @@ class DataManager:
                 loader = RegisteredMultiFileSetModelLoader()
                 registeredMultiFileSetModels.append(loader.load(multiFileSetModel.id))
         return registeredMultiFileSetModels
+    
+    def getRegisteredMultiFileSetModelByName(self, name) -> RegisteredMultiFileSetModel:
+        registeredMultiFileSetModel = None
+        with DbSession() as session:
+            multiFileSetModel = session.query(MultiFileSetModel).filter_by(name=name).one()
+            loader = RegisteredMultiFileSetModelLoader()
+            registeredMultiFileSetModel = loader.load(multiFileSetModel.id)
+        return registeredMultiFileSetModel
 
     # Updating names
 
