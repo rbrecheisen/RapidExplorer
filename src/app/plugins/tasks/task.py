@@ -1,6 +1,7 @@
 from typing import Dict
 
-from PySide6.QtWidgets import QDialog
+from PySide6.QtCore import QThreadPool
+from PySide6.QtWidgets import QDialog, QMessageBox
 
 from plugins.tasks.tasksetting import TaskSetting
 from plugins.tasks.taskbooleansetting import TaskBooleanSetting
@@ -8,7 +9,9 @@ from plugins.tasks.taskintegersetting import TaskIntegerSetting
 from plugins.tasks.taskfloatingpointsetting import TaskFloatingPointSetting
 from plugins.tasks.tasktextsetting import TaskTextSetting
 from plugins.tasks.taskoptionssetting import TaskOptionsSetting
-from app.plugins.tasks.taskfileselectorsetting import TaskFileSelectorSetting
+from plugins.tasks.taskfileselectorsetting import TaskFileSelectorSetting
+from plugins.tasks.taskfilesetselectorsetting import TaskFileSetSelectorSetting
+from plugins.tasks.taskmultifilesetselectorsetting import TaskMultiFileSetSelectorSetting
 from plugins.tasks.tasksettingsdialog import TaskSettingsDialog
 
 
@@ -16,9 +19,13 @@ class Task:
     def __init__(self, name: str) -> None:
         self._name = name
         self._settings = {}
+        self._readyToRun = False
 
     def name(self) -> str:
         return self._name
+    
+    def readyToRun(self) -> bool:
+        return self._readyToRun
     
     def addSetting(self, setting: TaskSetting) -> None:
         if setting.name() in self._settings.keys():
@@ -52,17 +59,23 @@ class Task:
     def checkSettingTypeIsFileSelector(self, setting: TaskSetting) -> bool:
         return isinstance(setting, TaskFileSelectorSetting)
     
+    def checkSettingTypeIsFileSetSelector(self, setting: TaskSetting) -> bool:
+        return isinstance(setting, TaskFileSetSelectorSetting)
+    
+    def checkSettingTypeIsMultiFileSetSelector(self, setting: TaskSetting) -> bool:
+        return isinstance(setting, TaskMultiFileSetSelectorSetting)
+    
     def showSettingsDialog(self) -> None:
+        self._readyToRun = False
         settingsDialog = TaskSettingsDialog(task=self)
         resultCode = settingsDialog.show()
         if resultCode == QDialog.Accepted:
-            pass
-        elif resultCode == QDialog.Rejected:
-            pass
+            self._readyToRun = True
         else:
             raise RuntimeError(f'Unknown return code {resultCode}')
 
     def run(self) -> None:
+        # QThreadPool.globalInstance().start(self.taskRunner())
         raise NotImplementedError('Not implemented')
     
     def outputData(self):

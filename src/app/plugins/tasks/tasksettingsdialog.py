@@ -4,6 +4,8 @@ from PySide6.QtWidgets import QSpinBox, QMessageBox, QDoubleSpinBox, QLineEdit
 
 from data.datamanager import DataManager
 from plugins.tasks.taskfileselectorwidget import TaskFileSelectorWidget
+from plugins.tasks.taskfilesetselectorwidget import TaskFileSetSelectorWidget
+from plugins.tasks.taskmultifilesetselectorwidget import TaskMultiFileSetSelectorWidget
 
 
 class TaskSettingsDialog(QDialog):
@@ -30,31 +32,38 @@ class TaskSettingsDialog(QDialog):
         for name in task.settings().keys():
             setting = task.setting(name)
             if task.checkSettingTypeIsBoolean(setting):
-                # Create combobox for boolean values
                 comboBox = QComboBox(self)
                 comboBox.addItem(None)
                 comboBox.addItem('True')
                 comboBox.addItem('False')
-                self._formFieldWidgets[name] = (comboBox, QLabel(setting.displayName()))            
+                self._formFieldWidgets[name] = (comboBox, QLabel(self._buildDisplayName(setting)))
+
             elif task.checkSettingTypeIsInteger(setting):
-                # Create spinbox for integer values
                 spinBox = QSpinBox(self)
                 spinBox.setRange(setting.minimum(), setting.maximum())
-                self._formFieldWidgets[name] = (spinBox, QLabel(setting.displayName()))            
+                self._formFieldWidgets[name] = (spinBox, QLabel(self._buildDisplayName(setting)))            
+
             elif task.checkSettingTypeIsFloatingPoint(setting):
-                # Create spinbox for floating point values
                 spinBox = QDoubleSpinBox(self)
                 spinBox.setRange(setting.minimum(), setting.maximum())
-                self._formFieldWidgets[name] = (spinBox, QLabel(setting.displayName()))            
+                self._formFieldWidgets[name] = (spinBox, QLabel(self._buildDisplayName(setting)))            
+
             elif task.checkSettingTypeIsText(setting):
-                # Create line edit
                 lineEdit = QLineEdit(self)
-                self._formFieldWidgets[name] = (lineEdit, QLabel(setting.displayName()))
+                self._formFieldWidgets[name] = (lineEdit, QLabel(self._buildDisplayName(setting)))
+
             elif task.checkSettingTypeIsFileSelector(setting):
-                # for this widget we retrieve all files of a given fileset. This implies
-                # that a fileset has been selected
-                selectorWidget = TaskFileSelectorWidget(name)
-                self._formFieldWidgets[name] = (selectorWidget, QLabel(setting.displayName()))            
+                selectorWidget = TaskFileSelectorWidget()
+                self._formFieldWidgets[name] = (selectorWidget, QLabel(self._buildDisplayName(setting)))            
+
+            elif task.checkSettingTypeIsFileSetSelector(setting):
+                selectorWidget = TaskFileSetSelectorWidget()
+                self._formFieldWidgets[name] = (selectorWidget, QLabel(self._buildDisplayName(setting)))
+
+            elif task.checkSettingTypeIsMultiFileSetSelector(setting):
+                selectorWidget = TaskMultiFileSetSelectorWidget()
+                self._formFieldWidgets[name] = (selectorWidget, QLabel(self._buildDisplayName(setting)))
+
             else:
                 raise RuntimeError(f'Unknown setting type {name}')
         return self._formFieldWidgets
@@ -72,19 +81,49 @@ class TaskSettingsDialog(QDialog):
         buttonsWidget.setLayout(buttonsLayout)
         return buttonsWidget
     
+    def _buildDisplayName(self, setting) -> str:
+        displayName = setting.displayName()
+        if setting.optional():
+            displayName += ' (optional)'
+        return displayName
+    
     def _cancel(self) -> None:
         self.reject()
 
     def _saveAndCloseSettings(self) -> None:
-        # inputDataName = self._inputDataComboBox.currentText()
-        # tensorFlowModelFilesName = self._tensorFlowModelFilesComboBox.currentText()
-        # if inputDataName and tensorFlowModelFilesName:
-        #     self.task().addSetting('inputData', inputDataName)
-        #     self.task().addSetting('tensorFlowModelFiles', tensorFlowModelFilesName)
-        #     self.accept()
-        #     return
-        # QMessageBox.critical(self, 'Error', 'Please select input data and TensorFlow model files!')
-        pass        
+        task = self._task
+        for name in task.settings().keys():
+            setting = task.setting(name)
+            if task.checkSettingTypeIsBoolean(setting):
+                comboBox = self._formFieldWidgets[name][0]
+                setting.setValue(True if comboBox.currentText() == 'True' else False)
+
+            elif task.checkSettingTypeIsInteger(setting):
+                spinBox = self._formFieldWidgets[name][0]
+                setting.setValue(spinBox.value())
+
+            elif task.checkSettingTypeIsFloatingPoint(setting):
+                doubleSpinBox = self._formFieldWidgets[name][0]
+                setting.setValue(doubleSpinBox.value())
+
+            elif task.checkSettingTypeIsText(setting):
+                lineEdit = self._formFieldWidgets[name][0]
+                setting.setValue(lineEdit.text())
+
+            elif task.checkSettingTypeIsFileSelector(setting):
+                fileSelector = self._formFieldWidgets[name][0]
+                setting.setValue(fileSelector.selectedFile())
+
+            elif task.checkSettingTypeIsFileSetSelector(setting):
+                fileSetSelector = self._formFieldWidgets[name][0]
+                setting.setValue(fileSetSelector.selectedFileSet())
+
+            elif task.checkSettingTypeIsMultiFileSetSelector(setting):
+                multiFileSetSelector = self._formFieldWidgets[name][0]
+                setting.setValue(multiFileSetSelector.selectedMultiFileSet())
+            else:
+                raise RuntimeError(f'Unknown setting type {name}')
+        self.accept()
 
     def show(self):
         return self.exec_()

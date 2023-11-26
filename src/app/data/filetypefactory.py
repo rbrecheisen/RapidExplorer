@@ -2,6 +2,7 @@ from data.filetype import FileType
 from data.dicomfiletype import DicomFileType
 from data.pngfiletype import PngFileType
 from data.jpegfiletype import JpegFileType
+from data.allfiletype import AllFileType
 
 
 class FileTypeFactory:
@@ -9,9 +10,11 @@ class FileTypeFactory:
     def forName(name: str) -> FileType:
         if name == 'dicom':
             return DicomFileType()
-        if name == 'png':
+        elif name == 'png':
             return PngFileType()
-        if name == 'jpg':
+        elif name == 'jpg':
             return JpegFileType()
+        elif name == 'all':
+            return AllFileType()
         else:
             return None

@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QDialog
 
-from app.plugins.viewers.viewer import Viewer
+from plugins.viewers.viewer import Viewer
 
 
 class ViewerSettingsDialog(QDialog):

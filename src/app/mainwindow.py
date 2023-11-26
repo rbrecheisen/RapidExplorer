@@ -8,6 +8,7 @@ import data.engine
 
 from plugins.pluginmanager import PluginManager
 from data.dicomfiletype import DicomFileType
+from data.allfiletype import AllFileType
 from data.datamanager import DataManager
 from widgets.datadockwidget import DataDockWidget
 from widgets.viewdockwidget import ViewsDockWidget
@@ -59,6 +60,8 @@ class MainWindow(QMainWindow):
         importDicomFileAction = QAction('Import DICOM Image...', self)
         importDicomFileSetAction = QAction('Import DICOM Image Series...', self)
         importDicomMultiFileSetAction = QAction('Import Multiple DICOM Image Series...', self)
+        importL3FileSetAction = QAction('Import L3s...', self)
+        importTensorFlowModelFileSetAction = QAction('Import TensorFlow Model Files...', self)
         printFileCacheAction = QAction('Print File Cache', self)
         deleteAllDataAction = QAction('Delete All Data from Database', self)
         resetLayoutAction = QAction('Reset Layout', self)
@@ -66,6 +69,8 @@ class MainWindow(QMainWindow):
         importDicomFileAction.triggered.connect(self._importDicomFile)
         importDicomFileSetAction.triggered.connect(self._importDicomFileSet)
         importDicomMultiFileSetAction.triggered.connect(self._importDicomMultiFileSet)
+        importL3FileSetAction.triggered.connect(self._importL3FileSet)
+        importTensorFlowModelFileSetAction.triggered.connect(self._importTensorFlowModelFileSet)
         printFileCacheAction.triggered.connect(self._printFileCache)
         deleteAllDataAction.triggered.connect(self._deleteAllData)
         resetLayoutAction.triggered.connect(self._resetToDefaultLayout)
@@ -74,6 +79,9 @@ class MainWindow(QMainWindow):
         datasetsMenu.addAction(importDicomFileAction)
         datasetsMenu.addAction(importDicomFileSetAction)
         datasetsMenu.addAction(importDicomMultiFileSetAction)
+        datasetsMenu.addSeparator()
+        datasetsMenu.addAction(importL3FileSetAction)
+        datasetsMenu.addAction(importTensorFlowModelFileSetAction)
         datasetsMenu.addSeparator()
         datasetsMenu.addAction(printFileCacheAction)
         datasetsMenu.addSeparator()
@@ -146,6 +154,22 @@ class MainWindow(QMainWindow):
             self._progressBarDialog.setValue(0)
             self._dataManager.signal().progress.connect(self._dataManagerMultiFileSetImportProgress)
             self._dataManager.importMultiFileSet(dirPath=dirPath, fileType=DicomFileType())
+
+    def _importL3FileSet(self) -> None:
+        dirPath = QFileDialog.getExistingDirectory(self, 'Open DICOM Image Series', FILESETPATH)
+        if dirPath:
+            self._progressBarDialog.show()
+            self._progressBarDialog.setValue(0)
+            self._dataManager.signal().progress.connect(self._dataManagerFileSetImportProgress)
+            self._dataManager.importFileSet(dirPath=dirPath, fileType=DicomFileType())
+
+    def _importTensorFlowModelFileSet(self) -> None:
+        dirPath = QFileDialog.getExistingDirectory(self, 'Open DICOM Image Series', FILESETPATH)
+        if dirPath:
+            self._progressBarDialog.show()
+            self._progressBarDialog.setValue(0)
+            self._dataManager.signal().progress.connect(self._dataManagerFileSetImportProgress)
+            self._dataManager.importFileSet(dirPath=dirPath, fileType=AllFileType())
 
     def _dataManagerFileImportProgress(self, progress) -> None:
         self._progressBarDialog.setValue(progress)

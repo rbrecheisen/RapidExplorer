@@ -2,8 +2,8 @@ from plugins.tasks.tasksetting import TaskSetting
 
 
 class TaskIntegerSetting(TaskSetting):
-    def __init__(self, name: str, displayName: str) -> None:
-        super(TaskIntegerSetting, self).__init__(name=name, displayName=displayName)
+    def __init__(self, name: str, displayName: str, optional: bool=False) -> None:
+        super(TaskIntegerSetting, self).__init__(name=name, displayName=displayName, optional=optional)
         self._minimum = 0
         self._maximum = 100
 
