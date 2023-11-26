@@ -36,7 +36,7 @@ class L3AutoSegmentationTaskRunner(TaskRunner):
     def run(self) -> None:
 
         # Collect data
-        inputFileSet = self.task().setting('inputFileSet')
+        inputFileSet = self.task().setting('inputFileSet').value()
         inputFileSetFiles = []
         for registeredFileModel in inputFileSet.registeredFileModels:
             file = self.cache().get(registeredFileModel.id)
@@ -44,7 +44,7 @@ class L3AutoSegmentationTaskRunner(TaskRunner):
                 raise RuntimeError(f'File {registeredFileModel.path} not in file cache')
             inputFileSetFiles.append(registeredFileModel.path)
 
-        tensorFlowModelFilesFileSet = self.task().setting('tensorFlowModelFileSet')
+        tensorFlowModelFilesFileSet = self.task().setting('tensorFlowModelFileSet').value()
         tensorFlowModelFilesFileSetFiles = []
         for registeredFileModel in tensorFlowModelFilesFileSet.registeredFileModels:
             file = self.cache().get(registeredFileModel.id)
@@ -57,6 +57,7 @@ class L3AutoSegmentationTaskRunner(TaskRunner):
         segmentator.input_files = inputFileSetFiles
         segmentator.model_files = tensorFlowModelFilesFileSetFiles
         segmentator.mode = MuscleFatSegmentator.ARGMAX
+        raise RuntimeError('How to deal with segmentator.output_directory!')
         segmentator.output_directory = output_dataset.data_dir
         segmentation_files = segmentator.execute()        
         for f in segmentation_files:
