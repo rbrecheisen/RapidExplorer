@@ -1,3 +1,5 @@
+from typing import List
+
 from PySide6.QtCore import QThreadPool
 
 from data.progresssignal import ProgressSignal
@@ -120,18 +122,15 @@ class DataManager:
 
     def getFileFromCache(self, id: str) -> File:
         return FileCache().get(id)
-
-    def getFileModel(self, registeredFileModel: RegisteredFileModel) -> FileModel:
-        pass
-
-    def getFileModelsFor(self, registeredFileSetModel: RegisteredFileSetModel) -> FileSetModel:
+    
+    def getRegisteredMultiFileSetModels(self) -> List[RegisteredMultiFileSetModel]:
+        registeredMultiFileSetModels = []
         with DbSession() as session:
-            fileSetModel = session.get(FileSetModel, registeredFileSetModel.id)
-            fileModels = session.query(FileModel).filter_by(fileSetModel=fileSetModel).all()
-            return fileModels
-        
-    def getMultiFileSetModel(self, registeredMultiFileSetModel: RegisteredMultiFileSetModel) -> MultiFileSetModel:
-        pass
+            multiFileSetModels = session.query(MultiFileSetModel).all()
+            for multiFileSetModel in multiFileSetModels:
+                loader = RegisteredMultiFileSetModelLoader()
+                registeredMultiFileSetModels.append(loader.load(multiFileSetModel.id))
+        return registeredMultiFileSetModels
 
     # Updating names
 

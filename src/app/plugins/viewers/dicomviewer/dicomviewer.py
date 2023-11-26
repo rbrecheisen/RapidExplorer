@@ -47,7 +47,8 @@ class DicomViewer(Viewer):
         self._dicomImagesSorted = []
         self._dicomAttributeLayersSorted = []
         registeredFileSetModel = data
-        fileModels = self._databaseManager.getFileModelsFor(registeredFileSetModel)
+        # fileModels = self._databaseManager.getFileModelsFromRegisteredFileSetModel(registeredFileSetModel)
+        fileModels = registeredFileSetModel.registeredFileModels
         dicomImages = []
         for fileModel in fileModels:
             if fileModel.fileType == DicomFileType.name:
