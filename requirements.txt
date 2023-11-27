@@ -9,3 +9,4 @@ barbell2_bodycomp
 nuitka
 pytest
 pytest-qt
+pylint
