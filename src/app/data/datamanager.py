@@ -1,35 +1,52 @@
+import os
+import re
+
 from typing import List
 
 from PySide6.QtCore import QThreadPool
 
 from data.progresssignal import ProgressSignal
 from data.dbsession import DbSession
-# from data.filecache import FileCache
-# from data.file import File
-# from data.filetype import FileType
-# from data.fileimporter import FileImporter
-# from data.filesetimporter import FileSetImporter
-# from data.multifilesetimporter import MultiFileSetImporter
+from data.file import File
 from data.filemodel import FileModel
+from data.fileset import FileSet
 from data.filesetmodel import FileSetModel
-# from data.multifilesetmodel import MultiFileSetModel
-# from data.registeredfilemodel import RegisteredFileModel
-# from data.registeredfilesetmodel import RegisteredFileSetModel
-# from data.registeredmultifilesetmodel import RegisteredMultiFileSetModel
-# from data.registeredmultifilesetmodelloader import RegisteredMultiFileSetModelLoader
-# from data.registeredmultifilesetcontentloader import RegisteredMultiFileSetContentLoader
 
 
 class DataManager:
     def __init__(self) -> None:
         self._signal = ProgressSignal()
-        self._importer = None
-        self._fileSetImporter = None
-        self._multiFileSetImporter = None
 
     def signal(self) -> ProgressSignal:
         return self._signal
     
+    def loadFile(self, filePath: str) -> File:
+        with DbSession() as session:
+            fileModel = FileModel(path=filePath)
+            session.add(fileModel)
+            session.commit()
+            file = File(fileModel=fileModel)
+        return file
+    
+    def loadFileSet(self, fileSetPath: str, regex: str=r'.*') -> FileSet:
+        with DbSession() as session:
+            fileSetModel = FileSetModel(path=fileSetPath)
+            session.add(fileSetModel)
+            for fileName in os.listdir(fileSetPath):
+                if re.match(regex, fileName):
+                    filePath = os.path.join(fileSetPath, fileName)
+                    fileModel = FileModel(path=filePath, fileSetModel=fileSetModel)
+                    session.add(fileModel)
+            session.commit()
+            fileSet = FileSet(fileSetModel=fileSetModel)
+        return fileSet
+    
+    def updateFileSetName(self, id: str, name: str) -> None:
+        with DbSession() as session:
+            fileSetModel = session.get(FileSetModel, id)
+            fileSetModel.name = name
+            session.commit()
+
     # def data(self) -> RegisteredMultiFileSetModel:
     #     if self._importer:
     #         return self._importer.data()
