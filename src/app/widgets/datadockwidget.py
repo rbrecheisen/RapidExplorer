@@ -1,5 +1,5 @@
 from widgets.dockwidget import DockWidget
-from widgets.registeredmultifilesetmodeltreeview import RegisteredMultiFileSetModelTreeView
+# from widgets.registeredmultifilesetmodeltreeview import RegisteredMultiFileSetModelTreeView
 
 
 class DataDockWidget(DockWidget):
@@ -9,12 +9,12 @@ class DataDockWidget(DockWidget):
         self._initUi()
 
     def _initUi(self) -> None:
-        self._treeView = RegisteredMultiFileSetModelTreeView()
-        self.setWidget(self._treeView)
+        # self._treeView = RegisteredMultiFileSetModelTreeView()
+        # self.setWidget(self._treeView)
         self.setMinimumHeight(200)
 
-    def treeView(self) -> RegisteredMultiFileSetModelTreeView:
-        return self._treeView
+    # def treeView(self) -> RegisteredMultiFileSetModelTreeView:
+    #     return self._treeView
     
-    def clearData(self) -> None:
-        self._treeView.clearData()
+    # def clearData(self) -> None:
+    #     self._treeView.clearData()
