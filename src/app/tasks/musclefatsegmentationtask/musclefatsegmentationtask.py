@@ -3,7 +3,8 @@ import os
 from typing import List
 
 from tasks.task import Task
-from tasks.tasksignal import TaskSignal
+from tasks.tasksettingtext import TaskSettingText
+from tasks.tasksettingfileset import TaskSettingFileSet
 from tasks.musclefatsegmentationtask.musclefatsegmentor import MuscleFatSegmentor
 from data.fileset import FileSet
 
@@ -11,58 +12,33 @@ from data.fileset import FileSet
 class MuscleFatSegmentationTask(Task):
     def __init__(self) -> None:
         super(MuscleFatSegmentationTask, self).__init__(name='MuscleFatSegmentationTask')
-        self._inputFileSets = {}
-        self._outputDirectory = None
-        self._outputFilePaths = []
-        self._signal = TaskSignal()
-        self._nrSteps = 0
+        self.settings().add(TaskSettingFileSet(name='dicomFiles', displayName='L3 Images', optional=False))
+        self.settings().add(TaskSettingFileSet(name='tensorFlowModelFiles', displayName='TensorFlow Model Files', optional=False))
+        self.settings().add(TaskSettingText(name='outputFileSetDirectory', displayName='Output File Set Directory', optional=True))
+        self.settings().add(TaskSettingFileSet(name='outputFileSet', displayName='Output File Set', optional=False))
 
-    def outputDirectory(self) -> str:
-        # Move to Task class
-        return self._outputDirectory
-
-    def setOutputDirectory(self, outputDirectory: str) -> None:
-        # Move to Task class
-        self._outputDirectory = outputDirectory
-
-    def outputFilePaths(self) -> List[str]:
-        return self._outputFilePaths
-    
-    def signal(self) -> TaskSignal:
-        return self._signal
-
-    def addInputFileSet(self, fileSet: FileSet, name: str) -> None:
-        # Move to Task class
-        self._inputFileSets[name] = fileSet
-
-    def getInputFileSet(self, name: str) -> FileSet:
-        return self._inputFileSets[name]
-
-    def run(self) -> List[str]:
-
+    def run(self) -> FileSet:
         inputFilePaths = []
-        for file in self._inputFileSets['dicomFiles'].files():
+        for file in self.settings().setting(name='dicomFiles').value().files():
             inputFilePaths.append(file.path())
         tensorFlowModelFilePaths = []
-        for file in self._inputFileSets['tensorFlowModelFiles'].files():
+        for file in self.settings().setting(name='tensorFlowModelFiles').value().files():
             tensorFlowModelFilePaths.append(file.path())
-        
-        os.makedirs(self.outputDirectory(), exist_ok=False)
-
-        self._nrSteps = len(inputFilePaths) + len(tensorFlowModelFilePaths)
-        
+        outputFileSetDirectory = self.settings().setting(name='outputFileSetDirectory').value()
+        os.makedirs(outputFileSetDirectory, exist_ok=False)
+        self.setNrSteps(len(inputFilePaths) + len(tensorFlowModelFilePaths))
         segmentator = MuscleFatSegmentor()
         segmentator.signal().progress.connect(self.updateSegmentorProgress)
         segmentator.setInputFiles(inputFilePaths)
         segmentator.setModelFiles(tensorFlowModelFilePaths)
-        segmentator.setOutputDirectory(self.outputDirectory())
+        segmentator.setOutputDirectory(outputFileSetDirectory)
         segmentator.setMode(MuscleFatSegmentor.ARGMAX)
         outputFilePaths = segmentator.execute()
-
-        self._outputFilePaths = []
-        for outputFilePath in outputFilePaths:
-            self._outputFilePaths.append(outputFilePath)
-        return self._outputFilePaths
+        # TODO: Build output fileset (also create file set model in database!)
+        # These output file paths already exist, so you can call dataManager.importFileSet(fileSetPath=outputFileSetDirectory)
+        outputFileSet = self.dataManager().importFileSet(fileSetPath=outputFileSetDirectory)
+        self.settings().setting(name='outputFileSet').setValue(value=outputFileSet)
+        return outputFileSet
     
     def updateSegmentorProgress(self, progress) -> None:
         progress = int((progress + 1) / self._nrSteps * 100)

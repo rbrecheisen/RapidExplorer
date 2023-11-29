@@ -25,11 +25,11 @@ def test_taskCanLoadInputData():
     taskManager.signal().taskFinished.connect(taskFinished)
     taskManager.loadTasks()
     task = taskManager.task(name='MuscleFatSegmentationTask')
-    task.addInputFileSet(inputFileSet, 'dicomFiles')
-    task.addInputFileSet(tensorFlowModelFileSet, 'tensorFlowModelFiles')
-    task.setOutputDirectory(outputDirectory=OUTPUTDIRECTORY)
-    outputFiles = taskManager.runTask(task, background=False)
-    assert len(outputFiles) == 4
+    task.settings().setting(name='dicomFiles').setValue(value=inputFileSet)
+    task.settings().setting(name='tensorFlowModelFiles').setValue(value=tensorFlowModelFileSet)
+    task.settings().setting(name='outputFileSetDirectory').setValue(value=OUTPUTDIRECTORY)
+    outputFileSet = taskManager.runTask(task, background=False)
+    assert len(outputFileSet.files()) == 4
 
 def taskProgress(progress: int):
     print(f'Task progress: {progress}')
