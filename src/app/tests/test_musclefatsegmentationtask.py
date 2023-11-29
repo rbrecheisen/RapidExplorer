@@ -16,8 +16,8 @@ def test_taskCanLoadInputData():
 
     # Load data
     dataManager = DataManager()
-    inputFileSet = dataManager.createFileSetFromFileSetPath(fileSetPath=INPUTFILESETPATH)
-    tensorFlowModelFileSet = dataManager.createFileSetFromFileSetPath(fileSetPath=TENSORFLOWMODELFILESETPATH)
+    inputFileSet = dataManager.importFileSet(fileSetPath=INPUTFILESETPATH)
+    tensorFlowModelFileSet = dataManager.importFileSet(fileSetPath=TENSORFLOWMODELFILESETPATH)
 
     # Run task
     taskManager = TaskManager()

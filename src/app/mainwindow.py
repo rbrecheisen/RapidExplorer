@@ -104,18 +104,30 @@ class MainWindow(QMainWindow):
         self.centerWindow()
         self.saveDefaultLayout()
 
+    # QAction handlers
+
     def importFile(self) -> None:
         filePath, _ = QFileDialog.getOpenFileName(self, 'Open File', FILEPATH)
         if filePath:
-            pass
+            self._progressBarDialog.show()
+            self._progressBarDialog.setValue(0)
+            self._dataManager.signal().progress.connect(self.fileImportProgress)
+            self._dataManager.signal().finished.connect(self.fileImportFinished)
+            self._dataManager.importFile(filePath=filePath)
 
     def importFileSet(self) -> None:
         dirPath = QFileDialog.getExistingDirectory(self, 'Open File Set', FILESETPATH)
         if dirPath:
-            pass
+            self._progressBarDialog.show()
+            self._progressBarDialog.setValue(0)
+            self._dataManager.signal().progress.connect(self.fileSetImportProgress)
+            self._dataManager.signal().finished.connect(self.fileSetImportFinished)
+            self._dataManager.importFileSet(fileSetPath=dirPath)
 
     def deleteAllFileSets(self) -> None:
         self._dataManager.deleteAllFileSets()
+        # Clear current viewer
+        pass
 
     def resetLayout(self) -> None:
         self.restoreState(self._defaultLayout)
@@ -124,74 +136,23 @@ class MainWindow(QMainWindow):
         self._settings.setValue('mainWindowSize', self.size())
         QApplication.exit()
 
-    # def _importDicomFile(self) -> None:
-    #     filePath, _ = QFileDialog.getOpenFileName(self, 'Open DICOM Image', FILEPATH)
-    #     if filePath:
-    #         self._progressBarDialog.show()
-    #         self._progressBarDialog.setValue(0)
-    #         self._dataManager.signal().progress.connect(self._dataManagerFileImportProgress)
-    #         self._dataManager.importFile(filePath=filePath, fileType=DicomFileType())
+    # Progress handlers
 
-    # def _importDicomFileSet(self) -> None:
-    #     dirPath = QFileDialog.getExistingDirectory(self, 'Open DICOM Image Series', FILESETPATH)
-    #     if dirPath:
-    #         self._progressBarDialog.show()
-    #         self._progressBarDialog.setValue(0)
-    #         self._dataManager.signal().progress.connect(self._dataManagerFileSetImportProgress)
-    #         self._dataManager.importFileSet(dirPath=dirPath, fileType=DicomFileType())
+    def fileImportProgress(self, progress) -> None:
+        self._progressBarDialog.setValue(progress)
+        
+    def fileImportFinished(self, finished) -> None:
+        # self._dataDockWidget.treeView().addRegisteredMultiFileSetModel(self._dataManager.data())
+        self._dataManager.signal().progress.disconnect(self.fileImportProgress)
+        self._dataManager.signal().finished.disconnect(self.fileImportFinished)
 
-    # def _importDicomMultiFileSet(self) -> None:
-    #     dirPath = QFileDialog.getExistingDirectory(self, 'Open Multiple DICOM Image Series', MULTIFILESETPATH)
-    #     if dirPath:            
-    #         self._progressBarDialog.show()
-    #         self._progressBarDialog.setValue(0)
-    #         self._dataManager.signal().progress.connect(self._dataManagerMultiFileSetImportProgress)
-    #         self._dataManager.importMultiFileSet(dirPath=dirPath, fileType=DicomFileType())
+    def fileSetImportProgress(self, progress) -> None:
+        self._progressBarDialog.setValue(progress)
 
-    # def _importL3FileSet(self) -> None:
-    #     dirPath = QFileDialog.getExistingDirectory(self, 'Open DICOM Image Series', FILESETPATH)
-    #     if dirPath:
-    #         self._progressBarDialog.show()
-    #         self._progressBarDialog.setValue(0)
-    #         self._dataManager.signal().progress.connect(self._dataManagerFileSetImportProgress)
-    #         self._dataManager.importFileSet(dirPath=dirPath, fileType=DicomFileType())
-
-    # def _importTensorFlowModelFileSet(self) -> None:
-    #     dirPath = QFileDialog.getExistingDirectory(self, 'Open DICOM Image Series', FILESETPATH)
-    #     if dirPath:
-    #         self._progressBarDialog.show()
-    #         self._progressBarDialog.setValue(0)
-    #         self._dataManager.signal().progress.connect(self._dataManagerFileSetImportProgress)
-    #         self._dataManager.importFileSet(dirPath=dirPath, fileType=AllFileType())
-
-    # def _dataManagerFileImportProgress(self, progress) -> None:
-    #     self._progressBarDialog.setValue(progress)
-    #     if progress == 100:
-    #         self._dataDockWidget.treeView().addRegisteredMultiFileSetModel(self._dataManager.data())
-    #         self._dataManager.signal().progress.disconnect(self._dataManagerFileImportProgress)
-
-    # def _dataManagerFileSetImportProgress(self, progress) -> None:
-    #     self._progressBarDialog.setValue(progress)            
-    #     if progress == 100:
-    #         self._dataDockWidget.treeView().addRegisteredMultiFileSetModel(self._dataManager.data())
-    #         self._dataManager.signal().progress.disconnect(self._dataManagerFileSetImportProgress)
-
-    # def _dataManagerMultiFileSetImportProgress(self, progress) -> None:
-    #     self._progressBarDialog.setValue(progress)
-    #     if progress == 100:
-    #         self._dataDockWidget.treeView().addRegisteredMultiFileSetModel(self._dataManager.data())
-    #         self._dataManager.signal().progress.disconnect(self._dataManagerMultiFileSetImportProgress)
-
-    # def _printFileCache(self) -> None:
-    #     self._dataManager.printFileCache()
-
-    # def _deleteAllData(self) -> None:
-    #     self._dataManager.deleteAllData()
-    #     currentPlugin = self._pluginManager.currentPlugin()
-    #     if currentPlugin:
-    #         if self._pluginManager.isViewerPlugin(currentPlugin):
-    #             currentPlugin.clearData()
-    #     self._dataDockWidget.clearData()        
+    def fileSetImportFinished(self, finished) -> None:
+        # self._dataDockWidget.treeView().addRegisteredMultiFileSetModel(self._dataManager.data())
+        self._dataManager.signal().progress.disconnect(self.fileSetImportProgress)
+        self._dataManager.signal().finished.disconnect(self.fileSetImportFinished)
 
     def saveDefaultLayout(self) -> None:
         self._defaultLayout = self.saveState()

@@ -8,7 +8,7 @@ FILESETPATH = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset/scan1'
 
 def test_dataManagerCanCreateFileSetFromFilePath():
     dataManager = DataManager()
-    fileSet = dataManager.createFileSetFromFilePath(filePath=FILEPATH)
+    fileSet = dataManager.importFile(filePath=FILEPATH)
     assert fileSet
     assert fileSet.id()
     assert fileSet.path()
@@ -19,7 +19,7 @@ def test_dataManagerCanCreateFileSetFromFilePath():
 
 def test_dataManagerCanCreateFileSetFromFileSetPath():
     dataManager = DataManager()
-    fileSet = dataManager.createFileSetFromFileSetPath(fileSetPath=FILESETPATH)
+    fileSet = dataManager.importFileSet(fileSetPath=FILESETPATH)
     assert fileSet
     assert fileSet.id()
     assert fileSet.path() == FILESETPATH
@@ -33,7 +33,7 @@ def test_dataManagerCanCreateFileSetFromFileSetPath():
 
 def test_dataManagerCanUpdateFileSet():
     dataManager = DataManager()
-    fileSet = dataManager.createFileSetFromFileSetPath(fileSetPath=FILESETPATH)
+    fileSet = dataManager.importFileSet(fileSetPath=FILESETPATH)
     newName = 'someNewName'
     fileSet.setName(newName)
     newFileSet = dataManager.updateFileSet(fileSet=fileSet)
