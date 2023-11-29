@@ -12,9 +12,9 @@ class MainViewDockWidget(DockWidget):
         super(MainViewDockWidget, self).__init__(title)
         # self._pluginManager = PluginManager()
         # self._pluginManager.signal().viewerPluginChanged.connect(self._currentPluginChanged)
-        self._initUi()
+        self.initUi()
 
-    def _initUi(self) -> None:
+    def initUi(self) -> None:
         # self._currentPluginChanged(QWidget())
         pass
 

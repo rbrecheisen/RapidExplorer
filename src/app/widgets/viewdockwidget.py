@@ -9,10 +9,10 @@ class ViewsDockWidget(DockWidget):
     def __init__(self, title: str) -> None:
         super(ViewsDockWidget, self).__init__(title)
         self._comboBoxViewerPlugins = None
-        self._initUi()
+        self.initUi()
         # self._loadViewPlugins()
 
-    def _initUi(self) -> None:
+    def initUi(self) -> None:
         # self._comboBoxViewerPlugins = QComboBox(self)
         # self._comboBoxViewerPlugins.currentIndexChanged.connect(self._currentIndexChanged)
         layout = QVBoxLayout()

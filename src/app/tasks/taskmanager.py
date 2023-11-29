@@ -17,6 +17,7 @@ class TaskManager:
         self._signal = TaskManagerSignal()
         self._settings = QSettings(SETTINGSFILEPATH, QSettings.Format.IniFormat)
         self._currentTask = None
+        self.loadTasks()
 
     def tasks(self) -> List[Task]:
         return self._tasks.values()

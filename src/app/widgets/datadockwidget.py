@@ -6,9 +6,9 @@ class DataDockWidget(DockWidget):
     def __init__(self, title: str) -> None:
         super(DataDockWidget, self).__init__(title)
         self._treeView = None
-        self._initUi()
+        self.initUi()
 
-    def _initUi(self) -> None:
+    def initUi(self) -> None:
         # self._treeView = RegisteredMultiFileSetModelTreeView()
         # self.setWidget(self._treeView)
         self.setMinimumHeight(200)

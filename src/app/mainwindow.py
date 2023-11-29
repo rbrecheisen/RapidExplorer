@@ -154,6 +154,8 @@ class MainWindow(QMainWindow):
         self._dataManager.signal().progress.disconnect(self.fileSetImportProgress)
         self._dataManager.signal().finished.disconnect(self.fileSetImportFinished)
 
+    # Miscellaneous
+
     def saveDefaultLayout(self) -> None:
         self._defaultLayout = self.saveState()
 
