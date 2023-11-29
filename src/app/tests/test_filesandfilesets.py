@@ -44,5 +44,12 @@ def test_dataManagerCanCreateFileSetFromFiles():
     """ This could happen when a task generates new files like the MuscleFatSegmentator.
     In that case you should save each file as a file model in the database. The file
     model should refer to an output fileset model.
+
+    Big question:
+    Do I need a FileSetModel or not? Can I just work with filesets using FileModel
+    objects? Or is there some persistent aspect of filesets that I want to preserve
+    over time? The fileset name is one property I might want to persist. Perhaps there
+    are others? Or do I want to keep track of filesets after I restart my application?
+    I think I do... 
     """
     pass
