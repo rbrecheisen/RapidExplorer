@@ -10,6 +10,8 @@ class Task(QRunnable):
     def __init__(self, name: str) -> None:
         super(Task, self).__init__()
         self._name = name
+        # Move these fields to the settings?
+        raise RuntimeError('Move these fields to the settings?')
         self._inputFileSets = {}
         self._outputFileSetDirectory = None
         self._outputFileSet = None
