@@ -4,11 +4,12 @@ from data.filemodel import FileModel
 
 
 class File:
+    # Read-only object
     def __init__(self, fileModel: FileModel) -> None:
         self._fileModel = fileModel
         self._id = self._fileModel.id
-        self._name = os.path.split(self._fileModel.path)[1]
         self._path = self._fileModel.path
+        self._name = os.path.split(self._path)[1]
 
     def fileModel(self) -> FileModel:
         return self._fileModel

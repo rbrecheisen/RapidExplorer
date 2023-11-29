@@ -11,4 +11,4 @@ class FileModel(BaseModel):
     id: Mapped[str] = mapped_column('_id', String, primary_key=True, default=lambda: str(uuid.uuid4()), unique=True, nullable=False)
     path: Mapped[str] = mapped_column('_path', String(1024), nullable=False)
     fileSetModel: Mapped['FileSetModel'] = relationship(back_populates='fileModels')
-    fileSetModelId: Mapped[str] = mapped_column('_filesetmodel_id', ForeignKey('_filesetmodel._id'), nullable=True)
+    fileSetModelId: Mapped[str] = mapped_column('_filesetmodel_id', ForeignKey('_filesetmodel._id'))

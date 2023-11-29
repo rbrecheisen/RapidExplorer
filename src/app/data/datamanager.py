@@ -3,36 +3,58 @@ import re
 
 from typing import List
 
-from PySide6.QtCore import QThreadPool
+from PySide6.QtCore import QSettings
 
 from data.progresssignal import ProgressSignal
 from data.dbsession import DbSession
-from data.file import File
+from data.objectcache import ObjectCache
 from data.filemodel import FileModel
 from data.fileset import FileSet
 from data.filesetmodel import FileSetModel
+
+SETTINGSFILEPATH = 'settings.ini'
 
 
 class DataManager:
     def __init__(self) -> None:
         self._signal = ProgressSignal()
+        self._settings = QSettings(SETTINGSFILEPATH, QSettings.Format.IniFormat)
 
     def signal(self) -> ProgressSignal:
         return self._signal
     
-    def loadFile(self, filePath: str) -> File:
+    def settings(self) -> QSettings:
+        return self._settings
+    
+    # GET
+    
+    def getFileSet(self, id: str) -> FileSet:
         with DbSession() as session:
-            fileModel = FileModel(path=filePath)
+            fileSetModel = session.get(FileSetModel, id)
+            fileSet = FileSet(fileSetModel=fileSetModel)
+        return fileSet
+    
+    # CREATE
+    
+    def createFileSetFromFilePath(self, filePath: str) -> FileSet:
+        with DbSession() as session:
+            # Each file should have a parent file set
+            fileSetModel = FileSetModel(path=os.path.split(filePath)[0])
+            session.add(fileSetModel)
+            fileModel = FileModel(path=filePath, fileSetModel=fileSetModel)
             session.add(fileModel)
             session.commit()
-            file = File(fileModel=fileModel)
-        return file
+            fileSet = self.getFileSet(fileSetModel.id)
+        return fileSet
     
-    def loadFileSet(self, fileSetPath: str, regex: str=r'.*') -> FileSet:
+    def createFileSetFromFileSetPath(self, fileSetPath: str, regex: str=r'.*') -> FileSet:
         with DbSession() as session:
             fileSetModel = FileSetModel(path=fileSetPath)
             session.add(fileSetModel)
             for fileName in os.listdir(fileSetPath):
+                filesToIgnore = self.settings().value('filesToIgnore')
+                if fileName in filesToIgnore:
+                    continue
                 if re.match(regex, fileName):
                     filePath = os.path.join(fileSetPath, fileName)
                     fileModel = FileModel(path=filePath, fileSetModel=fileSetModel)
@@ -41,132 +63,29 @@ class DataManager:
             fileSet = FileSet(fileSetModel=fileSetModel)
         return fileSet
     
-    def updateFileSetName(self, id: str, name: str) -> None:
+    # UPDATE
+
+    def updateFileSet(self, fileSet: FileSet) -> FileSet:
+        if not fileSet.id():
+            raise RuntimeError('Cannot update file set that has no ID')
         with DbSession() as session:
-            fileSetModel = session.get(FileSetModel, id)
-            fileSetModel.name = name
+            fileSetModel = session.get(FileSetModel, fileSet.id())
+            fileSetModel.name = fileSet.name()
             session.commit()
+            fileSet = self.getFileSet(fileSetModel.id)
+        return fileSet
 
-    # def data(self) -> RegisteredMultiFileSetModel:
-    #     if self._importer:
-    #         return self._importer.data()
-    #     return None
-    
-    # def printFileCache(self) -> None:
-    #     FileCache().printFiles()
+    # DELETE
 
-    # # Deleting data
-
-    # def deleteData(self, registeredMultiFileSetModel: RegisteredMultiFileSetModel) -> None:
-    #     cache = FileCache()
-    #     cache.removeMultiFileSet(registeredMultiFileSetModel)
-    #     with DbSession() as session:
-    #         model = session.get(MultiFileSetModel, registeredMultiFileSetModel.id)
-    #         session.delete(model)
-    #         session.commit()
-
-    # def deleteAllData(self) -> None:
-    #     cache = FileCache()
-    #     cache.removeAllData()
-    #     with DbSession() as session:
-    #         models = session.query(MultiFileSetModel).all()
-    #         for model in models:
-    #             session.delete(model)
-    #         session.commit()
-
-    # # Loading models
-
-    # def loadModels(self) -> None:
-    #     modelLoader = RegisteredMultiFileSetModelLoader()
-    #     registeredMultiFileSetModels = modelLoader.loadAll()
-    #     multiFileSetLoaded = True
-    #     for registeredMultiFileSetModel in registeredMultiFileSetModels:          
-    #         for registeredFileSetModel in registeredMultiFileSetModel.registeredFileSetModels:
-    #             fileSetLoaded = True
-    #             for registeredFileModel in registeredFileSetModel.registeredFileModels:
-    #                 if self._fileInCache(registeredFileModel):
-    #                     registeredFileModel.loaded = True
-    #                 else:
-    #                     # If there is one file model that is not loaded, the whole fileset is not loaded
-    #                     registeredFileModel.loaded = False
-    #                     fileSetLoaded = False
-    #             registeredFileSetModel.loaded = fileSetLoaded
-    #             if not fileSetLoaded:
-    #                 multiFileSetLoaded = False
-    #         registeredMultiFileSetModel.loaded = multiFileSetLoaded
-    #     return registeredMultiFileSetModels
-
-    # def _fileInCache(self, registeredFileModel: RegisteredFileModel) -> bool:
-    #     cache = FileCache()
-    #     if not cache.has(registeredFileModel.id):
-    #         return False
-    #     return True
-    
-    # # Importing data
-
-    # def importFile(self, filePath: str, fileType: FileType) -> None:
-    #     self._importer = None
-    #     self._importer = FileImporter(path=filePath, fileType=fileType)
-    #     self._importer.signal().progress.connect(self._updateImportProgress)
-    #     QThreadPool.globalInstance().start(self._importer)
-
-    # def importFileSet(self, dirPath: str, fileType: FileType) -> None:
-    #     self._importer = None
-    #     self._importer = FileSetImporter(path=dirPath, fileType=fileType)
-    #     self._importer.signal().progress.connect(self._updateImportProgress)
-    #     QThreadPool.globalInstance().start(self._importer)
-
-    # def importMultiFileSet(self, dirPath: str, fileType: FileType) -> None:
-    #     self._importer = None
-    #     self._importer = MultiFileSetImporter(path=dirPath, fileType=fileType)
-    #     self._importer.signal().progress.connect(self._updateImportProgress)
-    #     QThreadPool.globalInstance().start(self._importer)
-
-    # def _updateImportProgress(self, progress) -> None:
-    #     self._signal.progress.emit(progress)
-
-    # # Loading data
-
-    # def loadRegisteredMultiFileSetModel(self, registeredMultiFileSetModel: RegisteredMultiFileSetModel) -> None:
-    #     loader = RegisteredMultiFileSetContentLoader(registeredMultiFileSetModel)
-    #     loader.signal().progress.connect(self._updateLoadProgress)
-    #     loader.execute()
-
-    # def _updateLoadProgress(self, progress) -> None:
-    #     self._signal.progress.emit(progress)
-
-    # # Getting data
-
-    # def getFileFromCache(self, id: str) -> File:
-    #     return FileCache().get(id)
-    
-    # def getRegisteredMultiFileSetModels(self) -> List[RegisteredMultiFileSetModel]:
-    #     registeredMultiFileSetModels = []
-    #     with DbSession() as session:
-    #         multiFileSetModels = session.query(MultiFileSetModel).all()
-    #         for multiFileSetModel in multiFileSetModels:
-    #             loader = RegisteredMultiFileSetModelLoader()
-    #             registeredMultiFileSetModels.append(loader.load(multiFileSetModel.id))
-    #     return registeredMultiFileSetModels
-    
-    # def getRegisteredMultiFileSetModelByName(self, name) -> RegisteredMultiFileSetModel:
-    #     registeredMultiFileSetModel = None
-    #     with DbSession() as session:
-    #         multiFileSetModel = session.query(MultiFileSetModel).filter_by(name=name).one()
-    #         loader = RegisteredMultiFileSetModelLoader()
-    #         registeredMultiFileSetModel = loader.load(multiFileSetModel.id)
-    #     return registeredMultiFileSetModel
-
-    # # Updating names
-
-    # def updateFileSetName(self, id: str, name: str) -> None:
-    #     with DbSession() as session:
-    #         fileSetModel = session.get(FileSetModel, id)
-    #         fileSetModel.name = name
-    #         session.commit()
-
-    # def updateMultiFileSetName(self, id: str, name: str) -> None:
-    #     with DbSession() as session:
-    #         multiFileSetModel = session.get(MultiFileSetModel, id)
-    #         multiFileSetModel.name = name
-    #         session.commit()
+    def deleteFileSet(self, fileSet: FileSet) -> None:
+        if not fileSet.id():
+            raise RuntimeError('Cannot update file set that has no ID')
+        with DbSession() as session:
+            fileSetModel = session.get(FileSetModel, fileSet.id())
+            session.delete(fileSetModel)
+        # If file set files in object cache, delete these as well
+        cache = ObjectCache()
+        for file in fileSet.files():
+            if cache.has(file.id()):
+                print(f'Removing file {file.id()} from cache as well')
+                cache.remove(file.id())

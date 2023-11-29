@@ -6,50 +6,35 @@ FILEPATH = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset/scan1/ima
 FILESETPATH = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset/scan1')
 
 
-def test_dataManagerCanImportFile():
+def test_dataManagerCanCreateFileSetFromFilePath():
     dataManager = DataManager()
-    file = dataManager.loadFile(filePath=FILEPATH)
-    assert file
-    assert file.id()
-    assert file.path()
-    assert file.name()
-
-
-def test_dataManagerCanImportFileSet():
-    dataManager = DataManager()
-    fileSet = dataManager.loadFileSet(fileSetPath=FILESETPATH)
+    fileSet = dataManager.createFileSetFromFilePath(filePath=FILEPATH)
     assert fileSet
-    print(fileSet.name())
-    assert fileSet.name().startswith('fileset')
+    assert fileSet.id()
+    assert fileSet.path()
+    assert fileSet.name()
+    assert fileSet.nrFiles() == 1
+    assert fileSet.files()[0].name() == 'image-00000.dcm'
 
 
-def test_cannotAddFilesIfFileSetIsLocked():
+def test_dataManagerCanCreateFileSetFromFileSetPath():
     dataManager = DataManager()
-    fileSet = dataManager.loadFileSet(fileSetPath=FILESETPATH)
-    assert fileSet.locked()
-    try:
-        fileSet.addFile('Something to trigger error')
-        assert False
-    except Exception:
-        pass
+    fileSet = dataManager.createFileSetFromFileSetPath(fileSetPath=FILESETPATH)
+    assert fileSet
+    assert fileSet.id()
+    assert fileSet.path() == FILESETPATH
+    assert fileSet.name().startswith('fileset')
+    assert fileSet.nrFiles() == 361
+    for file in fileSet.files():
+        assert file
+        assert file.id()
+        assert file.name().startswith('image')
 
 
-# def test_dataManagerCanUpdateFileSetName():
-#     dataManager = DataManager()
-#     fileSet = dataManager.loadFileSet(fileSetPath=FILESETPATH)
-#     dataManager.updateFileSetName(fileSet.id(), 'someName')
-
-
-def test_dataManagerCanCreateFileSetFromFiles():
-    """ This could happen when a task generates new files like the MuscleFatSegmentator.
-    In that case you should save each file as a file model in the database. The file
-    model should refer to an output fileset model.
-
-    Big question:
-    Do I need a FileSetModel or not? Can I just work with filesets using FileModel
-    objects? Or is there some persistent aspect of filesets that I want to preserve
-    over time? The fileset name is one property I might want to persist. Perhaps there
-    are others? Or do I want to keep track of filesets after I restart my application?
-    I think I do... 
-    """
-    pass
+def test_dataManagerCanUpdateFileSet():
+    dataManager = DataManager()
+    fileSet = dataManager.createFileSetFromFileSetPath(fileSetPath=FILESETPATH)
+    newName = 'someNewName'
+    fileSet.setName(newName)
+    newFileSet = dataManager.updateFileSet(fileSet=fileSet)
+    assert newFileSet.name() == newName
