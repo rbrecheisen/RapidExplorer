@@ -1,6 +1,6 @@
 from typing import List, Dict, Any
 
-from PySide6.QtCore import QSettings
+from PySide6.QtCore import QSettings, QThreadPool
 
 from singleton import singleton
 from moduleloader import ModuleLoader
@@ -44,5 +44,15 @@ class TaskManager:
         self._tasks = ModuleLoader.loadModules(
             moduleDirectoryPath=self.settings().value('tasksDirectoryPath'), moduleBaseClass=Task)
         
-    def runTask(self, task: Task) -> None:
-        pass
+    def runTask(self, task: Task, background: bool=True) -> None:
+        task.signal().progress.connect(self.taskProgress)
+        if background:
+            QThreadPool.globalInstance().start(task)
+        else:
+            return task.run()
+
+    def taskProgress(self, progress) -> None:
+        self.signal().taskProgress.emit(progress)
+
+    def taskFinished(self, finished) -> None:
+        self.signal().taskFinished.emit(finished)
