@@ -15,7 +15,7 @@ class MuscleFatSegmentationTask(Task):
         self.settings().add(TaskSettingFileSet(name='dicomFiles', displayName='L3 Images', optional=False))
         self.settings().add(TaskSettingFileSet(name='tensorFlowModelFiles', displayName='TensorFlow Model Files', optional=False))
         self.settings().add(TaskSettingText(name='outputFileSetDirectory', displayName='Output File Set Directory', optional=True))
-        self.settings().add(TaskSettingFileSet(name='outputFileSet', displayName='Output File Set', optional=False))
+        self.settings().add(TaskSettingFileSet(name='outputFileSet', displayName='Output File Set', optional=False, visible=False))
 
     def run(self) -> FileSet:
         inputFilePaths = []

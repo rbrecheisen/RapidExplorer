@@ -2,10 +2,11 @@ from typing import Any
 
 
 class TaskSetting:
-    def __init__(self, name: str, displayName: str, optional: bool=False) -> None:
+    def __init__(self, name: str, displayName: str, optional: bool=False, visible: bool=True) -> None:
         self._name = name
         self._displayName = displayName
         self._optional = optional
+        self._visible = visible
         self._defaultValue = None
         self._value = None
 
@@ -17,6 +18,9 @@ class TaskSetting:
     
     def optional(self) -> bool:
         return self._optional
+    
+    def visible(self) -> bool:
+        return self._visible
     
     def setValue(self, value: Any) -> None:
         self._value = value
