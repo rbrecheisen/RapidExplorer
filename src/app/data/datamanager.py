@@ -83,9 +83,17 @@ class DataManager:
         with DbSession() as session:
             fileSetModel = session.get(FileSetModel, fileSet.id())
             session.delete(fileSetModel)
-        # If file set files in object cache, delete these as well
         cache = ObjectCache()
         for file in fileSet.files():
             if cache.has(file.id()):
-                print(f'Removing file {file.id()} from cache as well')
                 cache.remove(file.id())
+
+    def deleteAllFileSets(self) -> None:
+        with DbSession() as session:
+            cache = ObjectCache()
+            fileSetModels = session.query(FileSetModel).all()
+            for fileSetModel in fileSetModels:
+                for fileModel in fileSetModel.fileModels:
+                    if cache.has(fileModel.id):
+                        cache.remove(fileModel.id)
+                session.delete(fileSetModel)

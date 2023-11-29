@@ -4,12 +4,7 @@ from PySide6.QtCore import Qt, QSize, QSettings
 from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QFileDialog, QMenu, QProgressDialog, QMessageBox
 from PySide6.QtGui import QAction, QGuiApplication
 
-# import data.engine
-
-# from plugins.pluginmanager import PluginManager
-# from data.dicomfiletype import DicomFileType
-# from data.allfiletype import AllFileType
-# from data.datamanager import DataManager
+from data.datamanager import DataManager
 from widgets.datadockwidget import DataDockWidget
 from widgets.viewdockwidget import ViewsDockWidget
 from widgets.taskdockwidget import TaskDockWidget
@@ -35,101 +30,99 @@ class MainWindow(QMainWindow):
         self._mainViewDockWidget = None
         self._viewsDockWidget = None
         self._progressBarDialog = None
-        # self._dataManager = DataManager()
-        # self._pluginManager = PluginManager()
-        self._fileImporter = None
-        self._fileSetImporter = None
-        self._multiFileSetImporter = None
+        self._dataManager = DataManager()
         self._defaultLayout = None        
-        # self._loadPlugins()
-        self._initUi()
+        self.initUi()
 
-    # def _loadPlugins(self) -> None:
-    #     self._pluginManager.loadAll()
+    def initUi(self) -> None:
+        self.initActionsAndMenus()
+        self.initDataDockWidget()
+        self.initTaskDockWidget()
+        self.initMainViewDockWidget()
+        self.initViewDockWidget()
+        self.initProgressBarDialog()
+        self.initMainWindow()
 
-    def _initUi(self) -> None:
-        self._initMenus()
-        self._initDataDockWidget()
-        self._initTaskDockWidget()
-        self._initMainViewDockWidget()
-        self._initViewDockWidget()
-        self._initProgressBarDialog()
-        self._initMainWindow()
-
-    def _initMenus(self) -> None:
-        # importDicomFileAction = QAction('Import DICOM Image...', self)
-        # importDicomFileSetAction = QAction('Import DICOM Image Series...', self)
-        # importDicomMultiFileSetAction = QAction('Import Multiple DICOM Image Series...', self)
-        # importL3FileSetAction = QAction('Import L3s...', self)
-        # importTensorFlowModelFileSetAction = QAction('Import TensorFlow Model Files...', self)
-        # printFileCacheAction = QAction('Print File Cache', self)
-        # deleteAllDataAction = QAction('Delete All Data from Database', self)
-        # resetLayoutAction = QAction('Reset Layout', self)
-        # exitAction = QAction('Exit', self)
-        # importDicomFileAction.triggered.connect(self._importDicomFile)
-        # importDicomFileSetAction.triggered.connect(self._importDicomFileSet)
-        # importDicomMultiFileSetAction.triggered.connect(self._importDicomMultiFileSet)
-        # importL3FileSetAction.triggered.connect(self._importL3FileSet)
-        # importTensorFlowModelFileSetAction.triggered.connect(self._importTensorFlowModelFileSet)
-        # printFileCacheAction.triggered.connect(self._printFileCache)
-        # deleteAllDataAction.triggered.connect(self._deleteAllData)
-        # resetLayoutAction.triggered.connect(self._resetToDefaultLayout)
-        # exitAction.triggered.connect(self._exit)
-        datasetsMenu = QMenu('Data')
-        # datasetsMenu.addAction(importDicomFileAction)
-        # datasetsMenu.addAction(importDicomFileSetAction)
-        # datasetsMenu.addAction(importDicomMultiFileSetAction)
-        # datasetsMenu.addSeparator()
-        # datasetsMenu.addAction(importL3FileSetAction)
-        # datasetsMenu.addAction(importTensorFlowModelFileSetAction)
-        # datasetsMenu.addSeparator()
-        # datasetsMenu.addAction(printFileCacheAction)
-        # datasetsMenu.addSeparator()
-        # datasetsMenu.addAction(deleteAllDataAction)
-        # datasetsMenu.addSeparator()
-        # datasetsMenu.addAction(exitAction)
+    def initActionsAndMenus(self) -> None:
+        importFileAction = QAction('Import File...', self)
+        importFileSetAction = QAction('Import File Set...', self)
+        deleteAllFileSetsAction = QAction('Delete All Data from Database', self)
+        resetLayoutAction = QAction('Reset Layout', self)
+        exitApplicationAction = QAction('Exit', self)
+        importFileAction.triggered.connect(self.importFile)
+        importFileSetAction.triggered.connect(self.importFileSet)
+        deleteAllFileSetsAction.triggered.connect(self.deleteAllFileSets)
+        resetLayoutAction.triggered.connect(self.resetLayout)
+        exitApplicationAction.triggered.connect(self.exitApplication)
+        dataMenu = QMenu('Data')
+        dataMenu.addAction(importFileAction)
+        dataMenu.addAction(importFileSetAction)
+        dataMenu.addSeparator()
+        dataMenu.addAction(deleteAllFileSetsAction)
+        dataMenu.addSeparator()
+        dataMenu.addAction(exitApplicationAction)
         viewMenu = QMenu('View')
-        # viewMenu.addAction(resetLayoutAction)
-        self.menuBar().addMenu(datasetsMenu)
+        viewMenu.addAction(resetLayoutAction)
+        self.menuBar().addMenu(dataMenu)
         self.menuBar().addMenu(viewMenu)
         self.menuBar().setNativeMenuBar(False)
 
-    def _initDataDockWidget(self) -> None:
+    def initDataDockWidget(self) -> None:
         self._dataDockWidget = DataDockWidget('Data')
         self._dataDockWidget.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.TopDockWidgetArea)
         self.addDockWidget(Qt.LeftDockWidgetArea, self._dataDockWidget)
 
-    def _initTaskDockWidget(self) -> None:
+    def initTaskDockWidget(self) -> None:
         self._tasksDockWidget = TaskDockWidget('Tasks')
         self._tasksDockWidget.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.BottomDockWidgetArea)
         self.addDockWidget(Qt.LeftDockWidgetArea, self._tasksDockWidget)
 
-    def _initMainViewDockWidget(self) -> None:
+    def initMainViewDockWidget(self) -> None:
         self._mainViewDockWidget = MainViewDockWidget('Main View')
         self._mainViewDockWidget.setAllowedAreas(Qt.RightDockWidgetArea | Qt.TopDockWidgetArea)
         self.addDockWidget(Qt.RightDockWidgetArea, self._mainViewDockWidget)
 
-    def _initViewDockWidget(self) -> None:
+    def initViewDockWidget(self) -> None:
         self._viewsDockWidget = ViewsDockWidget('Views')
         self._viewsDockWidget.setAllowedAreas(Qt.RightDockWidgetArea | Qt.BottomDockWidgetArea)
         self.addDockWidget(Qt.RightDockWidgetArea, self._viewsDockWidget)
 
-    def _initProgressBarDialog(self) -> None:
+    def initProgressBarDialog(self) -> None:
         self._progressBarDialog = QProgressDialog('Importing Files...', 'Abort Import', 0, 100, self)
         self._progressBarDialog.setWindowModality(Qt.WindowModality.WindowModal)
         self._progressBarDialog.setAutoReset(True)
         self._progressBarDialog.setAutoClose(True)
         self._progressBarDialog.close()
 
-    def _initMainWindow(self) -> None:
+    def initMainWindow(self) -> None:
         self.setCentralWidget(QWidget(self))
         self.centralWidget().hide()
         self.splitDockWidget(self._dataDockWidget, self._tasksDockWidget, Qt.Vertical)
         self.splitDockWidget(self._mainViewDockWidget, self._viewsDockWidget, Qt.Vertical)
         self.setWindowTitle(WINDOWTITLE)
-        self._setSize()
-        self._centerWindow()
-        self._saveDefaultLayout()
+        self.setWindowSize()
+        self.centerWindow()
+        self.saveDefaultLayout()
+
+    def importFile(self) -> None:
+        filePath, _ = QFileDialog.getOpenFileName(self, 'Open File', FILEPATH)
+        if filePath:
+            pass
+
+    def importFileSet(self) -> None:
+        dirPath = QFileDialog.getExistingDirectory(self, 'Open File Set', FILESETPATH)
+        if dirPath:
+            pass
+
+    def deleteAllFileSets(self) -> None:
+        self._dataManager.deleteAllFileSets()
+
+    def resetLayout(self) -> None:
+        self.restoreState(self._defaultLayout)
+
+    def exitApplication(self) -> None:
+        self._settings.setValue('mainWindowSize', self.size())
+        QApplication.exit()
 
     # def _importDicomFile(self) -> None:
     #     filePath, _ = QFileDialog.getOpenFileName(self, 'Open DICOM Image', FILEPATH)
@@ -200,25 +193,18 @@ class MainWindow(QMainWindow):
     #             currentPlugin.clearData()
     #     self._dataDockWidget.clearData()        
 
-    def _saveDefaultLayout(self) -> None:
+    def saveDefaultLayout(self) -> None:
         self._defaultLayout = self.saveState()
 
-    def _resetToDefaultLayout(self) -> None:
-        self.restoreState(self._defaultLayout)
-
-    def _setSize(self) -> None:
+    def setWindowSize(self) -> None:
         size = self._settings.value('mainWindowSize', None)
         if not size:
             size = QSize(970, 760)
             self._settings.setValue('mainWindowSize', size)
         self.resize(size)
 
-    def _centerWindow(self) -> None:
+    def centerWindow(self) -> None:
         screen = QGuiApplication.primaryScreen().geometry()
         x = (screen.width() - self.geometry().width()) / 2
         y = (screen.height() - self.geometry().height()) / 2
         self.move(int(x), int(y))
-
-    def _exit(self) -> None:
-        self._settings.setValue('mainWindowSize', self.size())
-        QApplication.exit()
