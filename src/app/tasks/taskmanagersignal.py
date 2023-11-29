@@ -5,3 +5,5 @@ from tasks.task import Task
 
 class TaskManagerSignal(QObject):
     currentTaskChanged = Signal(Task)
+    taskProgress = Signal(int)
+    taskFinished = Signal(bool)

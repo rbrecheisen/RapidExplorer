@@ -1,5 +1,4 @@
 from tasks.taskmanager import TaskManager
-from tasks.task import Task
 
 
 def test_taskManagerCanFindTasks():

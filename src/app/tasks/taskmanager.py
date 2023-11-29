@@ -43,3 +43,6 @@ class TaskManager:
     def loadTasks(self) -> Dict[str, Task]:
         self._tasks = ModuleLoader.loadModules(
             moduleDirectoryPath=self.settings().value('tasksDirectoryPath'), moduleBaseClass=Task)
+        
+    def runTask(self, task: Task) -> None:
+        pass
