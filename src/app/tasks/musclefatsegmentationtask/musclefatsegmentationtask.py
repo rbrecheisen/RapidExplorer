@@ -12,10 +12,14 @@ from data.fileset import FileSet
 class MuscleFatSegmentationTask(Task):
     def __init__(self) -> None:
         super(MuscleFatSegmentationTask, self).__init__(name='MuscleFatSegmentationTask')
-        self.settings().add(TaskSettingFileSet(name='dicomFileSet', displayName='DICOM File Set', optional=False))
-        self.settings().add(TaskSettingFileSet(name='tensorFlowModelFileSet', displayName='TensorFlow Model File Set', optional=False))
-        self.settings().add(TaskSettingText(name='outputFileSetDirectory', displayName='Output File Set Directory', optional=True))
-        self.settings().add(TaskSettingFileSet(name='outputFileSet', displayName='Output File Set', optional=False, visible=False))
+        self.settings().add(
+            TaskSettingFileSet(name='dicomFileSet', displayName='DICOM File Set', optional=False))
+        self.settings().add(
+            TaskSettingFileSet(name='tensorFlowModelFileSet', displayName='TensorFlow Model File Set', optional=False))
+        self.settings().add(
+            TaskSettingText(name='outputFileSetDirectory', displayName='Output File Set Directory', optional=True))
+        self.settings().add(
+            TaskSettingFileSet(name='outputFileSet', displayName='Output File Set', optional=False, visible=False))
 
     def run(self) -> FileSet:
         inputFilePaths = []
