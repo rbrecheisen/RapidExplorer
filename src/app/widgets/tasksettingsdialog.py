@@ -1,4 +1,6 @@
-from PySide6.QtWidgets import QDialog, QComboBox, QSpinBox, QDoubleSpinBox, QLineEdit
+from PySide6.QtWidgets import QDialog, QComboBox, QSpinBox, QDoubleSpinBox, QLineEdit, QLabel
+
+from widgets.tasksettingbooleanwidget import TaskSettingBooleanWidget
 
 
 class TaskSettingsDialog(QDialog):
@@ -15,9 +17,8 @@ class TaskSettingsDialog(QDialog):
         settings = self._task.settings()
         for setting in settings.all():
             if settings.isTypeIsBoolean(setting):
-                widget = QComboBox(self)
-                widget.addItems([None, 'True', 'False'])
-                self._taskSettingWidgets[setting.name()] = (setting, widget)
+                widget = TaskSettingBooleanWidget()
+                self._taskSettingWidgets[setting.name()] = (widget, self.createLabel(setting=setting))
 
             elif settings.isTypeFileSet(setting):
                 pass
@@ -25,12 +26,12 @@ class TaskSettingsDialog(QDialog):
             elif settings.isTypeFloatingPoint(setting):
                 widget = QDoubleSpinBox(self)
                 widget.setRange(setting.minimum(), setting.maximum())
-                
+                self._taskSettingWidgets[setting.name()] = (widget, self.createLabel(setting=setting))
 
             elif settings.isTypeInteger(setting):
                 widget = QSpinBox(self)
                 widget.setRange(setting.minimum(), setting.maximum())
-                self._taskSettingWidgets[setting.name()] = (setting, widget)
+                self._taskSettingWidgets[setting.name()] = (widget, self.createLabel(setting=setting))
 
             elif settings.isTypeOptionList(setting):
                 pass
@@ -41,3 +42,9 @@ class TaskSettingsDialog(QDialog):
             else:
                 raise RuntimeError(f'Unknown setting {setting.name()}')
         return self._taskSettingWidgets
+    
+    def createLabel(self, setting) -> QLabel:
+        displayName = setting.displayName()
+        if not setting.optional():
+            displayName += '*'
+        return QLabel(displayName)
