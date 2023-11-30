@@ -47,6 +47,7 @@ class TaskManager:
         
     def runTask(self, task: Task, background: bool=True) -> None:
         task.signal().progress.connect(self.taskProgress)
+        task.signal().finished.connect(self.taskFinished)
         if background:
             QThreadPool.globalInstance().start(task)
         else:

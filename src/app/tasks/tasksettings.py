@@ -2,6 +2,7 @@ from typing import List
 
 from tasks.tasksetting import TaskSetting
 from tasks.tasksettingboolean import TaskSettingBoolean
+from tasks.tasksettingfilesetpath import TaskSettingFileSetPath
 from tasks.tasksettingfileset import TaskSettingFileSet
 from tasks.tasksettingfloatingpoint import TaskSettingFloatingPoint
 from tasks.tasksettinginteger import TaskSettingInteger
@@ -24,6 +25,9 @@ class TaskSettings:
 
     def isTypeBoolean(self, setting: TaskSetting) -> bool:
         return isinstance(setting, TaskSettingBoolean)
+    
+    def isTypeFileSetPath(self, setting: TaskSetting) -> bool:
+        return isinstance(setting, TaskSettingFileSetPath)
 
     def isTypeFileSet(self, setting: TaskSetting) -> bool:
         return isinstance(setting, TaskSettingFileSet)

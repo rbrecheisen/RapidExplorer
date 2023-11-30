@@ -1,5 +1,5 @@
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QWidget, QComboBox, QVBoxLayout, QHBoxLayout, QPushButton, QDialog
+from PySide6.QtWidgets import QWidget, QComboBox, QVBoxLayout, QHBoxLayout, QPushButton, QDialog, QProgressDialog
 
 from widgets.dockwidget import DockWidget
 from widgets.tasksettingsdialog import TaskSettingsDialog
@@ -12,6 +12,7 @@ class TaskDockWidget(DockWidget):
         self._tasksComboBox = None
         self._showSettingsDialogButton = None
         self._runSelectedTaskButton = None
+        self._progressBarDialog = None
         self._taskManager = TaskManager()
         self.initUi()
         self.loadTasks()
@@ -26,6 +27,7 @@ class TaskDockWidget(DockWidget):
         self._runSelectedTaskButton = QPushButton('Run Task')
         self._runSelectedTaskButton.clicked.connect(self.runSelectedTask)
         self._runSelectedTaskButton.setEnabled(False)
+        self.initProgressBarDialog()
         buttonLayout = QHBoxLayout()
         buttonLayout.addWidget(self._showSettingsDialogButton)
         buttonLayout.addWidget(self._runSelectedTaskButton)
@@ -40,6 +42,13 @@ class TaskDockWidget(DockWidget):
         widget.setLayout(layout)    
         self.setWidget(widget)
         self.setMinimumHeight(200)
+
+    def initProgressBarDialog(self) -> None:
+        self._progressBarDialog = QProgressDialog('Running Task...', 'Abort', 0, 100, self)
+        self._progressBarDialog.setWindowModality(Qt.WindowModality.WindowModal)
+        self._progressBarDialog.setAutoReset(True)
+        self._progressBarDialog.setAutoClose(True)
+        self._progressBarDialog.close()
 
     def currentIndexChanged(self, index) -> None:
         taskName = self._tasksComboBox.itemText(index)
@@ -60,6 +69,10 @@ class TaskDockWidget(DockWidget):
     def runSelectedTask(self) -> None:
         taskName = self._tasksComboBox.currentText()
         if taskName:
+            self._progressBarDialog.show()
+            self._progressBarDialog.setValue(0)
+            self._taskManager.signal().taskProgress.connect(self.taskProgress)
+            self._taskManager.signal().taskFinished.connect(self.taskFinished)
             self._taskManager.runTask(self._taskManager.task(taskName))
 
     def loadTasks(self) -> None:
@@ -67,3 +80,11 @@ class TaskDockWidget(DockWidget):
         self._tasksComboBox.addItem(None)
         for task in self._taskManager.tasks():
             self._tasksComboBox.addItem(task.name())
+
+    def taskProgress(self, progress) -> None:
+        self._progressBarDialog.setValue(progress)
+
+    def taskFinished(self, finished) -> None:
+        self._taskManager.signal().taskProgress.disconnect(self.taskProgress)
+        self._taskManager.signal().taskFinished.disconnect(self.taskFinished)
+        raise RuntimeError('Add output file set to tree view!')

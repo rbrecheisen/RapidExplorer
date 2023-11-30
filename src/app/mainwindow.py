@@ -1,7 +1,7 @@
 import os
 
 from PySide6.QtCore import Qt, QSize, QSettings
-from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QFileDialog, QMenu, QProgressDialog, QMessageBox
+from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QFileDialog, QMenu, QProgressDialog
 from PySide6.QtGui import QAction, QGuiApplication
 
 from data.datamanager import DataManager
@@ -69,22 +69,22 @@ class MainWindow(QMainWindow):
         self.menuBar().setNativeMenuBar(False)
 
     def initDataDockWidget(self) -> None:
-        self._dataDockWidget = DataDockWidget('Data')
+        self._dataDockWidget = DataDockWidget(title='Data')
         self._dataDockWidget.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.TopDockWidgetArea)
         self.addDockWidget(Qt.LeftDockWidgetArea, self._dataDockWidget)
 
     def initTaskDockWidget(self) -> None:
-        self._tasksDockWidget = TaskDockWidget('Tasks')
+        self._tasksDockWidget = TaskDockWidget(title='Tasks')
         self._tasksDockWidget.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.BottomDockWidgetArea)
         self.addDockWidget(Qt.LeftDockWidgetArea, self._tasksDockWidget)
 
     def initMainViewDockWidget(self) -> None:
-        self._mainViewDockWidget = MainViewDockWidget('Main View')
+        self._mainViewDockWidget = MainViewDockWidget(title='Main View')
         self._mainViewDockWidget.setAllowedAreas(Qt.RightDockWidgetArea | Qt.TopDockWidgetArea)
         self.addDockWidget(Qt.RightDockWidgetArea, self._mainViewDockWidget)
 
     def initViewDockWidget(self) -> None:
-        self._viewsDockWidget = ViewsDockWidget('Views')
+        self._viewsDockWidget = ViewsDockWidget(title='Views')
         self._viewsDockWidget.setAllowedAreas(Qt.RightDockWidgetArea | Qt.BottomDockWidgetArea)
         self.addDockWidget(Qt.RightDockWidgetArea, self._viewsDockWidget)
 

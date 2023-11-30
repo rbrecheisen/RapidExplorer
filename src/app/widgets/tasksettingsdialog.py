@@ -3,6 +3,7 @@ from PySide6.QtWidgets import QWidget, QDialog, QLabel, QPushButton, QVBoxLayout
 
 from tasks.task import Task
 from widgets.tasksettingbooleanwidget import TaskSettingBooleanWidget
+from widgets.tasksettingfilesetpathwidget import TaskSettingFileSetPathWidget
 from widgets.tasksettingfilesetwidget import TaskSettingFileSetWidget
 from widgets.tasksettingfloatingpointwidget import TaskSettingFloatingPointWidget
 from widgets.tasksettingintegerwidget import TaskSettingIntegerWidget
@@ -27,35 +28,41 @@ class TaskSettingsDialog(QDialog):
         layout.setAlignment(Qt.AlignTop)
         self.setLayout(layout)
         self.resize(self.sizeHint())
+        self.setFixedWidth(400)
+        self.setWindowTitle(self._task.name())
 
 
     def createTaskSettingWidgets(self) ->None:
         settings = self._task.settings()
         for setting in settings.all():
             if settings.isTypeBoolean(setting) and setting.visible():
-                widget = TaskSettingBooleanWidget(parent=self)
+                widget = TaskSettingBooleanWidget(setting=setting, parent=self)
+                self._taskSettingWidgets[setting.name()] = (widget, self.createLabel(setting=setting))
+
+            elif settings.isTypeFileSetPath(setting) and setting.visible():
+                widget = TaskSettingFileSetPathWidget(setting=setting, parent=self)
                 self._taskSettingWidgets[setting.name()] = (widget, self.createLabel(setting=setting))
 
             elif settings.isTypeFileSet(setting) and setting.visible():
-                widget = TaskSettingFileSetWidget(parent=self)
+                widget = TaskSettingFileSetWidget(setting=setting, parent=self)
                 self._taskSettingWidgets[setting.name()] = (widget, self.createLabel(setting=setting))
 
             elif settings.isTypeFloatingPoint(setting) and setting.visible():
-                widget = TaskSettingFloatingPointWidget(parent=self)
+                widget = TaskSettingFloatingPointWidget(setting=setting, parent=self)
                 widget.setRange(setting.minimum(), setting.maximum())
                 self._taskSettingWidgets[setting.name()] = (widget, self.createLabel(setting=setting))
 
             elif settings.isTypeInteger(setting) and setting.visible():
-                widget = TaskSettingIntegerWidget(parent=self)
+                widget = TaskSettingIntegerWidget(setting=setting, parent=self)
                 widget.setRange(setting.minimum(), setting.maximum())
                 self._taskSettingWidgets[setting.name()] = (widget, self.createLabel(setting=setting))
 
             elif settings.isTypeOptionList(setting) and setting.visible():
-                widget = TaskSettingOptionListWidget(parent=self)
+                widget = TaskSettingOptionListWidget(setting=setting, parent=self)
                 self._taskSettingWidgets[setting.name()] = (widget, self.createLabel(setting=setting))
 
             elif settings.isTypeText(setting) and setting.visible():
-                widget = TaskSettingTextWidget(parent=self)
+                widget = TaskSettingTextWidget(setting=setting, parent=self)
                 self._taskSettingWidgets[setting.name()] = (widget, self.createLabel(setting=setting))
 
             else:
@@ -71,7 +78,7 @@ class TaskSettingsDialog(QDialog):
     def createButtonsWidget(self) -> None:
         cancelButton = QPushButton('Cancel')
         cancelButton.clicked.connect(self.cancel)
-        saveAndCloseSettingsButton = QPushButton('Save and Close Settings')
+        saveAndCloseSettingsButton = QPushButton('Save and Close')
         saveAndCloseSettingsButton.clicked.connect(self.saveAndCloseSettings)
         buttonsLayout = QHBoxLayout()
         buttonsLayout.addWidget(cancelButton)
@@ -85,7 +92,7 @@ class TaskSettingsDialog(QDialog):
         self.reject()
 
     def saveAndCloseSettings(self) -> None:
-        raise RuntimeWarning('Implement this!')
+        self.accept()
 
     def show(self):
         return self.exec_()

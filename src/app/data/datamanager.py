@@ -34,6 +34,12 @@ class DataManager:
             fileSet = FileSet(fileSetModel=fileSetModel)
         return fileSet
     
+    def fileSetByName(self, name: str) -> FileSet:
+        with DbSession() as session:
+            fileSetModel = session.query(FileSetModel).filter_by(name=name).one()
+            fileSet = FileSet(fileSetModel=fileSetModel)
+        return fileSet
+    
     def fileSets(self) -> List[FileSet]:
         with DbSession() as session:
             fileSetModels = session.query(FileSetModel).all()
