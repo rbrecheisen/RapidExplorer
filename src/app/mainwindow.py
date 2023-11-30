@@ -5,6 +5,7 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QFileDialog, Q
 from PySide6.QtGui import QAction, QGuiApplication
 
 from data.datamanager import DataManager
+from data.fileset import FileSet
 from widgets.datadockwidget import DataDockWidget
 from widgets.viewdockwidget import ViewsDockWidget
 from widgets.taskdockwidget import TaskDockWidget
@@ -126,8 +127,8 @@ class MainWindow(QMainWindow):
 
     def deleteAllFileSets(self) -> None:
         self._dataManager.deleteAllFileSets()
+        self._dataDockWidget.clearFileSets()
         # Clear current viewer
-        pass
 
     def resetLayout(self) -> None:
         self.restoreState(self._defaultLayout)
@@ -141,16 +142,16 @@ class MainWindow(QMainWindow):
     def fileImportProgress(self, progress) -> None:
         self._progressBarDialog.setValue(progress)
         
-    def fileImportFinished(self, finished) -> None:
-        # self._dataDockWidget.treeView().addRegisteredMultiFileSetModel(self._dataManager.data())
+    def fileImportFinished(self, fileSet: FileSet) -> None:
+        self._dataDockWidget.addFileSet(fileSet=fileSet)
         self._dataManager.signal().progress.disconnect(self.fileImportProgress)
         self._dataManager.signal().finished.disconnect(self.fileImportFinished)
 
     def fileSetImportProgress(self, progress) -> None:
         self._progressBarDialog.setValue(progress)
 
-    def fileSetImportFinished(self, finished) -> None:
-        # self._dataDockWidget.treeView().addRegisteredMultiFileSetModel(self._dataManager.data())
+    def fileSetImportFinished(self, fileSet: FileSet) -> None:
+        self._dataDockWidget.addFileSet(fileSet=fileSet)
         self._dataManager.signal().progress.disconnect(self.fileSetImportProgress)
         self._dataManager.signal().finished.disconnect(self.fileSetImportFinished)
 

@@ -53,7 +53,7 @@ class DataManager:
             session.commit()
             fileSet = self.fileSet(fileSetModel.id)
             self.signal().progress.emit(100)
-            self.signal().finished.emit(True)
+            self.signal().finished.emit(fileSet)
         return fileSet
     
     def importFileSet(self, fileSetPath: str, regex: str=r'.*') -> FileSet:
@@ -79,7 +79,7 @@ class DataManager:
                     i += 1
             session.commit()
             fileSet = FileSet(fileSetModel=fileSetModel)
-        self.signal().finished.emit(True)
+        self.signal().finished.emit(fileSet)
         return fileSet
     
     # UPDATE
