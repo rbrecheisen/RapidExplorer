@@ -5,8 +5,8 @@ from data.datamanager import DataManager
 from tasks.taskmanager import TaskManager
 
 INPUTFILESETPATH = os.path.join(os.environ['HOME'], 'Desktop/downloads/pancreasdemo')
-OUTPUTDIRECTORY = os.path.join(os.environ['HOME'], 'Desktop/downloads/pancreasdemo-output')
 TENSORFLOWMODELFILESETPATH = os.path.join(os.environ['HOME'], 'Desktop/downloads/tensorflowmodelfiles')
+OUTPUTDIRECTORY = os.path.join(os.environ['HOME'], 'Desktop/downloads/pancreasdemo-output')
 
 
 def test_taskCanLoadInputData():
@@ -25,8 +25,9 @@ def test_taskCanLoadInputData():
     taskManager.signal().taskFinished.connect(taskFinished)
     taskManager.loadTasks()
     task = taskManager.task(name='MuscleFatSegmentationTask')
-    task.settings().setting(name='dicomFiles').setValue(value=inputFileSet)
-    task.settings().setting(name='tensorFlowModelFiles').setValue(value=tensorFlowModelFileSet)
+    # TODO: Standardize these setting names
+    task.settings().setting(name='dicomFileSet').setValue(value=inputFileSet)
+    task.settings().setting(name='tensorFlowModelFileSet').setValue(value=tensorFlowModelFileSet)
     task.settings().setting(name='outputFileSetDirectory').setValue(value=OUTPUTDIRECTORY)
     outputFileSet = taskManager.runTask(task, background=False)
     assert len(outputFileSet.files()) == 4
