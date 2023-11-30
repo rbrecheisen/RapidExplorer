@@ -28,11 +28,19 @@ class DataManager:
     
     # GET
     
-    def getFileSet(self, id: str) -> FileSet:
+    def fileSet(self, id: str) -> FileSet:
         with DbSession() as session:
             fileSetModel = session.get(FileSetModel, id)
             fileSet = FileSet(fileSetModel=fileSetModel)
         return fileSet
+    
+    def fileSets(self) -> List[FileSet]:
+        with DbSession() as session:
+            fileSetModels = session.query(FileSetModel).all()
+            fileSets = []
+            for fileSetModel in fileSetModels:
+                fileSets.append(FileSet(fileSetModel=fileSetModel))
+        return fileSets
     
     # CREATE/IMPORT
     
@@ -43,7 +51,7 @@ class DataManager:
             fileModel = FileModel(path=filePath, fileSetModel=fileSetModel)
             session.add(fileModel)
             session.commit()
-            fileSet = self.getFileSet(fileSetModel.id)
+            fileSet = self.fileSet(fileSetModel.id)
             self.signal().progress.emit(100)
             self.signal().finished.emit(True)
         return fileSet
@@ -83,7 +91,7 @@ class DataManager:
             fileSetModel = session.get(FileSetModel, fileSet.id())
             fileSetModel.name = fileSet.name()
             session.commit()
-            fileSet = self.getFileSet(fileSetModel.id)
+            fileSet = self.fileSet(fileSetModel.id)
         return fileSet
 
     # DELETE
@@ -94,6 +102,7 @@ class DataManager:
         with DbSession() as session:
             fileSetModel = session.get(FileSetModel, fileSet.id())
             session.delete(fileSetModel)
+            session.commit()
         cache = ObjectCache()
         for file in fileSet.files():
             if cache.has(file.id()):
@@ -108,3 +117,4 @@ class DataManager:
                     if cache.has(fileModel.id):
                         cache.remove(fileModel.id)
                 session.delete(fileSetModel)
+            session.commit()

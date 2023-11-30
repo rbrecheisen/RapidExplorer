@@ -10,6 +10,7 @@ class TaskDockWidget(DockWidget):
     def __init__(self, title: str) -> None:
         super(TaskDockWidget, self).__init__(title)
         self._tasksComboBox = None
+        self._showSettingsDialogButton = None
         self._runSelectedTaskButton = None
         self._taskManager = TaskManager()
         self.initUi()
@@ -18,14 +19,15 @@ class TaskDockWidget(DockWidget):
     def initUi(self) -> None:
         self._tasksComboBox = QComboBox(self)
         self._tasksComboBox.currentIndexChanged.connect(self.currentIndexChanged)
-        showSettingsDialogButton = QPushButton('Edit Settings...')
-        showSettingsDialogButton.setFixedWidth(200)
-        showSettingsDialogButton.clicked.connect(self.showSettingsDialog)
+        self._showSettingsDialogButton = QPushButton('Edit Settings...')
+        self._showSettingsDialogButton.setFixedWidth(200)
+        self._showSettingsDialogButton.setEnabled(False)
+        self._showSettingsDialogButton.clicked.connect(self.showSettingsDialog)
         self._runSelectedTaskButton = QPushButton('Run Task')
         self._runSelectedTaskButton.clicked.connect(self.runSelectedTask)
         self._runSelectedTaskButton.setEnabled(False)
         buttonLayout = QHBoxLayout()
-        buttonLayout.addWidget(showSettingsDialogButton)
+        buttonLayout.addWidget(self._showSettingsDialogButton)
         buttonLayout.addWidget(self._runSelectedTaskButton)
         buttonLayout.setAlignment(Qt.AlignRight)
         buttonWidget = QWidget()
@@ -42,7 +44,10 @@ class TaskDockWidget(DockWidget):
     def currentIndexChanged(self, index) -> None:
         taskName = self._tasksComboBox.itemText(index)
         if taskName:
+            self._showSettingsDialogButton.setEnabled(True)
             self._taskManager.setCurrentTask(self._taskManager.task(taskName))
+        else:
+            self._showSettingsDialogButton.setEnabled(False)
 
     def showSettingsDialog(self) -> None:
         taskName = self._tasksComboBox.currentText()
