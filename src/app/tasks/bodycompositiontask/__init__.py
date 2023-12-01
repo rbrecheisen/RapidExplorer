@@ -1,0 +1,1 @@
+from tasks.bodycompositiontask.bodycompositiontask import BodyCompositionTask

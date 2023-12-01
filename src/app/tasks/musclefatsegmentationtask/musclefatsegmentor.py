@@ -9,6 +9,8 @@ from typing import List
 
 from PySide6.QtCore import QSettings
 
+from tasks.utils import getPixels
+
 SETTINGSFILEPATH = 'settings.ini'
 
 
@@ -120,19 +122,6 @@ class MuscleFatSegmentor:
         newPrediction[newPrediction == 3] = 7
         return newPrediction
 
-    @staticmethod
-    def getPixels(p, normalize=False):
-        pixels = p.pixel_array
-        if not normalize:
-            return pixels
-        if normalize is True:
-            return p.RescaleSlope * pixels + p.RescaleIntercept
-        if isinstance(normalize, int):
-            return (pixels + np.min(pixels)) / (np.max(pixels) - np.min(pixels)) * normalize
-        if isinstance(normalize, list):
-            return (pixels + np.min(pixels)) / (np.max(pixels) - np.min(pixels)) * normalize[1] + normalize[0]
-        return pixels
-
     def execute(self) -> List[str]:
         model, contourModel, params = self.loadModelFiles()
         self._outputFiles = []
@@ -141,7 +130,7 @@ class MuscleFatSegmentor:
             try:
                 p = pydicom.dcmread(filePath)
                 p.decompress()
-                img1 = self.getPixels(p, normalize=True)
+                img1 = getPixels(p, normalize=True)
                 if contourModel is not None:
                     mask = self.predictContour(contourModel, img1, params)
                     img1 = self.normalize(img1, params['min_bound'], params['max_bound'])
