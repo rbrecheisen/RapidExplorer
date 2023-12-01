@@ -9,8 +9,6 @@ from typing import List
 
 from PySide6.QtCore import QSettings
 
-from tasks.tasksignal import TaskSignal
-
 SETTINGSFILEPATH = 'settings.ini'
 
 
@@ -18,14 +16,14 @@ class MuscleFatSegmentor:
     ARGMAX = 0
     PROBABILITIES = 1
 
-    def __init__(self) -> None:
+    def __init__(self, parentTask) -> None:
+        self._parentTask = parentTask
         self._inputFiles = None
         self._modelFiles = None
         self._mode = MuscleFatSegmentor.ARGMAX
         self._outputDirectory = None
         self._outputFiles = None
         self._settings = QSettings(SETTINGSFILEPATH, QSettings.Format.IniFormat)
-        self._signal = TaskSignal()
         self._progress = 0
 
     def inputFiles(self) -> List[str]:
@@ -60,17 +58,10 @@ class MuscleFatSegmentor:
     def settings(self) -> QSettings:
         return self._settings
     
-    def signal(self) -> TaskSignal:
-        return self._signal
-    
     def updateProgress(self) -> int:
-        self.signal().progress.emit(self._progress)
         self._progress += 1
-        return self._progress
+        self._parentTask.segmentorProgress(self._progress)
     
-    def finished(self) -> None:
-        self.signal().finished.emit(None)
-
     def loadModel(self, filePath: str):
         import tensorflow as tf
         temporaryModelDirectory = self.settings().value('l3AutoSegmentationTemporaryModelDirectory')
@@ -78,13 +69,11 @@ class MuscleFatSegmentor:
         with zipfile.ZipFile(filePath) as zipObj:
             zipObj.extractall(path=temporaryModelDirectory)
         tensorFlowModel = tf.keras.models.load_model(temporaryModelDirectory, compile=False)
-        self.updateProgress()
         return tensorFlowModel
 
     def loadParameters(self, filePath: str):
         with open(filePath, 'r') as f:
             parameters = json.load(f)
-            self.updateProgress()
             return parameters
 
     def loadModelFiles(self):
@@ -99,6 +88,7 @@ class MuscleFatSegmentor:
                 parameters = self.loadParameters(filePath)
             else:
                 raise RuntimeError(f'Unknown model file {filePath}')
+            self.updateProgress()
         return model, contourModel, parameters
     
     @staticmethod
@@ -176,5 +166,4 @@ class MuscleFatSegmentor:
             except pydicom.errors.InvalidDicomError:
                 print(f'File {fileName} is not a valid DICOM file')
             self.updateProgress()
-        self.finished()
         return self._outputFiles

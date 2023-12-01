@@ -66,7 +66,7 @@ class TaskSettingsDialog(QDialog):
                 self._taskSettingWidgets[setting.name()] = (widget, self.createLabel(setting=setting))
 
             else:
-                print(f'Unknown or invisible setting {setting.name()}')
+                pass
         return self._taskSettingWidgets
     
     def createLabel(self, setting) -> QLabel:

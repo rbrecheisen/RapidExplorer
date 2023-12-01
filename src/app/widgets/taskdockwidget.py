@@ -5,7 +5,7 @@ from widgets.dockwidget import DockWidget
 from widgets.tasksettingsdialog import TaskSettingsDialog
 from tasks.taskmanager import TaskManager
 from tasks.tasksignal import TaskSignal
-from tasks.task import Task
+from data.fileset import FileSet
 
 
 class TaskDockWidget(DockWidget):
@@ -69,6 +69,7 @@ class TaskDockWidget(DockWidget):
             self._taskManager.setCurrentTask(self._taskManager.task(taskName))
         else:
             self._showSettingsDialogButton.setEnabled(False)
+            self._runSelectedTaskButton.setEnabled(False)
 
     def showSettingsDialog(self) -> None:
         taskName = self._tasksComboBox.currentText()
@@ -80,12 +81,9 @@ class TaskDockWidget(DockWidget):
                 self._runSelectedTaskButton.setFocus()
 
     def runSelectedTask(self) -> None:
-        taskName = self._tasksComboBox.currentText()
-        if taskName:
-            self._progressBarDialog.show()
-            self._progressBarDialog.setValue(0)
-            task = self._taskManager.task(taskName)
-            self._taskManager.runTask(task, background=False)
+        self._progressBarDialog.show()
+        self._progressBarDialog.setValue(0)
+        self._taskManager.runCurrentTask(background=True)
 
     def loadTasks(self) -> None:
         self._tasksComboBox.clear()
@@ -95,6 +93,8 @@ class TaskDockWidget(DockWidget):
 
     def taskProgress(self, progress) -> None:
         self._progressBarDialog.setValue(progress)
+        print(progress)
 
-    def taskFinished(self, outputFileSetName: str) -> None:
-        self.signal().finished.emit(outputFileSetName)
+    def taskFinished(self, outputFileSet: FileSet) -> None:
+        self.signal().finished.emit(outputFileSet)
+        self._progressBarDialog.close()

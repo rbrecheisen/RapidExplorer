@@ -23,13 +23,13 @@ class MuscleFatSegmentationTask(Task):
             TaskSettingFileSetPath(name='outputFileSetPath', displayName='Output File Set Path'))
         self.settings().add(
             TaskSettingText(name='outputFileSetName', displayName='Output File Set Name', optional=True))
-        # self.settings().add(
-        #     TaskSettingFileSet(name='outputFileSet', displayName='Output File Set', visible=False))
+        self.settings().add(
+            TaskSettingFileSet(name='outputFileSet', displayName='Output File Set', visible=False))
         self._signal = TaskSignal()
 
     def signal(self) -> TaskSignal:
         return self._signal
-        
+    
     def run(self) -> FileSet:
         # Collect input files
         inputFileSetName = self.settings().setting(name='dicomFileSet').value()
@@ -48,14 +48,14 @@ class MuscleFatSegmentationTask(Task):
         outputFileSetName = self.settings().setting(name='outputFileSetName').value()
         if not outputFileSetName:
             outputFileSetName = createRandomName(prefix='output')        
+        self.settings().setting(name='outputFileSetName').setValue(outputFileSetName)
         outputFileSetPath = os.path.join(outputFileSetPath, outputFileSetName)
+        self.settings().setting(name='outputFileSetPath').setValue(outputFileSetPath)
         os.makedirs(outputFileSetPath, exist_ok=False)
         # Calculate number of steps required        
         self.setNrSteps(len(inputFilePaths) + len(tensorFlowModelFilePaths))
         # Run segmentation
-        segmentor = MuscleFatSegmentor()
-        segmentor.signal().progress.connect(self.updateSegmentorProgress)
-        segmentor.signal().finished.connect(self.segmentorFinished)
+        segmentor = MuscleFatSegmentor(parentTask=self)
         segmentor.setInputFiles(inputFilePaths)
         segmentor.setModelFiles(tensorFlowModelFilePaths)
         segmentor.setOutputDirectory(outputFileSetPath)
@@ -65,13 +65,10 @@ class MuscleFatSegmentationTask(Task):
         outputFileSet = self.dataManager().importFileSet(fileSetPath=outputFileSetPath)
         outputFileSet.setName(outputFileSetName)
         outputFileSet = self._dataManager.updateFileSet(fileSet=outputFileSet)
-        self.settings().setting(name='outputFileSetName').setValue(outputFileSetName)
-        # self.settings().setting(name='outputFileSet').setValue(value=outputFileSet)
+        self.settings().setting(name='outputFileSet').setValue(value=outputFileSet)        
+        self.signal().finished.emit(outputFileSet)
         return outputFileSet
     
-    def updateSegmentorProgress(self, progress) -> None:
-        progress = int((progress + 1) / self._nrSteps * 100)
+    def segmentorProgress(self, progress) -> None:
+        progress = int((progress + 1) / (self._nrSteps + 1) * 100)
         self.signal().progress.emit(progress)
-
-    def segmentorFinished(self, _) -> None:
-        self.signal().finished.emit(self.settings().setting(name='outputFileSetName').value())

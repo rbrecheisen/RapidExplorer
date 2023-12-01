@@ -157,9 +157,8 @@ class MainWindow(QMainWindow):
         self._dataManager.signal().progress.disconnect(self.fileSetImportProgress)
         self._dataManager.signal().finished.disconnect(self.fileSetImportFinished)
 
-    def taskFinished(self, outputFileSetName: str) -> None:
-        fileSet = self._dataManager.fileSetByName(name=outputFileSetName)
-        self._dataDockWidget.addFileSet(fileSet=fileSet)
+    def taskFinished(self, outputFileSet: FileSet) -> None:
+        self._dataDockWidget.addFileSet(fileSet=outputFileSet)
 
     # Miscellaneous
 

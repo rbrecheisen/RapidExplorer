@@ -29,7 +29,7 @@ def test_taskCanLoadInputData():
     task.settings().setting(name='dicomFileSet').setValue(value=inputFileSet)
     task.settings().setting(name='tensorFlowModelFileSet').setValue(value=tensorFlowModelFileSet)
     task.settings().setting(name='outputFileSetDirectory').setValue(value=OUTPUTDIRECTORY)
-    outputFileSet = taskManager.runTask(task, background=False)
+    outputFileSet = taskManager.runCurrentTask(task, background=False)
     assert len(outputFileSet.files()) == 4
 
 def taskProgress(progress: int):

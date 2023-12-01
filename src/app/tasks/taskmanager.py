@@ -4,6 +4,7 @@ from PySide6.QtCore import QSettings, QThreadPool
 
 from singleton import singleton
 from moduleloader import ModuleLoader
+from data.fileset import FileSet
 from tasks.taskmanagersignal import TaskManagerSignal
 from tasks.task import Task
 
@@ -45,16 +46,18 @@ class TaskManager:
         self._tasks = ModuleLoader.loadModules(
             moduleDirectoryPath=self.settings().value('tasksDirectoryPath'), moduleBaseClass=Task)
         
-    def runTask(self, task: Task, background: bool=True) -> None:
-        task.signal().progress.connect(self.taskProgress)
-        task.signal().finished.connect(self.taskFinished)
+    def runCurrentTask(self, background: bool=True) -> None:
+        self.currentTask().signal().progress.connect(self.taskProgress)
+        self.currentTask().signal().finished.connect(self.taskFinished)
         if background:
-            QThreadPool.globalInstance().start(task)
+            QThreadPool.globalInstance().start(self.currentTask())
         else:
-            return task.run()
+            self.currentTask().run()
 
     def taskProgress(self, progress) -> None:
         self.signal().taskProgress.emit(progress)
 
-    def taskFinished(self, outputFileSetName: str) -> None:
-        self.signal().taskFinished.emit(outputFileSetName)
+    def taskFinished(self, outputFileSet: FileSet) -> None:
+        self.currentTask().signal().progress.disconnect(self.taskProgress)
+        self.currentTask().signal().finished.disconnect(self.taskFinished)
+        self.signal().taskFinished.emit(outputFileSet)
