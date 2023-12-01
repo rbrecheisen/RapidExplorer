@@ -24,6 +24,9 @@ class MuscleFatSegmentationTask(Task):
             TaskSettingText(name='outputFileSetName', displayName='Output File Set Name', optional=True))
         self.settings().add(
             TaskSettingFileSet(name='outputFileSet', displayName='Output File Set', visible=False))
+        
+    def outputFileSet(self) -> FileSet:
+        return self.settings().setting(name='outputFileSet').value()
 
     def run(self) -> FileSet:
         # Collect input files
@@ -60,7 +63,7 @@ class MuscleFatSegmentationTask(Task):
         outputFileSet.setName(outputFileSetName)
         self._dataManager.updateFileSet(fileSet=outputFileSet)
         self.settings().setting(name='outputFileSet').setValue(value=outputFileSet)
-        self.setOutputFileSet(outputFileSet=outputFileSet)
+        # self.setOutputFileSet(outputFileSet=outputFileSet)
         return outputFileSet
     
     def updateSegmentorProgress(self, progress) -> None:
