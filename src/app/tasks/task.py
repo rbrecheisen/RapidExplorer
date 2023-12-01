@@ -2,7 +2,7 @@ from typing import Dict
 
 from PySide6.QtCore import QRunnable
 
-from tasks.tasksignal import TaskSignal
+# from tasks.tasksignal import TaskSignal
 from tasks.tasksettings import TaskSettings
 from data.datamanager import DataManager
 from data.fileset import FileSet
@@ -29,7 +29,6 @@ class Task(QRunnable):
         super(Task, self).__init__()
         self._name = name
         self._settings = TaskSettings()
-        self._signal = TaskSignal()
         self._dataManager = DataManager()
         self._nrSteps = 0
 
@@ -39,9 +38,6 @@ class Task(QRunnable):
     def settings(self) -> TaskSettings:
         return self._settings
 
-    def signal(self) -> TaskSignal:
-        return self._signal
-    
     def dataManager(self) -> DataManager:
         return self._dataManager
 
@@ -51,8 +47,5 @@ class Task(QRunnable):
     def setNrSteps(self, nrSteps: int) -> None:
         self._nrSteps = nrSteps
 
-    def outputFileSet(self) -> FileSet:
-        raise NotImplementedError('Not implemented')
-    
     def run(self) -> FileSet:
         raise NotImplementedError('Not implemented')

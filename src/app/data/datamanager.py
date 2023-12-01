@@ -57,7 +57,7 @@ class DataManager:
             fileModel = FileModel(path=filePath, fileSetModel=fileSetModel)
             session.add(fileModel)
             session.commit()
-            fileSet = self.fileSet(fileSetModel.id)
+            fileSet = FileSet(fileSetModel=fileSetModel)  # Don't use fileSet() because it mixes sessions!
             self.signal().progress.emit(100)
             self.signal().finished.emit(fileSet)
         return fileSet
@@ -97,7 +97,7 @@ class DataManager:
             fileSetModel = session.get(FileSetModel, fileSet.id())
             fileSetModel.name = fileSet.name()
             session.commit()
-            fileSet = self.fileSet(fileSetModel.id)
+            fileSet = FileSet(fileSetModel=fileSetModel)
         return fileSet
 
     # DELETE

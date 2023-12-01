@@ -79,6 +79,7 @@ class TaskSettingsDialog(QDialog):
         cancelButton = QPushButton('Cancel')
         cancelButton.clicked.connect(self.cancel)
         saveAndCloseSettingsButton = QPushButton('Save and Close')
+        saveAndCloseSettingsButton.setFocus()
         saveAndCloseSettingsButton.clicked.connect(self.saveAndCloseSettings)
         buttonsLayout = QHBoxLayout()
         buttonsLayout.addWidget(cancelButton)

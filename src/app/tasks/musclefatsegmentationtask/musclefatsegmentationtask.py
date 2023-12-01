@@ -3,6 +3,7 @@ import os
 from typing import List
 
 from tasks.task import Task
+from tasks.tasksignal import TaskSignal
 from tasks.tasksettingfilesetpath import TaskSettingFileSetPath
 from tasks.tasksettingtext import TaskSettingText
 from tasks.tasksettingfileset import TaskSettingFileSet
@@ -22,12 +23,13 @@ class MuscleFatSegmentationTask(Task):
             TaskSettingFileSetPath(name='outputFileSetPath', displayName='Output File Set Path'))
         self.settings().add(
             TaskSettingText(name='outputFileSetName', displayName='Output File Set Name', optional=True))
-        self.settings().add(
-            TaskSettingFileSet(name='outputFileSet', displayName='Output File Set', visible=False))
-        
-    def outputFileSet(self) -> FileSet:
-        return self.settings().setting(name='outputFileSet').value()
+        # self.settings().add(
+        #     TaskSettingFileSet(name='outputFileSet', displayName='Output File Set', visible=False))
+        self._signal = TaskSignal()
 
+    def signal(self) -> TaskSignal:
+        return self._signal
+        
     def run(self) -> FileSet:
         # Collect input files
         inputFileSetName = self.settings().setting(name='dicomFileSet').value()
@@ -51,24 +53,25 @@ class MuscleFatSegmentationTask(Task):
         # Calculate number of steps required        
         self.setNrSteps(len(inputFilePaths) + len(tensorFlowModelFilePaths))
         # Run segmentation
-        segmentator = MuscleFatSegmentor()
-        segmentator.signal().progress.connect(self.updateSegmentorProgress)
-        segmentator.setInputFiles(inputFilePaths)
-        segmentator.setModelFiles(tensorFlowModelFilePaths)
-        segmentator.setOutputDirectory(outputFileSetPath)
-        segmentator.setMode(MuscleFatSegmentor.ARGMAX)
-        segmentator.execute()
+        segmentor = MuscleFatSegmentor()
+        segmentor.signal().progress.connect(self.updateSegmentorProgress)
+        segmentor.signal().finished.connect(self.segmentorFinished)
+        segmentor.setInputFiles(inputFilePaths)
+        segmentor.setModelFiles(tensorFlowModelFilePaths)
+        segmentor.setOutputDirectory(outputFileSetPath)
+        segmentor.setMode(MuscleFatSegmentor.ARGMAX)
+        segmentor.execute()
         # Build output file set
         outputFileSet = self.dataManager().importFileSet(fileSetPath=outputFileSetPath)
         outputFileSet.setName(outputFileSetName)
-        self._dataManager.updateFileSet(fileSet=outputFileSet)
-        self.settings().setting(name='outputFileSet').setValue(value=outputFileSet)
-        # self.setOutputFileSet(outputFileSet=outputFileSet)
+        outputFileSet = self._dataManager.updateFileSet(fileSet=outputFileSet)
+        self.settings().setting(name='outputFileSetName').setValue(outputFileSetName)
+        # self.settings().setting(name='outputFileSet').setValue(value=outputFileSet)
         return outputFileSet
     
     def updateSegmentorProgress(self, progress) -> None:
         progress = int((progress + 1) / self._nrSteps * 100)
         self.signal().progress.emit(progress)
 
-    def segmentorFinished(self, value) -> None:
-        self.signal().finished.emit(value)
+    def segmentorFinished(self, _) -> None:
+        self.signal().finished.emit(self.settings().setting(name='outputFileSetName').value())

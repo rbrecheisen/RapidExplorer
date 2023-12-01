@@ -69,7 +69,7 @@ class MuscleFatSegmentor:
         return self._progress
     
     def finished(self) -> None:
-        self.signal().finished.emit(True)
+        self.signal().finished.emit(None)
 
     def loadModel(self, filePath: str):
         import tensorflow as tf
@@ -176,5 +176,5 @@ class MuscleFatSegmentor:
             except pydicom.errors.InvalidDicomError:
                 print(f'File {fileName} is not a valid DICOM file')
             self.updateProgress()
-            self.finished()
+        self.finished()
         return self._outputFiles

@@ -15,6 +15,7 @@ class DataDockWidget(DockWidget):
         self.setMinimumHeight(200)
 
     def addFileSet(self, fileSet: FileSet) -> None:
+        print(f'DataDockWidget.addFileSet() fileSet = {fileSet}')
         self._treeView.addFileSet(fileSet=fileSet)
 
     def clearFileSets(self) -> None:

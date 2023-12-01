@@ -56,5 +56,5 @@ class TaskManager:
     def taskProgress(self, progress) -> None:
         self.signal().taskProgress.emit(progress)
 
-    def taskFinished(self, task: Task) -> None:
-        self.signal().taskFinished.emit(task)
+    def taskFinished(self, outputFileSetName: str) -> None:
+        self.signal().taskFinished.emit(outputFileSetName)

@@ -4,7 +4,7 @@ from PySide6.QtWidgets import QWidget, QComboBox, QVBoxLayout, QHBoxLayout, QPus
 from widgets.dockwidget import DockWidget
 from widgets.tasksettingsdialog import TaskSettingsDialog
 from tasks.taskmanager import TaskManager
-from tasks.taskmanagersignal import TaskManagerSignal
+from tasks.tasksignal import TaskSignal
 from tasks.task import Task
 
 
@@ -16,12 +16,12 @@ class TaskDockWidget(DockWidget):
         self._runSelectedTaskButton = None
         self._progressBarDialog = None
         self._taskManager = None
-        self._signal = TaskManagerSignal()
+        self._signal = TaskSignal()
         self.initTaskManager()
         self.initUi()
         self.loadTasks()
 
-    def signal(self) -> TaskManagerSignal:
+    def signal(self) -> TaskSignal:
         return self._signal
     
     def initTaskManager(self) -> None:
@@ -77,16 +77,15 @@ class TaskDockWidget(DockWidget):
             resultCode = settingsDialog.show()
             if resultCode == QDialog.Accepted:
                 self._runSelectedTaskButton.setEnabled(True)
+                self._runSelectedTaskButton.setFocus()
 
     def runSelectedTask(self) -> None:
         taskName = self._tasksComboBox.currentText()
         if taskName:
             self._progressBarDialog.show()
             self._progressBarDialog.setValue(0)
-            # self._taskManager.signal().taskProgress.connect(self.taskProgress)
-            # self._taskManager.signal().taskFinished.connect(self.taskFinished)
             task = self._taskManager.task(taskName)
-            self._taskManager.runTask(task)
+            self._taskManager.runTask(task, background=False)
 
     def loadTasks(self) -> None:
         self._tasksComboBox.clear()
@@ -97,7 +96,5 @@ class TaskDockWidget(DockWidget):
     def taskProgress(self, progress) -> None:
         self._progressBarDialog.setValue(progress)
 
-    def taskFinished(self, task: Task) -> None:
-        # self._taskManager.signal().taskProgress.disconnect(self.taskProgress)
-        # self._taskManager.signal().taskFinished.disconnect(self.taskFinished)
-        self._signal.taskFinished.emit(task)
+    def taskFinished(self, outputFileSetName: str) -> None:
+        self.signal().finished.emit(outputFileSetName)

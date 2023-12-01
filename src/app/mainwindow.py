@@ -6,6 +6,7 @@ from PySide6.QtGui import QAction, QGuiApplication
 
 from data.datamanager import DataManager
 from data.fileset import FileSet
+from tasks.task import Task
 from widgets.datadockwidget import DataDockWidget
 from widgets.viewdockwidget import ViewsDockWidget
 from widgets.taskdockwidget import TaskDockWidget
@@ -18,7 +19,7 @@ FILEPATH = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset/scan1/ima
 MAINWINDOWSIZE = (1024, 800)
 ORGANISATION = 'Rbeesoft'
 APPLICATIONNAME = 'RapidExplorer'
-WINDOWTITLE = 'Mosamatic 2.0'
+WINDOWTITLE = 'Mosamatic Desktop 1.0'
 
 
 class MainWindow(QMainWindow):
@@ -75,7 +76,7 @@ class MainWindow(QMainWindow):
 
     def initTaskDockWidget(self) -> None:
         self._tasksDockWidget = TaskDockWidget(title='Tasks')
-        self._tasksDockWidget.signal().taskFinished.connect(self.taskFinished)
+        self._tasksDockWidget.signal().finished.connect(self.taskFinished)
         self._tasksDockWidget.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.BottomDockWidgetArea)
         self.addDockWidget(Qt.LeftDockWidgetArea, self._tasksDockWidget)
 
@@ -156,8 +157,9 @@ class MainWindow(QMainWindow):
         self._dataManager.signal().progress.disconnect(self.fileSetImportProgress)
         self._dataManager.signal().finished.disconnect(self.fileSetImportFinished)
 
-    def taskFinished(self, task: Task) -> None:
-        self._dataDockWidget.addFileSet(fileSet=task.outputFileSet())
+    def taskFinished(self, outputFileSetName: str) -> None:
+        fileSet = self._dataManager.fileSetByName(name=outputFileSetName)
+        self._dataDockWidget.addFileSet(fileSet=fileSet)
 
     # Miscellaneous
 

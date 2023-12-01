@@ -32,6 +32,7 @@ class FileSetTreeView(QTreeView):
             pass
 
     def addFileSet(self, fileSet: FileSet) -> None:
+        print(f'FileSetTreeView.addFileSet() fileSet = {fileSet}')
         fileSetItem = FileSetItem(fileSet=fileSet)
         fileSetItem.setEditable(False)
         for file in fileSet.files():
