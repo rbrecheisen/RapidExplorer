@@ -5,6 +5,7 @@ from PySide6.QtCore import QRunnable
 from tasks.tasksignal import TaskSignal
 from tasks.tasksettings import TaskSettings
 from data.datamanager import DataManager
+from data.fileset import FileSet
 
 
 class Task(QRunnable):
@@ -15,6 +16,7 @@ class Task(QRunnable):
         self._signal = TaskSignal()
         self._dataManager = DataManager()
         self._nrSteps = 0
+        self._outputFileSet = None
 
     def name(self) -> str:
         return self._name
@@ -34,5 +36,11 @@ class Task(QRunnable):
     def setNrSteps(self, nrSteps: int) -> None:
         self._nrSteps = nrSteps
 
-    def run(self) -> None:
+    def outputFileSet(self) -> FileSet:
+        return self._outputFileSet
+    
+    def setOutputFileSet(self, outputFileSet: FileSet) -> None:
+        self._outputFileSet = outputFileSet
+
+    def run(self) -> FileSet:
         raise NotImplementedError('Not implemented')

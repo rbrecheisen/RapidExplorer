@@ -4,6 +4,8 @@ from PySide6.QtWidgets import QWidget, QComboBox, QVBoxLayout, QHBoxLayout, QPus
 from widgets.dockwidget import DockWidget
 from widgets.tasksettingsdialog import TaskSettingsDialog
 from tasks.taskmanager import TaskManager
+from tasks.taskmanagersignal import TaskManagerSignal
+from tasks.task import Task
 
 
 class TaskDockWidget(DockWidget):
@@ -13,9 +15,19 @@ class TaskDockWidget(DockWidget):
         self._showSettingsDialogButton = None
         self._runSelectedTaskButton = None
         self._progressBarDialog = None
-        self._taskManager = TaskManager()
+        self._taskManager = None
+        self._signal = TaskManagerSignal()
+        self.initTaskManager()
         self.initUi()
         self.loadTasks()
+
+    def signal(self) -> TaskManagerSignal:
+        return self._signal
+    
+    def initTaskManager(self) -> None:
+        self._taskManager = TaskManager()
+        self._taskManager.signal().taskProgress.connect(self.taskProgress)
+        self._taskManager.signal().taskFinished.connect(self.taskFinished)
 
     def initUi(self) -> None:
         self._tasksComboBox = QComboBox(self)
@@ -71,9 +83,10 @@ class TaskDockWidget(DockWidget):
         if taskName:
             self._progressBarDialog.show()
             self._progressBarDialog.setValue(0)
-            self._taskManager.signal().taskProgress.connect(self.taskProgress)
-            self._taskManager.signal().taskFinished.connect(self.taskFinished)
-            self._taskManager.runTask(self._taskManager.task(taskName))
+            # self._taskManager.signal().taskProgress.connect(self.taskProgress)
+            # self._taskManager.signal().taskFinished.connect(self.taskFinished)
+            task = self._taskManager.task(taskName)
+            self._taskManager.runTask(task)
 
     def loadTasks(self) -> None:
         self._tasksComboBox.clear()
@@ -84,7 +97,7 @@ class TaskDockWidget(DockWidget):
     def taskProgress(self, progress) -> None:
         self._progressBarDialog.setValue(progress)
 
-    def taskFinished(self, finished) -> None:
-        self._taskManager.signal().taskProgress.disconnect(self.taskProgress)
-        self._taskManager.signal().taskFinished.disconnect(self.taskFinished)
-        raise RuntimeError('Add output file set to tree view!')
+    def taskFinished(self, task: Task) -> None:
+        # self._taskManager.signal().taskProgress.disconnect(self.taskProgress)
+        # self._taskManager.signal().taskFinished.disconnect(self.taskFinished)
+        self._signal.taskFinished.emit(task)

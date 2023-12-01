@@ -60,6 +60,7 @@ class MuscleFatSegmentationTask(Task):
         outputFileSet.setName(outputFileSetName)
         self._dataManager.updateFileSet(fileSet=outputFileSet)
         self.settings().setting(name='outputFileSet').setValue(value=outputFileSet)
+        self.setOutputFileSet(outputFileSet=outputFileSet)
         return outputFileSet
     
     def updateSegmentorProgress(self, progress) -> None:

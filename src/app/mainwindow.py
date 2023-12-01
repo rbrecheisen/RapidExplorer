@@ -75,6 +75,7 @@ class MainWindow(QMainWindow):
 
     def initTaskDockWidget(self) -> None:
         self._tasksDockWidget = TaskDockWidget(title='Tasks')
+        self._tasksDockWidget.signal().taskFinished.connect(self.taskFinished)
         self._tasksDockWidget.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.BottomDockWidgetArea)
         self.addDockWidget(Qt.LeftDockWidgetArea, self._tasksDockWidget)
 
@@ -154,6 +155,9 @@ class MainWindow(QMainWindow):
         self._dataDockWidget.addFileSet(fileSet=fileSet)
         self._dataManager.signal().progress.disconnect(self.fileSetImportProgress)
         self._dataManager.signal().finished.disconnect(self.fileSetImportFinished)
+
+    def taskFinished(self, task: Task) -> None:
+        self._dataDockWidget.addFileSet(fileSet=task.outputFileSet())
 
     # Miscellaneous
 
