@@ -42,7 +42,8 @@ class BodyCompositionTask(Task):
         segmentationFileSet = self._dataManager.fileSetByName(name=segmentationFileSetName)
         segmentationFilePaths = []
         for file in segmentationFileSet.files():
-            segmentationFilePaths.append(file.path())
+            if file.path().endswith('.npy'):
+                segmentationFilePaths.append(file.path())
         # Patient heights CSV (use csv package to load)
         patientHeights = None
         patientHeightsCsvFilePath = self.settings().setting(name='patientHeightsCsvFilePath').value()
@@ -74,7 +75,7 @@ class BodyCompositionTask(Task):
         calculator.setPatientHeights(patientHeights=patientHeights)
         calculator.execute()
         df = calculator.as_df()
-        csvFilePath = os.path.join(outputFileSetPath, createNameWithTimestamp('scores'))
+        csvFilePath = os.path.join(outputFileSetPath, createNameWithTimestamp('scores') + '.csv')
         df.to_csv(csvFilePath, index=False)
         # Copy segmentation files to output file set if necessary
         if copySegmentationsToOutputFileSet:
