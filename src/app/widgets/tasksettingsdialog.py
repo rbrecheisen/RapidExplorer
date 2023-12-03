@@ -1,7 +1,7 @@
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QWidget, QDialog, QLabel, QPushButton, QVBoxLayout, QHBoxLayout
 
-from tasks.task import Task
+from tasks.tasksettings import TaskSettings
 from widgets.tasksettingbooleanwidget import TaskSettingBooleanWidget
 from widgets.tasksettingfilesetpathwidget import TaskSettingFileSetPathWidget
 from widgets.tasksettingfilesetwidget import TaskSettingFileSetWidget
@@ -12,11 +12,14 @@ from widgets.tasksettingtextwidget import TaskSettingTextWidget
 
 
 class TaskSettingsDialog(QDialog):
-    def __init__(self, task: Task) -> None:
+    def __init__(self, taskSettings: TaskSettings) -> None:
         super(TaskSettingsDialog, self).__init__()
-        self._task = task
+        self._taskSettings = taskSettings
         self._taskSettingWidgets = {}
         self.initUi()
+
+    def taskSettings(self) -> TaskSettings:
+        return self._taskSettings
 
     def initUi(self) -> None:
         self._taskSettingWidgets = self.createTaskSettingWidgets()
@@ -29,11 +32,11 @@ class TaskSettingsDialog(QDialog):
         self.setLayout(layout)
         self.resize(self.sizeHint())
         self.setFixedWidth(400)
-        self.setWindowTitle(self._task.name())
+        self.setWindowTitle(self._taskSettings.taskName())
 
 
     def createTaskSettingWidgets(self) ->None:
-        settings = self._task.settings()
+        settings = self._taskSettings
         for setting in settings.all():
             if settings.isTypeBoolean(setting) and setting.visible():
                 widget = TaskSettingBooleanWidget(setting=setting, parent=self)

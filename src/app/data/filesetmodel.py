@@ -5,7 +5,7 @@ from sqlalchemy import String, ForeignKey, event
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from data.basemodel import BaseModel
-from utils import createRandomName
+from utils import createNameWithTimestamp
 
 
 class FileSetModel(BaseModel):
@@ -19,6 +19,6 @@ class FileSetModel(BaseModel):
 @event.listens_for(FileSetModel, 'after_insert')
 def afterInsert(_, connection, target):
     if not target.name:
-        target.name = createRandomName(prefix='fileset')
+        target.name = createNameWithTimestamp(prefix='fileset')
         connection.execute(
             FileSetModel.__table__.update().where(FileSetModel.id == target.id).values(name=target.name))

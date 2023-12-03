@@ -6,8 +6,8 @@ from typing import Dict, Any
 
 class ModuleLoader:
     @staticmethod
-    def loadModules(moduleDirectoryPath: str, moduleBaseClass: Any) -> Dict[str, Any]:
-        objects = {}
+    def loadModuleClasses(moduleDirectoryPath: str, moduleBaseClass: Any) -> Dict[str, Any]:
+        classes = {}
         moduleDirectoryName = os.path.split(moduleDirectoryPath)[1]
         for root, dirs, files in os.walk(moduleDirectoryPath):
             for fileName in files:
@@ -22,6 +22,7 @@ class ModuleLoader:
                             for attributeName in dir(module):
                                 attribute = getattr(module, attributeName)
                                 if isinstance(attribute, type) and issubclass(attribute, moduleBaseClass) and attribute is not moduleBaseClass:
-                                    object = attribute()
-                                    objects[object.name()] = object
-        return objects
+                                    # object = attribute()  # temporarily instantiate class to get it's name
+                                    # classes[object.name()] = attribute # this is the class
+                                    classes[attribute.NAME] = attribute
+        return classes

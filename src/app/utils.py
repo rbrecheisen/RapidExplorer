@@ -1,7 +1,7 @@
 import pendulum
 
 
-def createRandomName(prefix: str=''):
+def createNameWithTimestamp(prefix: str=''):
     tz = pendulum.local_timezone()
     timestamp = pendulum.now(tz).strftime('%Y%m%d%H%M%S%f')[:17]
     if prefix != '' and not prefix.endswith('-'):

@@ -3,9 +3,9 @@ import pydicom
 import numpy as np
 import pandas as pd
 
-from typing import List
+from typing import List, Dict
 
-from tasks.utils import calculate_area, calculate_mean_radiation_attenuation
+from tasks.utils import calculateArea, calculateMeanRadiationAttennuation, getPixels
 
 
 class BodyCompositionCalculator:
@@ -15,34 +15,35 @@ class BodyCompositionCalculator:
 
     def __init__(self, parentTask):
         self._parentTask = parentTask
-        self._inputFiles = None
-        self._inputSegmentationFiles = None
-        self._heights = {}
+        self._dicomFilePaths = None
+        self._segmentationFilePaths = None
+        self._patientHeights = {}
         self._outputMetrics = None
+        self._progress = 0
 
-    def inputFiles(self) -> List[str]:
-        return self._inputFiles
+    def dicomFilePaths(self) -> List[str]:
+        return self._dicomFilePaths
     
-    def setInputFiles(self, inputFiles: List[str]) -> None:
-        self._inputFiles = inputFiles
+    def setDicomFilePaths(self, dicomFilePaths: List[str]) -> None:
+        self._dicomFilePaths = dicomFilePaths
 
-    def inputSegmentationFiles(self) -> List[str]:
-        return self._inputSegmentationFiles
+    def segmentationFilePaths(self) -> List[str]:
+        return self._segmentationFilePaths
     
-    def setInputSegmentationFiles(self, inputSegmentationFiles: List[str]) -> None:
-        self._inputSegmentationFiles = inputSegmentationFiles
+    def setSegmentationFilePaths(self, segmentationFilePaths: List[str]) -> None:
+        self._segmentationFilePaths = segmentationFilePaths
 
-    def heights(self) -> Dict[str, float]:
-        return self._heights
+    def patientHeights(self) -> Dict[str, float]:
+        return self._patientHeights
     
-    def setHeights(self, heights: Dict[str, float]) -> None:
-        self._heights = heights
+    def setPatientHeights(self, patientHeights: Dict[str, float]) -> None:
+        self._patientHeights = patientHeights
 
     @staticmethod
     def loadDicomFile(filePath: str):
         p = pydicom.dcmread(filePath)
         pixelSpacing = p.PixelSpacing
-        pixels = get_pixels(p, normalize=True)
+        pixels = getPixels(p, normalize=True)
         return pixels, pixelSpacing
 
     @staticmethod
@@ -50,35 +51,37 @@ class BodyCompositionCalculator:
         return np.load(filePath)
     
     def execute(self):
-        file_pairs = []
-        for input_file in self.inputFiles:
-            input_file_name = os.path.split(input_file)[1]
-            for input_segmentation_file in self.inputSegmentationFiles:
-                input_segmentation_file_name = os.path.split(input_segmentation_file)[1]
-                if input_file_name + '.seg.npy' == input_segmentation_file_name:
-                    file_pairs.append((input_file, input_segmentation_file))
+        filePairs = []
+        for dicomFilePath in self.dicomFilePaths():
+            dicomFileName = os.path.split(dicomFilePath)[1]
+            for segmentationFilePath in self.segmentationFilePaths():
+                segmentationFileName = os.path.split(segmentationFilePath)[1]
+                if dicomFileName + '.seg.npy' == segmentationFileName:
+                    filePairs.append((dicomFilePath, segmentationFilePath))
                     break
         # Work with found file pairs
         self.outputMetrics = {}
-        for file_pair in file_pairs:
-            image, pixel_spacing = self.loadDicomFile(file_pair[0])
-            segmentations = self.loadSegmentation(file_pair[1])
-            self.outputMetrics[file_pair[0]] = {}
-            self.outputMetrics[file_pair[0]] = {
-                'muscle_area': calculate_area(segmentations, BodyCompositionCalculator.MUSCLE, pixel_spacing),
-                'vat_area': calculate_area(segmentations, BodyCompositionCalculator.VAT, pixel_spacing),
-                'sat_area': calculate_area(segmentations, BodyCompositionCalculator.SAT, pixel_spacing),
-                'muscle_ra': calculate_mean_radiation_attenuation(image, segmentations, BodyCompositionCalculator.MUSCLE),
-                'vat_ra': calculate_mean_radiation_attenuation(image, segmentations, BodyCompositionCalculator.VAT),
-                'sat_ra': calculate_mean_radiation_attenuation(image, segmentations, BodyCompositionCalculator.SAT),
+        for filePair in filePairs:
+            image, pixelSpacing = self.loadDicomFile(filePair[0])
+            segmentations = self.loadSegmentation(filePair[1])
+            self.outputMetrics[filePair[0]] = {}
+            self.outputMetrics[filePair[0]] = {
+                'muscle_area': calculateArea(segmentations, BodyCompositionCalculator.MUSCLE, pixelSpacing),
+                'vat_area': calculateArea(segmentations, BodyCompositionCalculator.VAT, pixelSpacing),
+                'sat_area': calculateArea(segmentations, BodyCompositionCalculator.SAT, pixelSpacing),
+                'muscle_ra': calculateMeanRadiationAttennuation(image, segmentations, BodyCompositionCalculator.MUSCLE),
+                'vat_ra': calculateMeanRadiationAttennuation(image, segmentations, BodyCompositionCalculator.VAT),
+                'sat_ra': calculateMeanRadiationAttennuation(image, segmentations, BodyCompositionCalculator.SAT),
             }
-            print(f'{file_pair[0]}')
-            print(' - muscle_area: {}'.format(self.outputMetrics[file_pair[0]]['muscle_area']))
-            print(' - vat_area: {}'.format(self.outputMetrics[file_pair[0]]['vat_area']))
-            print(' - sat_area: {}'.format(self.outputMetrics[file_pair[0]]['sat_area']))
-            print(' - muscle_ra: {}'.format(self.outputMetrics[file_pair[0]]['muscle_ra']))
-            print(' - vat_ra: {}'.format(self.outputMetrics[file_pair[0]]['vat_ra']))
-            print(' - sat_ra: {}'.format(self.outputMetrics[file_pair[0]]['sat_ra']))
+            print(f'{filePair[0]}')
+            print(' - muscle_area: {}'.format(self.outputMetrics[filePair[0]]['muscle_area']))
+            print(' - vat_area: {}'.format(self.outputMetrics[filePair[0]]['vat_area']))
+            print(' - sat_area: {}'.format(self.outputMetrics[filePair[0]]['sat_area']))
+            print(' - muscle_ra: {}'.format(self.outputMetrics[filePair[0]]['muscle_ra']))
+            print(' - vat_ra: {}'.format(self.outputMetrics[filePair[0]]['vat_ra']))
+            print(' - sat_ra: {}'.format(self.outputMetrics[filePair[0]]['sat_ra']))
+            self._progress += 1
+            self._parentTask.calculatorProgress(self._progress)
         return self.outputMetrics
     
     def as_df(self):

@@ -11,8 +11,12 @@ from tasks.tasksettingtext import TaskSettingText
 
 
 class TaskSettings:
-    def __init__(self) -> None:
+    def __init__(self, taskName: str) -> None:
+        self._taskName = taskName
         self._settings = {}
+
+    def taskName(self) -> str:
+        return self._taskName
 
     def all(self) -> List[TaskSetting]:
         return self._settings.values()

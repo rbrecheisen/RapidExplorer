@@ -1,4 +1,4 @@
-from typing import List, Dict, Any
+from typing import List
 
 from PySide6.QtCore import QSettings, QThreadPool
 
@@ -7,6 +7,7 @@ from moduleloader import ModuleLoader
 from data.fileset import FileSet
 from tasks.taskmanagersignal import TaskManagerSignal
 from tasks.task import Task
+from tasks.tasksettings import TaskSettings
 
 SETTINGSFILEPATH = 'settings.ini'
 
@@ -14,14 +15,22 @@ SETTINGSFILEPATH = 'settings.ini'
 @singleton
 class TaskManager:
     def __init__(self) -> None:
-        self._tasks = {}
+        self._taskDefinitions = {}
+        self._taskSettings = {}
         self._signal = TaskManagerSignal()
         self._settings = QSettings(SETTINGSFILEPATH, QSettings.Format.IniFormat)
-        self._currentTask = None
-        self.loadTasks()
+        self._currentTaskDefinitionName = None
+        self._currentTaskSettings = None
+        self.loadTaskDefinitionsAndSettings()
 
     def tasks(self) -> List[Task]:
         return self._tasks.values()
+    
+    def taskDefinitions(self) -> List[Task]:
+        return self._taskDefinitions.values()
+    
+    def taskDefinitionNames(self) -> List[str]:
+        return self._taskDefinitions.keys()
     
     def signal(self) -> TaskManagerSignal:
         return self._signal
@@ -29,35 +38,56 @@ class TaskManager:
     def settings(self) -> QSettings:
         return self._settings
     
-    def currentTask(self) -> Task:
-        return self._currentTask
+    def taskDefinition(self, name: str) -> Task:
+        return self._taskDefinitions[name]
     
-    def setCurrentTask(self, task: Task) -> None:
-        self._currentTask = task
-        self.signal().currentTaskChanged.emit(self._currentTask)
+    def currentTaskDefinitionName(self) -> str:
+        return self._currentTaskDefinitionName
+    
+    def setCurrentTaskDefinitionName(self, currentTaskDefinitionName: str) -> None:
+        if currentTaskDefinitionName not in self._taskDefinitions.keys():
+            raise RuntimeError(f'Class definition for task {currentTaskDefinitionName} does not exist')
+        self._currentTaskDefinitionName = currentTaskDefinitionName
 
-    def nrTasks(self) -> int:
-        return len(self.tasks())
+    def nrTaskDefinitions(self) -> int:
+        return len(self._taskDefinitions.keys())
     
-    def task(self, name: str) -> Task:
-        return self._tasks[name]
+    def taskSettings(self, name: str) -> TaskSettings:
+        return self._taskSettings[name]
     
-    def loadTasks(self) -> Dict[str, Task]:
-        self._tasks = ModuleLoader.loadModules(
+    def updateTaskSettings(self, name: str, taskSettings: TaskSettings) -> None:
+        self._taskSettings[name] = taskSettings
+
+    def currentTaskSettings(self) -> TaskSettings:
+        return self._taskSettings[self.currentTaskDefinitionName()]
+    
+    def loadTaskDefinitionsAndSettings(self):
+        self._taskDefinitions = ModuleLoader.loadModuleClasses(
             moduleDirectoryPath=self.settings().value('tasksDirectoryPath'), moduleBaseClass=Task)
+        self._taskSettings = {}
+        for taskDefinitionName in self._taskDefinitions.keys():
+            taskDefinition = self._taskDefinitions[taskDefinitionName]
+            task = taskDefinition()
+            taskSettings = task.settings()
+            self._taskSettings[taskDefinitionName] = taskSettings
+
+    def createTask(self, name: str) -> Task:
+        taskDefinition = self._taskDefinitions[name]
+        task = taskDefinition()
+        return task
         
     def runCurrentTask(self, background: bool=True) -> None:
-        self.currentTask().signal().progress.connect(self.taskProgress)
-        self.currentTask().signal().finished.connect(self.taskFinished)
+        task = self.createTask(self.currentTaskDefinitionName())
+        task.setSettings(self.currentTaskSettings())
+        task.signal().progress.connect(self.taskProgress)
+        task.signal().finished.connect(self.taskFinished)
         if background:
-            QThreadPool.globalInstance().start(self.currentTask())
+            QThreadPool.globalInstance().start(task)
         else:
-            self.currentTask().run()
+            task.run()
 
     def taskProgress(self, progress) -> None:
         self.signal().taskProgress.emit(progress)
 
     def taskFinished(self, outputFileSet: FileSet) -> None:
-        self.currentTask().signal().progress.disconnect(self.taskProgress)
-        self.currentTask().signal().finished.disconnect(self.taskFinished)
         self.signal().taskFinished.emit(outputFileSet)

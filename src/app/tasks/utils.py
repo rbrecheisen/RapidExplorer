@@ -14,23 +14,23 @@ def getPixels(p, normalize=False):
     return pixels
 
 
-def calculate_area(labels, label, pixel_spacing):
+def calculateArea(labels, label, pixelSpacing):
     mask = np.copy(labels)
     mask[mask != label] = 0
     mask[mask == label] = 1
-    area = np.sum(mask) * (pixel_spacing[0] * pixel_spacing[1]) / 100.0
+    area = np.sum(mask) * (pixelSpacing[0] * pixelSpacing[1]) / 100.0
     return area
 
 
-def calculate_mean_radiation_attenuation(image, labels, label):
+def calculateMeanRadiationAttennuation(image, labels, label):
     mask = np.copy(labels)
     mask[mask != label] = 0
     mask[mask == label] = 1
     subtracted = image * mask
-    mask_sum = np.sum(mask)
-    if mask_sum > 0.0:
-        mean_ra = np.sum(subtracted) / np.sum(mask)
+    maskSum = np.sum(mask)
+    if maskSum > 0.0:
+        meanRadiationAttenuation = np.sum(subtracted) / np.sum(mask)
     else:
         print('Sum of mask pixels is zero, return zero radiation attenuation')
-        mean_ra = 0.0
-    return mean_ra
+        meanRadiationAttenuation = 0.0
+    return meanRadiationAttenuation

@@ -8,10 +8,13 @@ class TaskSettingBooleanWidget(QComboBox):
         super(TaskSettingBooleanWidget, self).__init__(parent=parent)
         self._setting = setting
         self.currentIndexChanged.connect(self.settingChanged)
-        self.addItems([None, 'True', 'False'])
+        self.addItems(['True', 'False'])
+        if self._setting.defaultValue():
+            self.setCurrentIndex(0)
+        else:
+            self.setCurrentIndex(1)
 
     def settingChanged(self, index: int) -> None:
         value = self.currentText()
-        if value:
-            value = True if value == 'True' else False
-            self._setting.setValue(value)
+        value = True if value == 'True' else False
+        self._setting.setValue(value)

@@ -19,7 +19,7 @@ class TaskDockWidget(DockWidget):
         self._signal = TaskSignal()
         self.initTaskManager()
         self.initUi()
-        self.loadTasks()
+        self.loadTaskNames()
 
     def signal(self) -> TaskSignal:
         return self._signal
@@ -56,7 +56,7 @@ class TaskDockWidget(DockWidget):
         self.setMinimumHeight(200)
 
     def initProgressBarDialog(self) -> None:
-        self._progressBarDialog = QProgressDialog('Running Task...', 'Abort', 0, 100, self)
+        self._progressBarDialog = QProgressDialog('', 'Abort', 0, 100, self)
         self._progressBarDialog.setWindowModality(Qt.WindowModality.WindowModal)
         self._progressBarDialog.setAutoReset(True)
         self._progressBarDialog.setAutoClose(True)
@@ -66,35 +66,38 @@ class TaskDockWidget(DockWidget):
         taskName = self._tasksComboBox.itemText(index)
         if taskName:
             self._showSettingsDialogButton.setEnabled(True)
-            self._taskManager.setCurrentTask(self._taskManager.task(taskName))
+            self._taskManager.setCurrentTaskDefinitionName(taskName)
         else:
             self._showSettingsDialogButton.setEnabled(False)
             self._runSelectedTaskButton.setEnabled(False)
 
     def showSettingsDialog(self) -> None:
-        taskName = self._tasksComboBox.currentText()
-        if taskName:
-            settingsDialog = TaskSettingsDialog(self._taskManager.task(taskName))
+        taskDefinitionName = self._tasksComboBox.currentText()
+        if taskDefinitionName:
+            settingsDialog = TaskSettingsDialog(self._taskManager.taskSettings(taskDefinitionName))
             resultCode = settingsDialog.show()
             if resultCode == QDialog.Accepted:
+                self._taskManager.updateTaskSettings(taskDefinitionName, settingsDialog.taskSettings())
                 self._runSelectedTaskButton.setEnabled(True)
                 self._runSelectedTaskButton.setFocus()
 
     def runSelectedTask(self) -> None:
         self._progressBarDialog.show()
         self._progressBarDialog.setValue(0)
-        self._taskManager.runCurrentTask(background=True)
+        self._progressBarDialog.setWindowTitle('Running task ' + self._tasksComboBox.currentText() + '...')
+        self._taskManager.runCurrentTask(background=False)
 
-    def loadTasks(self) -> None:
+    def loadTaskNames(self) -> None:
         self._tasksComboBox.clear()
         self._tasksComboBox.addItem(None)
-        for task in self._taskManager.tasks():
-            self._tasksComboBox.addItem(task.name())
+        for taskDefinitionName in self._taskManager.taskDefinitionNames():
+            self._tasksComboBox.addItem(taskDefinitionName)
 
     def taskProgress(self, progress) -> None:
         self._progressBarDialog.setValue(progress)
-        print(progress)
 
     def taskFinished(self, outputFileSet: FileSet) -> None:
         self.signal().finished.emit(outputFileSet)
+        self._tasksComboBox.setCurrentIndex(0)
+        self._progressBarDialog.setWindowTitle('')
         self._progressBarDialog.close()
