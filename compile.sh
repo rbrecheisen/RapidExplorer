@@ -1,9 +1,10 @@
 #!/bin/bash
 
 export NUITKA_CCACHE_BINARY=none
+export APPNAME=MosamaticDesktop1.0
 
 # Clean up leftovers
-rm -rf main.build RapidExplorer
+rm -rf main.build ${APPNAME}
 
 # Compile Qt resources (if any)
 ~/.venv/RapidExplorer/bin/pyside6-rcc -o src/app/resources.py src/app/resources.qrc
@@ -14,13 +15,13 @@ rm -rf main.build RapidExplorer
 ~/.venv/RapidExplorer/bin/python -m nuitka --standalone --include-package=pydicom --enable-plugin=pyside6 src/app/main.py
 
 # Reorganize
-mv main.dist RapidExplorer
-cp settings.ini RapidExplorer
-cp run.sh RapidExplorer
-mv RapidExplorer/run.sh RapidExplorer/RapidExplorer
+mv main.dist ${APPNAME}
+cp settings.ini ${APPNAME}
+cp run.sh ${APPNAME}
+mv ${APPNAME}/run.sh ${APPNAME}/${APPNAME}
 
 # Build a ZIP file for the application's distribution
-zip -r RapidExplorer.zip RapidExplorer
+zip -r ${APPNAME}.zip ${APPNAME}
 
 # Clean up
-rm -rf main.build RapidExplorer
+rm -rf main.build ${APPNAME}
