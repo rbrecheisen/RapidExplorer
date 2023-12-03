@@ -12,7 +12,7 @@ from data.filemodel import FileModel
 from data.fileset import FileSet
 from data.filesetmodel import FileSetModel
 
-SETTINGSFILEPATH = 'settings.ini'
+SETTINGSFILEPATH = os.environ['SETTINGSPATH']
 
 
 class DataManager:

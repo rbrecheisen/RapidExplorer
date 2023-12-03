@@ -22,7 +22,6 @@ class ModuleLoader:
                             for attributeName in dir(module):
                                 attribute = getattr(module, attributeName)
                                 if isinstance(attribute, type) and issubclass(attribute, moduleBaseClass) and attribute is not moduleBaseClass:
-                                    # object = attribute()  # temporarily instantiate class to get it's name
-                                    # classes[object.name()] = attribute # this is the class
                                     classes[attribute.NAME] = attribute
+                                    print(f'Loaded module {attribute.NAME}')
         return classes

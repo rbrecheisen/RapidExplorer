@@ -1,3 +1,5 @@
+import os
+
 from typing import List
 
 from PySide6.QtCore import QSettings, QThreadPool
@@ -9,7 +11,7 @@ from tasks.taskmanagersignal import TaskManagerSignal
 from tasks.task import Task
 from tasks.tasksettings import TaskSettings
 
-SETTINGSFILEPATH = 'settings.ini'
+SETTINGSFILEPATH = os.environ['SETTINGSPATH']
 
 
 @singleton
@@ -19,6 +21,8 @@ class TaskManager:
         self._taskSettings = {}
         self._signal = TaskManagerSignal()
         self._settings = QSettings(SETTINGSFILEPATH, QSettings.Format.IniFormat)
+        tasksDirectoryPath = self._settings.value('tasksDirectoryPath')
+        print(f'TaskManager.__init__() tasksDirectoryPath={tasksDirectoryPath}')
         self._currentTaskDefinitionName = None
         self._currentTaskSettings = None
         self.loadTaskDefinitionsAndSettings()

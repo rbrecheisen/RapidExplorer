@@ -11,7 +11,7 @@ from PySide6.QtCore import QSettings
 
 from tasks.utils import getPixels
 
-SETTINGSFILEPATH = 'settings.ini'
+SETTINGSFILEPATH = os.environ['SETTINGSPATH']
 
 
 class MuscleFatSegmentor:
@@ -66,7 +66,7 @@ class MuscleFatSegmentor:
     
     def loadModel(self, filePath: str):
         import tensorflow as tf
-        temporaryModelDirectory = self.settings().value('l3AutoSegmentationTemporaryModelDirectory')
+        temporaryModelDirectory = self.settings().value('MuscleFatSegmentationTemporaryModelDirectory')
         os.makedirs(temporaryModelDirectory, exist_ok=True)
         with zipfile.ZipFile(filePath) as zipObj:
             zipObj.extractall(path=temporaryModelDirectory)

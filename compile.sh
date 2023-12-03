@@ -1,7 +1,8 @@
 #!/bin/bash
 
 export NUITKA_CCACHE_BINARY=none
-export APPNAME=MosamaticDesktop1.0
+
+export APPNAME=MosamaticDesktop
 
 # Clean up leftovers
 rm -rf main.build ${APPNAME}
@@ -19,6 +20,7 @@ mv main.dist ${APPNAME}
 cp settings.ini ${APPNAME}
 cp run.sh ${APPNAME}
 mv ${APPNAME}/run.sh ${APPNAME}/${APPNAME}
+chmod +x ${APPNAME}/${APPNAME}
 
 # Build a ZIP file for the application's distribution
 zip -r ${APPNAME}.zip ${APPNAME}
