@@ -47,7 +47,7 @@ class TaskManager:
             raise RuntimeError(f'Class definition for task {currentTaskDefinitionName} does not exist')
         self._currentTaskDefinitionName = currentTaskDefinitionName
         task = self.taskDefinition(name=self._currentTaskDefinitionName)
-        self.signal().currentTaskChanged.emit(task)
+        # self.signal().currentTaskChanged.emit(task)
 
     def nrTaskDefinitions(self) -> int:
         return len(self._taskDefinitions.keys())

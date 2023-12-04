@@ -18,6 +18,3 @@ class Viewer(QWidget):
     
     def setSettings(self, settings: Settings) -> None:
         self._settings = settings
-
-    def show(self) -> None:
-        raise NotImplementedError('Not implemented')

@@ -22,7 +22,8 @@ class DicomViewer(Viewer):
         self._initUi()
 
     def _initUi(self) -> None:
-        self._initGraphicsView()
+        # self._initGraphicsView()
+        pass
 
     def _initGraphicsView(self) -> None:
         self._graphicsView = QGraphicsView(self)
