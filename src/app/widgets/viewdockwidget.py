@@ -8,30 +8,31 @@ from widgets.dockwidget import DockWidget
 class ViewsDockWidget(DockWidget):
     def __init__(self, title: str) -> None:
         super(ViewsDockWidget, self).__init__(title)
-        self._comboBoxViewerPlugins = None
+        self._viewersComboBox = None
         self.initUi()
-        # self._loadViewPlugins()
+        self.loadViewers()
 
     def initUi(self) -> None:
-        # self._comboBoxViewerPlugins = QComboBox(self)
-        # self._comboBoxViewerPlugins.currentIndexChanged.connect(self._currentIndexChanged)
+        self._viewersComboBox = QComboBox(self)
+        self._viewersComboBox.currentIndexChanged.connect(self.currentIndexChanged)
         layout = QVBoxLayout()
-        # layout.addWidget(self._comboBoxViewerPlugins)
+        layout.addWidget(self._viewersComboBox)
         layout.setAlignment(Qt.AlignTop)
         widget = QWidget()
         widget.setLayout(layout)    
         self.setWidget(widget)
 
-    # def _currentIndexChanged(self, index):
-    #     selectedText = self._comboBoxViewerPlugins.itemText(index)
-    #     manager = PluginManager()        
-    #     plugin = manager.viewerPlugin(selectedText)
-    #     if plugin:
-    #         manager.setCurrentViewerPlugin(plugin)
+    def currentIndexChanged(self, index):
+        selectedText = self._viewersComboBox.itemText(index)
+        manager = PluginManager()        
+        plugin = manager.viewerPlugin(selectedText)
+        if plugin:
+            manager.setCurrentViewerPlugin(plugin)
 
-    # def _loadViewPlugins(self):
-    #     self._comboBoxViewerPlugins.clear()
-    #     self._comboBoxViewerPlugins.addItem(None)
-    #     manager = PluginManager()
-    #     for pluginName in manager.viewerPlugins().keys():
-    #         self._comboBoxViewerPlugins.addItem(pluginName)
+    def loadViewers(self):
+        pass
+        self._comboBoxViewerPlugins.clear()
+        self._comboBoxViewerPlugins.addItem(None)
+        manager = PluginManager()
+        for pluginName in manager.viewerPlugins().keys():
+            self._comboBoxViewerPlugins.addItem(pluginName)

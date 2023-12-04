@@ -1,0 +1,1 @@
+from widgets.viewers.dicomviewer.dicomviewer import DicomViewer
