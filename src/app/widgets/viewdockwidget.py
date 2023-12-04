@@ -1,9 +1,9 @@
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QWidget, QComboBox, QVBoxLayout, QHBoxLayout, QPushButton
+from PySide6.QtWidgets import QWidget, QComboBox, QVBoxLayout, QHBoxLayout, QPushButton, QDialog
 
 from widgets.dockwidget import DockWidget
 from widgets.viewers.viewermanager import ViewerManager
-from widgets.viewersettingsdialog import ViewSettingsDialog
+from widgets.viewersettingsdialog import ViewerSettingsDialog
 
 
 class ViewsDockWidget(DockWidget):
@@ -44,7 +44,7 @@ class ViewsDockWidget(DockWidget):
             self._showSettingsDialogButton.setEnabled(False)
 
     def showSettingsDialog(self) -> None:
-        viewerDefinitionName = self._viewerComboBox.currentText()
+        viewerDefinitionName = self._viewersComboBox.currentText()
         if viewerDefinitionName:
             settingsDialog = ViewerSettingsDialog(self._viewerManager.viewerSettings(viewerDefinitionName))
             resultCode = settingsDialog.show()

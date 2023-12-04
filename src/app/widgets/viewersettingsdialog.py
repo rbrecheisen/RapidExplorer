@@ -11,9 +11,9 @@ from widgets.settingoptionlistwidget import SettingOptionListWidget
 from widgets.settingtextwidget import SettingTextWidget
 
 
-class ViewSettingsDialog(QDialog):
+class ViewerSettingsDialog(QDialog):
     def __init__(self, viewerSettings: Settings) -> None:
-        super(ViewSettingsDialog, self).__init__()
+        super(ViewerSettingsDialog, self).__init__()
         self._viewerSettings = viewerSettings
         self._viewerSettingWidgets = {}
         self.initUi()
