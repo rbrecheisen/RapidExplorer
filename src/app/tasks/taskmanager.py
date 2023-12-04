@@ -5,14 +5,12 @@ from typing import List
 from PySide6.QtCore import QSettings, QThreadPool
 
 from singleton import singleton
-# from moduleloader import ModuleLoader
 from data.fileset import FileSet
 from tasks.taskmanagersignal import TaskManagerSignal
 from tasks.task import Task
 from settings.settings import Settings
 
 SETTINGSFILEPATH = os.environ.get('SETTINGSPATH', 'settings.ini')
-# TASKSDIRECTORYPATH = os.environ.get('TASKSDIRECTORYPATH', 'src/app/tasks')
 
 
 @singleton
@@ -22,7 +20,6 @@ class TaskManager:
         self._taskSettings = {}
         self._signal = TaskManagerSignal()
         self._settings = QSettings(SETTINGSFILEPATH, QSettings.Format.IniFormat)
-        # self._tasksDirectoryPath = TASKSDIRECTORYPATH
         self._currentTaskDefinitionName = None
         self._currentTaskSettings = None
         self.loadTaskDefinitionsAndSettings()
@@ -49,6 +46,8 @@ class TaskManager:
         if currentTaskDefinitionName not in self._taskDefinitions.keys():
             raise RuntimeError(f'Class definition for task {currentTaskDefinitionName} does not exist')
         self._currentTaskDefinitionName = currentTaskDefinitionName
+        task = self.taskDefinition(name=self._currentTaskDefinitionName)
+        self.signal().currentTaskChanged.emit(task)
 
     def nrTaskDefinitions(self) -> int:
         return len(self._taskDefinitions.keys())

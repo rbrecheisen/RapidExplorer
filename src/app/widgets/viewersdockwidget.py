@@ -6,9 +6,9 @@ from widgets.viewers.viewermanager import ViewerManager
 from widgets.viewersettingsdialog import ViewerSettingsDialog
 
 
-class ViewsDockWidget(DockWidget):
+class ViewersDockWidget(DockWidget):
     def __init__(self, title: str) -> None:
-        super(ViewsDockWidget, self).__init__(title)
+        super(ViewersDockWidget, self).__init__(title)
         self._viewersComboBox = None
         self._viewerManager = ViewerManager()
         self._showSettingsDialogButton = None

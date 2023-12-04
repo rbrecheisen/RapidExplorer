@@ -8,9 +8,9 @@ from data.datamanager import DataManager
 from data.fileset import FileSet
 from tasks.task import Task
 from widgets.datadockwidget import DataDockWidget
-from widgets.viewdockwidget import ViewsDockWidget
+from widgets.viewersdockwidget import ViewersDockWidget
 from widgets.taskdockwidget import TaskDockWidget
-from widgets.mainviewdockwidget import MainViewDockWidget
+from widgets.mainviewerdockwidget import MainViewerDockWidget
 
 SETTINGSPATH = os.environ.get('SETTINGSPATH', 'settings.ini')
 MULTIFILESETPATH = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset')
@@ -40,8 +40,8 @@ class MainWindow(QMainWindow):
         self.initActionsAndMenus()
         self.initDataDockWidget()
         self.initTaskDockWidget()
-        self.initMainViewDockWidget()
-        self.initViewDockWidget()
+        self.initMainViewerDockWidget()
+        self.initViewersDockWidget()
         self.initProgressBarDialog()
         self.initMainWindow()
 
@@ -80,13 +80,13 @@ class MainWindow(QMainWindow):
         self._tasksDockWidget.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.BottomDockWidgetArea)
         self.addDockWidget(Qt.LeftDockWidgetArea, self._tasksDockWidget)
 
-    def initMainViewDockWidget(self) -> None:
-        self._mainViewDockWidget = MainViewDockWidget(title='Main View')
+    def initMainViewerDockWidget(self) -> None:
+        self._mainViewDockWidget = MainViewerDockWidget(title='Main View')
         self._mainViewDockWidget.setAllowedAreas(Qt.RightDockWidgetArea | Qt.TopDockWidgetArea)
         self.addDockWidget(Qt.RightDockWidgetArea, self._mainViewDockWidget)
 
-    def initViewDockWidget(self) -> None:
-        self._viewsDockWidget = ViewsDockWidget(title='Views')
+    def initViewersDockWidget(self) -> None:
+        self._viewsDockWidget = ViewersDockWidget(title='Views')
         self._viewsDockWidget.setAllowedAreas(Qt.RightDockWidgetArea | Qt.BottomDockWidgetArea)
         self.addDockWidget(Qt.RightDockWidgetArea, self._viewsDockWidget)
 
