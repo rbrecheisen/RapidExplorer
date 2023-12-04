@@ -66,10 +66,15 @@ class TaskManager:
         return self._taskSettings[self.currentTaskDefinitionName()]
     
     def loadTaskDefinitionsAndSettings(self):
-        print(f'TaskManager.loadTaskDefinitionsAndSettings() tasksDirectoryPath={self._tasksDirectoryPath}')
-        # self._taskDefinitions = ModuleLoader.loadModuleClasses(
-        #     moduleDirectoryPath=self.settings().value('tasksDirectoryPath'), moduleBaseClass=Task)
-        self._taskDefinitions = ModuleLoader.loadModuleClasses(moduleDirectoryPath=self._tasksDirectoryPath, moduleBaseClass=Task)
+        # Loading task definitions by importing them explicitly. Loading from file doesn't work
+        # after compilation with Nuitka
+        from tasks.musclefatsegmentationtask.musclefatsegmentationtask import MuscleFatSegmentationTask
+        from tasks.bodycompositiontask.bodycompositiontask import BodyCompositionTask
+        self._taskDefinitions = {
+            MuscleFatSegmentationTask.NAME: MuscleFatSegmentationTask,
+            BodyCompositionTask.NAME: BodyCompositionTask,
+        }
+        # self._taskDefinitions = ModuleLoader.loadModuleClasses(moduleDirectoryPath=self._tasksDirectoryPath, moduleBaseClass=Task)
         self._taskSettings = {}
         for taskDefinitionName in self._taskDefinitions.keys():
             taskDefinition = self._taskDefinitions[taskDefinitionName]
