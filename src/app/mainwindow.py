@@ -12,7 +12,7 @@ from widgets.viewdockwidget import ViewsDockWidget
 from widgets.taskdockwidget import TaskDockWidget
 from widgets.mainviewdockwidget import MainViewDockWidget
 
-SETTINGSPATH = os.environ['SETTINGSPATH']
+SETTINGSPATH = os.environ.get('SETTINGSPATH', 'settings.ini')
 MULTIFILESETPATH = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset')
 FILESETPATH = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset/scan1')
 FILEPATH = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset/scan1/image-00000.dcm')

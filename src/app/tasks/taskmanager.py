@@ -11,7 +11,8 @@ from tasks.taskmanagersignal import TaskManagerSignal
 from tasks.task import Task
 from tasks.tasksettings import TaskSettings
 
-SETTINGSFILEPATH = os.environ['SETTINGSPATH']
+SETTINGSFILEPATH = os.environ.get('SETTINGSPATH', 'settings.ini')
+TASKSDIRECTORYPATH = os.environ.get('TASKSDIRECTORYPATH', 'src/app/tasks')
 
 
 @singleton
@@ -21,8 +22,7 @@ class TaskManager:
         self._taskSettings = {}
         self._signal = TaskManagerSignal()
         self._settings = QSettings(SETTINGSFILEPATH, QSettings.Format.IniFormat)
-        tasksDirectoryPath = self._settings.value('tasksDirectoryPath')
-        print(f'TaskManager.__init__() tasksDirectoryPath={tasksDirectoryPath}')
+        self._tasksDirectoryPath = TASKSDIRECTORYPATH
         self._currentTaskDefinitionName = None
         self._currentTaskSettings = None
         self.loadTaskDefinitionsAndSettings()
@@ -66,8 +66,10 @@ class TaskManager:
         return self._taskSettings[self.currentTaskDefinitionName()]
     
     def loadTaskDefinitionsAndSettings(self):
-        self._taskDefinitions = ModuleLoader.loadModuleClasses(
-            moduleDirectoryPath=self.settings().value('tasksDirectoryPath'), moduleBaseClass=Task)
+        print(f'TaskManager.loadTaskDefinitionsAndSettings() tasksDirectoryPath={self._tasksDirectoryPath}')
+        # self._taskDefinitions = ModuleLoader.loadModuleClasses(
+        #     moduleDirectoryPath=self.settings().value('tasksDirectoryPath'), moduleBaseClass=Task)
+        self._taskDefinitions = ModuleLoader.loadModuleClasses(moduleDirectoryPath=self._tasksDirectoryPath, moduleBaseClass=Task)
         self._taskSettings = {}
         for taskDefinitionName in self._taskDefinitions.keys():
             taskDefinition = self._taskDefinitions[taskDefinitionName]
