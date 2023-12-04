@@ -2,13 +2,13 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QWidget, QDialog, QLabel, QPushButton, QVBoxLayout, QHBoxLayout
 
 from settings.settings import Settings
-from widgets.tasksettingbooleanwidget import TaskSettingBooleanWidget
-from widgets.tasksettingfilesetpathwidget import TaskSettingFileSetPathWidget
-from widgets.tasksettingfilesetwidget import TaskSettingFileSetWidget
-from widgets.tasksettingfloatingpointwidget import TaskSettingFloatingPointWidget
-from widgets.tasksettingintegerwidget import TaskSettingIntegerWidget
-from widgets.tasksettingoptionlistwidget import TaskSettingOptionListWidget
-from widgets.tasksettingtextwidget import TaskSettingTextWidget
+from widgets.settingbooleanwidget import SettingBooleanWidget
+from widgets.settingfilesetpathwidget import SettingFileSetPathWidget
+from widgets.settingfilesetwidget import SettingFileSetWidget
+from widgets.settingfloatingpointwidget import SettingFloatingPointWidget
+from widgets.settingintegerwidget import SettingIntegerWidget
+from widgets.settingoptionlistwidget import SettingOptionListWidget
+from widgets.settingtextwidget import SettingTextWidget
 
 
 class TaskSettingsDialog(QDialog):
@@ -39,33 +39,33 @@ class TaskSettingsDialog(QDialog):
         settings = self._taskSettings
         for setting in settings.all():
             if settings.isTypeBoolean(setting) and setting.visible():
-                widget = TaskSettingBooleanWidget(setting=setting, parent=self)
+                widget = SettingBooleanWidget(setting=setting, parent=self)
                 self._taskSettingWidgets[setting.name()] = (widget, self.createLabel(setting=setting))
 
             elif settings.isTypeFileSetPath(setting) and setting.visible():
-                widget = TaskSettingFileSetPathWidget(setting=setting, parent=self)
+                widget = SettingFileSetPathWidget(setting=setting, parent=self)
                 self._taskSettingWidgets[setting.name()] = (widget, self.createLabel(setting=setting))
 
             elif settings.isTypeFileSet(setting) and setting.visible():
-                widget = TaskSettingFileSetWidget(setting=setting, parent=self)
+                widget = SettingFileSetWidget(setting=setting, parent=self)
                 self._taskSettingWidgets[setting.name()] = (widget, self.createLabel(setting=setting))
 
             elif settings.isTypeFloatingPoint(setting) and setting.visible():
-                widget = TaskSettingFloatingPointWidget(setting=setting, parent=self)
+                widget = SettingFloatingPointWidget(setting=setting, parent=self)
                 widget.setRange(setting.minimum(), setting.maximum())
                 self._taskSettingWidgets[setting.name()] = (widget, self.createLabel(setting=setting))
 
             elif settings.isTypeInteger(setting) and setting.visible():
-                widget = TaskSettingIntegerWidget(setting=setting, parent=self)
+                widget = SettingIntegerWidget(setting=setting, parent=self)
                 widget.setRange(setting.minimum(), setting.maximum())
                 self._taskSettingWidgets[setting.name()] = (widget, self.createLabel(setting=setting))
 
             elif settings.isTypeOptionList(setting) and setting.visible():
-                widget = TaskSettingOptionListWidget(setting=setting, parent=self)
+                widget = SettingOptionListWidget(setting=setting, parent=self)
                 self._taskSettingWidgets[setting.name()] = (widget, self.createLabel(setting=setting))
 
             elif settings.isTypeText(setting) and setting.visible():
-                widget = TaskSettingTextWidget(setting=setting, parent=self)
+                widget = SettingTextWidget(setting=setting, parent=self)
                 self._taskSettingWidgets[setting.name()] = (widget, self.createLabel(setting=setting))
 
             else:

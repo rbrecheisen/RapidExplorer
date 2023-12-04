@@ -3,9 +3,9 @@ from PySide6.QtWidgets import QWidget, QComboBox
 from settings.setting import Setting
 
 
-class TaskSettingBooleanWidget(QComboBox):
+class SettingBooleanWidget(QComboBox):
     def __init__(self, setting: Setting, parent: QWidget=None) -> None:
-        super(TaskSettingBooleanWidget, self).__init__(parent=parent)
+        super(SettingBooleanWidget, self).__init__(parent=parent)
         self._setting = setting
         self.currentIndexChanged.connect(self.settingChanged)
         self.addItems(['True', 'False'])

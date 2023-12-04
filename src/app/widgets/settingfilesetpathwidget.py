@@ -3,9 +3,9 @@ from PySide6.QtWidgets import QWidget, QFileDialog, QLineEdit, QVBoxLayout, QPus
 from settings.setting import Setting
 
 
-class TaskSettingFileSetPathWidget(QWidget):
+class SettingFileSetPathWidget(QWidget):
     def __init__(self, setting: Setting, parent: QWidget=None) -> None:
-        super(TaskSettingFileSetPathWidget, self).__init__(parent=parent)
+        super(SettingFileSetPathWidget, self).__init__(parent=parent)
         self._setting = setting
         self._fileSetPathLineEdit = None
         self.initUi()

@@ -56,7 +56,7 @@ class TaskDockWidget(DockWidget):
         self.setMinimumHeight(200)
 
     def initProgressBarDialog(self) -> None:
-        self._progressBarDialog = QProgressDialog('', 'Abort', 0, 100, self)
+        self._progressBarDialog = QProgressDialog('Running task...', 'Abort', 0, 100, self)
         self._progressBarDialog.setWindowModality(Qt.WindowModality.WindowModal)
         self._progressBarDialog.setAutoReset(True)
         self._progressBarDialog.setAutoClose(True)
@@ -84,7 +84,6 @@ class TaskDockWidget(DockWidget):
     def runSelectedTask(self) -> None:
         self._progressBarDialog.show()
         self._progressBarDialog.setValue(0)
-        self._progressBarDialog.setWindowTitle('Running task ' + self._tasksComboBox.currentText() + '...')
         self._taskManager.runCurrentTask(background=True)
 
     def loadTaskNames(self) -> None:
@@ -99,5 +98,4 @@ class TaskDockWidget(DockWidget):
     def taskFinished(self, outputFileSet: FileSet) -> None:
         self.signal().finished.emit(outputFileSet)
         self._tasksComboBox.setCurrentIndex(0)
-        self._progressBarDialog.setWindowTitle('')
         self._progressBarDialog.close()

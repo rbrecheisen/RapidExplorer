@@ -3,9 +3,9 @@ from PySide6.QtWidgets import QWidget, QSpinBox
 from settings.setting import Setting
 
 
-class TaskSettingIntegerWidget(QSpinBox):
+class SettingIntegerWidget(QSpinBox):
     def __init__(self, setting: Setting, parent: QWidget=None) -> None:
-        super(TaskSettingIntegerWidget, self).__init__(parent=parent)
+        super(SettingIntegerWidget, self).__init__(parent=parent)
         self._setting = setting
         self.valueChanged.connect(self.settingChanged)
 

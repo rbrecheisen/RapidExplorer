@@ -3,9 +3,9 @@ from PySide6.QtWidgets import QWidget, QDoubleSpinBox
 from settings.setting import Setting
 
 
-class TaskSettingFloatingPointWidget(QDoubleSpinBox):
+class SettingFloatingPointWidget(QDoubleSpinBox):
     def __init__(self, setting: Setting, parent: QWidget=None) -> None:
-        super(TaskSettingFloatingPointWidget, self).__init__(parent=parent)
+        super(SettingFloatingPointWidget, self).__init__(parent=parent)
         self._setting = setting
         self.valueChanged.connect(self.settingChanged)
 
