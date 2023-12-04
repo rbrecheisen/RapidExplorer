@@ -1,7 +1,7 @@
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QWidget, QDialog, QLabel, QPushButton, QVBoxLayout, QHBoxLayout
 
-from tasks.tasksettings import TaskSettings
+from settings.settings import Settings
 from widgets.tasksettingbooleanwidget import TaskSettingBooleanWidget
 from widgets.tasksettingfilesetpathwidget import TaskSettingFileSetPathWidget
 from widgets.tasksettingfilesetwidget import TaskSettingFileSetWidget
@@ -12,13 +12,13 @@ from widgets.tasksettingtextwidget import TaskSettingTextWidget
 
 
 class TaskSettingsDialog(QDialog):
-    def __init__(self, taskSettings: TaskSettings) -> None:
+    def __init__(self, taskSettings: Settings) -> None:
         super(TaskSettingsDialog, self).__init__()
         self._taskSettings = taskSettings
         self._taskSettingWidgets = {}
         self.initUi()
 
-    def taskSettings(self) -> TaskSettings:
+    def taskSettings(self) -> Settings:
         return self._taskSettings
 
     def initUi(self) -> None:
@@ -32,7 +32,7 @@ class TaskSettingsDialog(QDialog):
         self.setLayout(layout)
         self.resize(self.sizeHint())
         self.setFixedWidth(400)
-        self.setWindowTitle(self._taskSettings.taskName())
+        self.setWindowTitle(self._taskSettings.name())
 
 
     def createTaskSettingWidgets(self) ->None:

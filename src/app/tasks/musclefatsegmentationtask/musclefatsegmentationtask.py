@@ -4,9 +4,9 @@ from typing import List
 
 from tasks.task import Task
 from tasks.tasksignal import TaskSignal
-from tasks.tasksettingfilesetpath import TaskSettingFileSetPath
-from tasks.tasksettingtext import TaskSettingText
-from tasks.tasksettingfileset import TaskSettingFileSet
+from settings.settingfilesetpath import SettingFileSetPath
+from settings.settingtext import SettingText
+from settings.settingfileset import SettingFileSet
 from tasks.musclefatsegmentationtask.musclefatsegmentor import MuscleFatSegmentor
 from data.fileset import FileSet
 from utils import createNameWithTimestamp
@@ -16,11 +16,11 @@ class MuscleFatSegmentationTask(Task):
     NAME = 'MuscleFatSegmentationTask'
     
     def __init__(self) -> None:
-        super(MuscleFatSegmentationTask, self).__init__(name='MuscleFatSegmentationTask')
-        self.settings().add(TaskSettingFileSet(name='dicomFileSetName', displayName='DICOM File Set'))
-        self.settings().add(TaskSettingFileSet(name='tensorFlowModelFileSetName', displayName='TensorFlow Model File Set'))
-        self.settings().add(TaskSettingFileSetPath(name='outputFileSetPath', displayName='Output File Set Path'))
-        self.settings().add(TaskSettingText(name='outputFileSetName', displayName='Output File Set Name', optional=True))
+        super(MuscleFatSegmentationTask, self).__init__()
+        self.settings().add(SettingFileSet(name='dicomFileSetName', displayName='DICOM File Set'))
+        self.settings().add(SettingFileSet(name='tensorFlowModelFileSetName', displayName='TensorFlow Model File Set'))
+        self.settings().add(SettingFileSetPath(name='outputFileSetPath', displayName='Output File Set Path'))
+        self.settings().add(SettingText(name='outputFileSetName', displayName='Output File Set Name', optional=True))
         self._signal = TaskSignal()
 
     def signal(self) -> TaskSignal:

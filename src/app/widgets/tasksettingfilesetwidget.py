@@ -1,11 +1,11 @@
 from PySide6.QtWidgets import QWidget, QComboBox
 
 from data.datamanager import DataManager
-from tasks.tasksetting import TaskSetting
+from settings.setting import Setting
 
 
 class TaskSettingFileSetWidget(QComboBox):
-    def __init__(self, setting: TaskSetting, parent: QWidget=None) -> None:
+    def __init__(self, setting: Setting, parent: QWidget=None) -> None:
         super(TaskSettingFileSetWidget, self).__init__(parent=parent)
         self._setting = setting
         self._dataManager = DataManager()

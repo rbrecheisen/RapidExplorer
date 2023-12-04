@@ -85,7 +85,7 @@ class TaskDockWidget(DockWidget):
         self._progressBarDialog.show()
         self._progressBarDialog.setValue(0)
         self._progressBarDialog.setWindowTitle('Running task ' + self._tasksComboBox.currentText() + '...')
-        self._taskManager.runCurrentTask(background=False)
+        self._taskManager.runCurrentTask(background=True)
 
     def loadTaskNames(self) -> None:
         self._tasksComboBox.clear()

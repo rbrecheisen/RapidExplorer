@@ -1,10 +1,10 @@
 from PySide6.QtWidgets import QWidget, QFileDialog, QLineEdit, QVBoxLayout, QPushButton
 
-from tasks.tasksetting import TaskSetting
+from settings.setting import Setting
 
 
 class TaskSettingFilePathWidget(QWidget):
-    def __init__(self, setting: TaskSetting, parent: QWidget=None) -> None:
+    def __init__(self, setting: Setting, parent: QWidget=None) -> None:
         super(TaskSettingFilePathWidget, self).__init__(parent=parent)
         self._setting = setting
         self._filePathLineEdit = None

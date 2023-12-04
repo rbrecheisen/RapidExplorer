@@ -1,9 +1,9 @@
-from tasks.tasksetting import TaskSetting
+from settings.setting import Setting
 
 
-class TaskSettingInteger(TaskSetting):
+class SettingInteger(Setting):
     def __init__(self, name: str, displayName: str, optional: bool=False, visible=True) -> None:
-        super(TaskSettingInteger, self).__init__(name=name, displayName=displayName, optional=optional, visible=visible)
+        super(SettingInteger, self).__init__(name=name, displayName=displayName, optional=optional, visible=visible)
         self._minimum = 0
         self._maximum = 100
 

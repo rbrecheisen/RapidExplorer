@@ -1,9 +1,9 @@
-from tasks.tasksetting import TaskSetting
+from settings.setting import Setting
 
 
-class TaskSettingText(TaskSetting):
+class SettingText(Setting):
     def __init__(self, name: str, displayName: str, optional: bool=False, visible=True) -> None:
-        super(TaskSettingText, self).__init__(name=name, displayName=displayName, optional=optional, visible=visible)
+        super(SettingText, self).__init__(name=name, displayName=displayName, optional=optional, visible=visible)
         self._maximumLength = 1024
 
     def setMaximumLength(self, maximumLength: int) -> None:

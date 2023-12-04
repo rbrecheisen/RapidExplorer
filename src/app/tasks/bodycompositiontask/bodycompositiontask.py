@@ -4,11 +4,11 @@ import shutil
 
 from tasks.task import Task
 from tasks.tasksignal import TaskSignal
-from tasks.tasksettingfilepath import TaskSettingFilePath
-from tasks.tasksettingfilesetpath import TaskSettingFileSetPath
-from tasks.tasksettingtext import TaskSettingText
-from tasks.tasksettingboolean import TaskSettingBoolean
-from tasks.tasksettingfileset import TaskSettingFileSet
+from settings.settingfilepath import SettingFilePath
+from settings.settingfilesetpath import SettingFileSetPath
+from settings.settingtext import SettingText
+from settings.settingfileset import SettingFileSet
+from settings.settingboolean import SettingBoolean
 from tasks.bodycompositiontask.bodycompositioncalculator import BodyCompositionCalculator
 from data.fileset import FileSet
 from utils import createNameWithTimestamp
@@ -18,13 +18,13 @@ class BodyCompositionTask(Task):
     NAME = 'BodyCompositionTask'
 
     def __init__(self) -> None:
-        super(BodyCompositionTask, self).__init__(name='BodyCompositionTask')
-        self.settings().add(TaskSettingFileSet(name='dicomFileSetName', displayName='DICOM File Set'))
-        self.settings().add(TaskSettingFileSet(name='segmentationFileSetName', displayName='Segmentation File Set'))
-        self.settings().add(TaskSettingFilePath(name='patientHeightsCsvFilePath', displayName='Patient Heights (*.csv)', optional=True))
-        self.settings().add(TaskSettingFileSetPath(name='outputFileSetPath', displayName='Output File Set Path'))
-        self.settings().add(TaskSettingText(name='outputFileSetName', displayName='Output File Set Name', optional=True))
-        self.settings().add(TaskSettingBoolean(name='copySegmentationsToOutputFileSet', displayName='Copy Segmentation Files to Output File Set', defaultValue=True))
+        super(BodyCompositionTask, self).__init__()
+        self.settings().add(SettingFileSet(name='dicomFileSetName', displayName='DICOM File Set'))
+        self.settings().add(SettingFileSet(name='segmentationFileSetName', displayName='Segmentation File Set'))
+        self.settings().add(SettingFilePath(name='patientHeightsCsvFilePath', displayName='Patient Heights (*.csv)', optional=True))
+        self.settings().add(SettingFileSetPath(name='outputFileSetPath', displayName='Output File Set Path'))
+        self.settings().add(SettingText(name='outputFileSetName', displayName='Output File Set Name', optional=True))
+        self.settings().add(SettingBoolean(name='copySegmentationsToOutputFileSet', displayName='Copy Segmentation Files to Output File Set', defaultValue=True))
         self._signal = TaskSignal()
 
     def signal(self) -> TaskSignal:

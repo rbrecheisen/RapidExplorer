@@ -5,14 +5,14 @@ from typing import List
 from PySide6.QtCore import QSettings, QThreadPool
 
 from singleton import singleton
-from moduleloader import ModuleLoader
+# from moduleloader import ModuleLoader
 from data.fileset import FileSet
 from tasks.taskmanagersignal import TaskManagerSignal
 from tasks.task import Task
-from tasks.tasksettings import TaskSettings
+from settings.settings import Settings
 
 SETTINGSFILEPATH = os.environ.get('SETTINGSPATH', 'settings.ini')
-TASKSDIRECTORYPATH = os.environ.get('TASKSDIRECTORYPATH', 'src/app/tasks')
+# TASKSDIRECTORYPATH = os.environ.get('TASKSDIRECTORYPATH', 'src/app/tasks')
 
 
 @singleton
@@ -22,14 +22,11 @@ class TaskManager:
         self._taskSettings = {}
         self._signal = TaskManagerSignal()
         self._settings = QSettings(SETTINGSFILEPATH, QSettings.Format.IniFormat)
-        self._tasksDirectoryPath = TASKSDIRECTORYPATH
+        # self._tasksDirectoryPath = TASKSDIRECTORYPATH
         self._currentTaskDefinitionName = None
         self._currentTaskSettings = None
         self.loadTaskDefinitionsAndSettings()
 
-    def tasks(self) -> List[Task]:
-        return self._tasks.values()
-    
     def taskDefinitions(self) -> List[Task]:
         return self._taskDefinitions.values()
     
@@ -56,13 +53,13 @@ class TaskManager:
     def nrTaskDefinitions(self) -> int:
         return len(self._taskDefinitions.keys())
     
-    def taskSettings(self, name: str) -> TaskSettings:
+    def taskSettings(self, name: str) -> Settings:
         return self._taskSettings[name]
     
-    def updateTaskSettings(self, name: str, taskSettings: TaskSettings) -> None:
+    def updateTaskSettings(self, name: str, taskSettings: Settings) -> None:
         self._taskSettings[name] = taskSettings
 
-    def currentTaskSettings(self) -> TaskSettings:
+    def currentTaskSettings(self) -> Settings:
         return self._taskSettings[self.currentTaskDefinitionName()]
     
     def loadTaskDefinitionsAndSettings(self):

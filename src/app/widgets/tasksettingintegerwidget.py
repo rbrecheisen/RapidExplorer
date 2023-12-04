@@ -1,10 +1,10 @@
 from PySide6.QtWidgets import QWidget, QSpinBox
 
-from tasks.tasksetting import TaskSetting
+from settings.setting import Setting
 
 
 class TaskSettingIntegerWidget(QSpinBox):
-    def __init__(self, setting: TaskSetting, parent: QWidget=None) -> None:
+    def __init__(self, setting: Setting, parent: QWidget=None) -> None:
         super(TaskSettingIntegerWidget, self).__init__(parent=parent)
         self._setting = setting
         self.valueChanged.connect(self.settingChanged)

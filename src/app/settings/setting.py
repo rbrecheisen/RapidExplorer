@@ -1,7 +1,7 @@
 from typing import Any
 
 
-class TaskSetting:
+class Setting:
     def __init__(self, name: str, displayName: str, optional: bool=False, visible: bool=True) -> None:
         self._name = name
         self._displayName = displayName
