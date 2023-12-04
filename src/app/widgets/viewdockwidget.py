@@ -1,38 +1,58 @@
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QWidget, QComboBox, QVBoxLayout
+from PySide6.QtWidgets import QWidget, QComboBox, QVBoxLayout, QHBoxLayout, QPushButton
 
 from widgets.dockwidget import DockWidget
-# from plugins.pluginmanager import PluginManager
+from widgets.viewers.viewermanager import ViewerManager
+from widgets.viewersettingsdialog import ViewSettingsDialog
 
 
 class ViewsDockWidget(DockWidget):
     def __init__(self, title: str) -> None:
         super(ViewsDockWidget, self).__init__(title)
         self._viewersComboBox = None
+        self._viewerManager = ViewerManager()
+        self._showSettingsDialogButton = None
         self.initUi()
         self.loadViewers()
 
     def initUi(self) -> None:
         self._viewersComboBox = QComboBox(self)
         self._viewersComboBox.currentIndexChanged.connect(self.currentIndexChanged)
+        self._showSettingsDialogButton = QPushButton('Edit Settings...')
+        self._showSettingsDialogButton.setFixedWidth(200)
+        self._showSettingsDialogButton.setEnabled(False)
+        self._showSettingsDialogButton.clicked.connect(self.showSettingsDialog)
+        buttonLayout = QHBoxLayout()
+        buttonLayout.addWidget(self._showSettingsDialogButton)
+        buttonLayout.setAlignment(Qt.AlignRight)
+        buttonWidget = QWidget()
+        buttonWidget.setLayout(buttonLayout)
         layout = QVBoxLayout()
         layout.addWidget(self._viewersComboBox)
+        layout.addWidget(buttonWidget)
         layout.setAlignment(Qt.AlignTop)
         widget = QWidget()
         widget.setLayout(layout)    
         self.setWidget(widget)
 
     def currentIndexChanged(self, index):
-        selectedText = self._viewersComboBox.itemText(index)
-        manager = PluginManager()        
-        plugin = manager.viewerPlugin(selectedText)
-        if plugin:
-            manager.setCurrentViewerPlugin(plugin)
+        viewerName = self._viewersComboBox.itemText(index)
+        if viewerName:
+            self._showSettingsDialogButton.setEnabled(True)
+            self._viewerManager.setCurrentViewerDefinitionName(viewerName)
+        else:
+            self._showSettingsDialogButton.setEnabled(False)
+
+    def showSettingsDialog(self) -> None:
+        viewerDefinitionName = self._viewerComboBox.currentText()
+        if viewerDefinitionName:
+            settingsDialog = ViewerSettingsDialog(self._viewerManager.viewerSettings(viewerDefinitionName))
+            resultCode = settingsDialog.show()
+            if resultCode == QDialog.Accepted:
+                self._viewerManager.updateViewerSettings(viewerDefinitionName, settingsDialog.viewerSettings())
 
     def loadViewers(self):
-        pass
-        self._comboBoxViewerPlugins.clear()
-        self._comboBoxViewerPlugins.addItem(None)
-        manager = PluginManager()
-        for pluginName in manager.viewerPlugins().keys():
-            self._comboBoxViewerPlugins.addItem(pluginName)
+        self._viewersComboBox.clear()
+        self._viewersComboBox.addItem(None)
+        for viewerDefinitionName in self._viewerManager.viewerDefinitionNames():
+            self._viewersComboBox.addItem(viewerDefinitionName)
