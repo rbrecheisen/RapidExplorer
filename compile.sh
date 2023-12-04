@@ -4,6 +4,11 @@ export NUITKA_CCACHE_BINARY=none
 
 export APPNAME=MosamaticDesktop
 
+#######
+# TODO:
+# Include Git commit ID somewhere!
+#######
+
 # Clean up leftovers
 rm -rf main.build ${APPNAME}
 

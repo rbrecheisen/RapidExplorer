@@ -9,7 +9,7 @@ from typing import List
 
 from PySide6.QtCore import QSettings
 
-from tasks.utils import getPixels
+from utils import getPixelsFromDicomObject
 
 SETTINGSFILEPATH = os.environ.get('SETTINGSPATH', 'settings.ini')
 
@@ -130,7 +130,7 @@ class MuscleFatSegmentor:
             try:
                 p = pydicom.dcmread(filePath)
                 p.decompress()
-                img1 = getPixels(p, normalize=True)
+                img1 = getPixelsFromDicomObject(p, normalize=True)
                 if contourModel is not None:
                     mask = self.predictContour(contourModel, img1, params)
                     img1 = self.normalize(img1, params['min_bound'], params['max_bound'])
