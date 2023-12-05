@@ -52,10 +52,6 @@ class DicomViewer(Viewer):
         self.setLayout(layout)
 
     def updateSettings(self) -> None:
-        """ What to do when there are also segmentation files?
-        Segmentation files should be matched to their respective DICOM files. The only way this
-        can be done is through their file names.
-        """
         dicomFileSetName = self.settings().setting(name='dicomFileSetName').value()
         if dicomFileSetName:
             dicomFileSet = self._dataManager.fileSetByName(name=dicomFileSetName)

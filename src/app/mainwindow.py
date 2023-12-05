@@ -48,17 +48,20 @@ class MainWindow(QMainWindow):
     def initActionsAndMenus(self) -> None:
         importFileAction = QAction('Import File...', self)
         importFileSetAction = QAction('Import File Set...', self)
+        importFileSetWithFileTypeAction = QAction('Import File Set with File Type...', self)
         deleteAllFileSetsAction = QAction('Delete All Data from Database', self)
         resetLayoutAction = QAction('Reset Layout', self)
         exitApplicationAction = QAction('Exit', self)
         importFileAction.triggered.connect(self.importFile)
         importFileSetAction.triggered.connect(self.importFileSet)
+        importFileSetWithFileTypeAction.triggered.connect(self.importFileSetWithFileType)
         deleteAllFileSetsAction.triggered.connect(self.deleteAllFileSets)
         resetLayoutAction.triggered.connect(self.resetLayout)
         exitApplicationAction.triggered.connect(self.exitApplication)
         dataMenu = QMenu('Data')
         dataMenu.addAction(importFileAction)
         dataMenu.addAction(importFileSetAction)
+        dataMenu.addAction(importFileSetWithFileTypeAction)
         dataMenu.addSeparator()
         dataMenu.addAction(deleteAllFileSetsAction)
         dataMenu.addSeparator()
@@ -126,6 +129,17 @@ class MainWindow(QMainWindow):
             self._dataManager.signal().progress.connect(self.fileSetImportProgress)
             self._dataManager.signal().finished.connect(self.fileSetImportFinished)
             self._dataManager.importFileSet(fileSetPath=dirPath)
+
+    def importFileSetWithFileType(self) -> None:
+        regex = 
+        dirPath = QFileDialog.getExistingDirectory(self, 'Open File Set', FILESETPATH)
+        if dirPath:
+            self._progressBarDialog.show()
+            self._progressBarDialog.setValue(0)
+            self._dataManager.signal().progress.connect(self.fileSetImportProgress)
+            self._dataManager.signal().finished.connect(self.fileSetImportFinished)
+            self._dataManager.importFileSet(fileSetPath=dirPath)
+
 
     def deleteAllFileSets(self) -> None:
         self._dataManager.deleteAllFileSets()
