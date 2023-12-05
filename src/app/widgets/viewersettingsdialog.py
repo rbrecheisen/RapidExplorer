@@ -78,7 +78,7 @@ class ViewerSettingsDialog(QDialog):
             displayName += ' *'
         return QLabel(displayName)
     
-    def createButtonsWidget(self) -> None:
+    def createButtonsWidget(self) -> QWidget:
         cancelButton = QPushButton('Cancel')
         cancelButton.clicked.connect(self.cancel)
         saveAndCloseSettingsButton = QPushButton('Save and Close')

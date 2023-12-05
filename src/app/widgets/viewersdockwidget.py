@@ -43,7 +43,6 @@ class ViewersDockWidget(DockWidget):
             self._viewerManager.setCurrentViewer(self._viewerManager.viewer(name=viewerName))
         else:
             self._showSettingsDialogButton.setEnabled(False)
-            # self._viewerManager.setCurrentViewer(None)
 
     def showSettingsDialog(self) -> None:
         viewerName = self._viewersComboBox.currentText()

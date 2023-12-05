@@ -11,6 +11,8 @@ from data.objectcache import ObjectCache
 from data.filemodel import FileModel
 from data.fileset import FileSet
 from data.filesetmodel import FileSetModel
+from data.filetype import FileType
+from data.allfiletype import AllFileType
 
 SETTINGSFILEPATH = os.environ.get('SETTINGSPATH', 'settings.ini')
 
@@ -54,7 +56,8 @@ class DataManager:
         with DbSession() as session:
             fileSetModel = FileSetModel(path=os.path.split(filePath)[0])
             session.add(fileSetModel)
-            fileModel = FileModel(path=filePath, fileSetModel=fileSetModel)
+            fileName = os.path.split(filePath)[1]
+            fileModel = FileModel(name=fileName, path=filePath, fileSetModel=fileSetModel)
             session.add(fileModel)
             session.commit()
             fileSet = FileSet(fileSetModel=fileSetModel)  # Don't use fileSet() because it mixes sessions!
@@ -62,27 +65,48 @@ class DataManager:
             self.signal().finished.emit(fileSet)
         return fileSet
     
-    def importFileSet(self, fileSetPath: str, regex: str=r'.*') -> FileSet:
+    def importFileSet(self, fileSetPath: str, fileType: FileType=AllFileType, recursive=False) -> FileSet:
         # Count files to be able to show progress
         filesToIgnore = self.settings().value('filesToIgnore')
         nrFiles = 0
-        for f in os.listdir(fileSetPath):
-            if f not in filesToIgnore and re.match(regex, f):
-                nrFiles += 1
+        if recursive:
+            for root, dirs, files in os.walk(fileSetPath):
+                for fileName in files:
+                    filePath = os.path.join(root, fileName)
+                    if fileName not in filesToIgnore and fileType.check(filePath=filePath):
+                        nrFiles +=1
+        else:
+            for fileName in os.listdir(fileSetPath):
+                filePath = os.path.join(fileSetPath, fileName)
+                if fileName not in filesToIgnore and fileType.check(filePath=filePath):
+                    nrFiles += 1
+        if nrFiles == 0:
+            self.signal().finished.emit(None)
+            return None
         i = 0
         with DbSession() as session:
             fileSetModel = FileSetModel(path=fileSetPath)
             session.add(fileSetModel)
-            for fileName in os.listdir(fileSetPath):
-                if fileName in filesToIgnore:
-                    continue
-                if re.match(regex, fileName):
+            if recursive:
+                for root, dirs, files in os.walk(fileSetPath):
+                    for fileName in files:
+                        filePath = os.path.join(root, fileName)
+                        if fileName not in filesToIgnore and fileType.check(filePath=filePath):
+                            extendedFileName = os.path.join(os.path.relpath(root, fileSetPath), fileName)
+                            fileModel = FileModel(name=extendedFileName, path=filePath, fileSetModel=fileSetModel)
+                            session.add(fileModel)
+                            progress = int((i + 1) / nrFiles * 100)
+                            self.signal().progress.emit(progress)
+                            i += 1
+            else:                
+                for fileName in os.listdir(fileSetPath):
                     filePath = os.path.join(fileSetPath, fileName)
-                    fileModel = FileModel(path=filePath, fileSetModel=fileSetModel)
-                    session.add(fileModel)
-                    progress = int((i + 1) / nrFiles * 100)
-                    self.signal().progress.emit(progress)
-                    i += 1
+                    if fileName not in filesToIgnore and fileType.check(filePath=filePath):
+                        fileModel = FileModel(name=fileName, path=filePath, fileSetModel=fileSetModel)
+                        session.add(fileModel)
+                        progress = int((i + 1) / nrFiles * 100)
+                        self.signal().progress.emit(progress)
+                        i += 1
             session.commit()
             fileSet = FileSet(fileSetModel=fileSetModel)
         self.signal().finished.emit(fileSet)

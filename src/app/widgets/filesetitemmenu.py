@@ -29,10 +29,9 @@ class FileSetItemMenu(QMenu):
         self._dataManager.deleteFileSet(fileSet=fileSet)
         self._treeView.clearFileSets()
         self._treeView.loadFileSetsFromDatabase()
-        resultCode = self.showFileSetDeleteWarning()
-        if resultCode == QMessageBox.Yes:
-            shutil.rmtree(fileSet.path())
-        # Clear viewer if viewer is pointing to this file set!
+        # resultCode = self.showFileSetDeleteWarning()
+        # if resultCode == QMessageBox.Yes:
+        #     shutil.rmtree(fileSet.path())
 
     def showFileSetDeleteWarning(self) -> int:
         messageBox = QMessageBox(self)

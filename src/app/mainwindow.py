@@ -1,16 +1,16 @@
 import os
 
 from PySide6.QtCore import Qt, QSize, QSettings
-from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QFileDialog, QMenu, QProgressDialog
+from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QFileDialog, QMenu, QProgressDialog, QMessageBox
 from PySide6.QtGui import QAction, QGuiApplication
 
 from data.datamanager import DataManager
 from data.fileset import FileSet
-from tasks.task import Task
 from widgets.datadockwidget import DataDockWidget
 from widgets.viewersdockwidget import ViewersDockWidget
 from widgets.taskdockwidget import TaskDockWidget
 from widgets.mainviewerdockwidget import MainViewerDockWidget
+from widgets.filetypedialog import FileTypeDialog
 
 SETTINGSPATH = os.environ.get('SETTINGSPATH', 'settings.ini')
 MULTIFILESETPATH = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset')
@@ -131,15 +131,18 @@ class MainWindow(QMainWindow):
             self._dataManager.importFileSet(fileSetPath=dirPath)
 
     def importFileSetWithFileType(self) -> None:
-        regex = 
-        dirPath = QFileDialog.getExistingDirectory(self, 'Open File Set', FILESETPATH)
-        if dirPath:
-            self._progressBarDialog.show()
-            self._progressBarDialog.setValue(0)
-            self._dataManager.signal().progress.connect(self.fileSetImportProgress)
-            self._dataManager.signal().finished.connect(self.fileSetImportFinished)
-            self._dataManager.importFileSet(fileSetPath=dirPath)
-
+        fileTypeDialog = FileTypeDialog(self)
+        resultCode = fileTypeDialog.show()
+        if resultCode == FileTypeDialog.Accepted:
+            fileType = fileTypeDialog.selectedFileType()
+            recursive = fileTypeDialog.recursive()
+            dirPath = QFileDialog.getExistingDirectory(self, 'Open File Set', FILESETPATH)
+            if dirPath:
+                self._progressBarDialog.show()
+                self._progressBarDialog.setValue(0)
+                self._dataManager.signal().progress.connect(self.fileSetImportProgress)
+                self._dataManager.signal().finished.connect(self.fileSetImportFinished)
+                self._dataManager.importFileSet(fileSetPath=dirPath, fileType=fileType, recursive=recursive)
 
     def deleteAllFileSets(self) -> None:
         self._dataManager.deleteAllFileSets()
@@ -159,17 +162,25 @@ class MainWindow(QMainWindow):
         self._progressBarDialog.setValue(progress)
         
     def fileImportFinished(self, fileSet: FileSet) -> None:
-        self._dataDockWidget.addFileSet(fileSet=fileSet)
         self._dataManager.signal().progress.disconnect(self.fileImportProgress)
         self._dataManager.signal().finished.disconnect(self.fileImportFinished)
+        if fileSet is None:
+            self._progressBarDialog.close()
+            QMessageBox.critical(self, 'Warning', 'File Set Is Empty!')
+            return
+        self._dataDockWidget.addFileSet(fileSet=fileSet)
 
     def fileSetImportProgress(self, progress) -> None:
         self._progressBarDialog.setValue(progress)
 
     def fileSetImportFinished(self, fileSet: FileSet) -> None:
-        self._dataDockWidget.addFileSet(fileSet=fileSet)
         self._dataManager.signal().progress.disconnect(self.fileSetImportProgress)
         self._dataManager.signal().finished.disconnect(self.fileSetImportFinished)
+        if fileSet is None:
+            self._progressBarDialog.close()
+            QMessageBox.critical(self, 'Warning', 'File Set Is Empty!')
+            return
+        self._dataDockWidget.addFileSet(fileSet=fileSet)
 
     def taskFinished(self, outputFileSet: FileSet) -> None:
         self._dataDockWidget.addFileSet(fileSet=outputFileSet)

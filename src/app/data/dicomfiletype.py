@@ -5,6 +5,8 @@ from data.filetype import FileType
 
 
 class DicomFileType(FileType):
+    NAME = 'dicom'
+    
     @staticmethod
     def check(filePath: str) -> bool:
         if filePath.endswith('.dcm'):

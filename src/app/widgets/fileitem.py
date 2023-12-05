@@ -7,7 +7,8 @@ from data.file import File
 
 class FileItem(QStandardItem):
     def __init__(self, file: File) -> None:
-        super(FileItem, self).__init__(os.path.split(file.path())[1])
+        # super(FileItem, self).__init__(os.path.split(file.path())[1])
+        super(FileItem, self).__init__(file.name())
         self._file = file
 
     def file(self) -> File:
