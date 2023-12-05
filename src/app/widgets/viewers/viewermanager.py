@@ -2,12 +2,12 @@ import os
 
 from typing import List
 
-from PySide6.QtCore import QSettings, QThreadPool
+from PySide6.QtCore import QSettings
 
 from singleton import singleton
+from settings.settings import Settings
 from widgets.viewers.viewer import Viewer
 from widgets.viewers.viewermanagersignal import ViewerManagerSignal
-from settings.settings import Settings
 
 SETTINGSFILEPATH = os.environ.get('SETTINGSPATH', 'settings.ini')
 
@@ -15,66 +15,41 @@ SETTINGSFILEPATH = os.environ.get('SETTINGSPATH', 'settings.ini')
 @singleton
 class ViewerManager:
     def __init__(self) -> None:
-        self._viewerDefinitions = {}
-        self._viewerSettings = {}
+        self._viewers = {}
+        self._currentViewer = None
         self._signal = ViewerManagerSignal()
         self._settings = QSettings(SETTINGSFILEPATH, QSettings.Format.IniFormat)
-        self._currentViewerDefinitionName = None
-        self._currentViewerSettings = None
-        self.loadViewerDefinitionsAndSettings()
+        self.loadViewers()
 
-    def viewerDefinitions(self) -> List[Viewer]:
-        return self._viewerDefinitions.values()
-    
-    def viewerDefinitionNames(self) -> List[str]:
-        return self._viewerDefinitions.keys()
-    
     def signal(self) -> ViewerManagerSignal:
         return self._signal
     
     def settings(self) -> QSettings:
         return self._settings
     
-    def viewerDefinition(self, name: str) -> Viewer:
-        return self._viewerDefinitions[name]
+    def viewer(self, name: str) -> Viewer:
+        return self._viewers[name]
     
-    def currentViewerDefinitionName(self) -> str:
-        return self._currentViewerDefinitionName
+    def viewers(self) -> List[Viewer]:
+        return self._viewers.values()
     
-    def setCurrentViewerDefinitionName(self, currentViewerDefinitionName: str) -> None:
-        if currentViewerDefinitionName not in self._viewerDefinitions.keys():
-            raise RuntimeError(f'Class definition for viewer {currentViewerDefinitionName} does not exist')
-        self._currentViewerDefinitionName = currentViewerDefinitionName
-        viewerDefinition = self.viewerDefinition(name=self._currentViewerDefinitionName)
-        viewer = viewerDefinition()
-        self.signal().currentViewerChanged.emit(viewer)
+    def viewerNames(self) -> List[str]:
+        return self._viewers.keys()
+    
+    def setCurrentViewer(self, viewer: Viewer) -> None:
+        if viewer and viewer.name() not in self._viewers.keys():
+            raise RuntimeError(f'Viewer {viewer.name()} was never registered')
+        self._currentViewer = viewer
+        self.signal().currentViewerChanged.emit(self._currentViewer)
 
-    def nrViewerDefinitions(self) -> int:
-        return len(self._viewerDefinitions.keys())
+    def currentViewer(self) -> Viewer:
+        return self._currentViewer
     
-    def viewerSettings(self, name: str) -> Settings:
-        return self._viewerSettings[name]
-    
-    def updateViewerSettings(self, name: str, viewerSettings: Settings) -> None:
-        self._viewerSettings[name] = viewerSettings
-        self.signal().currentViewerSettingsChanged.emit(self._currentViewerDefinitionName, viewerSettings)
+    def updateViewerSettings(self) -> None:
+        self._currentViewer.updateSettings()
 
-    def currentViewerSettings(self) -> Settings:
-        return self._viewerSettings[self.currentViewerDefinitionName()]
-
-    def loadViewerDefinitionsAndSettings(self) -> None:
+    def loadViewers(self) -> None:
         from widgets.viewers.dicomviewer.dicomviewer import DicomViewer
-        self._viewerDefinitions = {
-            DicomViewer.NAME: DicomViewer,
+        self._viewers = {
+            DicomViewer.NAME: DicomViewer(),
         }
-        self._viewerSettings = {}
-        for viewerDefinitionName in self._viewerDefinitions.keys():
-            viewerDefinition = self._viewerDefinitions[viewerDefinitionName]
-            viewer = viewerDefinition()
-            viewerSettings = viewer.settings()
-            self._viewerSettings[viewerDefinitionName] = viewerSettings
-
-    def createViewer(self, name: str) -> Viewer:
-        viewerDefinition = self._viewerDefinitions[name]
-        viewer = viewerDefinition()
-        return viewer

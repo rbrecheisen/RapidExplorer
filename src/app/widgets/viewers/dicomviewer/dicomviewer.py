@@ -52,19 +52,24 @@ class DicomViewer(Viewer):
         self.setLayout(layout)
 
     def updateSettings(self) -> None:
+        """ What to do when there are also segmentation files?
+        Segmentation files should be matched to their respective DICOM files. The only way this
+        can be done is through their file names.
+        """
         dicomFileSetName = self.settings().setting(name='dicomFileSetName').value()
-        dicomFileSet = self._dataManager.fileSetByName(name=dicomFileSetName)
-        dicomFiles = []
-        for file in dicomFileSet.files():
-            dicomFile = DicomFile(filePath=file.path())
-            dicomFiles.append(dicomFile)
-        dicomFiles = sorted(dicomFiles, key=lambda x: x.data().InstanceNumber)
-        i = 0
-        for dicomFile in dicomFiles:
-            self._dicomFilesSorted.append(self.convertToQImage(dicomFile))
-            self._dicomAttributeLayersSorted.append(self.createDicomAttributeLayer(dicomFile, i))
-            i += 1
-        self._displayDicomImageAndAttributeLayer(self._currentImageIndex)
+        if dicomFileSetName:
+            dicomFileSet = self._dataManager.fileSetByName(name=dicomFileSetName)
+            dicomFiles = []
+            for file in dicomFileSet.files():
+                dicomFile = DicomFile(filePath=file.path())
+                dicomFiles.append(dicomFile)
+            dicomFiles = sorted(dicomFiles, key=lambda x: x.data().InstanceNumber)
+            i = 0
+            for dicomFile in dicomFiles:
+                self._dicomFilesSorted.append(self.convertToQImage(dicomFile))
+                self._dicomAttributeLayersSorted.append(self.createDicomAttributeLayer(dicomFile, i))
+                i += 1
+            self._displayDicomImageAndAttributeLayer(self._currentImageIndex)
 
     def convertToQImage(self, dicomFile: DicomFile) -> QImage:
         p = dicomFile.data()

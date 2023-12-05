@@ -2,7 +2,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QWidget, QComboBox, QVBoxLayout, QHBoxLayout, QPushButton, QDialog
 
 from widgets.dockwidget import DockWidget
-from widgets.viewers.viewermanager2 import ViewerManager
+from widgets.viewers.viewermanager import ViewerManager
 from widgets.viewersettingsdialog import ViewerSettingsDialog
 
 

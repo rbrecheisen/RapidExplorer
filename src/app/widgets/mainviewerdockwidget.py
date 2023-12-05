@@ -5,7 +5,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout
 
 from widgets.dockwidget import DockWidget
 from widgets.viewers.viewer import Viewer
-from widgets.viewers.viewermanager2 import ViewerManager
+from widgets.viewers.viewermanager import ViewerManager
 
 SETTINGSPATH = os.environ.get('SETTINGSPATH', 'settings.ini')
 
