@@ -10,7 +10,7 @@ class DicomFile:
             self._data = pydicom.dcmread(self._filePath)
             self._data.decompress()
         except pydicom.errors.InvalidDicomError:
-            pass
+            print(f'File {self._filePath} is not a valid DICOM file')
 
     def filePath(self) -> str:
         return self._filePath

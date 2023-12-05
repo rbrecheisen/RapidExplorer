@@ -5,7 +5,6 @@ from typing import List
 from PySide6.QtCore import QSettings
 
 from singleton import singleton
-from settings.settings import Settings
 from widgets.viewers.viewer import Viewer
 from widgets.viewers.viewermanagersignal import ViewerManagerSignal
 

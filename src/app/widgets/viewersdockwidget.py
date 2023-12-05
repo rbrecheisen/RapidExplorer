@@ -46,14 +46,13 @@ class ViewersDockWidget(DockWidget):
             # self._viewerManager.setCurrentViewer(None)
 
     def showSettingsDialog(self) -> None:
-        viewerDefinitionName = self._viewersComboBox.currentText()
-        if viewerDefinitionName:
-            viewer = self._viewerManager.viewer(name=viewerDefinitionName)
+        viewerName = self._viewersComboBox.currentText()
+        if viewerName:
+            viewer = self._viewerManager.viewer(name=viewerName)
             settingsDialog = ViewerSettingsDialog(viewerSettings=viewer.settings())
             resultCode = settingsDialog.show()
             if resultCode == QDialog.Accepted:
                 self._viewerManager.updateViewerSettings()
-                pass
 
     def loadViewers(self):
         self._viewersComboBox.clear()

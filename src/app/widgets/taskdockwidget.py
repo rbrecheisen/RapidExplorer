@@ -3,7 +3,7 @@ from PySide6.QtWidgets import QWidget, QComboBox, QVBoxLayout, QHBoxLayout, QPus
 
 from widgets.dockwidget import DockWidget
 from widgets.tasksettingsdialog import TaskSettingsDialog
-from tasks.taskmanager2 import TaskManager
+from tasks.taskmanager import TaskManager
 from tasks.tasksignal import TaskSignal
 from data.fileset import FileSet
 
@@ -16,6 +16,7 @@ class TaskDockWidget(DockWidget):
         self._runSelectedTaskButton = None
         self._progressBarDialog = None
         self._taskManager = None
+        self._currentTask = None
         self._signal = TaskSignal()
         self.initTaskManager()
         self.initUi()
@@ -66,34 +67,34 @@ class TaskDockWidget(DockWidget):
         taskName = self._tasksComboBox.itemText(index)
         if taskName:
             self._showSettingsDialogButton.setEnabled(True)
-            task = self._taskManager.task(name=taskName)
-            self._taskManager.setCurrentTask(task)
-            # self._taskManager.setCurrentTaskDefinitionName(taskName)
+            self._currentTask = self._taskManager.createTaskFromTaskTypeName(name=taskName)
         else:
             self._showSettingsDialogButton.setEnabled(False)
             self._runSelectedTaskButton.setEnabled(False)
+            self._currentTask = None
 
     def showSettingsDialog(self) -> None:
-        taskDefinitionName = self._tasksComboBox.currentText()
-        if taskDefinitionName:
-            task = self._taskManager.currentTask()
-            settingsDialog = TaskSettingsDialog(task.settings())
-            resultCode = settingsDialog.show()
-            if resultCode == QDialog.Accepted:
-                # self._taskManager.updateTaskSettings(taskDefinitionName, settingsDialog.taskSettings())
-                self._runSelectedTaskButton.setEnabled(True)
-                self._runSelectedTaskButton.setFocus()
+        taskName = self._tasksComboBox.currentText()
+        if taskName:
+            if self._currentTask:
+                settingsDialog = TaskSettingsDialog(self._currentTask.settings())
+                resultCode = settingsDialog.show()
+                if resultCode == QDialog.Accepted:
+                    self._runSelectedTaskButton.setEnabled(True)
+                    self._runSelectedTaskButton.setFocus()
 
     def runSelectedTask(self) -> None:
-        self._progressBarDialog.show()
-        self._progressBarDialog.setValue(0)
-        self._taskManager.runCurrentTask(background=True)
+        taskName = self._tasksComboBox.currentText()
+        if taskName:
+            if self._currentTask:
+                self._progressBarDialog.show()
+                self._progressBarDialog.setValue(0)
+                self._taskManager.runTask(task=self._currentTask, background=True)
 
     def loadTaskNames(self) -> None:
         self._tasksComboBox.clear()
         self._tasksComboBox.addItem(None)
-        # for taskDefinitionName in self._taskManager.taskDefinitionNames():
-        for taskName in self._taskManager.taskNames():
+        for taskName in self._taskManager.taskTypeNames():
             self._tasksComboBox.addItem(taskName)
 
     def taskProgress(self, progress) -> None:
