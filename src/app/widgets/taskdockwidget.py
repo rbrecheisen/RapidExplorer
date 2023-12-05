@@ -3,7 +3,7 @@ from PySide6.QtWidgets import QWidget, QComboBox, QVBoxLayout, QHBoxLayout, QPus
 
 from widgets.dockwidget import DockWidget
 from widgets.tasksettingsdialog import TaskSettingsDialog
-from tasks.taskmanager import TaskManager
+from tasks.taskmanager2 import TaskManager
 from tasks.tasksignal import TaskSignal
 from data.fileset import FileSet
 
@@ -66,7 +66,9 @@ class TaskDockWidget(DockWidget):
         taskName = self._tasksComboBox.itemText(index)
         if taskName:
             self._showSettingsDialogButton.setEnabled(True)
-            self._taskManager.setCurrentTaskDefinitionName(taskName)
+            task = self._taskManager.task(name=taskName)
+            self._taskManager.setCurrentTask(task)
+            # self._taskManager.setCurrentTaskDefinitionName(taskName)
         else:
             self._showSettingsDialogButton.setEnabled(False)
             self._runSelectedTaskButton.setEnabled(False)
@@ -74,10 +76,11 @@ class TaskDockWidget(DockWidget):
     def showSettingsDialog(self) -> None:
         taskDefinitionName = self._tasksComboBox.currentText()
         if taskDefinitionName:
-            settingsDialog = TaskSettingsDialog(self._taskManager.taskSettings(taskDefinitionName))
+            task = self._taskManager.currentTask()
+            settingsDialog = TaskSettingsDialog(task.settings())
             resultCode = settingsDialog.show()
             if resultCode == QDialog.Accepted:
-                self._taskManager.updateTaskSettings(taskDefinitionName, settingsDialog.taskSettings())
+                # self._taskManager.updateTaskSettings(taskDefinitionName, settingsDialog.taskSettings())
                 self._runSelectedTaskButton.setEnabled(True)
                 self._runSelectedTaskButton.setFocus()
 
@@ -89,8 +92,9 @@ class TaskDockWidget(DockWidget):
     def loadTaskNames(self) -> None:
         self._tasksComboBox.clear()
         self._tasksComboBox.addItem(None)
-        for taskDefinitionName in self._taskManager.taskDefinitionNames():
-            self._tasksComboBox.addItem(taskDefinitionName)
+        # for taskDefinitionName in self._taskManager.taskDefinitionNames():
+        for taskName in self._taskManager.taskNames():
+            self._tasksComboBox.addItem(taskName)
 
     def taskProgress(self, progress) -> None:
         self._progressBarDialog.setValue(progress)
