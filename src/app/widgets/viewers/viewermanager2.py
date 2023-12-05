@@ -37,7 +37,7 @@ class ViewerManager:
         return self._viewers.keys()
     
     def setCurrentViewer(self, viewer: Viewer) -> None:
-        if viewer.name() not in self._viewers.keys():
+        if viewer and viewer.name() not in self._viewers.keys():
             raise RuntimeError(f'Viewer {viewer.name()} was never registered')
         self._currentViewer = viewer
         self.signal().currentViewerChanged.emit(self._currentViewer)

@@ -13,6 +13,7 @@ from widgets.viewers.viewer import Viewer
 from widgets.viewers.dicomviewer.dicomattributelayer import DicomAttributeLayer
 from data.datamanager import DataManager
 from settings.settingfileset import SettingFileSet
+from widgets.viewers.dicomviewer.dicomfile import DicomFile
 
 SETTINGSPATH = os.environ.get('SETTINGSPATH', 'settings.ini')
 
@@ -24,7 +25,7 @@ class DicomViewer(Viewer):
         super(DicomViewer, self).__init__()
         self._graphicsView = None
         self._scene = None
-        self._dicomImagesSorted = []
+        self._dicomFilesSorted = []
         self._dicomAttributeLayersSorted = []
         self._currentImageIndex = 0
         self._qsettings = QSettings(SETTINGSPATH, QSettings.Format.IniFormat)
@@ -53,21 +54,20 @@ class DicomViewer(Viewer):
     def updateSettings(self) -> None:
         dicomFileSetName = self.settings().setting(name='dicomFileSetName').value()
         dicomFileSet = self._dataManager.fileSetByName(name=dicomFileSetName)
-        dicomImages = []
+        dicomFiles = []
         for file in dicomFileSet.files():
-            p = pydicom.dcmread(file.path())
-            p.decompress()
-            dicomImages.append(p)
-        dicomImages = sorted(dicomImages, key=lambda x: p.InstanceNumber)
+            dicomFile = DicomFile(filePath=file.path())
+            dicomFiles.append(dicomFile)
+        dicomFiles = sorted(dicomFiles, key=lambda x: x.data().InstanceNumber)
         i = 0
-        for image in dicomImages:
-            self._dicomImagesSorted.append(self.convertToQImage(image))
-            # self._dicomAttributeLayersSorted.append(self.createDicomAttributeLayer(image, i))
+        for dicomFile in dicomFiles:
+            self._dicomFilesSorted.append(self.convertToQImage(dicomFile))
+            self._dicomAttributeLayersSorted.append(self.createDicomAttributeLayer(dicomFile, i))
             i += 1
         self._displayDicomImageAndAttributeLayer(self._currentImageIndex)
 
-    def convertToQImage(self, image) -> QImage:
-        p = image
+    def convertToQImage(self, dicomFile: DicomFile) -> QImage:
+        p = dicomFile.data()
         pixelArray = p.pixel_array
         if 'RescaleSlope' in p and 'RescaleIntercept' in p:
             pixelArray = pixelArray * p.RescaleSlope + p.RescaleIntercept
@@ -78,12 +78,11 @@ class DicomViewer(Viewer):
         bytes_per_line = width
         return QImage(pixelArray.data, width, height, bytes_per_line, QImage.Format_Grayscale8)
 
-    # def createDicomAttributeLayer(self, image, index) -> DicomAttributeLayer:
-    #     layer = DicomAttributeLayer(name='dicomAttributeLayer', index=index)
-    #     p = dicomFile.data()
-    #     layer.setFileName(dicomFile.name)
-    #     layer.setInstanceNumber(p.InstanceNumber)
-    #     return layer
+    def createDicomAttributeLayer(self, dicomFile: DicomFile, index: int) -> DicomAttributeLayer:
+        layer = DicomAttributeLayer(name='dicomAttributeLayer', index=index)
+        layer.setFileName(dicomFile.filePath())
+        layer.setInstanceNumber(dicomFile.data().InstanceNumber)
+        return layer
 
     def applyWindowCenterAndWidth(self, image, center, width) -> np.array:
         imageMin = center - width // 2
@@ -107,21 +106,21 @@ class DicomViewer(Viewer):
         delta = event.angleDelta().y()
         if delta > 0 and self._currentImageIndex > 0:
             self._currentImageIndex -= 1
-        elif delta < 0 and self._currentImageIndex < len(self._dicomImagesSorted) - 1:
+        elif delta < 0 and self._currentImageIndex < len(self._dicomFilesSorted) - 1:
             self._currentImageIndex += 1
         self._displayDicomImageAndAttributeLayer(self._currentImageIndex)
 
     def _displayDicomImageAndAttributeLayer(self, index) -> None:
-        image = self._dicomImagesSorted[index]
-        # attributeLayer = self._dicomAttributeLayersSorted[index]
+        image = self._dicomFilesSorted[index]
+        attributeLayer = self._dicomAttributeLayersSorted[index]
         pixmap = QPixmap.fromImage(image)
         pixmapItem = QGraphicsPixmapItem(pixmap)
         self._scene.clear()
         self._scene.addItem(pixmapItem)
         # WARNING: do not add layer itself because it will be destroyed on scene.clear()
-        # self._scene.addItem(attributeLayer.createGraphicsItem())
+        self._scene.addItem(attributeLayer.createGraphicsItem())
         self._currentImageIndex = index
     
     def clearData(self) -> None:
-        self._dicomImagesSorted = []
+        self._dicomFilesSorted = []
         self._scene.clear()
