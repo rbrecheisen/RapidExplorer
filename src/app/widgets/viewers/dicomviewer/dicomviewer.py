@@ -6,7 +6,7 @@ from typing import List
 
 from PySide6.QtCore import Qt, QSettings
 from PySide6.QtGui import QPixmap, QImage
-from PySide6.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsPixmapItem
+from PySide6.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsPixmapItem, QProgressDialog
 from PySide6.QtWidgets import QVBoxLayout
 
 from widgets.viewers.viewer import Viewer
@@ -25,6 +25,7 @@ class DicomViewer(Viewer):
         super(DicomViewer, self).__init__()
         self._graphicsView = None
         self._scene = None
+        self._progressBarDialog = None
         self._dicomFilesSorted = []
         self._dicomAttributeLayersSorted = []
         self._currentImageIndex = 0
@@ -40,6 +41,7 @@ class DicomViewer(Viewer):
 
     def initUi(self) -> None:
         self.initGraphicsView()
+        self.initProgressBarDialog()
 
     def initGraphicsView(self) -> None:
         self._graphicsView = QGraphicsView(self)
@@ -51,19 +53,36 @@ class DicomViewer(Viewer):
         layout.addWidget(self._graphicsView)
         self.setLayout(layout)
 
+    def initProgressBarDialog(self) -> None:
+        self._progressBarDialog = QProgressDialog('Loading Images...', 'Abort Import', 0, 100, self)
+        self._progressBarDialog.setWindowModality(Qt.WindowModality.WindowModal)
+        self._progressBarDialog.setAutoReset(True)
+        self._progressBarDialog.setAutoClose(True)
+        self._progressBarDialog.close()
+
     def updateSettings(self) -> None:
         dicomFileSetName = self.settings().setting(name='dicomFileSetName').value()
         if dicomFileSetName:
+            self._progressBarDialog.show()
+            self._progressBarDialog.setValue(0)
             dicomFileSet = self._dataManager.fileSetByName(name=dicomFileSetName)
+            nrSteps = 2 * dicomFileSet.nrFiles()
+            step = 0
             dicomFiles = []
             for file in dicomFileSet.files():
                 dicomFile = DicomFile(filePath=file.path())
                 dicomFiles.append(dicomFile)
+                progress = int((step + 1) / nrSteps * 100)
+                self._progressBarDialog.setValue(progress)
+                step += 1
             dicomFiles = sorted(dicomFiles, key=lambda x: x.data().InstanceNumber)
             i = 0
             for dicomFile in dicomFiles:
                 self._dicomFilesSorted.append(self.convertToQImage(dicomFile))
                 self._dicomAttributeLayersSorted.append(self.createDicomAttributeLayer(dicomFile, i))
+                progress = int((step + 1) / nrSteps * 100)
+                self._progressBarDialog.setValue(progress)
+                step += 1
                 i += 1
             self._displayDicomImageAndAttributeLayer(self._currentImageIndex)
 
