@@ -45,7 +45,8 @@ class ViewerManager:
         if currentViewerDefinitionName not in self._viewerDefinitions.keys():
             raise RuntimeError(f'Class definition for viewer {currentViewerDefinitionName} does not exist')
         self._currentViewerDefinitionName = currentViewerDefinitionName
-        viewer = self.viewerDefinition(name=self._currentViewerDefinitionName)
+        viewerDefinition = self.viewerDefinition(name=self._currentViewerDefinitionName)
+        viewer = viewerDefinition()
         self.signal().currentViewerChanged.emit(viewer)
 
     def nrViewerDefinitions(self) -> int:
@@ -56,6 +57,7 @@ class ViewerManager:
     
     def updateViewerSettings(self, name: str, viewerSettings: Settings) -> None:
         self._viewerSettings[name] = viewerSettings
+        self.signal().currentViewerSettingsChanged.emit(self._currentViewerDefinitionName, viewerSettings)
 
     def currentViewerSettings(self) -> Settings:
         return self._viewerSettings[self.currentViewerDefinitionName()]

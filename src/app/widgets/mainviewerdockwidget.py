@@ -4,7 +4,8 @@ from PySide6.QtCore import Qt, QSettings, QSize
 from PySide6.QtWidgets import QWidget, QVBoxLayout
 
 from widgets.dockwidget import DockWidget
-from widgets.viewers.viewermanager import ViewerManager
+from widgets.viewers.viewer import Viewer
+from widgets.viewers.viewermanager2 import ViewerManager
 
 SETTINGSPATH = os.environ.get('SETTINGSPATH', 'settings.ini')
 
@@ -20,7 +21,7 @@ class MainViewerDockWidget(DockWidget):
     def initUi(self) -> None:
         self.currentViewerChanged(QWidget())
 
-    def currentViewerChanged(self, viewer):
+    def currentViewerChanged(self, viewer: Viewer):
         layout = QVBoxLayout()
         layout.setAlignment(Qt.AlignTop)
         layout.setContentsMargins(0, 0, 0, 0)
