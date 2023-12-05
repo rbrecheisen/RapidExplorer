@@ -26,6 +26,7 @@ class TaskManager:
     def loadTaskTypes(self) -> None:
         from tasks.musclefatsegmentationtask.musclefatsegmentationtask import MuscleFatSegmentationTask
         from tasks.bodycompositiontask.bodycompositiontask import BodyCompositionTask
+        from tasks.createarchivetask.createarchivetask import CreateArchiveTask
         self._taskTypes = {
             MuscleFatSegmentationTask.NAME: MuscleFatSegmentationTask,
             BodyCompositionTask.NAME: BodyCompositionTask,
