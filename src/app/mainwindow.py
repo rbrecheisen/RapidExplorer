@@ -55,12 +55,14 @@ class MainWindow(QMainWindow):
         importFileSetWithFileTypeAction = QAction('Import File Set with File Type...', self)
         deleteAllFileSetsAction = QAction('Delete All Data from Database', self)
         resetLayoutAction = QAction('Reset Layout', self)
+        showApplicationInfoAction = QAction('Show Application Info...', self)
         exitApplicationAction = QAction('Exit', self)
         importFileAction.triggered.connect(self.importFile)
         importFileSetAction.triggered.connect(self.importFileSet)
         importFileSetWithFileTypeAction.triggered.connect(self.importFileSetWithFileType)
         deleteAllFileSetsAction.triggered.connect(self.deleteAllFileSets)
         resetLayoutAction.triggered.connect(self.resetLayout)
+        showApplicationInfoAction.triggered.connect(self.showApplicationInfo)
         exitApplicationAction.triggered.connect(self.exitApplication)
         dataMenu = QMenu('Data')
         dataMenu.addAction(importFileAction)
@@ -72,8 +74,11 @@ class MainWindow(QMainWindow):
         dataMenu.addAction(exitApplicationAction)
         viewMenu = QMenu('View')
         viewMenu.addAction(resetLayoutAction)
+        aboutMenu = QMenu(f'About')
+        aboutMenu.addAction(showApplicationInfoAction)
         self.menuBar().addMenu(dataMenu)
         self.menuBar().addMenu(viewMenu)
+        self.menuBar().addMenu(aboutMenu)
         self.menuBar().setNativeMenuBar(False)
 
     def initDataDockWidget(self) -> None:
@@ -109,7 +114,7 @@ class MainWindow(QMainWindow):
         self.centralWidget().hide()
         self.splitDockWidget(self._dataDockWidget, self._tasksDockWidget, Qt.Vertical)
         self.splitDockWidget(self._mainViewDockWidget, self._viewsDockWidget, Qt.Vertical)
-        self.setWindowTitle(WINDOWTITLE + f' [{GITCOMMITID}]')
+        self.setWindowTitle(WINDOWTITLE)
         self.setWindowSize()
         self.centerWindow()
         self.saveDefaultLayout()
@@ -155,6 +160,9 @@ class MainWindow(QMainWindow):
 
     def resetLayout(self) -> None:
         self.restoreState(self._defaultLayout)
+
+    def showApplicationInfo(self) -> None:
+        QMessageBox.information(self, 'Application Information', f'Git Commit ID: {GITCOMMITID}')
 
     def exitApplication(self) -> None:
         self._settings.setValue('mainWindowSize', self.size())
