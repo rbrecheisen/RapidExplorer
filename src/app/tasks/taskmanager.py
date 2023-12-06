@@ -10,7 +10,9 @@ from data.fileset import FileSet
 from tasks.taskmanagersignal import TaskManagerSignal
 from tasks.task import Task
 
-SETTINGSFILEPATH = os.environ.get('SETTINGSPATH', 'settings.ini')
+# SETTINGSFILEPATH = os.environ.get('SETTINGSPATH', 'settings.ini')
+SETTINGSFILEPATH = 'settings.ini'
+
 LOGGER = Logger()
 
 

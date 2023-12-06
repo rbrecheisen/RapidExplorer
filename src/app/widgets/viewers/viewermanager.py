@@ -8,7 +8,8 @@ from singleton import singleton
 from widgets.viewers.viewer import Viewer
 from widgets.viewers.viewermanagersignal import ViewerManagerSignal
 
-SETTINGSFILEPATH = os.environ.get('SETTINGSPATH', 'settings.ini')
+# SETTINGSFILEPATH = os.environ.get('SETTINGSPATH', 'settings.ini')
+SETTINGSFILEPATH = 'settings.ini'
 
 
 @singleton

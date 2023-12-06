@@ -6,6 +6,7 @@ sqlalchemy
 pendulum 
 pylibjpeg[openjpeg]
 pylibjpeg-libjpeg
-nuitka
+# nuitka
 pytest
 tensorflow
+pyinstaller

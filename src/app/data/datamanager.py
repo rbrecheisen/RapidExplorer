@@ -14,7 +14,8 @@ from data.filesetmodel import FileSetModel
 from data.filetype import FileType
 from data.allfiletype import AllFileType
 
-SETTINGSFILEPATH = os.environ.get('SETTINGSPATH', 'settings.ini')
+# SETTINGSFILEPATH = os.environ.get('SETTINGSPATH', 'settings.ini')
+SETTINGSFILEPATH = 'settings.ini'
 
 
 class DataManager:

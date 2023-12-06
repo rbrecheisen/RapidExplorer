@@ -1,10 +1,13 @@
 import os
+import sys
 
 from PySide6.QtCore import Qt, QSize, QSettings
 from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QFileDialog, QMenu, QProgressDialog, QMessageBox
 from PySide6.QtGui import QAction, QGuiApplication
 
 from logger import Logger
+# from settingsinifile import SettingsIniFile
+from commitid import CommitId
 from data.datamanager import DataManager
 from data.fileset import FileSet
 from widgets.datadockwidget import DataDockWidget
@@ -13,12 +16,20 @@ from widgets.taskdockwidget import TaskDockWidget
 from widgets.mainviewerdockwidget import MainViewerDockWidget
 from widgets.filetypedialog import FileTypeDialog
 
-SETTINGSPATH = os.environ.get('SETTINGSPATH', 'settings.ini')
-GITCOMMITID = os.environ.get('GITCOMMITID', open('gitcommitid.txt', 'r').readline().strip())
+# SETTINGSPATH = os.environ.get('SETTINGSPATH', 'settings.ini')
+# SETTINGSPATH = 'settings.ini'
+# if not os.path.isfile(SETTINGSPATH):
+#     SETTINGSPATH = os.path.join(os.path.dirname(sys.executable), 'settings.ini')
+
+# GITCOMMITID = os.environ.get('GITCOMMITID', open('gitcommitid.txt', 'r').readline().strip())
+# GITCOMMITIDPATH = 'gitcommitid.txt'
+# if not os.path.isfile(GITCOMMITIDPATH):
+#     GITCOMMITIDPATH = os.path.join(os.path.dirname(sys.executable), 'gitcommitid.txt')
+# GITCOMMITID = open(GITCOMMITIDPATH, 'r').readline().strip()
+
 MULTIFILESETPATH = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset')
 FILESETPATH = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset/scan1')
 FILEPATH = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset/scan1/image-00000.dcm')
-MAINWINDOWSIZE = (1024, 800)
 ORGANISATION = 'Rbeesoft'
 APPLICATIONNAME = 'RapidExplorer'
 WINDOWTITLE = 'Mosamatic Desktop 1.0'
@@ -162,7 +173,8 @@ class MainWindow(QMainWindow):
         self.restoreState(self._defaultLayout)
 
     def showApplicationInfo(self) -> None:
-        QMessageBox.information(self, 'Application Information', f'Git Commit ID: {GITCOMMITID}')
+        commitId = CommitId()
+        QMessageBox.information(self, 'Application Information', f'Git Commit ID: {commitId.value()}')
 
     def exitApplication(self) -> None:
         self._settings.setValue('mainWindowSize', self.size())

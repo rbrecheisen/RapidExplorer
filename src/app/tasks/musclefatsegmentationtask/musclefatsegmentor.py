@@ -11,7 +11,8 @@ from PySide6.QtCore import QSettings
 
 from utils import getPixelsFromDicomObject
 
-SETTINGSFILEPATH = os.environ.get('SETTINGSPATH', 'settings.ini')
+# SETTINGSFILEPATH = os.environ.get('SETTINGSPATH', 'settings.ini')
+SETTINGSFILEPATH = 'settings.ini'
 
 
 class MuscleFatSegmentor:

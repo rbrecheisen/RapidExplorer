@@ -7,6 +7,10 @@ from singleton import singleton
 from utils import createNameWithTimestamp
 
 LOGFILEPATH = os.environ.get('LOGFILEPATH', 'MosamaticDesktop.log')
+if os.path.isfile(LOGFILEPATH):
+    os.remove(LOGFILEPATH)
+with open(LOGFILEPATH, 'w') as f:
+    pass
 
 
 @singleton
