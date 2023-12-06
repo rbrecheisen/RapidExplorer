@@ -4,6 +4,7 @@ from PySide6.QtCore import Qt, QSize, QSettings
 from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QFileDialog, QMenu, QProgressDialog, QMessageBox
 from PySide6.QtGui import QAction, QGuiApplication
 
+from logger import Logger
 from data.datamanager import DataManager
 from data.fileset import FileSet
 from widgets.datadockwidget import DataDockWidget
@@ -20,6 +21,9 @@ MAINWINDOWSIZE = (1024, 800)
 ORGANISATION = 'Rbeesoft'
 APPLICATIONNAME = 'RapidExplorer'
 WINDOWTITLE = 'Mosamatic Desktop 1.0'
+
+LOGGER = Logger()
+LOGGER.info(f'WINDOWTITLE: {WINDOWTITLE}')
 
 
 class MainWindow(QMainWindow):

@@ -11,7 +11,7 @@ def main():
     app = QApplication([])
     settingsPath = os.environ.get('SETTINGSPATH', 'settings.ini')
     logger = Logger()
-    logger.info(f'{settingsPath}')
+    logger.info(f'SETTINGSPATH: {settingsPath}')
     mainWindow = MainWindow(settingsPath=settingsPath)
     mainWindow.show()
     sys.exit(app.exec())
