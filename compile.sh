@@ -11,12 +11,12 @@ rm -rf main.build ${APPNAME}
 echo "$(git rev-parse HEAD)" > gitcommitid.txt
 
 # Compile Qt resources (if any)
-~/.venv/RapidExplorer/bin/pyside6-rcc -o src/app/resources.py src/app/resources.qrc
+~/.venv/MosamaticDesktop/bin/pyside6-rcc -o src/app/resources.py src/app/resources.qrc
 
 # Build executable. This is the same command on MacOS or Windows. If you want to disable the console
 # use the flag --disable-console on MacOS or --windows-disable-console on Windows. For MacOS or 
 # Windows you do need to create different startup scripts
-~/.venv/RapidExplorer/bin/python -m nuitka --standalone --include-package=pydicom --enable-plugin=pyside6 src/app/main.py
+~/.venv/MosamaticDesktop/bin/python -m nuitka --standalone --include-package=pydicom --enable-plugin=pyside6 src/app/main.py
 
 # Reorganize
 mv main.dist ${APPNAME}
