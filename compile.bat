@@ -11,7 +11,7 @@ REM Compile Qt resources (if any)
 ~\.venv\RapidExplorer\Scripts\pyside6-rcc -o src\app\resources.py src\app\resources.qrc
 
 REM Build executable. This is the same command on MacOS or Windows.
-~\.venv\RapidExplorer\Scripts\python -m nuitka --standalone --include-package=pydicom --enable-plugin=pyside6 src\app\main.py
+~\.venv\RapidExplorer\Scripts\python -m nuitka --standalone --include-package=pydicom --enable-plugin=pyside6 --nofollow-import-to=unittest src\app\main.py
 
 REM Reorganize
 move main.dist %APPNAME%

@@ -3,6 +3,7 @@
 
 main.dist/
 main.build/
+MosamaticDesktop/
 
 *.app/
 *.zip
