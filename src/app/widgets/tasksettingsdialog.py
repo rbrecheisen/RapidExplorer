@@ -1,5 +1,5 @@
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QWidget, QDialog, QLabel, QPushButton, QVBoxLayout, QHBoxLayout
+from PySide6.QtWidgets import QWidget, QDialog, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QMessageBox
 
 from settings.settings import Settings
 from widgets.settingbooleanwidget import SettingBooleanWidget
@@ -96,6 +96,11 @@ class TaskSettingsDialog(QDialog):
         self.reject()
 
     def saveAndCloseSettings(self) -> None:
+        for setting in self.taskSettings().all():
+            if not setting.optional():
+                if setting.value() is None:
+                    QMessageBox.critical(self, 'Error', f'Setting {setting.name()} cannot be empty!')
+                    return 
         self.accept()
 
     def show(self):

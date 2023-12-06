@@ -32,6 +32,9 @@ class TaskManager:
             BodyCompositionTask.NAME: BodyCompositionTask,
         }
 
+    def taskTypes(self) -> List[Task]:
+        return self._taskTypes
+
     def taskTypeNames(self) -> List[str]:
         return self._taskTypes.keys()
     
