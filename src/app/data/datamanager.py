@@ -1,5 +1,4 @@
 import os
-import re
 
 from typing import List
 
@@ -13,14 +12,15 @@ from data.fileset import FileSet
 from data.filesetmodel import FileSetModel
 from data.filetype import FileType
 from data.allfiletype import AllFileType
+from utils import SettingsIniFile
+from logger import Logger
 
-# SETTINGSFILEPATH = os.environ.get('SETTINGSPATH', 'settings.ini')
-SETTINGSFILEPATH = 'settings.ini'
+LOGGER = Logger()
 
 
 class DataManager:
     def __init__(self) -> None:
-        self._settings = QSettings(SETTINGSFILEPATH, QSettings.Format.IniFormat)
+        self._settings = QSettings(SettingsIniFile().path(), QSettings.Format.IniFormat)
         self._signal = DataManagerSigal()
 
     def settings(self) -> QSettings:
@@ -32,12 +32,14 @@ class DataManager:
     # GET
     
     def fileSet(self, id: str) -> FileSet:
+        LOGGER.info(f'DataManager.fileSet() id={id}')
         with DbSession() as session:
             fileSetModel = session.get(FileSetModel, id)
             fileSet = FileSet(fileSetModel=fileSetModel)
         return fileSet
     
     def fileSetByName(self, name: str) -> FileSet:
+        LOGGER.info(f'DataManager.fileSetByName() name={name}')
         with DbSession() as session:
             fileSetModel = session.query(FileSetModel).filter_by(name=name).one()
             fileSet = FileSet(fileSetModel=fileSetModel)
@@ -54,8 +56,10 @@ class DataManager:
     # CREATE/IMPORT
     
     def importFile(self, filePath: str) -> FileSet:
+        LOGGER.info(f'DataManager.importFile() filePath={filePath}')
         with DbSession() as session:
-            fileSetModel = FileSetModel(path=os.path.split(filePath)[0])
+            fileSetPath = os.path.split(filePath)[0]
+            fileSetModel = FileSetModel(path=fileSetPath)
             session.add(fileSetModel)
             fileName = os.path.split(filePath)[1]
             fileModel = FileModel(name=fileName, path=filePath, fileSetModel=fileSetModel)
@@ -67,8 +71,9 @@ class DataManager:
         return fileSet
     
     def importFileSet(self, fileSetPath: str, fileType: FileType=AllFileType, recursive=False) -> FileSet:
-        # Count files to be able to show progress
+        LOGGER.info(f'DataManager.importFileSet() fileSetPath={fileSetPath}, fileType={fileType}, recursive={recursive}')
         filesToIgnore = self.settings().value('filesToIgnore')
+        LOGGER.info(f'DataManager.importFileSet() filesToIgnore={filesToIgnore}')
         nrFiles = 0
         if recursive:
             for root, dirs, files in os.walk(fileSetPath):
@@ -116,6 +121,7 @@ class DataManager:
     # UPDATE
 
     def updateFileSet(self, fileSet: FileSet) -> FileSet:
+        LOGGER.info(f'DataManager.updateFileSet() fileSet={fileSet}')
         if not fileSet.id():
             raise RuntimeError('Cannot update file set that has no ID')
         with DbSession() as session:
@@ -128,6 +134,7 @@ class DataManager:
     # DELETE
 
     def deleteFileSet(self, fileSet: FileSet) -> None:
+        LOGGER.info(f'DataManager.deleteFileSet() fileSet={fileSet}')
         if not fileSet.id():
             raise RuntimeError('Cannot update file set that has no ID')
         with DbSession() as session:

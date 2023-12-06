@@ -29,11 +29,6 @@ class Logger:
         return handler
     
     def fileOutputHandler(self) -> logging.FileHandler:
-        # if os.path.isfile(LOGFILEPATH):
-        #     backupLogFileName = 'MosamaticDesktop.' + createNameWithTimestamp() + '.log'
-        #     backupLogFilePath = os.path.split(LOGFILEPATH)[0] + backupLogFileName
-        #     shutil.copyfile(LOGFILEPATH, backupLogFilePath)
-        #     os.remove(LOGFILEPATH)
         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         handler = logging.FileHandler(LOGFILEPATH)
         handler.setFormatter(formatter)

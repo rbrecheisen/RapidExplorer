@@ -1,13 +1,11 @@
 import os
-import sys
 
 from PySide6.QtCore import Qt, QSize, QSettings
 from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QFileDialog, QMenu, QProgressDialog, QMessageBox
 from PySide6.QtGui import QAction, QGuiApplication
 
 from logger import Logger
-# from settingsinifile import SettingsIniFile
-from commitid import CommitId
+from utils import GitCommit
 from data.datamanager import DataManager
 from data.fileset import FileSet
 from widgets.datadockwidget import DataDockWidget
@@ -15,17 +13,6 @@ from widgets.viewersdockwidget import ViewersDockWidget
 from widgets.taskdockwidget import TaskDockWidget
 from widgets.mainviewerdockwidget import MainViewerDockWidget
 from widgets.filetypedialog import FileTypeDialog
-
-# SETTINGSPATH = os.environ.get('SETTINGSPATH', 'settings.ini')
-# SETTINGSPATH = 'settings.ini'
-# if not os.path.isfile(SETTINGSPATH):
-#     SETTINGSPATH = os.path.join(os.path.dirname(sys.executable), 'settings.ini')
-
-# GITCOMMITID = os.environ.get('GITCOMMITID', open('gitcommitid.txt', 'r').readline().strip())
-# GITCOMMITIDPATH = 'gitcommitid.txt'
-# if not os.path.isfile(GITCOMMITIDPATH):
-#     GITCOMMITIDPATH = os.path.join(os.path.dirname(sys.executable), 'gitcommitid.txt')
-# GITCOMMITID = open(GITCOMMITIDPATH, 'r').readline().strip()
 
 MULTIFILESETPATH = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset')
 FILESETPATH = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset/scan1')
@@ -35,12 +22,12 @@ APPLICATIONNAME = 'RapidExplorer'
 WINDOWTITLE = 'Mosamatic Desktop 1.0'
 
 LOGGER = Logger()
-LOGGER.info(f'WINDOWTITLE: {WINDOWTITLE}')
 
 
 class MainWindow(QMainWindow):
     def __init__(self, settingsPath: str) -> None:
         super(MainWindow, self).__init__()
+        LOGGER.info(f'MainWindow.__init__() settingsPath={settingsPath}')
         self._settings = QSettings(settingsPath, QSettings.Format.IniFormat)
         self._dataDockWidget = None
         self._tasksDockWidget = None
@@ -135,6 +122,7 @@ class MainWindow(QMainWindow):
     def importFile(self) -> None:
         filePath, _ = QFileDialog.getOpenFileName(self, 'Open File', FILEPATH)
         if filePath:
+            LOGGER.info(f'MainWindow.importFile() filePath={filePath}')
             self._progressBarDialog.show()
             self._progressBarDialog.setValue(0)
             self._dataManager.signal().progress.connect(self.fileImportProgress)
@@ -144,6 +132,7 @@ class MainWindow(QMainWindow):
     def importFileSet(self) -> None:
         dirPath = QFileDialog.getExistingDirectory(self, 'Open File Set', FILESETPATH)
         if dirPath:
+            LOGGER.info(f'MainWindow.importFileSet() dirPath={dirPath}')
             self._progressBarDialog.show()
             self._progressBarDialog.setValue(0)
             self._dataManager.signal().progress.connect(self.fileSetImportProgress)
@@ -155,9 +144,12 @@ class MainWindow(QMainWindow):
         resultCode = fileTypeDialog.show()
         if resultCode == FileTypeDialog.Accepted:
             fileType = fileTypeDialog.selectedFileType()
+            LOGGER.info(f'MainWindow.importFileSetWithFileType() fileType={fileType}')
             recursive = fileTypeDialog.recursive()
+            LOGGER.info(f'MainWindow.importFileSetWithFileType() recursive={recursive}')
             dirPath = QFileDialog.getExistingDirectory(self, 'Open File Set', FILESETPATH)
             if dirPath:
+                LOGGER.info(f'MainWindow.importFileSetWithFileType() dirPath={dirPath}')
                 self._progressBarDialog.show()
                 self._progressBarDialog.setValue(0)
                 self._dataManager.signal().progress.connect(self.fileSetImportProgress)
@@ -167,14 +159,13 @@ class MainWindow(QMainWindow):
     def deleteAllFileSets(self) -> None:
         self._dataManager.deleteAllFileSets()
         self._dataDockWidget.clearFileSets()
-        # Clear current viewer
 
     def resetLayout(self) -> None:
         self.restoreState(self._defaultLayout)
 
     def showApplicationInfo(self) -> None:
-        commitId = CommitId()
-        QMessageBox.information(self, 'Application Information', f'Git Commit ID: {commitId.value()}')
+        gitCommit = GitCommit()
+        QMessageBox.information(self, 'Application Information', f'Git Commit ID: {gitCommit.id()}')
 
     def exitApplication(self) -> None:
         self._settings.setValue('mainWindowSize', self.size())

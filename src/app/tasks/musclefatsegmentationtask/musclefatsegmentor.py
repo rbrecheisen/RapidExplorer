@@ -9,10 +9,10 @@ from typing import List
 
 from PySide6.QtCore import QSettings
 
-from utils import getPixelsFromDicomObject
+from utils import getPixelsFromDicomObject, SettingsIniFile
 
 # SETTINGSFILEPATH = os.environ.get('SETTINGSPATH', 'settings.ini')
-SETTINGSFILEPATH = 'settings.ini'
+SETTINGSFILEPATH = SettingsIniFile().path()
 
 
 class MuscleFatSegmentor:

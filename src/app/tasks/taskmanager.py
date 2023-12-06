@@ -9,9 +9,10 @@ from logger import Logger
 from data.fileset import FileSet
 from tasks.taskmanagersignal import TaskManagerSignal
 from tasks.task import Task
+from utils import SettingsIniFile
 
 # SETTINGSFILEPATH = os.environ.get('SETTINGSPATH', 'settings.ini')
-SETTINGSFILEPATH = 'settings.ini'
+SETTINGSFILEPATH = SettingsIniFile().path()
 
 LOGGER = Logger()
 

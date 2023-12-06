@@ -7,9 +7,10 @@ from PySide6.QtCore import QSettings
 from singleton import singleton
 from widgets.viewers.viewer import Viewer
 from widgets.viewers.viewermanagersignal import ViewerManagerSignal
+from utils import SettingsIniFile
 
 # SETTINGSFILEPATH = os.environ.get('SETTINGSPATH', 'settings.ini')
-SETTINGSFILEPATH = 'settings.ini'
+SETTINGSFILEPATH = SettingsIniFile().path()
 
 
 @singleton
