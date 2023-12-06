@@ -1,6 +1,9 @@
 *.sqlite3
 .DS_Store
 
+main.dist/
+main.build/
+
 *.app/
 *.zip
 *.dmg
