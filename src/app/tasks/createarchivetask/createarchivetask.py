@@ -6,9 +6,13 @@ from tasks.task import Task
 from tasks.tasksignal import TaskSignal
 from settings.settingfileset import SettingFileSet
 from settings.settingfilesetpath import SettingFileSetPath
-# from settings.settingtext import SettingText
+from settings.settinglabel import SettingLabel
 from data.fileset import FileSet
 from data.zipfiletype import ZipFileType
+
+DESCRIPTION = """
+This task creates a ZIP archive from the selected file set.
+"""
 
 
 class CreateArchiveTask(Task):
@@ -16,9 +20,9 @@ class CreateArchiveTask(Task):
 
     def __init__(self) -> None:
         super(CreateArchiveTask, self).__init__()
-        self.settings().add(SettingFileSet(name='inputFileSetName', displayName='File Set to Compress'))
+        self.settings().add(SettingLabel(name='description', value=DESCRIPTION))
+        self.settings().add(SettingFileSet(name='inputFileSetName', displayName='File Set to Create Archive For'))
         self.settings().add(SettingFileSetPath(name='outputDirectoryPath', displayName='Output Directory Path'))
-        # self.settings().add(SettingText(name='zipFileName', displayName='ZIP File Name', optional=True))
         self._signal = TaskSignal()
 
     def signal(self) -> TaskSignal:

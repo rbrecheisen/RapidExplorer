@@ -9,9 +9,14 @@ from settings.settingfilesetpath import SettingFileSetPath
 from settings.settingtext import SettingText
 from settings.settingfileset import SettingFileSet
 from settings.settingboolean import SettingBoolean
+from settings.settinglabel import SettingLabel
 from tasks.bodycompositiontask.bodycompositioncalculator import BodyCompositionCalculator
 from data.fileset import FileSet
 from utils import createNameWithTimestamp
+
+DESCRIPTION = """
+This task calculates body composition metrics for segmentation masks created with MuscleFatSegmentationTask.
+"""
 
 
 class BodyCompositionTask(Task):
@@ -19,6 +24,7 @@ class BodyCompositionTask(Task):
 
     def __init__(self) -> None:
         super(BodyCompositionTask, self).__init__()
+        self.settings().add(SettingLabel(name='description', value=DESCRIPTION))
         self.settings().add(SettingFileSet(name='dicomFileSetName', displayName='DICOM File Set'))
         self.settings().add(SettingFileSet(name='segmentationFileSetName', displayName='Segmentation File Set'))
         self.settings().add(SettingFilePath(name='patientHeightsCsvFilePath', displayName='Patient Heights (*.csv)', optional=True))

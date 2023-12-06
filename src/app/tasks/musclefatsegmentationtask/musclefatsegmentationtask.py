@@ -7,9 +7,14 @@ from tasks.tasksignal import TaskSignal
 from settings.settingfilesetpath import SettingFileSetPath
 from settings.settingtext import SettingText
 from settings.settingfileset import SettingFileSet
+from settings.settinglabel import SettingLabel
 from tasks.musclefatsegmentationtask.musclefatsegmentor import MuscleFatSegmentor
 from data.fileset import FileSet
 from utils import createNameWithTimestamp
+
+DESCRIPTION = """
+This task creates muscle and fat segmentation masks for the given DICOM file set using the selected TensorFlow model.
+"""
 
 
 class MuscleFatSegmentationTask(Task):
@@ -17,6 +22,7 @@ class MuscleFatSegmentationTask(Task):
     
     def __init__(self) -> None:
         super(MuscleFatSegmentationTask, self).__init__()
+        self.settings().add(SettingLabel(name='description', value=DESCRIPTION))
         self.settings().add(SettingFileSet(name='dicomFileSetName', displayName='DICOM File Set'))
         self.settings().add(SettingFileSet(name='tensorFlowModelFileSetName', displayName='TensorFlow Model File Set'))
         self.settings().add(SettingFileSetPath(name='outputFileSetPath', displayName='Output File Set Path'))

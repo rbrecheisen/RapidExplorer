@@ -7,6 +7,7 @@ from widgets.settingfilesetpathwidget import SettingFileSetPathWidget
 from widgets.settingfilesetwidget import SettingFileSetWidget
 from widgets.settingfloatingpointwidget import SettingFloatingPointWidget
 from widgets.settingintegerwidget import SettingIntegerWidget
+from widgets.settinglabelwidget import SettingLabelWidget
 from widgets.settingoptionlistwidget import SettingOptionListWidget
 from widgets.settingtextwidget import SettingTextWidget
 
@@ -25,12 +26,14 @@ class TaskSettingsDialog(QDialog):
         self._taskSettingWidgets = self.createTaskSettingWidgets()
         layout = QVBoxLayout()
         for name in self._taskSettingWidgets.keys():
-            layout.addWidget(self._taskSettingWidgets[name][1])   # First widget display label
-            layout.addWidget(self._taskSettingWidgets[name][0])   # Then widget
+            displayLabel = self._taskSettingWidgets[name][1]
+            if displayLabel:
+                layout.addWidget(displayLabel)   # First widget display label
+            layout.addWidget(self._taskSettingWidgets[name][0])   # Then widget itself
         layout.addWidget(self.createButtonsWidget())
         layout.setAlignment(Qt.AlignTop)
         self.setLayout(layout)
-        self.resize(self.sizeHint())
+        # self.resize(self.sizeHint())
         self.setFixedWidth(400)
         self.setWindowTitle(self._taskSettings.name())
 
@@ -59,6 +62,10 @@ class TaskSettingsDialog(QDialog):
                 widget = SettingIntegerWidget(setting=setting, parent=self)
                 widget.setRange(setting.minimum(), setting.maximum())
                 self._taskSettingWidgets[setting.name()] = (widget, self.createLabel(setting=setting))
+
+            elif settings.isTypeLabel(setting) and setting.visible():
+                widget = SettingLabelWidget(setting=setting, parent=self)
+                self._taskSettingWidgets[setting.name()] = (widget, None)
 
             elif settings.isTypeOptionList(setting) and setting.visible():
                 widget = SettingOptionListWidget(setting=setting, parent=self)

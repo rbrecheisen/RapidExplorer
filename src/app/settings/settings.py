@@ -6,6 +6,7 @@ from settings.settingfilesetpath import SettingFileSetPath
 from settings.settingfileset import SettingFileSet
 from settings.settingfloatingpoint import SettingFloatingPoint
 from settings.settinginteger import SettingInteger
+from settings.settinglabel import SettingLabel
 from settings.settingoptionlist import SettingOptionList
 from settings.settingtext import SettingText
 
@@ -41,6 +42,9 @@ class Settings:
 
     def isTypeInteger(self, setting: Setting) -> bool:
         return isinstance(setting, SettingInteger)
+    
+    def isTypeLabel(self, setting: Setting) -> bool:
+        return isinstance(setting, SettingLabel)
 
     def isTypeOptionList(self, setting: Setting) -> bool:
         return isinstance(setting, SettingOptionList)

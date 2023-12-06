@@ -5,11 +5,13 @@ from typing import List
 from PySide6.QtCore import QSettings, QThreadPool
 
 from singleton import singleton
+from logger import Logger
 from data.fileset import FileSet
 from tasks.taskmanagersignal import TaskManagerSignal
 from tasks.task import Task
 
 SETTINGSFILEPATH = os.environ.get('SETTINGSPATH', 'settings.ini')
+LOGGER = Logger()
 
 
 @singleton
@@ -27,10 +29,13 @@ class TaskManager:
         from tasks.musclefatsegmentationtask.musclefatsegmentationtask import MuscleFatSegmentationTask
         from tasks.bodycompositiontask.bodycompositiontask import BodyCompositionTask
         from tasks.createarchivetask.createarchivetask import CreateArchiveTask
+        from tasks.createpngsfrommusclefatsegmentationtask.createpngsfrommusclefatsegmentationtask import CreatePngsFromMuscleFatSegmentationTask
+        
         self._taskTypes = {
             MuscleFatSegmentationTask.NAME: MuscleFatSegmentationTask,
             BodyCompositionTask.NAME: BodyCompositionTask,
             CreateArchiveTask.NAME: CreateArchiveTask,
+            CreatePngsFromMuscleFatSegmentationTask.NAME: CreatePngsFromMuscleFatSegmentationTask,
         }
 
     def taskTypes(self) -> List[Task]:
