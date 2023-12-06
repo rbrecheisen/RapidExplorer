@@ -6,13 +6,14 @@ from PySide6.QtWidgets import QApplication
 from mainwindow import MainWindow
 from logger import Logger
 
+SETTINGSPATH = os.environ.get('SETTINGSPATH', 'settings.ini')
+LOGGER = Logger()
+LOGGER.info(f'SETTINGSPATH: {SETTINGSPATH}')
+
 
 def main():
     app = QApplication([])
-    settingsPath = os.environ.get('SETTINGSPATH', 'settings.ini')
-    logger = Logger()
-    logger.info(f'SETTINGSPATH: {settingsPath}')
-    mainWindow = MainWindow(settingsPath=settingsPath)
+    mainWindow = MainWindow(settingsPath=SETTINGSPATH)
     mainWindow.show()
     sys.exit(app.exec())
 

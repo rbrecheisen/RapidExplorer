@@ -30,6 +30,7 @@ class TaskManager:
         self._taskTypes = {
             MuscleFatSegmentationTask.NAME: MuscleFatSegmentationTask,
             BodyCompositionTask.NAME: BodyCompositionTask,
+            CreateArchiveTask.NAME: CreateArchiveTask,
         }
 
     def taskTypes(self) -> List[Task]:
