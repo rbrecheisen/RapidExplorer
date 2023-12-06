@@ -14,6 +14,7 @@ from widgets.mainviewerdockwidget import MainViewerDockWidget
 from widgets.filetypedialog import FileTypeDialog
 
 SETTINGSPATH = os.environ.get('SETTINGSPATH', 'settings.ini')
+GITCOMMITID = os.environ.get('GITCOMMITID', open('gitcommitid.txt', 'r').readline().strip())
 MULTIFILESETPATH = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset')
 FILESETPATH = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset/scan1')
 FILEPATH = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset/scan1/image-00000.dcm')
@@ -108,7 +109,7 @@ class MainWindow(QMainWindow):
         self.centralWidget().hide()
         self.splitDockWidget(self._dataDockWidget, self._tasksDockWidget, Qt.Vertical)
         self.splitDockWidget(self._mainViewDockWidget, self._viewsDockWidget, Qt.Vertical)
-        self.setWindowTitle(WINDOWTITLE)
+        self.setWindowTitle(WINDOWTITLE + f' [{GITCOMMITID}]')
         self.setWindowSize()
         self.centerWindow()
         self.saveDefaultLayout()

@@ -4,13 +4,11 @@ export NUITKA_CCACHE_BINARY=none
 
 export APPNAME=MosamaticDesktop
 
-#######
-# TODO:
-# Include Git commit ID somewhere!
-#######
-
 # Clean up leftovers
 rm -rf main.build ${APPNAME}
+
+# Get Git commit ID and store in text file
+echo "$(git rev-parse HEAD)" > gitcommitid.txt
 
 # Compile Qt resources (if any)
 ~/.venv/RapidExplorer/bin/pyside6-rcc -o src/app/resources.py src/app/resources.qrc
@@ -24,6 +22,7 @@ rm -rf main.build ${APPNAME}
 mv main.dist ${APPNAME}
 cp settings.ini ${APPNAME}
 cp run.sh ${APPNAME}
+cp gitcommitid.txt ${APPNAME}
 mv ${APPNAME}/run.sh ${APPNAME}/${APPNAME}
 chmod +x ${APPNAME}/${APPNAME}
 
