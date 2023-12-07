@@ -14,6 +14,7 @@ from widgets.viewers.dicomviewer.dicomattributelayer import DicomAttributeLayer
 from data.datamanager import DataManager
 from settings.settingfileset import SettingFileSet
 from widgets.viewers.dicomviewer.dicomfile import DicomFile
+from utils import applyWindowCenterAndWidth
 
 SETTINGSPATH = os.environ.get('SETTINGSPATH', 'settings.ini')
 
@@ -37,7 +38,7 @@ class DicomViewer(Viewer):
 
     def initSettings(self) -> None:
         self.settings().add(SettingFileSet(name='dicomFileSetName', displayName='Images'))
-        self.settings().add(SettingFileSet(name='segmentationFileSetName', displayName='Segmentations'))
+        self.settings().add(SettingFileSet(name='segmentationFileSetName', displayName='Segmentations', optional=True))
 
     def initUi(self) -> None:
         self.initGraphicsView()
@@ -91,7 +92,7 @@ class DicomViewer(Viewer):
         pixelArray = p.pixel_array
         if 'RescaleSlope' in p and 'RescaleIntercept' in p:
             pixelArray = pixelArray * p.RescaleSlope + p.RescaleIntercept
-        pixelArray = self.applyWindowCenterAndWidth(pixelArray, self._windowCenter, self._windowWidth)
+        pixelArray = applyWindowCenterAndWidth(pixelArray, self._windowCenter, self._windowWidth)
         if pixelArray.dtype != np.uint8:
             pixelArray = pixelArray.astype(np.uint8)
         height, width = pixelArray.shape
@@ -104,12 +105,12 @@ class DicomViewer(Viewer):
         layer.setInstanceNumber(dicomFile.data().InstanceNumber)
         return layer
 
-    def applyWindowCenterAndWidth(self, image, center, width) -> np.array:
-        imageMin = center - width // 2
-        imageMax = center + width // 2
-        windowedImage = np.clip(image, imageMin, imageMax)
-        windowedImage = ((windowedImage - imageMin) / (imageMax - imageMin)) * 255.0
-        return windowedImage.astype(np.uint8)
+    # def applyWindowCenterAndWidth(self, image, center, width) -> np.array:
+    #     imageMin = center - width // 2
+    #     imageMax = center + width // 2
+    #     windowedImage = np.clip(image, imageMin, imageMax)
+    #     windowedImage = ((windowedImage - imageMin) / (imageMax - imageMin)) * 255.0
+    #     return windowedImage.astype(np.uint8)
     
     def windowCenterAndWidth(self) -> List[int]:
         windowCenter = self._qsettings.value('dicomViewerWindowCenter', None)

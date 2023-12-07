@@ -9,7 +9,7 @@ from typing import List
 
 from PySide6.QtCore import QSettings
 
-from utils import getPixelsFromDicomObject, SettingsIniFile
+from utils import getPixelsFromDicomObject, SettingsIniFile, convertLabelsTo157, normalizeBetween
 
 # SETTINGSFILEPATH = os.environ.get('SETTINGSPATH', 'settings.ini')
 SETTINGSFILEPATH = SettingsIniFile().path()
@@ -94,19 +94,9 @@ class MuscleFatSegmentor:
             self.updateProgress()
         return model, contourModel, parameters
     
-    @staticmethod
-    def normalize(img, minBound, maxBound):
-        img = (img - minBound) / (maxBound - minBound)
-        img[img > 1] = 0
-        img[img < 0] = 0
-        c = (img - np.min(img))
-        d = (np.max(img) - np.min(img))
-        img = np.divide(c, d, np.zeros_like(c), where=d != 0)
-        return img
-
     def predictContour(self, contourModel, sourceImage, parameters):
         ct = np.copy(sourceImage)
-        ct = self.normalize(ct, parameters['min_bound_contour'], parameters['max_bound_contour'])
+        ct = normalizeBetween(ct, parameters['min_bound_contour'], parameters['max_bound_contour'])
         img2 = np.expand_dims(ct, 0)
         img2 = np.expand_dims(img2, -1)
         pred = contourModel.predict([img2])
@@ -114,14 +104,6 @@ class MuscleFatSegmentor:
         pred_max = predSqueeze.argmax(axis=-1)
         mask = np.uint8(pred_max)
         return mask
-
-    @staticmethod
-    def convertLabelsTo157(prediction):
-        newPrediction = np.copy(prediction)
-        newPrediction[newPrediction == 1] = 1
-        newPrediction[newPrediction == 2] = 5
-        newPrediction[newPrediction == 3] = 7
-        return newPrediction
 
     def execute(self) -> List[str]:
         model, contourModel, params = self.loadModelFiles()
@@ -134,10 +116,10 @@ class MuscleFatSegmentor:
                 img1 = getPixelsFromDicomObject(p, normalize=True)
                 if contourModel is not None:
                     mask = self.predictContour(contourModel, img1, params)
-                    img1 = self.normalize(img1, params['min_bound'], params['max_bound'])
+                    img1 = self.normalizeBetween(img1, params['min_bound'], params['max_bound'])
                     img1 = img1 * mask
                 else:
-                    img1 = self.normalize(img1, params['min_bound'], params['max_bound'])
+                    img1 = self.normalizeBetween(img1, params['min_bound'], params['max_bound'])
                 img1 = img1.astype(np.float32)
                 img2 = np.expand_dims(img1, 0)
                 img2 = np.expand_dims(img2, -1)

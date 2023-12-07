@@ -5,7 +5,7 @@ import pandas as pd
 
 from typing import List, Dict
 
-from utils import getPixelsFromDicomObject
+from utils import getPixelsFromDicomObject, calculateArea, calculateMeanRadiationAttennuation
 
 
 class BodyCompositionCalculator:
@@ -39,27 +39,27 @@ class BodyCompositionCalculator:
     def setPatientHeights(self, patientHeights: Dict[str, float]) -> None:
         self._patientHeights = patientHeights
 
-    @staticmethod
-    def calculateArea(labels, label, pixelSpacing):
-        mask = np.copy(labels)
-        mask[mask != label] = 0
-        mask[mask == label] = 1
-        area = np.sum(mask) * (pixelSpacing[0] * pixelSpacing[1]) / 100.0
-        return area
+    # @staticmethod
+    # def calculateArea(labels, label, pixelSpacing):
+    #     mask = np.copy(labels)
+    #     mask[mask != label] = 0
+    #     mask[mask == label] = 1
+    #     area = np.sum(mask) * (pixelSpacing[0] * pixelSpacing[1]) / 100.0
+    #     return area
 
-    @staticmethod
-    def calculateMeanRadiationAttennuation(image, labels, label):
-        mask = np.copy(labels)
-        mask[mask != label] = 0
-        mask[mask == label] = 1
-        subtracted = image * mask
-        maskSum = np.sum(mask)
-        if maskSum > 0.0:
-            meanRadiationAttenuation = np.sum(subtracted) / np.sum(mask)
-        else:
-            print('Sum of mask pixels is zero, return zero radiation attenuation')
-            meanRadiationAttenuation = 0.0
-        return meanRadiationAttenuation
+    # @staticmethod
+    # def calculateMeanRadiationAttennuation(image, labels, label):
+    #     mask = np.copy(labels)
+    #     mask[mask != label] = 0
+    #     mask[mask == label] = 1
+    #     subtracted = image * mask
+    #     maskSum = np.sum(mask)
+    #     if maskSum > 0.0:
+    #         meanRadiationAttenuation = np.sum(subtracted) / np.sum(mask)
+    #     else:
+    #         print('Sum of mask pixels is zero, return zero radiation attenuation')
+    #         meanRadiationAttenuation = 0.0
+    #     return meanRadiationAttenuation
     
     @staticmethod
     def loadDicomFile(filePath: str):
@@ -88,12 +88,12 @@ class BodyCompositionCalculator:
             segmentations = self.loadSegmentation(filePair[1])
             self.outputMetrics[filePair[0]] = {}
             self.outputMetrics[filePair[0]] = {
-                'muscle_area': self.calculateArea(segmentations, BodyCompositionCalculator.MUSCLE, pixelSpacing),
-                'vat_area': self.calculateArea(segmentations, BodyCompositionCalculator.VAT, pixelSpacing),
-                'sat_area': self.calculateArea(segmentations, BodyCompositionCalculator.SAT, pixelSpacing),
-                'muscle_ra': self.calculateMeanRadiationAttennuation(image, segmentations, BodyCompositionCalculator.MUSCLE),
-                'vat_ra': self.calculateMeanRadiationAttennuation(image, segmentations, BodyCompositionCalculator.VAT),
-                'sat_ra': self.calculateMeanRadiationAttennuation(image, segmentations, BodyCompositionCalculator.SAT),
+                'muscle_area': calculateArea(segmentations, BodyCompositionCalculator.MUSCLE, pixelSpacing),
+                'vat_area': calculateArea(segmentations, BodyCompositionCalculator.VAT, pixelSpacing),
+                'sat_area': calculateArea(segmentations, BodyCompositionCalculator.SAT, pixelSpacing),
+                'muscle_ra': calculateMeanRadiationAttennuation(image, segmentations, BodyCompositionCalculator.MUSCLE),
+                'vat_ra': calculateMeanRadiationAttennuation(image, segmentations, BodyCompositionCalculator.VAT),
+                'sat_ra': calculateMeanRadiationAttennuation(image, segmentations, BodyCompositionCalculator.SAT),
             }
             print(f'{filePair[0]}')
             print(' - muscle_area: {}'.format(self.outputMetrics[filePair[0]]['muscle_area']))

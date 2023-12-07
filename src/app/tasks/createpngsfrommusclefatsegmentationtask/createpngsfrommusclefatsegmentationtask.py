@@ -28,17 +28,13 @@ class CreatePngsFromMuscleFatSegmentationTask(Task):
         return self._signal
     
     def run(self) -> FileSet:
-
         # # Collect input settings
-        # inputFileSetName = self.settings().setting(name='inputFileSetName').value()
-        # inputFileSet = self.dataManager().fileSetByName(name=inputFileSetName)
-        # outputDirectoryPath = self.settings().setting(name='outputDirectoryPath').value()
-        # zipFileName = createNameWithTimestamp(inputFileSet.name()) + '.zip'
-        # # Create ZIP file
-        # outputZipFilePath = os.path.join(outputDirectoryPath, zipFileName)
-        # with zipfile.ZipFile(outputZipFilePath, 'w') as zipObj:
-        #     for file in inputFileSet.files():
-        #         zipObj.write(file.path(), arcname=os.path.basename(file.path()))
+        dicomFileSetName = self.settings().setting(name='dicomFileSetName').value()
+        dicomFileSet = self.dataManager().fileSetByName(name=dicomFileSetName)
+        
+        segmentationFileSetName = self.settings().setting(name='segmentationFileSetName').value()
+        segmentationFileSet = self.dataManager().fileSetByName(name=segmentationFileSetName)
+        outputDirectoryPath = self.settings().setting(name='outputDirectoryPath').value()
         # # Create output fileset
         # outputFileSet = self.dataManager().importFileSet(fileSetPath=outputDirectoryPath, fileType=ZipFileType)
         # self.signal().finished.emit(outputFileSet)
