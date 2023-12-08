@@ -71,21 +71,15 @@ class DataManager:
             self.signal().finished.emit(fileSet)
         return fileSet
     
-    def importFileSet(self, fileSetPath: str, fileType: FileType=AllFileType, recursive=True) -> FileSet:
+    def importFileSet(self, fileSetPath: str, fileType: FileType=AllFileType) -> FileSet:
         LOGGER.info(f'DataManager.importFileSet() fileSetPath={fileSetPath}, fileType={fileType}, recursive={recursive}')
         filesToIgnore = self.settings().value('filesToIgnore')
         nrFiles = 0
-        if recursive:
-            for root, dirs, files in os.walk(fileSetPath):
-                for fileName in files:
-                    filePath = os.path.join(root, fileName)
-                    if fileName not in filesToIgnore and fileType.check(filePath=filePath):
-                        nrFiles +=1
-        else:
-            for fileName in os.listdir(fileSetPath):
-                filePath = os.path.join(fileSetPath, fileName)
+        for root, dirs, files in os.walk(fileSetPath):
+            for fileName in files:
+                filePath = os.path.join(root, fileName)
                 if fileName not in filesToIgnore and fileType.check(filePath=filePath):
-                    nrFiles += 1
+                    nrFiles +=1
         if nrFiles == 0:
             self.signal().finished.emit(None)
             return None
@@ -94,24 +88,14 @@ class DataManager:
             fileSetName = fileSetPath.split(os.path.sep)[-1]
             fileSetModel = FileSetModel(name=fileSetName, path=fileSetPath)
             session.add(fileSetModel)
-            if recursive:
-                for root, dirs, files in os.walk(fileSetPath):
-                    for fileName in files:
-                        filePath = os.path.join(root, fileName)
-                        if fileName not in filesToIgnore and fileType.check(filePath=filePath):
-                            extendedFileName = os.path.join(os.path.relpath(root, fileSetPath), fileName)
-                            if extendedFileName.startswith('./'):
-                                extendedFileName = extendedFileName[2:]
-                            fileModel = FileModel(name=extendedFileName, path=filePath, fileSetModel=fileSetModel)
-                            session.add(fileModel)
-                            progress = int((i + 1) / nrFiles * 100)
-                            self.signal().progress.emit(progress)
-                            i += 1
-            else:                
-                for fileName in os.listdir(fileSetPath):
-                    filePath = os.path.join(fileSetPath, fileName)
+            for root, dirs, files in os.walk(fileSetPath):
+                for fileName in files:
+                    filePath = os.path.join(root, fileName)
                     if fileName not in filesToIgnore and fileType.check(filePath=filePath):
-                        fileModel = FileModel(name=fileName, path=filePath, fileSetModel=fileSetModel)
+                        extendedFileName = os.path.join(os.path.relpath(root, fileSetPath), fileName)
+                        if extendedFileName.startswith('./'):
+                            extendedFileName = extendedFileName[2:]
+                        fileModel = FileModel(name=extendedFileName, path=filePath, fileSetModel=fileSetModel)
                         session.add(fileModel)
                         progress = int((i + 1) / nrFiles * 100)
                         self.signal().progress.emit(progress)
