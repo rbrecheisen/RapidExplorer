@@ -6,6 +6,9 @@ from widgets.tasksettingsdialog import TaskSettingsDialog
 from tasks.taskmanager import TaskManager
 from tasks.tasksignal import TaskSignal
 from tasks.taskoutput import TaskOutput
+from logger import Logger
+
+LOGGER = Logger()
 
 
 class TaskDockWidget(DockWidget):
@@ -66,6 +69,7 @@ class TaskDockWidget(DockWidget):
         taskName = self._tasksComboBox.itemText(index)
         if taskName:
             self._showSettingsDialogButton.setEnabled(True)
+            LOGGER.info(f'TaskDockWidget.currentIndexChanged() Creating new task instance: {taskName}')
             self._currentTask = self._taskManager.createTaskFromTaskTypeName(name=taskName)
         else:
             self._showSettingsDialogButton.setEnabled(False)
@@ -75,7 +79,9 @@ class TaskDockWidget(DockWidget):
     def showSettingsDialog(self) -> None:
         taskName = self._tasksComboBox.currentText()
         if taskName:
+            LOGGER.info(f'TaskDockWidget.showSettingsDialog() currentTask={self._currentTask}')
             if not self._currentTask:
+                LOGGER.info(f'TaskDockWidget.showSettingsDialog() Creating new task instance for: {taskName}')
                 self._currentTask = self._taskManager.createTaskFromTaskTypeName(name=taskName)
             settingsDialog = TaskSettingsDialog(self._currentTask.settings())
             resultCode = settingsDialog.show()

@@ -40,6 +40,8 @@ class TaskManager:
             CreatePngsFromMuscleFatSegmentationTask.NAME: CreatePngsFromMuscleFatSegmentationTask,
             MuscleFatSegmentationTask.NAME: MuscleFatSegmentationTask,
         }
+        for k in self._taskTypes.keys():
+            LOGGER.info(f'Loaded task {k}')
 
     def taskTypes(self) -> List[Task]:
         return self._taskTypes
@@ -52,6 +54,7 @@ class TaskManager:
     
     def runTask(self, task: Task, background=True) -> None:
         # background = False
+        LOGGER.info(f'Running task {task.name()} with background={background}')
         task.signal().progress.connect(self.taskProgress)
         task.signal().finished.connect(self.taskFinished)
         if background:

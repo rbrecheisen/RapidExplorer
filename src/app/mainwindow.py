@@ -196,6 +196,7 @@ class MainWindow(QMainWindow):
 
     def taskFinished(self, taskOutput: TaskOutput) -> None:
         # Show success and error info?
+        LOGGER.info(f'MainWindow.taskFinished() taskOutput={taskOutput}, fileSet={taskOutput.fileSet()}')
         self._dataDockWidget.addFileSet(fileSet=taskOutput.fileSet())
 
     # Miscellaneous
