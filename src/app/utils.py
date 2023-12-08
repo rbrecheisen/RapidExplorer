@@ -173,7 +173,10 @@ def convertNumPyArrayToPngImage(
         numpyArray = applyColorMap(pixels=numpyArray, colorMap=colorMap)
     fig = plt.figure(figsize=(figureWidth, figureHeight))
     ax = fig.add_subplot(1, 1, 1)
-    plt.imshow(numpyArray)
+    if colorMap:
+        plt.imshow(numpyArray)
+    else:
+        plt.imshow(numpyArray, cmap='gray')
     ax.axis('off')
     if not pngImageFileName:
         numpyArrayFileName = os.path.split(numpyArrayFilePathOrObject)[1]
