@@ -9,6 +9,7 @@ from tasks.taskoutput import TaskOutput
 from data.fileset import FileSet
 from settings.settinglabel import SettingLabel
 from settings.settingfileset import SettingFileSet
+from settings.settinginteger import SettingInteger
 from settings.settingfilesetpath import SettingFileSetPath
 from settings.settingboolean import SettingBoolean
 from settings.settingtext import SettingText
