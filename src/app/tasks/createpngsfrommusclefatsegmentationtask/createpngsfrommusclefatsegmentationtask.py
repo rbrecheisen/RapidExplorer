@@ -45,7 +45,7 @@ class CreatePngsFromMuscleFatSegmentationTask(Task):
         dicomFileSetName = self.settings().setting(name='dicomFileSetName').value()
         dicomFileSet = self.dataManager().fileSetByName(name=dicomFileSetName)
         for dicomFile in dicomFileSet.files():
-            numpyArray = convertDicomToNumPyArray(dicomFile.path(), windowCenter=400, windowWidth=50)
+            numpyArray = convertDicomToNumPyArray(dicomFile.path(), windowCenter=50, windowWidth=400)
             convertNumPyArrayToPngImage(
                 numpyArrayFilePathOrObject=numpyArray, 
                 colorMap=AlbertaColorMap(),
