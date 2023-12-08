@@ -29,16 +29,15 @@ class TaskManager:
         return self._signal
 
     def loadTaskTypes(self) -> None:
-        from tasks.musclefatsegmentationtask.musclefatsegmentationtask import MuscleFatSegmentationTask
         from tasks.bodycompositiontask.bodycompositiontask import BodyCompositionTask
         from tasks.createarchivetask.createarchivetask import CreateArchiveTask
         from tasks.createpngsfrommusclefatsegmentationtask.createpngsfrommusclefatsegmentationtask import CreatePngsFromMuscleFatSegmentationTask
-        
+        from tasks.musclefatsegmentationtask.musclefatsegmentationtask import MuscleFatSegmentationTask        
         self._taskTypes = {
-            MuscleFatSegmentationTask.NAME: MuscleFatSegmentationTask,
             BodyCompositionTask.NAME: BodyCompositionTask,
             CreateArchiveTask.NAME: CreateArchiveTask,
             CreatePngsFromMuscleFatSegmentationTask.NAME: CreatePngsFromMuscleFatSegmentationTask,
+            MuscleFatSegmentationTask.NAME: MuscleFatSegmentationTask,
         }
 
     def taskTypes(self) -> List[Task]:

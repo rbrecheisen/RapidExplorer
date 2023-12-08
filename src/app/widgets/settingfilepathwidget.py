@@ -7,11 +7,9 @@ class TaskSettingFilePathWidget(QWidget):
     def __init__(self, setting: Setting, parent: QWidget=None) -> None:
         super(TaskSettingFilePathWidget, self).__init__(parent=parent)
         self._setting = setting
-        self._filePathLineEdit = None
-        self.initUi()
-
-    def initUi(self) -> None:
         self._filePathLineEdit = QLineEdit(self)
+        if self._setting.value():
+            self._filePathLineEdit.setTex(self._setting.value())
         button = QPushButton('Select File Path...', self)
         button.setFixedWidth(150)
         button.clicked.connect(self.showFileDialog)

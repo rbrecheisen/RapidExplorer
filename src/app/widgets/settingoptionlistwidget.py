@@ -7,11 +7,8 @@ class SettingOptionListWidget(QComboBox):
     def __init__(self, setting: Setting, parent: QWidget=None) -> None:
         super(SettingOptionListWidget, self).__init__(parent=parent)
         self._setting = setting
+        self.addItem(None)        
         self.currentIndexChanged.connect(self.settingChanged)
-        self.initUi()
-
-    def initUi(self) -> None:
-        self.addItem(None)
 
     def addOption(self, option: str) -> None:
         self.addItem(option)

@@ -59,7 +59,8 @@ class DataManager:
         LOGGER.info(f'DataManager.importFile() filePath={filePath}')
         with DbSession() as session:
             fileSetPath = os.path.split(filePath)[0]
-            fileSetModel = FileSetModel(path=fileSetPath)
+            fileSetName = fileSetPath.split(os.path.sep)[-1]
+            fileSetModel = FileSetModel(name=fileSetName, path=fileSetPath)
             session.add(fileSetModel)
             fileName = os.path.split(filePath)[1]
             fileModel = FileModel(name=fileName, path=filePath, fileSetModel=fileSetModel)
@@ -70,7 +71,7 @@ class DataManager:
             self.signal().finished.emit(fileSet)
         return fileSet
     
-    def importFileSet(self, fileSetPath: str, fileType: FileType=AllFileType, recursive=False) -> FileSet:
+    def importFileSet(self, fileSetPath: str, fileType: FileType=AllFileType, recursive=True) -> FileSet:
         LOGGER.info(f'DataManager.importFileSet() fileSetPath={fileSetPath}, fileType={fileType}, recursive={recursive}')
         filesToIgnore = self.settings().value('filesToIgnore')
         LOGGER.info(f'DataManager.importFileSet() filesToIgnore={filesToIgnore}')
@@ -91,7 +92,8 @@ class DataManager:
             return None
         i = 0
         with DbSession() as session:
-            fileSetModel = FileSetModel(path=fileSetPath)
+            fileSetName = fileSetPath.split(os.path.sep)[-1]
+            fileSetModel = FileSetModel(name=fileSetName, path=fileSetPath)
             session.add(fileSetModel)
             if recursive:
                 for root, dirs, files in os.walk(fileSetPath):

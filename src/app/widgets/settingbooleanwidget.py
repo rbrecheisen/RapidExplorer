@@ -9,11 +9,10 @@ class SettingBooleanWidget(QCheckBox):
         super(SettingBooleanWidget, self).__init__(parent=parent)
         self._setting = setting
         self.stateChanged.connect(self.settingChanged)
-        if self._setting.defaultValue():
-            self.setCheckState(Qt.Checked)
-        else:
-            self.setCheckState(Qt.NotChecked)
+        if self._setting.value():
+            self.setCheckState(Qt.Checked if self._setting.value() else Qt.NotChecked)
+        elif self._setting.defaultValue():
+            self.setCheckState(Qt.Checked if self._setting.defaultValue() else Qt.NotChecked)
 
     def settingChanged(self, state: int) -> None:
-        value = True if state == Qt.Checked else False
-        self._setting.setValue(value)
+        self._setting.setValue(True if state == Qt.Checked else False)

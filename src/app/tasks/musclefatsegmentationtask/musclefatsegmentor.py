@@ -116,10 +116,10 @@ class MuscleFatSegmentor:
                 img1 = getPixelsFromDicomObject(p, normalize=True)
                 if contourModel is not None:
                     mask = self.predictContour(contourModel, img1, params)
-                    img1 = self.normalizeBetween(img1, params['min_bound'], params['max_bound'])
+                    img1 = normalizeBetween(img1, params['min_bound'], params['max_bound'])
                     img1 = img1 * mask
                 else:
-                    img1 = self.normalizeBetween(img1, params['min_bound'], params['max_bound'])
+                    img1 = normalizeBetween(img1, params['min_bound'], params['max_bound'])
                 img1 = img1.astype(np.float32)
                 img2 = np.expand_dims(img1, 0)
                 img2 = np.expand_dims(img2, -1)
@@ -127,7 +127,7 @@ class MuscleFatSegmentor:
                 predSqueeze = np.squeeze(pred)
                 if self.mode() == MuscleFatSegmentor.ARGMAX:
                     predMax = predSqueeze.argmax(axis=-1)
-                    predMax = self.convertLabelsTo157(predMax)
+                    predMax = convertLabelsTo157(predMax)
                     segmentationFile = os.path.join(self.outputDirectory(), f'{fileName}.seg.npy')
                     self._outputFiles.append(segmentationFile)
                     np.save(segmentationFile, predMax)

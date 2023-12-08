@@ -9,13 +9,12 @@ class SettingFileSetWidget(QComboBox):
         super(SettingFileSetWidget, self).__init__(parent=parent)
         self._setting = setting
         self._dataManager = DataManager()
-        self.currentIndexChanged.connect(self.settingChanged)
-        self.initUi()
-
-    def initUi(self) -> None:
         self.addItem(None)
         for fileSet in self._dataManager.fileSets():
             self.addItem(fileSet.name())
+        if self._setting.value():
+            self.setCurrentText(self._setting.value())
+        self.currentIndexChanged.connect(self.settingChanged)
 
     def settingChanged(self, index: int) -> None:
         value = self.currentText()

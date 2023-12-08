@@ -1,4 +1,5 @@
 import os
+import shutil
 
 from typing import List
 
@@ -8,6 +9,7 @@ from settings.settingfilesetpath import SettingFileSetPath
 from settings.settingtext import SettingText
 from settings.settingfileset import SettingFileSet
 from settings.settinglabel import SettingLabel
+from settings.settingboolean import SettingBoolean
 from tasks.musclefatsegmentationtask.musclefatsegmentor import MuscleFatSegmentor
 from data.fileset import FileSet
 from utils import createNameWithTimestamp
@@ -27,6 +29,7 @@ class MuscleFatSegmentationTask(Task):
         self.settings().add(SettingFileSet(name='tensorFlowModelFileSetName', displayName='TensorFlow Model File Set'))
         self.settings().add(SettingFileSetPath(name='outputFileSetPath', displayName='Output File Set Path'))
         self.settings().add(SettingText(name='outputFileSetName', displayName='Output File Set Name', optional=True))
+        self.settings().add(SettingBoolean(name='overwritePreviousOutputFileSet', displayName='Overwrite Previous Output File Set', optional=True, defaultValue=False))
         self._signal = TaskSignal()
 
     def signal(self) -> TaskSignal:
@@ -51,6 +54,9 @@ class MuscleFatSegmentationTask(Task):
         if not outputFileSetName:
             outputFileSetName = createNameWithTimestamp(prefix='output')        
         outputFileSetPath = os.path.join(outputFileSetPath, outputFileSetName)
+        overwritePreviousOutputFileSet = self.settings().setting(name='overwritePreviousOutputFileSet').value()
+        if overwritePreviousOutputFileSet:
+            shutil.rmtree(outputFileSetPath)
         os.makedirs(outputFileSetPath, exist_ok=False)
         # Calculate number of steps required        
         self.setNrSteps(len(inputFilePaths) + len(tensorFlowModelFilePaths))

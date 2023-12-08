@@ -16,7 +16,7 @@ class TaskDockWidget(DockWidget):
         self._runSelectedTaskButton = None
         self._progressBarDialog = None
         self._taskManager = None
-        self._currentTask = None
+        # self._currentTask = None
         self._signal = TaskSignal()
         self.initTaskManager()
         self.initUi()
@@ -76,12 +76,13 @@ class TaskDockWidget(DockWidget):
     def showSettingsDialog(self) -> None:
         taskName = self._tasksComboBox.currentText()
         if taskName:
-            if self._currentTask:
-                settingsDialog = TaskSettingsDialog(self._currentTask.settings())
-                resultCode = settingsDialog.show()
-                if resultCode == QDialog.Accepted:
-                    self._runSelectedTaskButton.setEnabled(True)
-                    self._runSelectedTaskButton.setFocus()
+            if not self._currentTask:
+                self._currentTask = self._taskManager.createTaskFromTaskTypeName(name=taskName)
+            settingsDialog = TaskSettingsDialog(self._currentTask.settings())
+            resultCode = settingsDialog.show()
+            if resultCode == QDialog.Accepted:
+                self._runSelectedTaskButton.setEnabled(True)
+                self._runSelectedTaskButton.setFocus()
 
     def runSelectedTask(self) -> None:
         taskName = self._tasksComboBox.currentText()
