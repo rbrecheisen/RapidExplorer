@@ -12,4 +12,3 @@ pytest
 tensorflow
 pyinstaller
 matplotlib
-imageio
