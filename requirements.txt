@@ -11,5 +11,5 @@ pylibjpeg-libjpeg
 pytest
 tensorflow
 pyinstaller
-# matplotlib
+matplotlib
 imageio

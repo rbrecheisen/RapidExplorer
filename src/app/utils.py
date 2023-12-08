@@ -6,6 +6,7 @@ import importlib
 import pydicom
 import pydicom.errors
 import numpy as np
+import matplotlib.pyplot as plt
 import imageio
 
 from typing import Dict, Any, List
@@ -98,6 +99,12 @@ class ColorMap:
         return self._values
     
 
+class GrayScaleColorMap(ColorMap):
+    def __init__(self) -> None:
+        super(GrayScaleColorMap, self).__init__(name='GrayScaleColorMap')
+        # Implement your own gray scale map or let NumPy do this more efficiently?
+        pass    
+
 class AlbertaColorMap(ColorMap):
     def __init__(self) -> None:
         super(AlbertaColorMap, self).__init__(name='AlbertaColorMap')
@@ -143,7 +150,7 @@ def tagPixels(tagFilePath: str) -> np.array:
     return values
 
 
-def convertDicomToNumPyArray(dicomFilePath: str, windowCenter: int=400, windowWidth: int=50, normalize=True) -> np.array:
+def convertDicomToNumPyArray(dicomFilePath: str, windowCenter: int=50, windowWidth: int=400, normalize=True) -> np.array:
     p = pydicom.dcmread(dicomFilePath)
     pixels = p.pixel_array
     pixels = pixels.reshape(p.Rows, p.Columns)
@@ -155,28 +162,28 @@ def convertDicomToNumPyArray(dicomFilePath: str, windowCenter: int=400, windowWi
 
 
 def convertNumPyArrayToPngImage(
-        numpyArrayFilePathOrObject: str, colorMap: ColorMap, outputDirectoryPath: str, pngImageFileName: str=None, figureWidth: int=10, figureHeight: int=10) -> str:
+        numpyArrayFilePathOrObject: str, outputDirectoryPath: str, colorMap: ColorMap=None, pngImageFileName: str=None, figureWidth: int=10, figureHeight: int=10) -> str:
     if isinstance(numpyArrayFilePathOrObject, str):
         numpyArray = np.load(numpyArrayFilePathOrObject)
     else:
         numpyArray = numpyArrayFilePathOrObject
         if not pngImageFileName:
             raise RuntimeError('PNG file name required for NumPy array object')
-    numpyArray = applyColorMap(pixels=numpyArray, colorMap=colorMap)
-    # plt.ioff()
-    # fig = plt.figure(figsize=(figureWidth, figureHeight))
-    # ax = fig.add_subplot(1, 1, 1)
-    # plt.imshow(numpyArray)
-    # ax.axis('off')
+    if colorMap:
+        numpyArray = applyColorMap(pixels=numpyArray, colorMap=colorMap)
+    fig = plt.figure(figsize=(figureWidth, figureHeight))
+    ax = fig.add_subplot(1, 1, 1)
+    plt.imshow(numpyArray)
+    ax.axis('off')
     if not pngImageFileName:
-        numpyArrayFileName = os.path.split(numpyArrayFilePath)[1]
+        numpyArrayFileName = os.path.split(numpyArrayFilePathOrObject)[1]
         pngImageFileName = numpyArrayFileName + '.png'      
     elif not pngImageFileName.endswith('.png'):
         pngImageFileName += '.png'
     pngImageFilePath = os.path.join(outputDirectoryPath, pngImageFileName)
-    imageio.imwrite(pngImageFilePath, (numpyArray * 255).astype(np.uint8))
-    # plt.savefig(pngImageFilePath, bbox_inches='tight')
-    # plt.close('all')
+    # imageio.imwrite(pngImageFilePath, (numpyArray * 255).astype(np.uint8))
+    plt.savefig(pngImageFilePath, bbox_inches='tight')
+    plt.close('all')
     return pngImageFilePath
 
 
@@ -244,3 +251,21 @@ class ModuleLoader:
                                 if isinstance(attribute, type) and issubclass(attribute, moduleBaseClass) and attribute is not moduleBaseClass:
                                     classes[attribute.NAME] = attribute
         return classes
+    
+
+if __name__ == '__main__':
+    def main():
+        # filePath = '/Users/ralph/Desktop/downloads/pancreasdemo/1.dcm'
+        pixels = convertDicomToNumPyArray(filePath)
+        convertNumPyArrayToPngImage(pixels, )
+        filePath = '/Users/ralph/Desktop/downloads/pancreasdemo-output/segmentations/1.dcm.seg.npy'
+        convertNumPyArrayToPngImage(filePath, '/Users/ralph/Desktop/downloads/pancreasdemo-output/segmentations', AlbertaColorMap())
+        # pixels = convertDicomToNumPyArray(dicomFilePath=filePath)
+        # pixels = applyColorMap(pixels=pixels, colorMap=AlbertaColorMap())
+        # import matplotlib.pyplot as plt
+        # fig = plt.figure(figsize=(10, 10))
+        # ax = fig.add_subplot(1, 1, 1)
+        # plt.imshow(pixels)
+        # ax.axis('off')
+        # plt.show()
+    main()
