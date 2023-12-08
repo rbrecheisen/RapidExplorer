@@ -51,6 +51,8 @@ class Logger:
     def info(self, message: str) -> None:
         self._logger.info(message)
 
+    def error(self, message: str) -> None:
+        self._logger.error(message)
+
     def debug(self, message: str) -> None:
-        # if self._logger.level == logging.DEBUG:
         self._logger.debug(message)

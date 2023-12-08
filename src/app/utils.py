@@ -4,7 +4,9 @@ import math
 import pendulum
 import importlib
 import pydicom
+import pydicom.errors
 import numpy as np
+import imageio
 
 from typing import Dict, Any, List
 
@@ -84,27 +86,39 @@ def applyWindowCenterAndWidth(image: np.array, center: int, width: int) -> np.ar
     return windowedImage.astype(np.uint8)
 
 
-def albertaColorMap() -> List[List[int]]:
-    colorMap = []
-    for i in range(256):
-        if i == 1:  # muscle
-            colorMap.append([255, 0, 0])
-        elif i == 2:  # inter-muscular adipose tissue
-            colorMap.append([0, 255, 0])
-        elif i == 5:  # visceral adipose tissue
-            colorMap.append([255, 255, 0])
-        elif i == 7:  # subcutaneous adipose tissue
-            colorMap.append([0, 255, 255])
-        elif i == 12:  # unknown
-            colorMap.append([0, 0, 255])
-        else:
-            colorMap.append([0, 0, 0])
-    return colorMap
+class ColorMap:
+    def __init__(self, name: str) -> None:
+        self._name = name
+        self._values = []
+
+    def name(self) -> str:
+        return self._name
+    
+    def values(self) -> List[List[int]]:
+        return self._values
+    
+
+class AlbertaColorMap(ColorMap):
+    def __init__(self) -> None:
+        super(AlbertaColorMap, self).__init__(name='AlbertaColorMap')
+        for i in range(256):
+            if i == 1:  # muscle
+                self.values().append([255, 0, 0])
+            elif i == 2:  # inter-muscular adipose tissue
+                self.values().append([0, 255, 0])
+            elif i == 5:  # visceral adipose tissue
+                self.values().append([255, 255, 0])
+            elif i == 7:  # subcutaneous adipose tissue
+                self.values().append([0, 255, 255])
+            elif i == 12:  # unknown
+                self.values().append([0, 0, 255])
+            else:
+                self.values().append([0, 0, 0])
 
 
-def applyColorMap(pixels: np.array, color_map: List[List[int]]) -> np.array:
+def applyColorMap(pixels: np.array, colorMap: ColorMap) -> np.array:
     pixelsNew = np.zeros((*pixels.shape, 3), dtype=np.uint8)
-    np.take(color_map, pixels, axis=0, out=pixelsNew)
+    np.take(colorMap.values(), pixels, axis=0, out=pixelsNew)
     return pixelsNew
 
 
@@ -129,6 +143,43 @@ def tagPixels(tagFilePath: str) -> np.array:
     return values
 
 
+def convertDicomToNumPyArray(dicomFilePath: str, windowCenter: int=400, windowWidth: int=50, normalize=True) -> np.array:
+    p = pydicom.dcmread(dicomFilePath)
+    pixels = p.pixel_array
+    pixels = pixels.reshape(p.Rows, p.Columns)
+    b = p.RescaleIntercept
+    m = p.RescaleSlope
+    pixels = m * pixels + b
+    pixels = applyWindowCenterAndWidth(pixels, windowCenter, windowWidth)
+    return pixels
+
+
+def convertNumPyArrayToPngImage(
+        numpyArrayFilePathOrObject: str, colorMap: ColorMap, outputDirectoryPath: str, pngImageFileName: str=None, figureWidth: int=10, figureHeight: int=10) -> str:
+    if isinstance(numpyArrayFilePathOrObject, str):
+        numpyArray = np.load(numpyArrayFilePathOrObject)
+    else:
+        numpyArray = numpyArrayFilePathOrObject
+        if not pngImageFileName:
+            raise RuntimeError('PNG file name required for NumPy array object')
+    numpyArray = applyColorMap(pixels=numpyArray, colorMap=colorMap)
+    # plt.ioff()
+    # fig = plt.figure(figsize=(figureWidth, figureHeight))
+    # ax = fig.add_subplot(1, 1, 1)
+    # plt.imshow(numpyArray)
+    # ax.axis('off')
+    if not pngImageFileName:
+        numpyArrayFileName = os.path.split(numpyArrayFilePath)[1]
+        pngImageFileName = numpyArrayFileName + '.png'      
+    elif not pngImageFileName.endswith('.png'):
+        pngImageFileName += '.png'
+    pngImageFilePath = os.path.join(outputDirectoryPath, pngImageFileName)
+    imageio.imwrite(pngImageFilePath, (numpyArray * 255).astype(np.uint8))
+    # plt.savefig(pngImageFilePath, bbox_inches='tight')
+    # plt.close('all')
+    return pngImageFilePath
+
+
 def calculateArea(labels, label, pixelSpacing):
     mask = np.copy(labels)
     mask[mask != label] = 0
@@ -145,7 +196,7 @@ def calculateMeanRadiationAttennuation(image, labels, label):
     if maskSum > 0.0:
         meanRadiationAttenuation = np.sum(subtracted) / np.sum(mask)
     else:
-        print('Sum of mask pixels is zero, return zero radiation attenuation')
+        # print('Sum of mask pixels is zero, return zero radiation attenuation')
         meanRadiationAttenuation = 0.0
     return meanRadiationAttenuation
 
@@ -192,5 +243,4 @@ class ModuleLoader:
                                 attribute = getattr(module, attributeName)
                                 if isinstance(attribute, type) and issubclass(attribute, moduleBaseClass) and attribute is not moduleBaseClass:
                                     classes[attribute.NAME] = attribute
-                                    print(f'Loaded module {attribute.NAME}')
         return classes
