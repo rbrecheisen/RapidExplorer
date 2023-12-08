@@ -255,7 +255,7 @@ class ModuleLoader:
 
 if __name__ == '__main__':
     def main():
-        # filePath = '/Users/ralph/Desktop/downloads/pancreasdemo/1.dcm'
+        filePath = '/Users/ralph/Desktop/downloads/pancreasdemo/1.dcm'
         pixels = convertDicomToNumPyArray(filePath)
         convertNumPyArrayToPngImage(pixels, '/Users/ralph/Desktop/downloads/pancreasdemo', pngImageFileName='1.dcm.png')
         filePath = '/Users/ralph/Desktop/downloads/pancreasdemo-output/segmentations/1.dcm.seg.npy'
