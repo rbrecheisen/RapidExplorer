@@ -3,6 +3,7 @@ import zipfile
 
 from utils import createNameWithTimestamp
 from tasks.task import Task
+from tasks.taskoutput import TaskOutput
 from tasks.tasksignal import TaskSignal
 from settings.settingfileset import SettingFileSet
 from settings.settingfilesetpath import SettingFileSetPath
@@ -41,5 +42,6 @@ class CreateArchiveTask(Task):
                 zipObj.write(file.path(), arcname=os.path.basename(file.path()))
         # Create output fileset
         outputFileSet = self.dataManager().importFileSet(fileSetPath=outputDirectoryPath, fileType=ZipFileType)
-        self.signal().finished.emit(outputFileSet)
-        return outputFileSet
+        taskOutput = TaskOutput(fileSet=outputFileSet, errorInfo=[])
+        self.signal().finished.emit(taskOutput)
+        return taskOutput

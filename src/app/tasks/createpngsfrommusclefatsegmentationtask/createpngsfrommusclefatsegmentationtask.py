@@ -2,6 +2,7 @@ import os
 
 from utils import createNameWithTimestamp, convertDicomToNumPyArray, convertNumPyArrayToPngImage, AlbertaColorMap
 from tasks.task import Task
+from tasks.taskoutput import TaskOutput
 from tasks.tasksignal import TaskSignal
 from settings.settingfileset import SettingFileSet
 from settings.settingfilesetpath import SettingFileSetPath
@@ -62,5 +63,6 @@ class CreatePngsFromMuscleFatSegmentationTask(Task):
 
         # Create output fileset
         outputFileSet = self.dataManager().importFileSet(fileSetPath=outputFileSetPath, fileType=PngFileType)
-        self.signal().finished.emit(outputFileSet)
-        return outputFileSet
+        taskOutput = TaskOutput(fileSet=outputFileSet, errorInfo=[])
+        self.signal().finished.emit(taskOutput)
+        return taskOutput

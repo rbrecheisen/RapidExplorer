@@ -4,6 +4,7 @@ import shutil
 from typing import List
 
 from tasks.task import Task
+from tasks.taskoutput import TaskOutput
 from tasks.tasksignal import TaskSignal
 from settings.settingfilesetpath import SettingFileSetPath
 from settings.settingtext import SettingText
@@ -69,10 +70,9 @@ class MuscleFatSegmentationTask(Task):
         segmentor.execute()
         # Build output file set
         outputFileSet = self.dataManager().importFileSet(fileSetPath=outputFileSetPath)
-        # outputFileSet.setName(outputFileSetName)
-        # outputFileSet = self._dataManager.updateFileSet(fileSet=outputFileSet)
-        self.signal().finished.emit(outputFileSet)
-        return outputFileSet
+        taskOutput = TaskOutput(fileSet=outputFileSet, errorInfo=[])
+        self.signal().finished.emit(taskOutput)
+        return taskOutput
     
     def segmentorProgress(self, progress) -> None:
         progress = int((progress + 1) / (self._nrSteps + 1) * 100)

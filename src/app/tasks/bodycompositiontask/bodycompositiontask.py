@@ -3,6 +3,7 @@ import csv
 import shutil
 
 from tasks.task import Task
+from tasks.taskoutput import TaskOutput
 from tasks.tasksignal import TaskSignal
 from settings.settingfilepath import SettingFilePath
 from settings.settingfilesetpath import SettingFileSetPath
@@ -89,10 +90,9 @@ class BodyCompositionTask(Task):
                 shutil.copy(file, outputFileSetPath)
         # Build new output file set
         outputFileSet = self.dataManager().importFileSet(fileSetPath=outputFileSetPath)
-        # outputFileSet.setName(outputFileSetName)
-        # outputFileSet = self._dataManager.updateFileSet(fileSet=outputFileSet)
-        self.signal().finished.emit(outputFileSet)
-        return outputFileSet
+        taskOutput = TaskOutput(fileSet=outputFileSet, errorInfo=[])
+        self.signal().finished.emit(taskOutput)
+        return taskOutput
 
     def calculatorProgress(self, progress) -> None:
         progress = int((progress + 1) / (self._nrSteps + 1) * 100)
