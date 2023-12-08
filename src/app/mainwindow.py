@@ -144,17 +144,13 @@ class MainWindow(QMainWindow):
         resultCode = fileTypeDialog.show()
         if resultCode == FileTypeDialog.Accepted:
             fileType = fileTypeDialog.selectedFileType()
-            LOGGER.info(f'MainWindow.importFileSetWithFileType() fileType={fileType}')
-            recursive = fileTypeDialog.recursive()
-            LOGGER.info(f'MainWindow.importFileSetWithFileType() recursive={recursive}')
             dirPath = QFileDialog.getExistingDirectory(self, 'Open File Set', FILESETPATH)
             if dirPath:
-                LOGGER.info(f'MainWindow.importFileSetWithFileType() dirPath={dirPath}')
                 self._progressBarDialog.show()
                 self._progressBarDialog.setValue(0)
                 self._dataManager.signal().progress.connect(self.fileSetImportProgress)
                 self._dataManager.signal().finished.connect(self.fileSetImportFinished)
-                self._dataManager.importFileSet(fileSetPath=dirPath, fileType=fileType, recursive=recursive)
+                self._dataManager.importFileSet(fileSetPath=dirPath, fileType=fileType)
 
     def deleteAllFileSets(self) -> None:
         self._dataManager.deleteAllFileSets()

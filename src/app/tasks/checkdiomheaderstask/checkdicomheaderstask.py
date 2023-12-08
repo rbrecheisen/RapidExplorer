@@ -28,6 +28,7 @@ class CheckDicomHeadersTask(Task):
         super(CheckDicomHeadersTask, self).__init__()
         self.settings().add(SettingLabel(name='description', value=DESCRIPTION))
         self.settings().add(SettingFileSet(name='dicomFileSetName', displayName='DICOM File Set'))
+        self.settings().add(SettingText(name='requiredDicomAttributes', displayName='Required Attributes (comma-separated list)', defaultValue='Rows,Columns,PixelSpacing'))
         self.settings().add(SettingFileSetPath(name='outputFileSetPath', displayName='Output File Set Path'))
         self.settings().add(SettingText(name='outputFileSetName', displayName='Output File Set Name', optional=True))
         self.settings().add(SettingBoolean(name='overwriteOutputFileSet', displayName='Overwrite Output File Set', defaultValue=True))
@@ -37,8 +38,24 @@ class CheckDicomHeadersTask(Task):
         return self._signal
 
     def run(self) -> FileSet:
+        # Get input file set
         dicomFileSetName = self.settings().setting(name='dicomFileSetName').value()
         dicomFileSet = self.dataManager().fileSetByName(name=dicomFileSetName)
+        # Check DICOM files
+        requiredDicomAttributes = self.settings().setting(name='requiredDicomAttributes').value()
+        requiredDicomAttributes = [x.strip() for x in requiredDicomAttributes.split(',')]
+        dicomFilePathsOk = []
+        nonDicomFilePaths = []
+        for dicomFile in dicomFileSet.files():
+            try:
+                p = pydicom.dcmread(dicomFile.path())
+                p.decompress()
+                for requiredAttribute in requiredDicomAttributes:
+                    if requiredAttribute in p:
+                        dicomFilePathsOk.append(dicomFile.path())
+            except pydicom.errors.InvalidDicomError:
+                nonDicomFilePaths.append(dicomFile.path())
+        # Build output file set
         outputFileSetPath = self.settings().setting(name='outputFileSetPath').value()
         outputFileSetName = self.settings().setting(name='outputFileSetName').value()
         if not outputFileSetName:
@@ -49,9 +66,15 @@ class CheckDicomHeadersTask(Task):
             if os.path.isdir(outputFileSetPath):
                 shutil.rmtree(outputFileSetPath)
         os.makedirs(outputFileSetPath, exist_ok=False)
-        for dicomFile in dicomFileSet.files():
-            shutil.copy(dicomFile.path(), outputFileSetPath)
+        LOGGER.info(f'CheckDicomHeadersTask.run() outputFileSetPath={outputFileSetPath}')
+        # Copy files to output file set
+        for file in dicomFilePathsOk:
+            shutil.copy(file, outputFileSetPath)
+        for file in nonDicomFilePaths:
+            shutil.copy(file, outputFileSetPath)
+        # Reload output file set        
         outputFileSet = self.dataManager().importFileSet(fileSetPath=outputFileSetPath)
+        # Send signal that we're ready
         self.signal().finished.emit(outputFileSet)
         return outputFileSet
 
