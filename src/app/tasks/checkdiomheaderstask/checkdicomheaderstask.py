@@ -5,11 +5,11 @@ import pydicom.errors
 
 from tasks.task import Task
 from tasks.tasksignal import TaskSignal
+from tasks.taskoutput import TaskOutput
 from data.fileset import FileSet
 from settings.settinglabel import SettingLabel
 from settings.settingfileset import SettingFileSet
 from settings.settingfilesetpath import SettingFileSetPath
-from settings.settinginteger import SettingInteger
 from settings.settingboolean import SettingBoolean
 from settings.settingtext import SettingText
 from logger import Logger
@@ -29,6 +29,9 @@ class CheckDicomHeadersTask(Task):
         self.settings().add(SettingLabel(name='description', value=DESCRIPTION))
         self.settings().add(SettingFileSet(name='dicomFileSetName', displayName='DICOM File Set'))
         self.settings().add(SettingText(name='requiredDicomAttributes', displayName='Required Attributes (comma-separated list)', defaultValue='Rows,Columns,PixelSpacing'))
+        self.settings().add(SettingInteger(name='requiredNumberOfRows', displayName='Required Number of Rows', minimum=0, maximum=1024, defaultValue=512))
+        self.settings().add(SettingInteger(name='requiredNumberOfColumns', displayName='Required Number of Columns', minimum=0, maximum=1024, defaultValue=512))
+        self.settings().add(SettingBoolean(name='copyNonDicomFilesToOutputFileSet', displayName='Copy Non-DICOM Files to Output File Set', defaultValue=False))
         self.settings().add(SettingFileSetPath(name='outputFileSetPath', displayName='Output File Set Path'))
         self.settings().add(SettingText(name='outputFileSetName', displayName='Output File Set Name', optional=True))
         self.settings().add(SettingBoolean(name='overwriteOutputFileSet', displayName='Overwrite Output File Set', defaultValue=True))
@@ -37,24 +40,40 @@ class CheckDicomHeadersTask(Task):
     def signal(self) -> TaskSignal:
         return self._signal
 
-    def run(self) -> FileSet:
+    def run(self) -> TaskOutput:
         # Get input file set
         dicomFileSetName = self.settings().setting(name='dicomFileSetName').value()
         dicomFileSet = self.dataManager().fileSetByName(name=dicomFileSetName)
         # Check DICOM files
         requiredDicomAttributes = self.settings().setting(name='requiredDicomAttributes').value()
         requiredDicomAttributes = [x.strip() for x in requiredDicomAttributes.split(',')]
-        dicomFilePathsOk = []
-        nonDicomFilePaths = []
+        requiredNumberOfRows = self.settings().setting(name='requiredNumberOfRows').value()
+        requiredNumberOfColumns = self.settings().setting(name='requiredNumberOfColumns').value()
+        dicomFilesOk = []
+        nonDicomFilesToIgnore = []
+        errorInfo = []
         for dicomFile in dicomFileSet.files():
             try:
                 p = pydicom.dcmread(dicomFile.path())
                 p.decompress()
+                allAttributesPresent = True
                 for requiredAttribute in requiredDicomAttributes:
-                    if requiredAttribute in p:
-                        dicomFilePathsOk.append(dicomFile.path())
+                    if requiredAttribute not in p:
+                        errorInfo.append(f'{dicomFile.path()}: attribute {requiredAttribute} missing')
+                        allAttributesPresent = False
+                if not allAttributesPresent:
+                    continue
+                rowsAndColumnsOk = True
+                if p.Rows != requiredNumberOfRows:
+                    errorInfo.append(f'{dicomFile.path()}: rows={p.Rows} (should be {requiredNumberOfRows})')
+                    rowsAndColumnsOk = False
+                if p.Columns != requiredNumberOfColumns:
+                    errorInfo.append(f'{dicomFile.path()}: columns={p.Columns} (should be {requiredNumberOfColumns})')
+                if not rowsAndColumnsOk:
+                    continue
+                dicomFilesOk.append(dicomFile)
             except pydicom.errors.InvalidDicomError:
-                nonDicomFilePaths.append(dicomFile.path())
+                nonDicomFilesToIgnore.append(dicomFile.path())
         # Build output file set
         outputFileSetPath = self.settings().setting(name='outputFileSetPath').value()
         outputFileSetName = self.settings().setting(name='outputFileSetName').value()
@@ -68,15 +87,19 @@ class CheckDicomHeadersTask(Task):
         os.makedirs(outputFileSetPath, exist_ok=False)
         LOGGER.info(f'CheckDicomHeadersTask.run() outputFileSetPath={outputFileSetPath}')
         # Copy files to output file set
-        for file in dicomFilePathsOk:
-            shutil.copy(file, outputFileSetPath)
-        for file in nonDicomFilePaths:
-            shutil.copy(file, outputFileSetPath)
+        for dicomFile in dicomFilesOk:
+            shutil.copy(dicomFile.path(), outputFileSetPath)
+        # If enabled, copy non-DICOM files to output file set as well
+        copyNonDicomFilesToOutputFileSet = self.settings().setting(name='copyNonDicomFilesToOutputFileSet').value()
+        if copyNonDicomFilesToOutputFileSet:
+            for dicomFile in nonDicomFilesToIgnore:
+                shutil.copy(dicomFile.path(), outputFileSetPath)
         # Reload output file set        
         outputFileSet = self.dataManager().importFileSet(fileSetPath=outputFileSetPath)
-        # Send signal that we're ready
-        self.signal().finished.emit(outputFileSet)
-        return outputFileSet
+        # Build task output and notify listeners
+        taskOutput = TaskOutput(fileSet=outputFileSet, errorInfo=errorInfo)
+        self.signal().finished.emit(taskOutput)
+        return taskOutput
 
 
 # class CheckDicomHeadersTask(Task):

@@ -81,13 +81,7 @@ class DataManager:
             LOGGER.debug(f'DataManager.importFileSet() fileName={fileName}, filePath={filePath}')
             if fileName not in filesToIgnore and fileType.check(filePath=filePath):
                 nrFiles +=1
-        # for root, dirs, files in os.walk(fileSetPath):
-        #     for fileName in files:
-        #         filePath = os.path.join(root, fileName)
-        #         LOGGER.debug(f'DataManager.importFileSet() fileName={fileName}, filePath={filePath}')
-        #         if fileName not in filesToIgnore and fileType.check(filePath=filePath):
-        #             nrFiles +=1
-        LOGGER.info(f'Found {nrFiles} files')
+        LOGGER.info(f'DataManager.importFileSet() Found {nrFiles} files')
         if nrFiles == 0:
             self.signal().finished.emit(None)
             return None
@@ -97,25 +91,13 @@ class DataManager:
             fileSetModel = FileSetModel(name=fileSetName, path=fileSetPath)
             session.add(fileSetModel)
             for fileName in os.listdir(fileSetPath):
-                filePath = os.path.join(fileSetPath)
+                filePath = os.path.join(fileSetPath, fileName)
                 if fileName not in filesToIgnore and fileType.check(filePath=filePath):
                     fileModel = FileModel(name=fileName, path=filePath, fileSetModel=fileSetModel)
                     session.add(fileModel)
                     progress = int((i + 1) / nrFiles * 100)
                     self.signal().progress.emit(progress)
                     i += 1
-            # for root, dirs, files in os.walk(fileSetPath):
-            #     for fileName in files:
-            #         filePath = os.path.join(root, fileName)
-            #         if fileName not in filesToIgnore and fileType.check(filePath=filePath):
-            #             extendedFileName = os.path.join(os.path.relpath(root, fileSetPath), fileName)
-            #             if extendedFileName.startswith('./'):
-            #                 extendedFileName = extendedFileName[2:]
-            #             fileModel = FileModel(name=extendedFileName, path=filePath, fileSetModel=fileSetModel)
-            #             session.add(fileModel)
-            #             progress = int((i + 1) / nrFiles * 100)
-            #             self.signal().progress.emit(progress)
-            #             i += 1
             session.commit()
             fileSet = FileSet(fileSetModel=fileSetModel)
         self.signal().finished.emit(fileSet)

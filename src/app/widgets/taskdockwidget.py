@@ -5,7 +5,7 @@ from widgets.dockwidget import DockWidget
 from widgets.tasksettingsdialog import TaskSettingsDialog
 from tasks.taskmanager import TaskManager
 from tasks.tasksignal import TaskSignal
-from data.fileset import FileSet
+from tasks.taskoutput import TaskOutput
 
 
 class TaskDockWidget(DockWidget):
@@ -16,7 +16,6 @@ class TaskDockWidget(DockWidget):
         self._runSelectedTaskButton = None
         self._progressBarDialog = None
         self._taskManager = None
-        # self._currentTask = None
         self._signal = TaskSignal()
         self.initTaskManager()
         self.initUi()
@@ -27,8 +26,8 @@ class TaskDockWidget(DockWidget):
     
     def initTaskManager(self) -> None:
         self._taskManager = TaskManager()
-        self._taskManager.signal().taskProgress.connect(self.taskProgress)
-        self._taskManager.signal().taskFinished.connect(self.taskFinished)
+        self._taskManager.signal().progress.connect(self.taskProgress)
+        self._taskManager.signal().finished.connect(self.taskFinished)
 
     def initUi(self) -> None:
         self._tasksComboBox = QComboBox(self)
@@ -101,7 +100,7 @@ class TaskDockWidget(DockWidget):
     def taskProgress(self, progress) -> None:
         self._progressBarDialog.setValue(progress)
 
-    def taskFinished(self, outputFileSet: FileSet) -> None:
-        self.signal().finished.emit(outputFileSet)
+    def taskFinished(self, taskOutput: TaskOutput) -> None:
+        self.signal().finished.emit(taskOutput)
         self._tasksComboBox.setCurrentIndex(0)
         self._progressBarDialog.close()

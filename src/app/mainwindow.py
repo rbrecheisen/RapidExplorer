@@ -8,6 +8,7 @@ from logger import Logger
 from utils import GitCommit
 from data.datamanager import DataManager
 from data.fileset import FileSet
+from tasks.taskoutput import TaskOutput
 from widgets.datadockwidget import DataDockWidget
 from widgets.viewersdockwidget import ViewersDockWidget
 from widgets.taskdockwidget import TaskDockWidget
@@ -193,8 +194,9 @@ class MainWindow(QMainWindow):
             return
         self._dataDockWidget.addFileSet(fileSet=fileSet)
 
-    def taskFinished(self, outputFileSet: FileSet) -> None:
-        self._dataDockWidget.addFileSet(fileSet=outputFileSet)
+    def taskFinished(self, taskOutput: TaskOutput) -> None:
+        # Show success and error info?
+        self._dataDockWidget.addFileSet(fileSet=taskOutput.fileSet())
 
     # Miscellaneous
 

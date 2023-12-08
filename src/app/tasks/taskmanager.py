@@ -6,12 +6,11 @@ from PySide6.QtCore import QSettings, QThreadPool
 
 from singleton import singleton
 from logger import Logger
-from data.fileset import FileSet
-from tasks.taskmanagersignal import TaskManagerSignal
+from tasks.tasksignal import TaskSignal
 from tasks.task import Task
+from tasks.taskoutput import TaskOutput
 from utils import SettingsIniFile
 
-# SETTINGSFILEPATH = os.environ.get('SETTINGSPATH', 'settings.ini')
 SETTINGSFILEPATH = SettingsIniFile().path()
 
 LOGGER = Logger()
@@ -21,11 +20,11 @@ LOGGER = Logger()
 class TaskManager:
     def __init__(self) -> None:
         self._taskTypes = {}
-        self._signal = TaskManagerSignal()
+        self._signal = TaskSignal()
         self._settings = QSettings(SETTINGSFILEPATH, QSettings.Format.IniFormat)
         self.loadTaskTypes()
 
-    def signal(self) -> TaskManagerSignal:
+    def signal(self) -> TaskSignal:
         return self._signal
 
     def loadTaskTypes(self) -> None:
@@ -61,7 +60,7 @@ class TaskManager:
             task.run()
     
     def taskProgress(self, progress) -> None:
-        self.signal().taskProgress.emit(progress)
+        self.signal().progress.emit(progress)
 
-    def taskFinished(self, outputFileSet: FileSet) -> None:
-        self.signal().taskFinished.emit(outputFileSet)
+    def taskFinished(self, taskOutput: TaskOutput) -> None:
+        self.signal().finished.emit(taskOutput)
