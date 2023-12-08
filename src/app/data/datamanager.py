@@ -74,7 +74,6 @@ class DataManager:
     def importFileSet(self, fileSetPath: str, fileType: FileType=AllFileType, recursive=True) -> FileSet:
         LOGGER.info(f'DataManager.importFileSet() fileSetPath={fileSetPath}, fileType={fileType}, recursive={recursive}')
         filesToIgnore = self.settings().value('filesToIgnore')
-        LOGGER.info(f'DataManager.importFileSet() filesToIgnore={filesToIgnore}')
         nrFiles = 0
         if recursive:
             for root, dirs, files in os.walk(fileSetPath):
@@ -101,6 +100,8 @@ class DataManager:
                         filePath = os.path.join(root, fileName)
                         if fileName not in filesToIgnore and fileType.check(filePath=filePath):
                             extendedFileName = os.path.join(os.path.relpath(root, fileSetPath), fileName)
+                            if extendedFileName.startswith('./'):
+                                extendedFileName = extendedFileName[2:]
                             fileModel = FileModel(name=extendedFileName, path=filePath, fileSetModel=fileSetModel)
                             session.add(fileModel)
                             progress = int((i + 1) / nrFiles * 100)

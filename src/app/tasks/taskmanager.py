@@ -30,11 +30,13 @@ class TaskManager:
 
     def loadTaskTypes(self) -> None:
         from tasks.bodycompositiontask.bodycompositiontask import BodyCompositionTask
+        from tasks.checkdiomheaderstask.checkdicomheaderstask import CheckDicomHeadersTask
         from tasks.createarchivetask.createarchivetask import CreateArchiveTask
         from tasks.createpngsfrommusclefatsegmentationtask.createpngsfrommusclefatsegmentationtask import CreatePngsFromMuscleFatSegmentationTask
         from tasks.musclefatsegmentationtask.musclefatsegmentationtask import MuscleFatSegmentationTask        
         self._taskTypes = {
             BodyCompositionTask.NAME: BodyCompositionTask,
+            CheckDicomHeadersTask.NAME: CheckDicomHeadersTask,
             CreateArchiveTask.NAME: CreateArchiveTask,
             CreatePngsFromMuscleFatSegmentationTask.NAME: CreatePngsFromMuscleFatSegmentationTask,
             MuscleFatSegmentationTask.NAME: MuscleFatSegmentationTask,
@@ -50,6 +52,7 @@ class TaskManager:
         return self._taskTypes[name]()
     
     def runTask(self, task: Task, background=True) -> None:
+        # background = False
         task.signal().progress.connect(self.taskProgress)
         task.signal().finished.connect(self.taskFinished)
         if background:
