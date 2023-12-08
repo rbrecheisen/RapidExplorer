@@ -13,3 +13,6 @@ class TaskOutput:
     
     def errorInfo(self) -> List[str]:
         return self._errorInfo
+    
+    def hasErrors(self) -> bool:
+        return len(self._errorInfo) > 0

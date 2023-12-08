@@ -7,6 +7,10 @@ class SettingInteger(Setting):
         self._minimum = minimum
         self._maximum = maximum
         self._defaultValue = defaultValue
+        if self._defaultValue > self._maximum:
+            self._maximum = self._defaultValue
+        if self._defaultValue < self._minimum:
+            self._minimum = self._defaultValue
         self.setValue(self._defaultValue)
 
     def minimum(self) -> int:

@@ -10,6 +10,9 @@ from settings.settingfilesetpath import SettingFileSetPath
 from settings.settinglabel import SettingLabel
 from data.fileset import FileSet
 from data.zipfiletype import ZipFileType
+from logger import Logger
+
+LOGGER = Logger()
 
 DESCRIPTION = """
 This task creates a ZIP archive from the selected file set.
@@ -32,16 +35,20 @@ class CreateArchiveTask(Task):
     def run(self) -> FileSet:
         # Collect input settings
         inputFileSetName = self.settings().setting(name='inputFileSetName').value()
+        LOGGER.info(f'CreateArchiveTask.run() inputFileSetName={inputFileSetName}')
         inputFileSet = self.dataManager().fileSetByName(name=inputFileSetName)
         outputDirectoryPath = self.settings().setting(name='outputDirectoryPath').value()
         zipFileName = createNameWithTimestamp(inputFileSet.name()) + '.zip'
         # Create ZIP file
         outputZipFilePath = os.path.join(outputDirectoryPath, zipFileName)
+        LOGGER.info(f'CreateArchiveTask.run() outputZipFilePath={outputZipFilePath}')
         with zipfile.ZipFile(outputZipFilePath, 'w') as zipObj:
             for file in inputFileSet.files():
+                LOGGER.info(f'CreateArchiveTask.run() adding {file.path()} to ZIP archive...')
                 zipObj.write(file.path(), arcname=os.path.basename(file.path()))
         # Create output fileset
         outputFileSet = self.dataManager().importFileSet(fileSetPath=outputDirectoryPath, fileType=ZipFileType)
         taskOutput = TaskOutput(fileSet=outputFileSet, errorInfo=[])
+        LOGGER.info(f'CreateArchiveTask.run() created output {taskOutput}')
         self.signal().finished.emit(taskOutput)
         return taskOutput

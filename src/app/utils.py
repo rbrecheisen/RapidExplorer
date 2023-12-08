@@ -150,13 +150,18 @@ def tagPixels(tagFilePath: str) -> np.array:
     return values
 
 
+def loadNumPyArray(filePath: str) -> np.array:
+    return np.load(filePath)
+
+
 def convertDicomToNumPyArray(dicomFilePath: str, windowCenter: int=50, windowWidth: int=400, normalize=True) -> np.array:
     p = pydicom.dcmread(dicomFilePath)
     pixels = p.pixel_array
     pixels = pixels.reshape(p.Rows, p.Columns)
-    b = p.RescaleIntercept
-    m = p.RescaleSlope
-    pixels = m * pixels + b
+    if normalize:
+        b = p.RescaleIntercept
+        m = p.RescaleSlope
+        pixels = m * pixels + b
     pixels = applyWindowCenterAndWidth(pixels, windowCenter, windowWidth)
     return pixels
 
@@ -164,7 +169,7 @@ def convertDicomToNumPyArray(dicomFilePath: str, windowCenter: int=50, windowWid
 def convertNumPyArrayToPngImage(
         numpyArrayFilePathOrObject: str, outputDirectoryPath: str, colorMap: ColorMap=None, pngImageFileName: str=None, figureWidth: int=10, figureHeight: int=10) -> str:
     if isinstance(numpyArrayFilePathOrObject, str):
-        numpyArray = np.load(numpyArrayFilePathOrObject)
+        numpyArray = loadNumPyArray(numpyArrayFilePathOrObject)
     else:
         numpyArray = numpyArrayFilePathOrObject
         if not pngImageFileName:

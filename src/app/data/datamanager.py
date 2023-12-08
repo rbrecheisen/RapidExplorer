@@ -77,7 +77,7 @@ class DataManager:
         LOGGER.info(f'DataManager.importFileSet() filesToIgnore={filesToIgnore}')
         nrFiles = 0
         for fileName in os.listdir(fileSetPath):
-            filePath = os.path.join(fileSetPath)
+            filePath = os.path.join(fileSetPath, fileName)
             LOGGER.debug(f'DataManager.importFileSet() fileName={fileName}, filePath={filePath}')
             if fileName not in filesToIgnore and fileType.check(filePath=filePath):
                 nrFiles +=1

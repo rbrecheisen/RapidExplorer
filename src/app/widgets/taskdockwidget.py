@@ -107,6 +107,7 @@ class TaskDockWidget(DockWidget):
         self._progressBarDialog.setValue(progress)
 
     def taskFinished(self, taskOutput: TaskOutput) -> None:
+        LOGGER.info(f'TaskDockWidget.taskFinished() taskOutput={taskOutput}')
         self.signal().finished.emit(taskOutput)
         self._tasksComboBox.setCurrentIndex(0)
         self._progressBarDialog.close()

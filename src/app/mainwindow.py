@@ -14,6 +14,7 @@ from widgets.viewersdockwidget import ViewersDockWidget
 from widgets.taskdockwidget import TaskDockWidget
 from widgets.mainviewerdockwidget import MainViewerDockWidget
 from widgets.filetypedialog import FileTypeDialog
+from widgets.taskoutputdialog import TaskOutputDialog
 
 MULTIFILESETPATH = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset')
 FILESETPATH = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset/scan1')
@@ -195,9 +196,11 @@ class MainWindow(QMainWindow):
         self._dataDockWidget.addFileSet(fileSet=fileSet)
 
     def taskFinished(self, taskOutput: TaskOutput) -> None:
-        # Show success and error info?
         LOGGER.info(f'MainWindow.taskFinished() taskOutput={taskOutput}, fileSet={taskOutput.fileSet()}')
         self._dataDockWidget.addFileSet(fileSet=taskOutput.fileSet())
+        if taskOutput.hasErrors():
+            taskOutputDialog = TaskOutputDialog(taskOutput=taskOutput, clipboard=QApplication.clipboard())
+            taskOutputDialog.show()
 
     # Miscellaneous
 
