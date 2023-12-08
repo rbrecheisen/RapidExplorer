@@ -1,4 +1,7 @@
+import os
+import shutil
 import pydicom
+import pydicom.errors
 
 from tasks.task import Task
 from tasks.tasksignal import TaskSignal
@@ -6,6 +9,12 @@ from data.fileset import FileSet
 from settings.settinglabel import SettingLabel
 from settings.settingfileset import SettingFileSet
 from settings.settingfilepath import SettingFilePath
+from settings.settinginteger import SettingInteger
+from settings.settingboolean import SettingBoolean
+from settings.settingtext import SettingText
+from logger import Logger
+
+LOGGER = Logger()
 
 DESCRIPTION = """
 This task checks DICOM headers to see whether all attributes are correct for MuscleFatSegmentationTask
@@ -17,6 +26,10 @@ class CheckDicomHeadersTask(Task):
         super(CheckDicomHeadersTask, self).__init__()
         self.settings().add(SettingLabel(name='description', value=DESCRIPTION))
         self.settings().add(SettingFileSet(name='dicomFileSetName', displayName='DICOM File Set'))
+        self.settings().add(SettingText(name='requiredAttributes', displayName='Required Attributes (comma-separated list)', defaultValue='Rows,Columns,PixelSpacing,InstanceNumber,FileMetaInformationGroupLength'))
+        self.settings().add(SettingInteger(name='requiredNumberOfRows', displayName='Required Number of Rows', defaultValue=512))
+        self.settings().add(SettingInteger(name='requiredNumberOfColumns', displayName='Required Number of Columns', defaultValue=512))
+        self.settings().add(SettingBoolean(name='copyNonDicomFilesToOutputFileSet', displayName='Copy Non-DICOM Files to Output File Set', defaultValue=False))
         self.settings().add(SettingFileSetPath(name='outputFileSetPath', displayName='Output File Set Path'))
         self._signal = TaskSignal()
 
@@ -24,8 +37,60 @@ class CheckDicomHeadersTask(Task):
         return self._signal
 
     def run(self) -> FileSet:
+        # Get input file set
         dicomFileSetName = self.settings().setting(name='dicomFileSetName').value()
         dicomFileSet = self.dataManager().fileSetByName(name=dicomFileSetName)
+        dicomFilesCheckedOk = []
+        nonDicomFiles = []
+        errors = []
         for dicomFile in dicomFileSet.files():
-            p = pydicom.dcmread(dicomFile.path())
-            
+            try:
+                # Read data
+                p = pydicom.dcmread(dicomFile.path())
+                p.decompress()
+                # Check required attributes
+                requiredAttributes = [x.strip for x in self.settings().setting(name='requiredAttributes').value().split(',')]
+                allAttributesPresent = True
+                for requiredAttribute in requiredAttributes:
+                    if requiredAttribute not in p:
+                        errors.append(f'{dicomFile.path} does not contain attribute {requiredAttribute}')
+                        allAttributesPresent = False
+                if not allAttributesPresent:
+                    continue
+                # Check required number of rows and columns
+                correctNumberOfRows = True
+                requiredNumberOfRows = self.settings().setting(name='requiredNumberOfRows').value()
+                if p.Rows != requiredNumberOfRows:
+                    errors.append(f'{dicomFile.path()} has wrong number of rows: {p.Rows} instead of {requiredNumberOfRows}')
+                    correctNumberOfRows = False
+                correctNumberOfColumns = True
+                requiredNumberOfColumns = self.settings().setting(name='requiredNumberOfColumns').value()
+                if p.Columns != requiredNumberOfColumns:
+                    errors.append(f'{dicomFile.path()} has wrong number of columns: {p.Columns} instead of {requiredNumberOfColumns}')
+                    correctNumberOfColumns = False
+                if not correctNumberOfRows or not correctNumberOfColumns:
+                    continue
+                # All is well, add to checked list
+                dicomFilesCheckedOk.append(dicomFile.path())
+            except pydicom.errors.InvalidDicomError:
+                nonDicomFiles.append(dicomFile.path())
+        # Build output file set
+        outputFileSetPath = self.settings().setting(name='outputFileSetPath').value()
+        outputFileSetName = dicomFileSet.name() + 'Checked'        
+        outputFileSetPath = os.path.join(outputFileSetPath, outputFileSetName)
+        # Write error file if there were errors
+        if len(errors) > 0:
+            with open(os.path.join(outputFileSetPath, 'errors.txt'), 'w') as f:
+                for error in errors:
+                    f.write(error + '\n')
+        # Write DICOM files that checked out ok
+        for dicomFile in dicomFilesCheckedOk:
+            shutil.copy(dicomFile.path(), outputFileSetPath)
+        copyNonDicomFilesToOutputFileSet = self.settings().setting(name='copyNonDicomFilesToOutputFileSet').value()
+        if copyNonDicomFilesToOutputFileSet:
+            for file in nonDicomFiles:
+                shutil.copy(file.path(), outputFileSetPath)
+        # Load new output file set
+        outputFileSet = self.dataManager().importFileSet(fileSetPath=outputFileSetPath)
+        self.signal().finished.emit(outputFileSet)
+        return outputFileSet

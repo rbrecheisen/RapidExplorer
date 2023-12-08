@@ -89,8 +89,8 @@ class BodyCompositionTask(Task):
                 shutil.copy(file, outputFileSetPath)
         # Build new output file set
         outputFileSet = self.dataManager().importFileSet(fileSetPath=outputFileSetPath)
-        outputFileSet.setName(outputFileSetName)
-        outputFileSet = self._dataManager.updateFileSet(fileSet=outputFileSet)
+        # outputFileSet.setName(outputFileSetName)
+        # outputFileSet = self._dataManager.updateFileSet(fileSet=outputFileSet)
         self.signal().finished.emit(outputFileSet)
         return outputFileSet
 
