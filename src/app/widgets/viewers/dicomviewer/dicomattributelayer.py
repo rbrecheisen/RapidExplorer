@@ -1,7 +1,7 @@
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QGraphicsTextItem, QGraphicsItemGroup
 
-from widgets.viewers.layer import Layer
+from widgets.viewers.dicomviewer.layer import Layer
 
 
 class DicomAttributeLayer(Layer):

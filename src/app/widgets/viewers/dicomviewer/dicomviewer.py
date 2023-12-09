@@ -6,14 +6,16 @@ from typing import List
 
 from PySide6.QtCore import Qt, QSettings
 from PySide6.QtGui import QPixmap, QImage
-from PySide6.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsPixmapItem, QProgressDialog
+from PySide6.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsPixmapItem, QProgressDialog, QSlider
 from PySide6.QtWidgets import QVBoxLayout
 
 from widgets.viewers.viewer import Viewer
 from widgets.viewers.dicomviewer.dicomattributelayer import DicomAttributeLayer
+from widgets.viewers.dicomviewer.segmentationmasklayer import SegmentationMaskLayer
 from data.datamanager import DataManager
 from settings.settingfileset import SettingFileSet
 from widgets.viewers.dicomviewer.dicomfile import DicomFile
+from widgets.viewers.dicomviewer.segmentationfile import SegmentationFile
 from utils import applyWindowCenterAndWidth
 
 SETTINGSPATH = os.environ.get('SETTINGSPATH', 'settings.ini')
@@ -26,9 +28,11 @@ class DicomViewer(Viewer):
         super(DicomViewer, self).__init__()
         self._graphicsView = None
         self._scene = None
+        self._imageSlider = None
         self._progressBarDialog = None
         self._dicomFilesSorted = []
         self._dicomAttributeLayersSorted = []
+        self._dicomSegmentationMaskLayersSorted = []
         self._currentImageIndex = 0
         self._qsettings = QSettings(SETTINGSPATH, QSettings.Format.IniFormat)
         self._windowCenter, self._windowWidth = self.windowCenterAndWidth()
@@ -42,6 +46,11 @@ class DicomViewer(Viewer):
 
     def initUi(self) -> None:
         self.initGraphicsView()
+        self.initSlider()
+        layout = QVBoxLayout()
+        layout.addWidget(self._graphicsView)
+        layout.addWidget(self._imageSlider)
+        self.setLayout(layout)
         self.initProgressBarDialog()
 
     def initGraphicsView(self) -> None:
@@ -50,9 +59,10 @@ class DicomViewer(Viewer):
         item = self._scene.addText(self.name())
         item.setDefaultTextColor(Qt.blue)
         self._graphicsView.setScene(self._scene)
-        layout = QVBoxLayout()
-        layout.addWidget(self._graphicsView)
-        self.setLayout(layout)
+
+    def initSlider(self) -> None:
+        self._imageSlider = QSlider(Qt.Horizontal, self)
+        self._imageSlider.setRange(0, 0)
 
     def initProgressBarDialog(self) -> None:
         self._progressBarDialog = QProgressDialog('Loading Images...', 'Abort Import', 0, 100, self)
@@ -64,23 +74,34 @@ class DicomViewer(Viewer):
     def updateSettings(self) -> None:
         dicomFileSetName = self.settings().setting(name='dicomFileSetName').value()
         if dicomFileSetName:
+            segmentationFileSet = None
+            segmentationFileSetName = self.settings().setting(name='segmentationFileSetName').value()
+            if segmentationFileSetName:
+                segmentationFileSet = self._dataManager.fileSetByName(name=segmentationFileSetName)
             self._progressBarDialog.show()
             self._progressBarDialog.setValue(0)
             dicomFileSet = self._dataManager.fileSetByName(name=dicomFileSetName)
             nrSteps = 2 * dicomFileSet.nrFiles()
             step = 0
             dicomFiles = []
-            for file in dicomFileSet.files():
-                dicomFile = DicomFile(filePath=file.path())
-                dicomFiles.append(dicomFile)
+            for i in range(len(dicomFileSet.files())):
+                item = []
+                dicomFile = DicomFile(filePath=dicomFileSet.files()[i].path())
+                item.append(dicomFile)
+                if segmentationFileSet:
+                    segmentationFile = SegmentationFile(filePath=segmentationFileSet.files()[i].path())
+                    item.append(segmentationFile)
+                dicomFiles.append(item)
                 progress = int((step + 1) / nrSteps * 100)
                 self._progressBarDialog.setValue(progress)
                 step += 1
-            dicomFiles = sorted(dicomFiles, key=lambda x: x.data().InstanceNumber)
+            dicomFiles = sorted(dicomFiles, key=lambda item: item[0].data().InstanceNumber)
             i = 0
             for dicomFile in dicomFiles:
-                self._dicomFilesSorted.append(self.convertToQImage(dicomFile))
-                self._dicomAttributeLayersSorted.append(self.createDicomAttributeLayer(dicomFile, i))
+                self._dicomFilesSorted.append(self.convertToQImage(dicomFile[0]))
+                if segmentationFileSet:
+                    self._dicomSegmentationMaskLayersSorted.append(self.createSegmentationMaskLayer(dicomFile[1], i))
+                self._dicomAttributeLayersSorted.append(self.createDicomAttributeLayer(dicomFile[0], i))
                 progress = int((step + 1) / nrSteps * 100)
                 self._progressBarDialog.setValue(progress)
                 step += 1
@@ -105,13 +126,10 @@ class DicomViewer(Viewer):
         layer.setInstanceNumber(dicomFile.data().InstanceNumber)
         return layer
 
-    # def applyWindowCenterAndWidth(self, image, center, width) -> np.array:
-    #     imageMin = center - width // 2
-    #     imageMax = center + width // 2
-    #     windowedImage = np.clip(image, imageMin, imageMax)
-    #     windowedImage = ((windowedImage - imageMin) / (imageMax - imageMin)) * 255.0
-    #     return windowedImage.astype(np.uint8)
-    
+    def createSegmentationMaskLayer(self, segmentationFile: SegmentationFile, index: int) -> SegmentationMaskLayer:
+        layer = SegmentationMaskLayer(name='segmenationMaskLayer', index=index)
+        return layer
+
     def windowCenterAndWidth(self) -> List[int]:
         windowCenter = self._qsettings.value('dicomViewerWindowCenter', None)
         if not windowCenter:
@@ -139,9 +157,11 @@ class DicomViewer(Viewer):
         self._scene.clear()
         self._scene.addItem(pixmapItem)
         # WARNING: do not add layer itself because it will be destroyed on scene.clear()
+        # Create scene graphics item on-the-fly
         self._scene.addItem(attributeLayer.createGraphicsItem())
         self._currentImageIndex = index
     
     def clearData(self) -> None:
         self._dicomFilesSorted = []
+        self._dicomAttributeLayersSorted = []
         self._scene.clear()
