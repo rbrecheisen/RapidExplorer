@@ -28,7 +28,7 @@ class MainViewerDockWidget(DockWidget):
         layout.addWidget(viewer)
         widget = QWidget()
         size = self.windowSize()
-        widget.setFixedSize(size.width(), size.height())
+        widget.setFixedSize(size.width()+10, size.height()+10)
         widget.setLayout(layout)
         self.setWidget(widget)
 

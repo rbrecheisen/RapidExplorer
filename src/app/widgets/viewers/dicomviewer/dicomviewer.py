@@ -13,6 +13,7 @@ from widgets.viewers.viewer import Viewer
 from widgets.viewers.dicomviewer.dicomattributelayer import DicomAttributeLayer
 from widgets.viewers.dicomviewer.segmentationmasklayer import SegmentationMaskLayer
 from data.datamanager import DataManager
+from data.fileset import FileSet
 from settings.settingfileset import SettingFileSet
 from widgets.viewers.dicomviewer.dicomfile import DicomFile
 from widgets.viewers.dicomviewer.segmentationfile import SegmentationFile
@@ -33,6 +34,8 @@ class DicomViewer(Viewer):
         self._dicomFilesSorted = []
         self._dicomAttributeLayersSorted = []
         self._dicomSegmentationMaskLayersSorted = []
+        self._currentDicomFileSet = None
+        self._currentSegmentationFileSet = None
         self._currentImageIndex = 0
         self._qsettings = QSettings(SETTINGSPATH, QSettings.Format.IniFormat)
         self._windowCenter, self._windowWidth = self.windowCenterAndWidth()
@@ -71,7 +74,21 @@ class DicomViewer(Viewer):
         self._progressBarDialog.setAutoClose(True)
         self._progressBarDialog.close()
 
+    def findSegmentationFileForDicomFile(self, segmentationFileSet: FileSet, dicomFile: DicomFile) -> SegmentationFile:
+        dicomFileName = os.path.split(dicomFile.filePath())[1]
+        for file in segmentationFileSet.files():
+            segmentationFileName = os.path.split(file.path())[1]
+            if dicomFileName in segmentationFileName:
+                segmentationFile = SegmentationFile(filePath=file.path())
+                return segmentationFile
+        return None
+
     def updateSettings(self) -> None:
+        """ TODO:
+        Check which settings have changed and update only these. For example, if the
+        DICOM fileset is the same as the loaded one, ignore updating it. Other settings
+        like opacity and slice slider should be updated always. 
+        """        
         dicomFileSetName = self.settings().setting(name='dicomFileSetName').value()
         if dicomFileSetName:
             segmentationFileSet = None
@@ -89,7 +106,7 @@ class DicomViewer(Viewer):
                 dicomFile = DicomFile(filePath=dicomFileSet.files()[i].path())
                 item.append(dicomFile)
                 if segmentationFileSet:
-                    segmentationFile = SegmentationFile(filePath=segmentationFileSet.files()[i].path())
+                    segmentationFile = self.findSegmentationFileForDicomFile(segmentationFileSet=segmentationFileSet, dicomFile=dicomFile)
                     item.append(segmentationFile)
                 dicomFiles.append(item)
                 progress = int((step + 1) / nrSteps * 100)
@@ -101,7 +118,10 @@ class DicomViewer(Viewer):
                 self._dicomFilesSorted.append(self.convertToQImage(dicomFile[0]))
                 if segmentationFileSet:
                     self._dicomSegmentationMaskLayersSorted.append(self.createSegmentationMaskLayer(dicomFile[1], i))
-                self._dicomAttributeLayersSorted.append(self.createDicomAttributeLayer(dicomFile[0], i))
+                attributeLayer = self.createDicomAttributeLayer(dicomFile[0], i)
+                if segmentationFileSet:
+                    attributeLayer.setSegmentationFilePath(dicomFile[1].filePath())
+                self._dicomAttributeLayersSorted.append(attributeLayer)
                 progress = int((step + 1) / nrSteps * 100)
                 self._progressBarDialog.setValue(progress)
                 step += 1
@@ -122,12 +142,13 @@ class DicomViewer(Viewer):
 
     def createDicomAttributeLayer(self, dicomFile: DicomFile, index: int) -> DicomAttributeLayer:
         layer = DicomAttributeLayer(name='dicomAttributeLayer', index=index)
-        layer.setFileName(dicomFile.filePath())
+        layer.setFilePath(dicomFile.filePath())
         layer.setInstanceNumber(dicomFile.data().InstanceNumber)
         return layer
 
     def createSegmentationMaskLayer(self, segmentationFile: SegmentationFile, index: int) -> SegmentationMaskLayer:
-        layer = SegmentationMaskLayer(name='segmenationMaskLayer', index=index)
+        layer = SegmentationMaskLayer(name='segmenationMaskLayer', index=index, opacity=0.5)
+        layer.setFilePath(segmentationFile.filePath())
         return layer
 
     def windowCenterAndWidth(self) -> List[int]:
@@ -152,12 +173,14 @@ class DicomViewer(Viewer):
     def _displayDicomImageAndAttributeLayer(self, index) -> None:
         image = self._dicomFilesSorted[index]
         attributeLayer = self._dicomAttributeLayersSorted[index]
+        segmentationMaskLayer = self._dicomSegmentationMaskLayersSorted[index]
         pixmap = QPixmap.fromImage(image)
         pixmapItem = QGraphicsPixmapItem(pixmap)
         self._scene.clear()
         self._scene.addItem(pixmapItem)
         # WARNING: do not add layer itself because it will be destroyed on scene.clear()
         # Create scene graphics item on-the-fly
+        self._scene.addItem(segmentationMaskLayer.createGraphicsItem())
         self._scene.addItem(attributeLayer.createGraphicsItem())
         self._currentImageIndex = index
     

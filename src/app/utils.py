@@ -7,9 +7,10 @@ import pydicom
 import pydicom.errors
 import numpy as np
 import matplotlib.pyplot as plt
-import imageio
 
 from typing import Dict, Any, List
+
+from PySide6.QtGui import QImage
 
 from singleton import singleton
 
@@ -193,6 +194,13 @@ def convertNumPyArrayToPngImage(
     plt.savefig(pngImageFilePath, bbox_inches='tight')
     plt.close('all')
     return pngImageFilePath
+
+
+def convertNumPyArrayToRgbQImage(numpyArray: np.array, colorMap: ColorMap) -> QImage:
+    numpyArray = applyColorMap(pixels=numpyArray, colorMap=colorMap)
+    h, w, _ = numpyArray.shape
+    image = QImage(numpyArray.data.tobytes(), w, h, QImage.Format_RGB888)
+    return image
 
 
 def calculateArea(labels, label, pixelSpacing):
