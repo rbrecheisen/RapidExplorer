@@ -14,6 +14,7 @@ from settings.settinginteger import SettingInteger
 from settings.settingtext import SettingText
 from data.fileset import FileSet
 from data.pngfiletype import PngFileType
+from data.allfiletype import AllFileType
 from logger import Logger
 
 LOGGER = Logger()
@@ -32,8 +33,12 @@ class CreatePngsFromMuscleFatSegmentationTask(Task):
         self.settings().add(SettingFileSet(name='dicomFileSetName', displayName='DICOM File Set'))
         self.settings().add(SettingBoolean(name='copyDicomFilesToOutputFileSet', displayName='Copy DICOM Files to Output File Set'))
         self.settings().add(SettingFileSet(name='segmentationFileSetName', displayName='Segmentation File Set'))
-        self.settings().add(SettingInteger(name='windowCenter', displayName='Window Center', defaultValue=50))
-        self.settings().add(SettingInteger(name='windowWidth', displayName='Window Width', defaultValue=400))
+        setting = SettingInteger(name='windowCenter', displayName='Window Center', defaultValue=50)
+        setting.setWidgetTypeSpinBox()
+        self.settings().add(setting)
+        setting = SettingInteger(name='windowWidth', displayName='Window Width', defaultValue=400)
+        setting.setWidgetTypeSpinBox()
+        self.settings().add(setting)
         self.settings().add(SettingBoolean(name='copySegmentationFilesToOutputFileSet', displayName='Copy Segmentation Files to Output File Set'))
         self.settings().add(SettingFileSetPath(name='outputFileSetPath', displayName='Output File Set Path'))
         self.settings().add(SettingText(name='outputFileSetName', displayName='Output File Set Name', optional=True))

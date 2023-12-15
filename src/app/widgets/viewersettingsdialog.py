@@ -6,7 +6,8 @@ from widgets.settingbooleanwidget import SettingBooleanWidget
 from widgets.settingfilesetpathwidget import SettingFileSetPathWidget
 from widgets.settingfilesetwidget import SettingFileSetWidget
 from widgets.settingfloatingpointwidget import SettingFloatingPointWidget
-from widgets.settingintegerwidget import SettingIntegerWidget
+from widgets.settingintegersliderwidget import SettingIntegerSliderWidget
+from widgets.settingintegerspinboxwidget import SettingIntegerSpinBoxWidget
 from widgets.settinglabelwidget import SettingLabelWidget
 from widgets.settingoptionlistwidget import SettingOptionListWidget
 from widgets.settingtextwidget import SettingTextWidget
@@ -73,7 +74,11 @@ class ViewerSettingsDialog(QDialog):
                 self._viewerSettingWidgets[setting.name()] = (widget, self.createLabel(setting=setting))
 
             elif settings.isTypeInteger(setting) and setting.visible():
-                widget = SettingIntegerWidget(setting=setting, parent=self)
+                if setting.isWidgetTypeSpinBox():
+                    widget = SettingIntegerSpinBoxWidget(setting=setting, parent=self)
+                else:
+                    widget = SettingIntegerSliderWidget(setting=setting, parent=self)
+                    widget.setSingleStep(setting.step())
                 widget.setRange(setting.minimum(), setting.maximum())
                 widget.valueChanged.connect(self.settingsUpdated)
                 self._viewerSettingWidgets[setting.name()] = (widget, self.createLabel(setting=setting))
