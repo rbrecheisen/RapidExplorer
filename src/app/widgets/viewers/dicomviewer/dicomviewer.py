@@ -27,6 +27,7 @@ class DicomViewer(Viewer):
         self._graphicsView = None
         self._scene = None
         self._imageSlider = None
+        self._segmentationMaskOpacitySlider = None
         self._progressBarDialog = None
         self._dicomFilesSorted = []
         self._dicomAttributeLayersSorted = []
@@ -47,10 +48,11 @@ class DicomViewer(Viewer):
 
     def initUi(self) -> None:
         self.initGraphicsView()
-        self.initSlider()
+        self.initSliders()
         layout = QVBoxLayout()
         layout.addWidget(self._graphicsView)
         layout.addWidget(self._imageSlider)
+        layout.addWidget(self._segmentationMaskOpacitySlider)
         self.setLayout(layout)
         self.initProgressBarDialog()
 
@@ -61,10 +63,14 @@ class DicomViewer(Viewer):
         item.setDefaultTextColor(Qt.blue)
         self._graphicsView.setScene(self._scene)
 
-    def initSlider(self) -> None:
+    def initSliders(self) -> None:
         self._imageSlider = QSlider(Qt.Horizontal, self)
         self._imageSlider.setRange(0, 100)
         self._imageSlider.valueChanged.connect(self.currentImageIndexChanged)
+        self._segmentationMaskOpacitySlider = QSlider(Qt.Horizontal, self)
+        self._segmentationMaskOpacitySlider.setRange(0, 100)
+        self._segmentationMaskOpacitySlider.setValue(50)
+        self._segmentationMaskOpacitySlider.valueChanged.connect(self.segmentationMaskOpacityChanged)
 
     def initProgressBarDialog(self) -> None:
         self._progressBarDialog = QProgressDialog('Loading Images...', 'Abort Import', 0, 100, self)
@@ -144,6 +150,13 @@ class DicomViewer(Viewer):
             if index >= 0 and index < self._currentDicomFileSet.nrFiles():
                 self._currentImageIndex = index
                 self.displayDicomViewerImage(self._currentImageIndex)
+
+    def segmentationMaskOpacityChanged(self, value: int) -> None:
+        for dicomViewerImage in self._dicomViewerImages:
+            segmentationMaskLayer = dicomViewerImage.segmentationMaskLayer()
+            if segmentationMaskLayer:
+                segmentationMaskLayer.setOpacity(value / 100.0)
+        self.displayDicomViewerImage(self._currentImageIndex)
 
     def displayDicomViewerImage(self, index) -> None:
         if len(self._dicomViewerImages) > 0 and index < len(self._dicomViewerImages):
