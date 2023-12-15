@@ -10,10 +10,7 @@ from widgets.viewers.viewer import Viewer
 from data.datamanager import DataManager
 from data.fileset import FileSet
 from settings.settingfileset import SettingFileSet
-from settings.settinginteger import SettingInteger
 from widgets.viewers.dicomviewer.dicomviewerimage import DicomViewerImage
-from widgets.viewers.dicomviewer.dicomfile import DicomFile
-from widgets.viewers.dicomviewer.segmentationfile import SegmentationFile
 from utils import applyWindowCenterAndWidth
 
 SETTINGSPATH = os.environ.get('SETTINGSPATH', 'settings.ini')
@@ -29,14 +26,11 @@ class DicomViewer(Viewer):
         self._imageSlider = None
         self._segmentationMaskOpacitySlider = None
         self._progressBarDialog = None
-        self._dicomFilesSorted = []
-        self._dicomAttributeLayersSorted = []
-        self._dicomSegmentationMaskLayersSorted = []
         self._dicomViewerImages = []
         self._currentDicomFileSet = None
         self._currentSegmentationFileSet = None
         self._currentImageIndex = 0
-        self._qsettings = QSettings(SETTINGSPATH, QSettings.Format.IniFormat)
+        self._settingsQ = QSettings(SETTINGSPATH, QSettings.Format.IniFormat)
         self._windowCenter, self._windowWidth = self.windowCenterAndWidth()
         self._dataManager = DataManager()
         self.initSettings()
@@ -112,7 +106,7 @@ class DicomViewer(Viewer):
             for i in range(len(self._currentDicomFileSet.files())):
                 dicomFilePath = self._currentDicomFileSet.files()[i].path()
                 dicomViewerImage = DicomViewerImage(dicomFilePath=dicomFilePath, index=i)
-                dicomViewerImage.setWindowCenterAndWidth(self.windowCenterAndWidth())
+                dicomViewerImage.setWindowCenterAndWidth(windowCenterAndWidth=[self._windowCenter, self._windowWidth])
                 if newSegmentationFileSet:
                     segmentationFilePath = self.findSegmentationFilePathForDicomFilePath(segmentationFileSet=self._currentSegmentationFileSet, dicomFilePath=dicomFilePath)
                     dicomViewerImage.setSegmentationFilePath(segmentationFilePath=segmentationFilePath)
@@ -124,14 +118,14 @@ class DicomViewer(Viewer):
         self.displayDicomViewerImage(self._currentImageIndex)
                 
     def windowCenterAndWidth(self) -> List[int]:
-        windowCenter = self._qsettings.value('dicomViewerWindowCenter', None)
+        windowCenter = self._settingsQ.value('dicomViewerWindowCenter', None)
         if not windowCenter:
             windowCenter = 50
-            self._qsettings.setValue('dicomViewerWindowCenter', windowCenter)
-        windowWidth = self._qsettings.value('dicomViewerWindowWidth', None)
+            self._settingsQ.setValue('dicomViewerWindowCenter', windowCenter)
+        windowWidth = self._settingsQ.value('dicomViewerWindowWidth', None)
         if not windowWidth:
             windowWidth = 400
-            self._qsettings.setValue('dicomViewerWindowWidth', windowWidth)
+            self._settingsQ.setValue('dicomViewerWindowWidth', windowWidth)
         return int(windowCenter), int(windowWidth)
 
     def wheelEvent(self, event) -> None:
