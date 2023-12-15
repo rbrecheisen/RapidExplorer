@@ -29,7 +29,7 @@ class TaskManager:
 
     def loadTaskTypes(self) -> None:
         from tasks.bodycompositiontask.bodycompositiontask import BodyCompositionTask
-        from tasks.checkdiomheaderstask.checkdicomheaderstask import CheckDicomHeadersTask
+        from tasks.checkdicomheaderstask.checkdicomheaderstask import CheckDicomHeadersTask
         from tasks.createarchivetask.createarchivetask import CreateArchiveTask
         from tasks.createpngsfrommusclefatsegmentationtask.createpngsfrommusclefatsegmentationtask import CreatePngsFromMuscleFatSegmentationTask
         from tasks.musclefatsegmentationtask.musclefatsegmentationtask import MuscleFatSegmentationTask        

@@ -1,31 +1,35 @@
 import os
 import pydicom
+import pydicom.errors
 import numpy as np
 import pandas as pd
 
 from typing import List, Dict
 
 from utils import getPixelsFromDicomObject, calculateArea, calculateMeanRadiationAttennuation
+from logger import Logger
+
+LOGGER = Logger('MosamaticDesktop')
 
 
-class BodyCompositionCalculator:
+class BodyCompositionValidationCalculator:
     MUSCLE = 1
     VAT = 5
     SAT = 7
 
     def __init__(self, parentTask):
         self._parentTask = parentTask
-        self._dicomFilePaths = None
+        self._dicomAndTagFilePaths = None
         self._segmentationFilePaths = None
         self._patientHeights = {}
         self._outputMetrics = None
         self._progress = 0
 
-    def dicomFilePaths(self) -> List[str]:
-        return self._dicomFilePaths
+    def dicomAndTagFilePaths(self) -> List[str]:
+        return self._dicomAndTagFilePaths
     
-    def setDicomFilePaths(self, dicomFilePaths: List[str]) -> None:
-        self._dicomFilePaths = dicomFilePaths
+    def setDicomAndTagFilePaths(self, dicomAndTagFilePaths: List[str]) -> None:
+        self._dicomAndTagFilePaths = dicomAndTagFilePaths
 
     def segmentationFilePaths(self) -> List[str]:
         return self._segmentationFilePaths
@@ -50,18 +54,41 @@ class BodyCompositionCalculator:
     def loadSegmentation(filePath: str):
         return np.load(filePath)
     
+    def isDicomFile(self, filePath: str) -> bool:
+        try:
+            pydicom.dcmread(filePath, stop_before_pixels=True)
+            return True
+        except pydicom.errors.InvalidDicomError:
+            return False
+
+    def tagFilePathForDicomFilePath(self, filePath: str) -> bool:
+        return filePath.endswith('.tag')
+    
     def execute(self):
-        filePairs = []
-        for dicomFilePath in self.dicomFilePaths():
+        fileTuples = []
+        for dicomAndTagFilePath in self.dicomAndTagFilePaths():
+            dicomFilePath = None
+            tagFilePath = None
+            if self.isDicomFile(filePath=dicomAndTagFilePath):
+                dicomFilePath = dicomAndTagFilePath
+            tagFilePath = self.tagFilePathForDicomFilePath(filePath=dicomAndTagFilePath):
+            if not tagFilePath:
+                LOGGER.error(f'Could not find TAG file for {dicomFilePath}')
+                continue
+            segmentationFilePath = None
             dicomFileName = os.path.split(dicomFilePath)[1]
-            for segmentationFilePath in self.segmentationFilePaths():
-                segmentationFileName = os.path.split(segmentationFilePath)[1]
-                if dicomFileName + '.seg.npy' == segmentationFileName:
-                    filePairs.append((dicomFilePath, segmentationFilePath))
+            for filePath in self.segmentationFilePaths():
+                fileName = os.path.split(filePath)[1]
+                if dicomFileName + '.seg.npy' == fileName:
+                    segmentationFilePath = filePath
                     break
-        # Work with found file pairs
+            if dicomFilePath and tagFilePath and segmentationFilePath:
+                fileTuples.append((dicomFilePath, tagFilePath, segmentationFilePath))
+            else:
+                raise RuntimeError('Could not find tuple (dicomFilePath, tagFilePath, segmentationFilePath)')
+        # Work with found file tuples
         self.outputMetrics = {}
-        for filePair in filePairs:
+        for filePair in fileTuples:
             image, pixelSpacing = self.loadDicomFile(filePair[0])
             segmentations = self.loadSegmentation(filePair[1])
             self.outputMetrics[filePair[0]] = {}
