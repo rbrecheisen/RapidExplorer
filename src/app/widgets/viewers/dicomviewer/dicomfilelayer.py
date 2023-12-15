@@ -1,7 +1,8 @@
 import pydicom
 import numpy as np
 
-from PySide6.QtCore import Qt
+from typing import List
+
 from PySide6.QtGui import QImage, QPixmap
 from PySide6.QtWidgets import QGraphicsItemGroup, QGraphicsPixmapItem
 
@@ -20,9 +21,9 @@ class DicomFileLayer(Layer):
     def setFilePath(self, filePath: str) -> None:
         self._filePath = filePath
 
-    def setWindowCenterAndWidth(self, windowCenter: int, windowWidth: int) -> None:
-        self._windowCenter = windowCenter
-        self._windowWidth = windowWidth
+    def setWindowCenterAndWidth(self, windowCenterAndWidth: List[int]) -> None:
+        self._windowCenter = windowCenterAndWidth[0]
+        self._windowWidth = windowCenterAndWidth[1]
 
     def convertToQImage(self, filePath: str) -> QImage:
         p = pydicom.dcmread(filePath)

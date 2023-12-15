@@ -16,6 +16,7 @@ class SettingBooleanWidget(QCheckBox):
             self.setCheckState(Qt.Unchecked)
         else:
             pass
+        self.setText(self._setting.displayName())
         self.stateChanged.connect(self.settingChanged)
 
     def settingChanged(self, state: int) -> None:

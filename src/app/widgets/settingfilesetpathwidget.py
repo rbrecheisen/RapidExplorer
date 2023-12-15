@@ -18,6 +18,10 @@ class SettingFileSetPathWidget(QWidget):
         layout.addWidget(button)
         self.setLayout(layout)
 
+    @property
+    def textChanged(self):
+        return self._fileSetPathLineEdit.textChanged
+
     def showFileDialog(self) -> None:
         dirPath = QFileDialog.getExistingDirectory(self, 'Select File Set Path', '.')
         if dirPath:

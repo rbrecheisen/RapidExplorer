@@ -1,3 +1,5 @@
+from typing import List
+
 from widgets.viewers.dicomviewer.dicomfile import DicomFile
 from widgets.viewers.dicomviewer.segmentationfile import SegmentationFile
 from widgets.viewers.dicomviewer.dicomfilelayer import DicomFileLayer
@@ -37,5 +39,5 @@ class DicomViewerImage:
         self._segmentationMaskLayer.setFilePath(filePath=self._segmentationFile.filePath())
         self._dicomAttributesLayer.setSegmentationFilePath(filePath=self._segmentationFile.filePath())
 
-    def setWindowCenterAndWidth(self, windowCenter: int, windowWidth: int) -> None:
-        self._dicomFileLayer.setWindowCenterAndWidth(windowCenter=windowCenter, windowWidth=windowWidth)
+    def setWindowCenterAndWidth(self, windowCenterAndWidth: List[int]) -> None:
+        self._dicomFileLayer.setWindowCenterAndWidth(windowCenterAndWidth=windowCenterAndWidth)

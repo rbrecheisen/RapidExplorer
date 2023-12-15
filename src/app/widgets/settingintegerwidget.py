@@ -12,9 +12,6 @@ class SettingIntegerWidget(QSpinBox):
             self.setValue(self._setting.value())
         self.valueChanged.connect(self.settingChanged)
 
-    # def setRange(self, minimum: int, maximum: int) -> None:
-    #     self.setRange(minimum, maximum)
-
     def settingChanged(self, value: int) -> None:
         if value:
             self._setting.setValue(value)

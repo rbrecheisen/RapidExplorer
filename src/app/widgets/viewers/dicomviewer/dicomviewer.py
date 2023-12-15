@@ -107,7 +107,7 @@ class DicomViewer(Viewer):
             if not self._currentSegmentationFileSet or (self._currentSegmentationFileSet and segmentationFileSetName != self._currentSegmentationFileSet.name()):
                 self._currentSegmentationFileSet = self._dataManager.fileSetByName(name=segmentationFileSetName)
                 newSegmentationFileSet = True
-        if newDicomFileSet:
+        if newDicomFileSet or newSegmentationFileSet:
             self._progressBarDialog.show()
             self._progressBarDialog.setValue(0)
             nrSteps = self._currentDicomFileSet.nrFiles()
@@ -116,6 +116,7 @@ class DicomViewer(Viewer):
             for i in range(len(self._currentDicomFileSet.files())):
                 dicomFilePath = self._currentDicomFileSet.files()[i].path()
                 dicomViewerImage = DicomViewerImage(dicomFilePath=dicomFilePath, index=i)
+                dicomViewerImage.setWindowCenterAndWidth(self.windowCenterAndWidth())
                 if newSegmentationFileSet:
                     segmentationFilePath = self.findSegmentationFilePathForDicomFilePath(segmentationFileSet=self._currentSegmentationFileSet, dicomFilePath=dicomFilePath)
                     dicomViewerImage.setSegmentationFilePath(segmentationFilePath=segmentationFilePath)
@@ -124,7 +125,7 @@ class DicomViewer(Viewer):
                 self._progressBarDialog.setValue(progress)
                 step += 1
             self._dicomViewerImages = sorted(self._dicomViewerImages, key=lambda image: image.dicomFile().data().InstanceNumber)
-        self.displayDicomViewerImage(self._currentImageIndex)
+            self.displayDicomViewerImage(self._currentImageIndex)
                 
     # def updateSettings(self) -> None:
     #     dicomFileSetName = self.settings().setting(name='dicomFileSetName').value()
@@ -212,26 +213,11 @@ class DicomViewer(Viewer):
         if len(self._dicomViewerImages) > 0 and index < len(self._dicomViewerImages):
             dicomViewerImage = self._dicomViewerImages[index]
             self._scene.clear()
-            dicomFileLayer = dicomViewerImage.dicomFileLayer()
-            self._scene.addItem(dicomFileLayer.createGraphicsItem())
+            self._scene.addItem(dicomViewerImage.dicomFileLayer().createGraphicsItem())
             segmentationMaskLayer = dicomViewerImage.segmentationMaskLayer()
-            self._scene.addItem(segmentationMaskLayer.createGraphicsItem())
-            dicomAttributesLayer = dicomViewerImage.dicomAttributesLayer()
-            self._scene.addItem(dicomAttributesLayer.createGraphicsItem())
-
-    # def displayDicomImageAndAttributeLayer(self, index) -> None:
-    #     image = self._dicomFilesSorted[index]
-    #     attributeLayer = self._dicomAttributeLayersSorted[index]
-    #     segmentationMaskLayer = self._dicomSegmentationMaskLayersSorted[index]
-    #     pixmap = QPixmap.fromImage(image)
-    #     pixmapItem = QGraphicsPixmapItem(pixmap)
-    #     self._scene.clear()
-    #     self._scene.addItem(pixmapItem)
-    #     # WARNING: do not add layer itself because it will be destroyed on scene.clear()
-    #     # Create scene graphics item on-the-fly
-    #     self._scene.addItem(segmentationMaskLayer.createGraphicsItem())
-    #     self._scene.addItem(attributeLayer.createGraphicsItem())
-    #     self._currentImageIndex = index
+            if segmentationMaskLayer:
+                self._scene.addItem(segmentationMaskLayer.createGraphicsItem())
+            self._scene.addItem(dicomViewerImage.dicomAttributesLayer().createGraphicsItem())
     
     def clearData(self) -> None:
         self._dicomFilesSorted = []

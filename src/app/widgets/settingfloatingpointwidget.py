@@ -12,9 +12,6 @@ class SettingFloatingPointWidget(QDoubleSpinBox):
             self.setValue(self._setting.value())
         self.valueChanged.connect(self.settingChanged)
 
-    # def setRange(self, minimum: float, maximum: float) -> None:
-    #     self.setRange(minimum, maximum)
-
     def settingChanged(self, value: float) -> None:
         if value:
             self._setting.setValue(value)

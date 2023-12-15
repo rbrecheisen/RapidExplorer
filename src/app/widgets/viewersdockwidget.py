@@ -12,7 +12,6 @@ class ViewersDockWidget(DockWidget):
         self._viewersComboBox = None
         self._viewerManager = ViewerManager()
         self._showSettingsDialogButton = None
-        self._updateViewerButton = None
         self.initUi()
         self.loadViewers()
 
@@ -28,7 +27,6 @@ class ViewersDockWidget(DockWidget):
         self._updateViewerButton.clicked.connect(self.updateViewer)
         buttonLayout = QHBoxLayout()
         buttonLayout.addWidget(self._showSettingsDialogButton)
-        buttonLayout.addWidget(self._updateViewerButton)
         buttonLayout.setAlignment(Qt.AlignRight)
         buttonWidget = QWidget()
         buttonWidget.setLayout(buttonLayout)
@@ -53,12 +51,13 @@ class ViewersDockWidget(DockWidget):
         if viewerName:
             viewer = self._viewerManager.viewer(name=viewerName)
             settingsDialog = ViewerSettingsDialog(viewerSettings=viewer.settings())
+            settingsDialog.signal().updated.connect(self.updateViewer)
             resultCode = settingsDialog.show()
             if resultCode == QDialog.Accepted:
-                # self._viewerManager.updateViewerSettings()
-                self._updateViewerButton.setEnabled(True)
+                self.updateViewer()
+                settingsDialog.signal().updated.disconnect(self.updateViewer)
             else:
-                self._updateViewerButton.setEnabled(False)
+                settingsDialog.signal().updated.disconnect(self.updateViewer)
 
     def updateViewer(self) -> None:
         self._viewerManager.updateViewerSettings()

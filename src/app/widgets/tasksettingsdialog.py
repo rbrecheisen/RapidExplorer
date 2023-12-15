@@ -28,8 +28,8 @@ class TaskSettingsDialog(QDialog):
         for name in self._taskSettingWidgets.keys():
             displayLabel = self._taskSettingWidgets[name][1]
             if displayLabel:
-                layout.addWidget(displayLabel)   # First widget display label
-            layout.addWidget(self._taskSettingWidgets[name][0])   # Then widget itself
+                layout.addWidget(displayLabel)
+            layout.addWidget(self._taskSettingWidgets[name][0])
         layout.addWidget(self.createButtonsWidget())
         layout.setAlignment(Qt.AlignTop)
         self.setLayout(layout)
