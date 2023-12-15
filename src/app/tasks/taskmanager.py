@@ -29,12 +29,14 @@ class TaskManager:
 
     def loadTaskTypes(self) -> None:
         from tasks.bodycompositiontask.bodycompositiontask import BodyCompositionTask
+        from tasks.bodycompositionvalidationtask.bodycompositionvalidationtask import BodyCompositionValidationTask
         from tasks.checkdicomheaderstask.checkdicomheaderstask import CheckDicomHeadersTask
         from tasks.createarchivetask.createarchivetask import CreateArchiveTask
         from tasks.createpngsfrommusclefatsegmentationtask.createpngsfrommusclefatsegmentationtask import CreatePngsFromMuscleFatSegmentationTask
         from tasks.musclefatsegmentationtask.musclefatsegmentationtask import MuscleFatSegmentationTask        
         self._taskTypes = {
             BodyCompositionTask.NAME: BodyCompositionTask,
+            BodyCompositionValidationTask.NAME: BodyCompositionValidationTask,
             CheckDicomHeadersTask.NAME: CheckDicomHeadersTask,
             CreateArchiveTask.NAME: CreateArchiveTask,
             CreatePngsFromMuscleFatSegmentationTask.NAME: CreatePngsFromMuscleFatSegmentationTask,

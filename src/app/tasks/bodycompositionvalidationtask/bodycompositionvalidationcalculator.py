@@ -6,7 +6,7 @@ import pandas as pd
 
 from typing import List, Dict
 
-from utils import getPixelsFromDicomObject, calculateArea, calculateMeanRadiationAttennuation
+from utils import getPixelsFromDicomObject, calculateArea, calculateMeanRadiationAttennuation, tagPixels
 from logger import Logger
 
 LOGGER = Logger('MosamaticDesktop')
@@ -54,14 +54,20 @@ class BodyCompositionValidationCalculator:
     def loadSegmentation(filePath: str):
         return np.load(filePath)
     
-    def isDicomFile(self, filePath: str) -> bool:
+    @staticmethod
+    def loadTagFile(filePath: str):
+        return tagPixels(tagFilePath=filePath)
+    
+    @staticmethod
+    def isDicomFile(filePath: str) -> bool:
         try:
             pydicom.dcmread(filePath, stop_before_pixels=True)
             return True
         except pydicom.errors.InvalidDicomError:
             return False
 
-    def tagFilePathForDicomFilePath(self, filePath: str) -> bool:
+    @staticmethod
+    def tagFilePathForDicomFilePath(filePath: str) -> bool:
         return filePath.endswith('.tag')
     
     def execute(self):
@@ -88,25 +94,50 @@ class BodyCompositionValidationCalculator:
                 raise RuntimeError('Could not find tuple (dicomFilePath, tagFilePath, segmentationFilePath)')
         # Work with found file tuples
         self.outputMetrics = {}
-        for filePair in fileTuples:
-            image, pixelSpacing = self.loadDicomFile(filePair[0])
-            segmentations = self.loadSegmentation(filePair[1])
-            self.outputMetrics[filePair[0]] = {}
-            self.outputMetrics[filePair[0]] = {
-                'muscle_area': calculateArea(segmentations, BodyCompositionCalculator.MUSCLE, pixelSpacing),
-                'vat_area': calculateArea(segmentations, BodyCompositionCalculator.VAT, pixelSpacing),
-                'sat_area': calculateArea(segmentations, BodyCompositionCalculator.SAT, pixelSpacing),
-                'muscle_ra': calculateMeanRadiationAttennuation(image, segmentations, BodyCompositionCalculator.MUSCLE),
-                'vat_ra': calculateMeanRadiationAttennuation(image, segmentations, BodyCompositionCalculator.VAT),
-                'sat_ra': calculateMeanRadiationAttennuation(image, segmentations, BodyCompositionCalculator.SAT),
+        for fileTuple in fileTuples:
+            image, pixelSpacing = self.loadDicomFile(fileTuple[0])
+            groundTruthSegmentations = self.loadTagFile(fileTuple[1])
+            segmentations = self.loadSegmentation(fileTuple[2])
+            self.outputMetrics[fileTuple[0]] = {}
+            self.outputMetrics[fileTuple[0]] = {
+                'muscle_area_true': calculateArea(groundTruthSegmentations, BodyCompositionCalculator.MUSCLE, pixelSpacing),
+                'muscle_area_pred': calculateArea(segmentations, BodyCompositionCalculator.MUSCLE, pixelSpacing),
+                'vat_area_true': calculateArea(groundTruthSegmentations, BodyCompositionCalculator.VAT, pixelSpacing),
+                'vat_area_pred': calculateArea(segmentations, BodyCompositionCalculator.VAT, pixelSpacing),
+                'sat_area_true': calculateArea(groundTruthSegmentations, BodyCompositionCalculator.SAT, pixelSpacing),
+                'sat_area_pred': calculateArea(segmentations, BodyCompositionCalculator.SAT, pixelSpacing),
+                'muscle_ra_true': calculateMeanRadiationAttennuation(image, groundTruthSegmentations, BodyCompositionCalculator.MUSCLE),
+                'muscle_ra_pred': calculateMeanRadiationAttennuation(image, segmentations, BodyCompositionCalculator.MUSCLE),
+                'vat_ra_true': calculateMeanRadiationAttennuation(image, groundTruthSegmentations, BodyCompositionCalculator.VAT),
+                'vat_ra_pred': calculateMeanRadiationAttennuation(image, segmentations, BodyCompositionCalculator.VAT),
+                'sat_ra_true': calculateMeanRadiationAttennuation(image, groundTruthSegmentations, BodyCompositionCalculator.SAT),
+                'sat_ra_pred': calculateMeanRadiationAttennuation(image, segmentations, BodyCompositionCalculator.SAT),
             }
-            print(f'{filePair[0]}')
-            print(' - muscle_area: {}'.format(self.outputMetrics[filePair[0]]['muscle_area']))
-            print(' - vat_area: {}'.format(self.outputMetrics[filePair[0]]['vat_area']))
-            print(' - sat_area: {}'.format(self.outputMetrics[filePair[0]]['sat_area']))
-            print(' - muscle_ra: {}'.format(self.outputMetrics[filePair[0]]['muscle_ra']))
-            print(' - vat_ra: {}'.format(self.outputMetrics[filePair[0]]['vat_ra']))
-            print(' - sat_ra: {}'.format(self.outputMetrics[filePair[0]]['sat_ra']))
+            print(f'{fileTuple[0]}')
+            print(' - muscle_area: true={} <-> predicted={}'.format(
+                self.outputMetrics[fileTuple[0]]['muscle_area_true'],
+                self.outputMetrics[fileTuple[0]]['muscle_area_pred']
+                ))
+            print(' - vat_area: true={} <-> predicted={}'.format(
+                self.outputMetrics[fileTuple[0]]['vat_area_true'],
+                self.outputMetrics[fileTuple[0]]['vat_area_pred']
+                ))
+            print(' - sat_area: true={} <-> predicted={}'.format(
+                self.outputMetrics[fileTuple[0]]['sat_area_true'],
+                self.outputMetrics[fileTuple[0]]['sat_area_pred']
+                ))
+            print(' - muscle_ra: true={} <-> predicted={}'.format(
+                self.outputMetrics[fileTuple[0]]['muscle_ra_true'],
+                self.outputMetrics[fileTuple[0]]['muscle_ra_pred']
+                ))
+            print(' - vat_ra: true={} <-> predicted={}'.format(
+                self.outputMetrics[fileTuple[0]]['vat_ra_true'],
+                self.outputMetrics[fileTuple[0]]['vat_ra_pred']
+                ))
+            print(' - sat_ra: true={} <-> predicted={}'.format(
+                self.outputMetrics[fileTuple[0]]['sat_ra_true'],
+                self.outputMetrics[fileTuple[0]]['sat_ra_pred']
+                ))
             self._progress += 1
             self._parentTask.calculatorProgress(self._progress)
         return self.outputMetrics
