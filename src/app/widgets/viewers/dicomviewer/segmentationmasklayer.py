@@ -2,7 +2,7 @@ import numpy as np
 
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QImage, QPixmap
-from PySide6.QtWidgets import QGraphicsTextItem, QGraphicsItemGroup, QGraphicsPixmapItem
+from PySide6.QtWidgets import QGraphicsItemGroup, QGraphicsPixmapItem
 
 from widgets.viewers.dicomviewer.layer import Layer
 from utils import convertNumPyArrayToRgbQImage, AlbertaColorMap
@@ -23,14 +23,10 @@ class SegmentationMaskLayer(Layer):
 
     def createGraphicsItem(self) -> QGraphicsItemGroup:
         group = QGraphicsItemGroup()
-        # if self._filePath:
-        #     fileNameItem = QGraphicsTextItem('File path: ' + self._filePath)
-        #     fileNameItem.setDefaultTextColor(Qt.white)
-        #     fileNameItem.setPos(10, 10)
-        #     group.addToGroup(fileNameItem)
         if not self._segmentationMask and self._filePath:
-            image = self.convertToQImage(filePath=self._filePath)
-            pixmap = QPixmap.fromImage(image)
+            self._segmentationMask = self.convertToQImage(filePath=self._filePath)
+        if self._segmentationMask:
+            pixmap = QPixmap.fromImage(self._segmentationMask)
             pixmapItem = QGraphicsPixmapItem(pixmap)
             pixmapItem.setOpacity(self.opacity())
             group.addToGroup(pixmapItem)

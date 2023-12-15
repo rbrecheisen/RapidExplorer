@@ -4,9 +4,9 @@ from PySide6.QtWidgets import QGraphicsTextItem, QGraphicsItemGroup
 from widgets.viewers.dicomviewer.layer import Layer
 
 
-class DicomAttributeLayer(Layer):
+class DicomAttributesLayer(Layer):
     def __init__(self, name: str, index: int, opacity: float=1.0, visible: bool=True) -> None:
-        super(DicomAttributeLayer, self).__init__(name, index, opacity, visible)
+        super(DicomAttributesLayer, self).__init__(name, index, opacity, visible)
         self._filePath = None
         self._segmentationFilePath = None
         self._instanceNumber = -1
