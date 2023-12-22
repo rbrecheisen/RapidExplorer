@@ -1,5 +1,6 @@
 import os
-import zipfile
+import pydicom
+import pydicom.errors
 
 from utils import createNameWithTimestamp
 from tasks.task import Task
@@ -28,7 +29,7 @@ class DecompressDicomFilesTask(Task):
         super(DecompressDicomFilesTask, self).__init__()
         self.settings().add(SettingLabel(name='description', value=DESCRIPTION))
         self.settings().add(SettingFileSet(name='inputFileSetName', displayName='DICOM Input File Set to Decompress'))
-        self.settings().add(SettingFileSetPath(name='outputDirectoryPath', displayName='Output Directory Path'))
+        self.settings().add(SettingFileSetPath(name='outputFileSetPath', displayName='Output File Set Path'))
         self.settings().add(SettingText(name='outputFileSetName', displayName='Output File Set Name', optional=True))
         self.settings().add(SettingBoolean(name='overwritePreviousOutputFileSet', displayName='Overwrite Previous Output File Set', defaultValue=True))
         self._signal = TaskSignal()
@@ -37,23 +38,32 @@ class DecompressDicomFilesTask(Task):
         return self._signal
     
     def run(self) -> FileSet:
-        # # Collect input settings
-        # inputFileSetName = self.settings().setting(name='inputFileSetName').value()
-        # inputFileSet = self.dataManager().fileSetByName(name=inputFileSetName)
-        # outputDirectoryPath = self.settings().setting(name='outputDirectoryPath').value()
-        # zipFileName = createNameWithTimestamp(inputFileSet.name()) + '.zip'
-        # # Create ZIP file
-        # outputZipFilePath = os.path.join(outputDirectoryPath, zipFileName)
-        # LOGGER.info(f'CreateArchiveTask.run() outputZipFilePath={outputZipFilePath}')
-        # with zipfile.ZipFile(outputZipFilePath, 'w') as zipObj:
-        #     for file in inputFileSet.files():
-        #         LOGGER.info(f'CreateArchiveTask.run() adding {file.path()} to ZIP archive...')
-        #         zipObj.write(file.path(), arcname=os.path.basename(file.path()))
-        # # Create output fileset
-        # outputFileSet = self.dataManager().importFileSet(fileSetPath=outputDirectoryPath, fileType=ZipFileType)
-        # taskOutput = TaskOutput(fileSet=outputFileSet, errorInfo=[])
-        # LOGGER.info(f'CreateArchiveTask.run() created output {taskOutput}')
-        # self.signal().finished.emit(taskOutput)
-        # return taskOutput
-        raise RuntimeError('Implement this task!')
-        return None
+        inputFileSetName = self.settings().setting(name='inputFileSetName').value()
+        inputFileSet = self.dataManager().fileSetByName(name=inputFileSetName)
+        inputFilePaths = []
+        for file in inputFileSet.files():
+            inputFilePaths.append(file.path())
+        outputFileSetPath = self.settings().setting(name='outputFileSetPath').value()
+        outputFileSetName = self.settings().setting(name='outputFileSetName').value()
+        if not outputFileSetName:
+            outputFileSetName = createNameWithTimestamp(prefix='output')        
+        outputFileSetPath = os.path.join(outputFileSetPath, outputFileSetName)
+        overwritePreviousOutputFileSet = self.settings().setting(name='overwritePreviousOutputFileSet').value()
+        os.makedirs(outputFileSetPath, exist_ok=overwritePreviousOutputFileSet)
+        # Set nr of steps
+        self.setNrSteps(len(inputFilePaths))
+        # Decompress files (if DICOM)
+        for filePath in inputFilePaths:
+            try:
+                p = pydicom.dcmread(filePath)
+                p.decompress()
+                fileName = os.path.split(filePath)[1]
+                outputFilePath = os.path.join(outputFileSetPath, fileName)
+                p.save_as(outputFilePath)
+            except pydicom.errors.InvalidDicomError:
+                pass
+        # Build output file set
+        outputFileSet = self.dataManager().importFileSet(fileSetPath=outputFileSetPath)
+        taskOutput = TaskOutput(fileSet=outputFileSet, errorInfo=[])
+        self.signal().finished.emit(taskOutput)
+        return taskOutput

@@ -34,6 +34,7 @@ class TaskManager:
         from tasks.createarchivetask.createarchivetask import CreateArchiveTask
         from tasks.createpngsfrommusclefatsegmentationtask.createpngsfrommusclefatsegmentationtask import CreatePngsFromMuscleFatSegmentationTask
         from tasks.musclefatsegmentationtask.musclefatsegmentationtask import MuscleFatSegmentationTask        
+        from tasks.decompressdicomfilestask.decompressdicomfilestask import DecompressDicomFilesTask
         self._taskTypes = {
             BodyCompositionTask.NAME: BodyCompositionTask,
             BodyCompositionValidationTask.NAME: BodyCompositionValidationTask,
@@ -41,6 +42,7 @@ class TaskManager:
             CreateArchiveTask.NAME: CreateArchiveTask,
             CreatePngsFromMuscleFatSegmentationTask.NAME: CreatePngsFromMuscleFatSegmentationTask,
             MuscleFatSegmentationTask.NAME: MuscleFatSegmentationTask,
+            DecompressDicomFilesTask.NAME: DecompressDicomFilesTask,
         }
         for k in self._taskTypes.keys():
             LOGGER.info(f'Loaded task {k}')
