@@ -4,10 +4,9 @@ pydicom
 pyside6
 sqlalchemy
 pendulum 
-# pylibjpeg[openjpeg]
-pylibjpeg-openjpeg
-pylibjpeg-libjpeg
-# nuitka
+pylibjpeg[all]
+pyjpegls
+python-gdcm
 pytest
 tensorflow
 pyinstaller

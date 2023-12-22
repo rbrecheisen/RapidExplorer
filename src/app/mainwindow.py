@@ -29,7 +29,6 @@ LOGGER = Logger()
 class MainWindow(QMainWindow):
     def __init__(self, settingsPath: str) -> None:
         super(MainWindow, self).__init__()
-        LOGGER.info(f'MainWindow.__init__() settingsPath={settingsPath}')
         self._settings = QSettings(settingsPath, QSettings.Format.IniFormat)
         self._dataDockWidget = None
         self._tasksDockWidget = None
