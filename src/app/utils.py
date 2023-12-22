@@ -4,6 +4,8 @@ import math
 import pendulum
 import importlib
 import pydicom
+import binascii
+import struct
 import pydicom.errors
 import numpy as np
 import matplotlib.pyplot as plt

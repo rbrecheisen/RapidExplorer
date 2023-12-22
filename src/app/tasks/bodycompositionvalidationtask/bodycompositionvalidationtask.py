@@ -11,9 +11,12 @@ from settings.settingtext import SettingText
 from settings.settingfileset import SettingFileSet
 from settings.settingboolean import SettingBoolean
 from settings.settinglabel import SettingLabel
-from tasks.bodycompositiontask.bodycompositioncalculator import BodyCompositionCalculator
+from tasks.bodycompositionvalidationtask.bodycompositionvalidationcalculator import BodyCompositionValidationCalculator
 from data.fileset import FileSet
 from utils import createNameWithTimestamp
+from logger import Logger
+
+LOGGER = Logger()
 
 DESCRIPTION = """
 This task validates body composition using TAG files.
@@ -31,7 +34,8 @@ class BodyCompositionValidationTask(Task):
         self.settings().add(SettingFilePath(name='patientHeightsCsvFilePath', displayName='Patient Heights (*.csv)', optional=True))
         self.settings().add(SettingFileSetPath(name='outputFileSetPath', displayName='Output File Set Path'))
         self.settings().add(SettingText(name='outputFileSetName', displayName='Output File Set Name', optional=True))
-        self.settings().add(SettingBoolean(name='copyTagAndSegmentationFilesToOutputFileSet', displayName='Copy TAG and Segmentation Files to Output File Set', defaultValue=True))
+        self.settings().add(SettingBoolean(name='copyTagAndSegmentationFilesToOutputFileSet', displayName='Copy TAG and Segmentation Files to Output File Set', defaultValue=False))
+        self.settings().add(SettingBoolean(name='overwritePreviousOutputFileset', displayName='Overwrite Previous Output File Set', defaultValue=True))
         self._signal = TaskSignal()
 
     def signal(self) -> TaskSignal:
@@ -70,14 +74,18 @@ class BodyCompositionValidationTask(Task):
         if not outputFileSetName:
             outputFileSetName = createNameWithTimestamp(prefix='output')
         outputFileSetPath = os.path.join(outputFileSetPath, outputFileSetName)
-        os.makedirs(outputFileSetPath, exist_ok=False)
+        # Get setting to overwrite previous output
+        overwritePreviousOutputFileset = self.settings().setting(name='overwritePreviousOutputFileset').value()
+        LOGGER.info(f'BodyCompositionValidationTask.execute() overwritePreviousOutputFileSet={overwritePreviousOutputFileset}')
+        os.makedirs(outputFileSetPath, exist_ok=overwritePreviousOutputFileset)
         # Get setting to copy segmentation files or not
         copyTagAndSegmentationFilesToOutputFileSet = self.settings().setting(name='copyTagAndSegmentationFilesToOutputFileSet').value()
+        LOGGER.info(f'BodyCompositionValidationTask.execute() copyTagAndSegmentationFilesToOutputFileSet={copyTagAndSegmentationFilesToOutputFileSet}')
         # Determine nr. stepts required for processing
         self.setNrSteps(len(dicomAndTagFilePaths))
         # Calculate scores
-        calculator = BodyCompositionCalculator(parentTask=self)
-        calculator.setDicomFilePaths(dicomFilePaths=dicomAndTagFilePaths)
+        calculator = BodyCompositionValidationCalculator(parentTask=self)
+        calculator.setDicomAndTagFilePaths(dicomAndTagFilePaths=dicomAndTagFilePaths)
         calculator.setSegmentationFilePaths(segmentationFilePaths=segmentationFilePaths)
         calculator.setPatientHeights(patientHeights=patientHeights)
         calculator.execute()

@@ -1,5 +1,5 @@
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QWidget, QComboBox, QVBoxLayout, QHBoxLayout, QPushButton, QDialog, QProgressDialog
+from PySide6.QtWidgets import QWidget, QComboBox, QVBoxLayout, QHBoxLayout, QPushButton, QDialog, QProgressDialog, QCheckBox
 
 from widgets.dockwidget import DockWidget
 from widgets.tasksettingsdialog import TaskSettingsDialog
@@ -17,6 +17,7 @@ class TaskDockWidget(DockWidget):
         self._tasksComboBox = None
         self._showSettingsDialogButton = None
         self._runSelectedTaskButton = None
+        self._runInBackgroundCheckBox = None
         self._progressBarDialog = None
         self._taskManager = None
         self._signal = TaskSignal()
@@ -42,16 +43,19 @@ class TaskDockWidget(DockWidget):
         self._runSelectedTaskButton = QPushButton('Run Task')
         self._runSelectedTaskButton.clicked.connect(self.runSelectedTask)
         self._runSelectedTaskButton.setEnabled(False)
+        self._runInBackgroundCheckBox = QCheckBox('Run in Background', self)
+        self._runInBackgroundCheckBox.setChecked(True)
         self.initProgressBarDialog()
         buttonLayout = QHBoxLayout()
         buttonLayout.addWidget(self._showSettingsDialogButton)
-        buttonLayout.addWidget(self._runSelectedTaskButton)
+        buttonLayout.addWidget(self._runSelectedTaskButton)        
         buttonLayout.setAlignment(Qt.AlignRight)
         buttonWidget = QWidget()
         buttonWidget.setLayout(buttonLayout)
         layout = QVBoxLayout()
         layout.addWidget(self._tasksComboBox)
         layout.addWidget(buttonWidget)
+        layout.addWidget(self._runInBackgroundCheckBox)
         layout.setAlignment(Qt.AlignTop)
         widget = QWidget()
         widget.setLayout(layout)    
@@ -95,7 +99,10 @@ class TaskDockWidget(DockWidget):
             if self._currentTask:
                 self._progressBarDialog.show()
                 self._progressBarDialog.setValue(0)
-                self._taskManager.runTask(task=self._currentTask, background=True)
+                if self._runInBackgroundCheckBox.isChecked():
+                    self._taskManager.runTask(task=self._currentTask, background=True)
+                else:
+                    self._taskManager.runTask(task=self._currentTask, background=False)
 
     def loadTaskNames(self) -> None:
         self._tasksComboBox.clear()

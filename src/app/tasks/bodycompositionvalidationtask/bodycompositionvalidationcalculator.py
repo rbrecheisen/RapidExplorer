@@ -55,8 +55,9 @@ class BodyCompositionValidationCalculator:
         return np.load(filePath)
     
     @staticmethod
-    def loadTagFile(filePath: str):
-        return tagPixels(tagFilePath=filePath)
+    def loadTagFile(filePath: str, shape=(512, 512)):
+        pixels = tagPixels(tagFilePath=filePath)
+        return pixels.reshape(shape)
     
     @staticmethod
     def isDicomFile(filePath: str) -> bool:
@@ -68,50 +69,51 @@ class BodyCompositionValidationCalculator:
 
     @staticmethod
     def tagFilePathForDicomFilePath(filePath: str) -> bool:
-        return filePath.endswith('.tag')
+        if os.path.isfile(filePath + '.tag'):
+            return filePath + '.tag'
+        elif os.path.isfile(filePath[:-4] + '.tag'):
+            return filePath[:-4] + '.tag'
+        return None
     
     def execute(self):
         fileTuples = []
         for dicomAndTagFilePath in self.dicomAndTagFilePaths():
             dicomFilePath = None
             tagFilePath = None
+            segmentationFilePath = None
             if self.isDicomFile(filePath=dicomAndTagFilePath):
                 dicomFilePath = dicomAndTagFilePath
-            tagFilePath = self.tagFilePathForDicomFilePath(filePath=dicomAndTagFilePath):
-            if not tagFilePath:
-                LOGGER.error(f'Could not find TAG file for {dicomFilePath}')
-                continue
-            segmentationFilePath = None
-            dicomFileName = os.path.split(dicomFilePath)[1]
-            for filePath in self.segmentationFilePaths():
-                fileName = os.path.split(filePath)[1]
-                if dicomFileName + '.seg.npy' == fileName:
-                    segmentationFilePath = filePath
-                    break
-            if dicomFilePath and tagFilePath and segmentationFilePath:
-                fileTuples.append((dicomFilePath, tagFilePath, segmentationFilePath))
-            else:
-                raise RuntimeError('Could not find tuple (dicomFilePath, tagFilePath, segmentationFilePath)')
+                tagFilePath = self.tagFilePathForDicomFilePath(filePath=dicomFilePath)
+                if tagFilePath:
+                    segmentationFilePath = None
+                    dicomFileName = os.path.split(dicomFilePath)[1]
+                    for filePath in self.segmentationFilePaths():
+                        fileName = os.path.split(filePath)[1]
+                        if dicomFileName + '.seg.npy' == fileName:
+                            segmentationFilePath = filePath
+                            break
+                    if segmentationFilePath:
+                        fileTuples.append((dicomFilePath, tagFilePath, segmentationFilePath))
         # Work with found file tuples
         self.outputMetrics = {}
         for fileTuple in fileTuples:
             image, pixelSpacing = self.loadDicomFile(fileTuple[0])
-            groundTruthSegmentations = self.loadTagFile(fileTuple[1])
+            groundTruthSegmentations = self.loadTagFile(fileTuple[1], shape=image.shape)
             segmentations = self.loadSegmentation(fileTuple[2])
             self.outputMetrics[fileTuple[0]] = {}
             self.outputMetrics[fileTuple[0]] = {
-                'muscle_area_true': calculateArea(groundTruthSegmentations, BodyCompositionCalculator.MUSCLE, pixelSpacing),
-                'muscle_area_pred': calculateArea(segmentations, BodyCompositionCalculator.MUSCLE, pixelSpacing),
-                'vat_area_true': calculateArea(groundTruthSegmentations, BodyCompositionCalculator.VAT, pixelSpacing),
-                'vat_area_pred': calculateArea(segmentations, BodyCompositionCalculator.VAT, pixelSpacing),
-                'sat_area_true': calculateArea(groundTruthSegmentations, BodyCompositionCalculator.SAT, pixelSpacing),
-                'sat_area_pred': calculateArea(segmentations, BodyCompositionCalculator.SAT, pixelSpacing),
-                'muscle_ra_true': calculateMeanRadiationAttennuation(image, groundTruthSegmentations, BodyCompositionCalculator.MUSCLE),
-                'muscle_ra_pred': calculateMeanRadiationAttennuation(image, segmentations, BodyCompositionCalculator.MUSCLE),
-                'vat_ra_true': calculateMeanRadiationAttennuation(image, groundTruthSegmentations, BodyCompositionCalculator.VAT),
-                'vat_ra_pred': calculateMeanRadiationAttennuation(image, segmentations, BodyCompositionCalculator.VAT),
-                'sat_ra_true': calculateMeanRadiationAttennuation(image, groundTruthSegmentations, BodyCompositionCalculator.SAT),
-                'sat_ra_pred': calculateMeanRadiationAttennuation(image, segmentations, BodyCompositionCalculator.SAT),
+                'muscle_area_true': calculateArea(groundTruthSegmentations, BodyCompositionValidationCalculator.MUSCLE, pixelSpacing),
+                'muscle_area_pred': calculateArea(segmentations, BodyCompositionValidationCalculator.MUSCLE, pixelSpacing),
+                'vat_area_true': calculateArea(groundTruthSegmentations, BodyCompositionValidationCalculator.VAT, pixelSpacing),
+                'vat_area_pred': calculateArea(segmentations, BodyCompositionValidationCalculator.VAT, pixelSpacing),
+                'sat_area_true': calculateArea(groundTruthSegmentations, BodyCompositionValidationCalculator.SAT, pixelSpacing),
+                'sat_area_pred': calculateArea(segmentations, BodyCompositionValidationCalculator.SAT, pixelSpacing),
+                'muscle_ra_true': calculateMeanRadiationAttennuation(image, groundTruthSegmentations, BodyCompositionValidationCalculator.MUSCLE),
+                'muscle_ra_pred': calculateMeanRadiationAttennuation(image, segmentations, BodyCompositionValidationCalculator.MUSCLE),
+                'vat_ra_true': calculateMeanRadiationAttennuation(image, groundTruthSegmentations, BodyCompositionValidationCalculator.VAT),
+                'vat_ra_pred': calculateMeanRadiationAttennuation(image, segmentations, BodyCompositionValidationCalculator.VAT),
+                'sat_ra_true': calculateMeanRadiationAttennuation(image, groundTruthSegmentations, BodyCompositionValidationCalculator.SAT),
+                'sat_ra_pred': calculateMeanRadiationAttennuation(image, segmentations, BodyCompositionValidationCalculator.SAT),
             }
             print(f'{fileTuple[0]}')
             print(' - muscle_area: true={} <-> predicted={}'.format(
@@ -145,13 +147,27 @@ class BodyCompositionValidationCalculator:
     def as_df(self):
         if self.outputMetrics is None:
             return None
-        data = {'file': [], 'muscle_area': [], 'vat_area': [], 'sat_area': [], 'muscle_ra': [], 'vat_ra': [], 'sat_ra': []}
+        data = {
+            'file': [], 
+            'muscle_area_true': [], 'muscle_area_pred': [], 
+            'vat_area_true': [], 'vat_area_pred': [],
+            'sat_area_true': [], 'sat_area_pred': [],
+            'muscle_ra_true': [], 'muscle_ra_pred': [],
+            'vat_ra_true': [], 'vat_ra_pred': [],
+            'sat_ra_true': [], 'sat_ra_pred': [],
+        }
         for k in self.outputMetrics.keys():
             data['file'].append(k)
-            data['muscle_area'].append(self.outputMetrics[k]['muscle_area'])
-            data['vat_area'].append(self.outputMetrics[k]['vat_area'])
-            data['sat_area'].append(self.outputMetrics[k]['sat_area'])
-            data['muscle_ra'].append(self.outputMetrics[k]['muscle_ra'])
-            data['vat_ra'].append(self.outputMetrics[k]['vat_ra'])
-            data['sat_ra'].append(self.outputMetrics[k]['sat_ra'])
+            data['muscle_area_true'].append(self.outputMetrics[k]['muscle_area_true'])
+            data['muscle_area_pred'].append(self.outputMetrics[k]['muscle_area_pred'])
+            data['vat_area_true'].append(self.outputMetrics[k]['vat_area_true'])
+            data['vat_area_pred'].append(self.outputMetrics[k]['vat_area_pred'])
+            data['sat_area_true'].append(self.outputMetrics[k]['sat_area_true'])
+            data['sat_area_pred'].append(self.outputMetrics[k]['sat_area_pred'])
+            data['muscle_ra_true'].append(self.outputMetrics[k]['muscle_ra_true'])
+            data['muscle_ra_pred'].append(self.outputMetrics[k]['muscle_ra_pred'])
+            data['vat_ra_true'].append(self.outputMetrics[k]['vat_ra_true'])
+            data['vat_ra_pred'].append(self.outputMetrics[k]['vat_ra_pred'])
+            data['sat_ra_true'].append(self.outputMetrics[k]['sat_ra_true'])
+            data['sat_ra_pred'].append(self.outputMetrics[k]['sat_ra_pred'])
         return pd.DataFrame(data=data)

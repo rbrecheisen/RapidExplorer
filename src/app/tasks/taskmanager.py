@@ -55,8 +55,7 @@ class TaskManager:
         return self._taskTypes[name]()
     
     def runTask(self, task: Task, background=True) -> None:
-        background = False
-        LOGGER.info(f'Running task {task.name()} with background={background}')
+        LOGGER.info(f'TaskManager.runTask() Running task {task.name()} with background={background}')
         task.signal().progress.connect(self.taskProgress)
         task.signal().finished.connect(self.taskFinished)
         if background:

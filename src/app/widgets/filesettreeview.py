@@ -5,6 +5,7 @@ from PySide6.QtGui import QStandardItemModel, QStandardItem, QMouseEvent
 from data.datamanager import DataManager
 from data.fileset import FileSet
 from widgets.fileitem import FileItem
+from widgets.fileitemmenu import FileItemMenu
 from widgets.filesetitem import FileSetItem
 from widgets.filesetitemmenu import FileSetItemMenu
 
@@ -55,9 +56,14 @@ class FileSetTreeView(QTreeView):
 
     def rightClickEvent(self, index: int, globalPos: QPoint) -> None:
         item = self._model.itemFromIndex(index)
-        if isinstance(item, FileSetItem):
+        if isinstance(item, FileItem):
+            menu = FileItemMenu(self, item, globalPos)
+            menu.show()
+        elif isinstance(item, FileSetItem):
             menu = FileSetItemMenu(self, item, globalPos)
             menu.show()
+        else:
+            pass
 
     def clearFileSets(self) -> None:
         self._model.clear()
