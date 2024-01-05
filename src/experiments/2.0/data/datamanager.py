@@ -1,5 +1,7 @@
 import os
 
+from typing import List
+
 from data.session import Session
 from data.fileset import FileSet
 from data.models.filesetmodel import FileSetModel
@@ -41,6 +43,15 @@ class DataManager:
                 return fileSet
         return None
     
+    def fileSets(self) -> List[FileSet]:
+        with Session() as session:
+            fileSetModels = session.query(FileSetModel).all()
+            fileSets = []
+            for fileSetModel in fileSetModels:
+                fileSet = FileSet(model=fileSetModel)
+                fileSets.append(fileSet)
+        return fileSets
+
     def updateFileSet(self, fileSet: FileSet) -> FileSet:
         LOGGER.info(f'DataManager.updateFileset() fileSet={fileSet.name()}')
         with Session() as session:
