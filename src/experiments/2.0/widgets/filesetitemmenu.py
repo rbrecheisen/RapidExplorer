@@ -25,8 +25,8 @@ class FileSetItemMenu(QMenu):
     def deleteFileSet(self):
         fileSet = self._fileSetItem.fileSet()
         self._dataManager.deleteFileSet(fileSet=fileSet)
-        # self._treeView.clearFileSets()
-        # self._treeView.loadFileSetsFromDatabase()
+        self._treeView.clearFileSets()
+        self._treeView.loadFileSetsFromDatabase()
 
     def show(self):
         self.exec_(self._position)

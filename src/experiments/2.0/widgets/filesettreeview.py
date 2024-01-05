@@ -1,6 +1,6 @@
 from PySide6.QtCore import Qt, QPoint
 from PySide6.QtWidgets import QTreeView
-from PySide6.QtGui import QStandardItemModel, QStandardItem, QMouseEvent
+from PySide6.QtGui import QResizeEvent, QStandardItemModel, QStandardItem, QMouseEvent
 
 from data.datamanager import DataManager
 from data.fileset import FileSet
@@ -8,6 +8,8 @@ from widgets.fileitem import FileItem
 from widgets.fileitemmenu import FileItemMenu
 from widgets.filesetitem import FileSetItem
 from widgets.filesetitemmenu import FileSetItemMenu
+
+FIRSTCOLUMNOFFSET = 100
 
 
 class FileSetTreeView(QTreeView):
@@ -19,7 +21,7 @@ class FileSetTreeView(QTreeView):
 
     def initModel(self) -> None:
         self._model = QStandardItemModel()
-        self._model.setHorizontalHeaderLabels(['File Sets'])
+        self._model.setHorizontalHeaderLabels(['File Sets', 'Nr. Files'])
         self._model.itemChanged.connect(self.itemChanged)
         self.setModel(self._model)
 
@@ -41,8 +43,8 @@ class FileSetTreeView(QTreeView):
         for file in fileSet.files():
             fileItem = FileItem(file=file)
             fileItem.setEditable(False)
-            fileSetItem.appendRow(fileItem)
-        self._model.appendRow(fileSetItem)
+            fileSetItem.appendRow([fileItem, QStandardItem()])
+        self._model.appendRow([fileSetItem, QStandardItem(str(fileSetItem.fileSet().nrFiles()))])
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
         index = self.indexAt(event.pos())
@@ -63,6 +65,10 @@ class FileSetTreeView(QTreeView):
             menu.show()
         else:
             pass
+
+    def resizeEvent(self, event: QResizeEvent) -> None:
+        self.setColumnWidth(0, event.size().width() - FIRSTCOLUMNOFFSET)
+        return super().resizeEvent(event)
 
     def clearFileSets(self) -> None:
         self._model.clear()
