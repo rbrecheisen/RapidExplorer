@@ -7,8 +7,6 @@ LOGGER = Logger()
 
 
 class DummyTask(Task):
-    NAME = __name__
-
     def __init__(self) -> None:
         super(DummyTask, self).__init__()
 

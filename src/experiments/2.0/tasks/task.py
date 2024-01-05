@@ -10,6 +10,10 @@ class Task:
     FINISHED = 5
     ERROR = 6
 
+    @classmethod
+    def NAME(cls):
+        return cls.__qualname__
+
     def __init__(self) -> None:
         self._status = Task.IDLE
         self._progress = 0

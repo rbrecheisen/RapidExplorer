@@ -269,5 +269,5 @@ class ModuleLoader:
                             for attributeName in dir(module):
                                 attribute = getattr(module, attributeName)
                                 if isinstance(attribute, type) and issubclass(attribute, moduleBaseClass) and attribute is not moduleBaseClass:
-                                    classes[attribute.__name__] = attribute
+                                    classes[attribute.NAME()] = attribute
         return classes
