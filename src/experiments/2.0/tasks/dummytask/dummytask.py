@@ -1,33 +1,32 @@
 import time
 
 from tasks.task import Task
+from logger import Logger
+
+LOGGER = Logger()
 
 
 class DummyTask(Task):
     def __init__(self) -> None:
         super(DummyTask, self).__init__(name='DummyTask')
 
-    def start(self) -> None:
-        self.setStatus(status=Task.IDLE)
-        #
-        # Re-initialize task if necesesary
-        #
-        self.setStatus(status=Task.START)
-        print('Running dummy task (takes about 5 seconds)...')
+    def run(self) -> None:
+        self.setStatus(status=Task.RUNNING)
+        LOGGER.info('Running dummy task (takes about 5 seconds)...')
         canceled = False        
         for i in range(10):
-            print(f'Iteration: {i}')
+            LOGGER.info(f'Iteration: {i}')
             if self.status() == Task.CANCELLING:
-                print('Cancelling task...')
+                LOGGER.info('Cancelling task...')
                 canceled = True
                 break
             time.sleep(1)
         if canceled:
             self.setStatus(status=Task.CANCELED)
-            print('Task canceled')
+            LOGGER.info('Task canceled')
         else:
             self.setStatus(status=Task.FINISHED)
-            print('Task finished')
+            LOGGER.info('Task finished')
 
     def cancel(self) -> None:
         self.setStatus(status=Task.CANCELLING)

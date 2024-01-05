@@ -11,19 +11,10 @@ from tasks.dummytask.dummytaskwidget import DummyTaskWidget
 # qtbot.mouseClick(button, Qt.LeftButton)
 
 
-def test_taskWidgetCanStartTask(qtbot):
+def test_taskWidgetCanStartAndCancelTask(qtbot):
     widget = DummyTaskWidget()
     widget.startTask()
-    assert widget.taskStatus() == Task.FINISHED
-
-
-def test_taskWidgetCanStartAndCancelTask():
-    widget = DummyTaskWidget()
-    widget.startTask()
-
-    # Task first finishes above statement before it gets to the cancelTask()
-    # Need to implement threading!
-
+    assert widget.taskStatus() == Task.RUNNING
     time.sleep(5)
     widget.cancelTask()
-    assert widget.taskStatus() == Task.CANCELED
+    assert widget.taskStatus() == Task.CANCELLING or widget.taskStatus() == Task.CANCELED
