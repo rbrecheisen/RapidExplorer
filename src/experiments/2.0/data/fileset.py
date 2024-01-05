@@ -9,6 +9,7 @@ class FileSet:
         self._id = model.id
         self._name = model.name
         self._path = model.path
+        
         self._files = []
         for fileModel in model.fileModels:
             file = File(model=fileModel)
