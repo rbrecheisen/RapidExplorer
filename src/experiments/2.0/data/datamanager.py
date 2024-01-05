@@ -6,6 +6,9 @@ from data.models.filesetmodel import FileSetModel
 from data.file import File
 from data.models.filemodel import FileModel
 from data.filecontentcache import FileContentCache
+from logger import Logger
+
+LOGGER = Logger()
 
 
 class DataManager:
@@ -13,6 +16,7 @@ class DataManager:
         pass
 
     def createFileSet(self, fileSetPath: str) -> FileSet:
+        LOGGER.info(f'DataManager.createFileset() fileSetPath={fileSetPath}')
         fileSetName = os.path.split(fileSetPath)[-1]
         with Session() as session:
             fileSetModel = FileSetModel(name=fileSetName, path=fileSetPath)
@@ -29,6 +33,7 @@ class DataManager:
         return fileSet
     
     def fileSet(self, id: str) -> FileSet:
+        LOGGER.info(f'DataManager.fileset() id={id}')
         with Session() as session:
             fileSetModel = session.get(FileSetModel, id)
             if fileSetModel:
@@ -37,6 +42,7 @@ class DataManager:
         return None
     
     def updateFileSet(self, fileSet: FileSet) -> FileSet:
+        LOGGER.info(f'DataManager.updateFileset() fileSet={fileSet.name()}')
         with Session() as session:
             fileSetModel = session.get(FileSetModel, fileSet.id())
             if fileSetModel:
@@ -46,6 +52,7 @@ class DataManager:
         return None
     
     def deleteFileSet(self, fileSet: FileSet) -> None:
+        LOGGER.info(f'DataManager.deleteFileset() fileSet={fileSet.name()}')
         with Session() as session:
             fileSetModel = session.get(FileSetModel, fileSet.id())
             session.delete(fileSetModel)
@@ -55,6 +62,7 @@ class DataManager:
                 cache.remove(file.id())
 
     def deleteAllFileSets(self) -> None:
+        LOGGER.info(f'DataManager.deleteAllFileSets()')
         with Session() as session:
             cache = FileContentCache()
             fileSetModels = session.query(FileSetModel).all()
