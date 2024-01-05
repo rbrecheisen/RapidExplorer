@@ -7,8 +7,10 @@ LOGGER = Logger()
 
 
 class DummyTask(Task):
+    NAME = __name__
+
     def __init__(self) -> None:
-        super(DummyTask, self).__init__(name='DummyTask')
+        super(DummyTask, self).__init__()
 
     def run(self) -> None:
         self.setStatus(status=Task.RUNNING)

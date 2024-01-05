@@ -253,13 +253,13 @@ class GitCommit:
 
 class ModuleLoader:
     @staticmethod
-    def loadModuleClasses(moduleDirectoryPath: str, moduleBaseClass: Any) -> Dict[str, Any]:
+    def loadModuleClasses(moduleDirectoryPath: str, moduleBaseClass: Any, fileNameEndsWith: str) -> Dict[str, Any]:
         classes = {}
         moduleDirectoryName = os.path.split(moduleDirectoryPath)[1]
         for root, dirs, files in os.walk(moduleDirectoryPath):
             for fileName in files:
                 filePath = os.path.join(root, fileName)
-                if fileName == '__init__.py':
+                if fileName.endswith(fileNameEndsWith):
                     taskModule = filePath.split(os.path.sep)[-2]
                     if taskModule != moduleDirectoryName:
                         spec = importlib.util.spec_from_file_location(taskModule, filePath)
@@ -269,5 +269,5 @@ class ModuleLoader:
                             for attributeName in dir(module):
                                 attribute = getattr(module, attributeName)
                                 if isinstance(attribute, type) and issubclass(attribute, moduleBaseClass) and attribute is not moduleBaseClass:
-                                    classes[attribute.NAME] = attribute
+                                    classes[attribute.__name__] = attribute
         return classes

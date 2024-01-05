@@ -10,14 +10,13 @@ class Task:
     FINISHED = 5
     ERROR = 6
 
-    def __init__(self, name: str) -> None:
-        self._name = name
+    def __init__(self) -> None:
         self._status = Task.IDLE
         self._progress = 0
         self._thread = None
 
     def name(self) -> str:
-        return self._name
+        return self.__class__.__name__
     
     def status(self) -> int:
         return self._status
