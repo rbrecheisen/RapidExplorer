@@ -43,7 +43,6 @@ class TaskWidget(QWidget):
         self._cancelButton = None
         self._placeholderWidget = None
         self._test = False
-        self._background = True
         self.initUi()
 
     def name(self) -> str:
@@ -52,9 +51,6 @@ class TaskWidget(QWidget):
     def setTest(self, test: bool) -> None:
         self._test = test
 
-    def setBackground(self, background: bool) -> None:
-        self._background = background
-    
     def initUi(self) -> None:
         self._progressBarLabel = QLabel('0 %')
         labelLayout = QHBoxLayout()
@@ -145,10 +141,7 @@ class TaskWidget(QWidget):
             self._progressBar.setValue(0)
             monitor = TaskProgressMonitor(
                 task=self._task, progress=self.taskProgress, finished=self.taskFinished)
-            if self._background:
-                QThreadPool.globalInstance().start(monitor)
-            else:
-                monitor.run()
+            QThreadPool.globalInstance().start(monitor)
 
     def cancelTask(self) -> None:
         if self._task:

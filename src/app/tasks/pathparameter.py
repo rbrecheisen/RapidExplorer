@@ -9,6 +9,8 @@ class PathParameter(Parameter):
     def __init__(self, name: str, labelText: str, optional: bool=False, visible: bool=True, defaultValue: Any=None, parent: QWidget=None) -> None:
         super(PathParameter, self).__init__(
             name=name, labelText=labelText, optional=optional, visible=visible, defaultValue=defaultValue, parent=parent)
+        if self.defaultValue() is not None:
+            self.setValue(self.defaultValue())
         self._pathLineEdit = None
         self.initUi()
 
