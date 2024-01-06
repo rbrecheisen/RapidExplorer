@@ -4,11 +4,13 @@ export APPNAME=MosamaticDesktop
 
 rm -rf main.build ${APPNAME}
 
-~/.venv/MosamaticDesktop/bin/pyinstaller \
-    --onefile \
-    --hidden-import=pydicom.encoders.gdcm \
-    --hidden-import=pydicom.encoders.pylibjpeg \
-    src/app/main.py
+# ~/.venv/MosamaticDesktop/bin/pyinstaller \
+#     --onefile \
+#     --hidden-import=pydicom.encoders.gdcm \
+#     --hidden-import=pydicom.encoders.pylibjpeg \
+#     src/app/main.py
+
+~/.venv/MosamaticDesktop/bin/pyinstaller main.spec
 
 mv dist ${APPNAME}
 cp settings.ini ${APPNAME}
@@ -18,4 +20,4 @@ chmod +x ${APPNAME}/${APPNAME}
 
 zip -r ${APPNAME}.zip ${APPNAME}
 
-rm -rf build main.spec ${APPNAME}
+rm -rf build ${APPNAME}
