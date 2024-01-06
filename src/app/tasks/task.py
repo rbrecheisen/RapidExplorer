@@ -16,6 +16,7 @@ class Task:
 
     @classmethod
     def NAME(cls):
+        # Returns class name of child classes
         return cls.__qualname__
 
     def __init__(self) -> None:

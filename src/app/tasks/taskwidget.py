@@ -1,6 +1,6 @@
 import inspect
 
-from typing import Any
+from typing import Any, List
 
 from PySide6.QtCore import Qt, QThreadPool
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QProgressBar, QLabel
@@ -14,6 +14,9 @@ from tasks.filesetparameter import FileSetParameter
 from tasks.pathparameter import PathParameter
 from tasks.textparameter import TextParameter
 from tasks.integerparameter import IntegerParameter
+from tasks.floatingpointparameter import FloatingPointParameter
+from tasks.booleanparameter import BooleanParameter
+from tasks.optiongroupparameter import OptionGroupParameter
 from logger import Logger
 
 LOGGER = Logger()
@@ -24,7 +27,8 @@ class TaskWidget(QWidget):
     # https://chat.openai.com/c/b7bd6334-5ec3-40e3-9af1-93405c68d795
     @classmethod
     def NAME(cls):
-        return cls.__qualname__[:-6] # Strip last 6 characters ("Widget") to get the task name
+        # Returns class name of child classes (and strips of last 6 characters to get the task name itself)
+        return cls.__qualname__[:-6]
     
     def __init__(self, taskType: Task) -> None:
         super(TaskWidget, self).__init__()
@@ -111,20 +115,26 @@ class TaskWidget(QWidget):
         return parameter
 
     def addFloatingPointParameter(self, name: str, labelText: str, optional: bool=False, visible: bool=True, defaultValue: Any=None) -> Parameter:
-        pass
+        parameter = FloatingPointParameter(name=name, labelText=labelText, optional=optional, visible=visible, defaultValue=defaultValue)
+        self._placeholderWidget.layout().addWidget(parameter)
+        self._taskParameters[parameter.name()] = parameter
+        return parameter
     
     def addBooleanParameter(self, name: str, labelText: str, optional: bool=False, visible: bool=True, defaultValue: Any=None) -> Parameter:
-        pass
+        parameter = BooleanParameter(name=name, labelText=labelText, optional=optional, visible=visible, defaultValue=defaultValue)
+        self._placeholderWidget.layout().addWidget(parameter)
+        self._taskParameters[parameter.name()] = parameter
+        return parameter
 
-    def addOptionGroupParameter(self, name: str, labelText: str, optional: bool=False, visible: bool=True, defaultValue: Any=None) -> Parameter:
-        pass
+    def addOptionGroupParameter(self, name: str, labelText: str, optional: bool=False, visible: bool=True, defaultValue: Any=None, options: List[str]=[]) -> Parameter:
+        parameter = OptionGroupParameter(name=name, labelText=labelText, optional=optional, visible=visible, defaultValue=defaultValue, options=options)
+        self._placeholderWidget.layout().addWidget(parameter)
+        self._taskParameters[parameter.name()] = parameter
+        return parameter
 
     # Task execution
 
     def startTask(self) -> None:
-        """
-        How do I pass parameters to the task?
-        """
         LOGGER.info('TaskWidget: creating and running task...')
         self._task = self._taskType() # instantiate class
         self._task.setParameters(parameters=self._taskParameters)
