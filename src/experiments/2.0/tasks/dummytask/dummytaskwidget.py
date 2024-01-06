@@ -6,7 +6,7 @@ from tasks.dummytask.dummytask import DummyTask
 
 class DummyTaskWidget(TaskWidget):
     def __init__(self) -> None:
-        super(DummyTaskWidget, self).__init__(DummyTask())
+        super(DummyTaskWidget, self).__init__(taskType=DummyTask)
         button = QPushButton('Hello!')
         layout = QVBoxLayout()
         layout.addWidget(button)
