@@ -15,7 +15,7 @@ call %USERPROFILE%\.venv\MosamaticDesktop\Scripts\pyinstaller main.win.spec
 if exist dist move /y dist %APPNAME%
 
 copy settings.ini %APPNAME%
-copy run.sh %APPNAME%
+copy run.bat %APPNAME%
 move /y %APPNAME%\run.sh %APPNAME%\%APPNAME%
 
 powershell Compress-Archive -Path %APPNAME% -DestinationPath %APPNAME%.zip
