@@ -1,5 +1,4 @@
 import os
-import sys
 
 from PySide6.QtCore import Qt, QSize, QSettings
 from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QFileDialog, QMenu
@@ -10,10 +9,10 @@ from widgets.datadockwidget import DataDockWidget
 from widgets.viewersdockwidget import ViewersDockWidget
 from widgets.taskdockwidget import TaskDockWidget
 from widgets.mainviewerdockwidget import MainViewerDockWidget
+from operatingsystem import OperatingSystem
 
-PLATFORM = sys.platform
 HOME = 'HOME' 
-if PLATFORM.startswith('win'):
+if OperatingSystem.isWindows():
     HOME = 'USERPROFILE'
 WINDOWTITLE = 'Mosamatic Desktop 2.0'
 FILESETPATH = os.path.join(os.environ[HOME], 'Desktop', 'downloads', 'dataset', 'scan1')

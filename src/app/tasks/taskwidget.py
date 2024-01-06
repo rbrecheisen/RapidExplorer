@@ -17,6 +17,7 @@ from tasks.integerparameter import IntegerParameter
 from tasks.floatingpointparameter import FloatingPointParameter
 from tasks.booleanparameter import BooleanParameter
 from tasks.optiongroupparameter import OptionGroupParameter
+from operatingsystem import OperatingSystem
 from logger import Logger
 
 LOGGER = Logger()
@@ -71,14 +72,11 @@ class TaskWidget(QWidget):
         buttonLayout.addWidget(self._cancelButton)
         self._placeholderWidget = QWidget(self)
         placeholderLayout = QVBoxLayout()
-        # placeholderLayout.setContentsMargins(0, 0, 0, 0)
-        # placeholderLayout.setSpacing(0)
         self._placeholderWidget.setLayout(placeholderLayout)
         layout = QVBoxLayout()
         layout.setAlignment(Qt.AlignTop)
-        # layout.setContentsMargins(0, 0, 0, 0)
-        # layout.setSpacing(0)
-        layout.addLayout(labelLayout)
+        if OperatingSystem.isDarwin():
+            layout.addLayout(labelLayout)
         layout.addWidget(self._progressBar)
         layout.addLayout(buttonLayout)
         layout.addWidget(self._placeholderWidget)
