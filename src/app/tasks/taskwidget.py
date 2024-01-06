@@ -1,10 +1,19 @@
 import inspect
 
-from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QProgressDialog
+from typing import Any
+
+from PySide6.QtCore import Qt, QThreadPool
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QProgressBar, QLabel
+from PySide6.QtWidgets import QComboBox, QSpacerItem, QSizePolicy
 
 from tasks.task import Task
 from tasks.taskwidgetexception import TaskWidgetException
+from tasks.taskprogressmonitor import TaskProgressMonitor
+from tasks.parameter import Parameter
+from tasks.filesetparameter import FileSetParameter
+from tasks.pathparameter import PathParameter
+from tasks.textparameter import TextParameter
+from tasks.integerparameter import IntegerParameter
 from logger import Logger
 
 LOGGER = Logger()
@@ -15,19 +24,22 @@ class TaskWidget(QWidget):
     # https://chat.openai.com/c/b7bd6334-5ec3-40e3-9af1-93405c68d795
     @classmethod
     def NAME(cls):
-        return cls.__qualname__[:-6]
+        return cls.__qualname__[:-6] # Strip last 6 characters ("Widget") to get the task name
     
     def __init__(self, taskType: Task) -> None:
         super(TaskWidget, self).__init__()
         if not inspect.isclass(taskType):
             raise TaskWidgetException('TaskWidget: argument taskType should be a class')
-        self._taskType = taskType
+        self._taskType = taskType        
         self._task = None
-        self._placeholderWidget = None
-        self._progressBarDialog = None
+        self._taskParameters = {}
+        self._progressBar = None
+        self._progressBarLabel = None
         self._startButton = None
         self._cancelButton = None
+        self._placeholderWidget = None
         self._test = False
+        self._background = True
         self.initUi()
 
     def name(self) -> str:
@@ -35,11 +47,18 @@ class TaskWidget(QWidget):
     
     def setTest(self, test: bool) -> None:
         self._test = test
+
+    def setBackground(self, background: bool) -> None:
+        self._background = background
     
     def initUi(self) -> None:
-        self._placeholderWidget = QWidget()
-        self._placeholderWidget.setLayout(QVBoxLayout())
-        self.initProgressBarDialog()
+        self._progressBarLabel = QLabel('0 %')
+        labelLayout = QHBoxLayout()
+        labelLayout.addItem(QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum))
+        labelLayout.addWidget(self._progressBarLabel)
+        labelLayout.addItem(QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum))
+        self._progressBar = QProgressBar(self)
+        self._progressBar.setRange(0, 100)
         self._startButton = QPushButton('Start')
         self._startButton.setObjectName('startButton') # for testing
         self._startButton.clicked.connect(self.startTask)
@@ -50,40 +69,94 @@ class TaskWidget(QWidget):
         buttonLayout = QHBoxLayout()
         buttonLayout.addWidget(self._startButton)
         buttonLayout.addWidget(self._cancelButton)
+        self._placeholderWidget = QWidget(self)
+        placeholderLayout = QVBoxLayout()
+        placeholderLayout.setContentsMargins(0, 0, 0, 0)
+        placeholderLayout.setSpacing(0)
+        self._placeholderWidget.setLayout(placeholderLayout)
         layout = QVBoxLayout()
-        layout.addWidget(self._placeholderWidget)
+        layout.setAlignment(Qt.AlignTop)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
+        layout.addLayout(labelLayout)
+        layout.addWidget(self._progressBar)
         layout.addLayout(buttonLayout)
+        layout.addWidget(self._placeholderWidget)
         self.setLayout(layout)
 
-    def initProgressBarDialog(self) -> None:
-        self._progressBarDialog = QProgressDialog('Running task...', 'Abort', 0, 100, self)
-        self._progressBarDialog.setWindowModality(Qt.WindowModality.WindowModal)
-        self._progressBarDialog.setAutoReset(True)
-        self._progressBarDialog.setAutoClose(True)
-        self._progressBarDialog.close()
+    # Task parameters
+        
+    def addFileSetParameter(self, name: str, labelText: str, optional: bool=False, visible: bool=True, defaultValue: Any=None) -> Parameter:
+        parameter = FileSetParameter(name=name, labelText=labelText, optional=optional, visible=visible, defaultValue=defaultValue)
+        self._placeholderWidget.layout().addWidget(parameter)
+        self._taskParameters[parameter.name()] = parameter
+        return parameter
+
+    def addPathParameter(self, name: str, labelText: str, optional: bool=False, visible: bool=True, defaultValue: Any=None) -> Parameter:
+        parameter = PathParameter(name=name, labelText=labelText, optional=optional, visible=visible, defaultValue=defaultValue)
+        self._placeholderWidget.layout().addWidget(parameter)
+        self._taskParameters[parameter.name()] = parameter
+        return parameter
+
+    def addTextParameter(self, name: str, labelText: str, optional: bool=False, visible: bool=True, defaultValue: Any=None) -> Parameter:
+        parameter = TextParameter(name=name, labelText=labelText, optional=optional, visible=visible, defaultValue=defaultValue)
+        self._placeholderWidget.layout().addWidget(parameter)
+        self._taskParameters[parameter.name()] = parameter
+        return parameter
+
+    def addIntegerParameter(self, name: str, labelText: str, optional: bool=False, visible: bool=True, defaultValue: Any=None) -> Parameter:
+        parameter = IntegerParameter(name=name, labelText=labelText, optional=optional, visible=visible, defaultValue=defaultValue)
+        self._placeholderWidget.layout().addWidget(parameter)
+        self._taskParameters[parameter.name()] = parameter
+        return parameter
+
+    def addFloatingPointParameter(self, name: str, labelText: str, optional: bool=False, visible: bool=True, defaultValue: Any=None) -> Parameter:
+        pass
     
-    # Execution
+    def addBooleanParameter(self, name: str, labelText: str, optional: bool=False, visible: bool=True, defaultValue: Any=None) -> Parameter:
+        pass
+
+    def addOptionGroupParameter(self, name: str, labelText: str, optional: bool=False, visible: bool=True, defaultValue: Any=None) -> Parameter:
+        pass
+
+    # Task execution
 
     def startTask(self) -> None:
-        self._task = self._taskType()
-        LOGGER.info('TaskWidget: running task...')
+        """
+        How do I pass parameters to the task?
+        """
+        LOGGER.info('TaskWidget: creating and running task...')
+        self._task = self._taskType() # instantiate class
+        self._task.setParameters(parameters=self._taskParameters)
         self._task.start()
         self._cancelButton.setEnabled(True)
         if not self._test:
-            self._progressBarDialog.show()
-            self._progressBarDialog.setValue(0)
+            self._progressBarLabel.setText('0 %')
+            self._progressBar.setValue(0)
+            monitor = TaskProgressMonitor(
+                task=self._task, progress=self.taskProgress, finished=self.taskFinished)
+            if self._background:
+                QThreadPool.globalInstance().start(monitor)
+            else:
+                monitor.run()
 
     def cancelTask(self) -> None:
         if self._task:
             LOGGER.info('TaskWidget: cancelling task...')
-            self._task.setStatusCanceling()
+            self._task.cancel()
             self._cancelButton.setEnabled(False)
             if not self._test:
-                self._progressBarDialog.close()
-        else:
-            raise TaskWidgetException('TaskWidget: cannot cancel task, start it first')
+                self._progressBarLabel.setText('0 %')
+                self._progressBar.setValue(0)
         
-    # Status
+    def taskProgress(self, progress: int) -> None:
+        self._progressBarLabel.setText(f'{progress} %')
+        self._progressBar.setValue(progress)
+
+    def taskFinished(self, value: bool) -> None:
+        self._cancelButton.setEnabled(False)
+
+    # Status (only used for testing)
         
     def taskIsIdle(self) -> bool:
         if self._task:

@@ -60,6 +60,15 @@ class DataManager:
                 return fileSet
         return None
     
+    def fileSetByName(self, name: str) -> FileSet:
+        LOGGER.info(f'DataManager: retrieving fileset with name {name}...')
+        with Session() as session:
+            fileSetModel = session.query(FileSetModel).filter_by(name=name).one()
+            if fileSetModel:
+                fileSet = FileSet(model=fileSetModel)
+                return fileSet
+        return None
+    
     def fileSets(self) -> List[FileSet]:
         LOGGER.info(f'DataManager: retrieving all filesets...')
         with Session() as session:

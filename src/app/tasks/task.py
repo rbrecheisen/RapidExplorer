@@ -1,5 +1,9 @@
 import threading
 
+from typing import Dict
+
+from tasks.parameter import Parameter
+
 
 class Task:
     IDLE = 0
@@ -18,9 +22,18 @@ class Task:
         self._status = Task.IDLE
         self._progress = 0
         self._thread = None
+        self._parameters = None
 
     def name(self) -> str:
         return self.__class__.__name__
+    
+    def setParameters(self, parameters: Dict[str, Parameter]) -> None:
+        self._parameters = parameters
+    
+    def parameter(self, name: str) -> Parameter:
+        if name in self._parameters.keys():
+            return self._parameters[name]
+        return None
     
     # Status
     
@@ -77,8 +90,8 @@ class Task:
     def progress(self) -> int:
         return self._progress
     
-    def setProgress(self, progress: int) -> None:
-        self._progress = progress
+    def setProgress(self, step: int, nrSteps: int) -> None:
+        self._progress = int(((step + 1) / (nrSteps)) * 100)
 
     # Execution
 
