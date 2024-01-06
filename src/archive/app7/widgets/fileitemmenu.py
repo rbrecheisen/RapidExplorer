@@ -18,8 +18,8 @@ class FileItemMenu(QMenu):
         self._fileItem = fileItem
         self._position = position
         self._dataManager = DataManager()
-        action = self.addAction('Find File in Finder/Explorer')
-        action.triggered.connect(self.findFileInFinderOrExplorer)
+        findFileInFinderOrExplorer = self.addAction('Find File in Finder/Explorer')
+        findFileInFinderOrExplorer.triggered.connect(self.findFileInFinderOrExplorer)
 
     def findFileInFinderOrExplorer(self):
         if PLATFORM == 'darwin':

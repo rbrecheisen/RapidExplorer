@@ -253,13 +253,13 @@ class GitCommit:
 
 class ModuleLoader:
     @staticmethod
-    def loadModuleClasses(moduleDirectoryPath: str, moduleBaseClass: Any, fileNameEndsWith: str) -> Dict[str, Any]:
+    def loadModuleClasses(moduleDirectoryPath: str, moduleBaseClass: Any) -> Dict[str, Any]:
         classes = {}
         moduleDirectoryName = os.path.split(moduleDirectoryPath)[1]
         for root, dirs, files in os.walk(moduleDirectoryPath):
             for fileName in files:
                 filePath = os.path.join(root, fileName)
-                if fileName.endswith(fileNameEndsWith):
+                if fileName == '__init__.py':
                     taskModule = filePath.split(os.path.sep)[-2]
                     if taskModule != moduleDirectoryName:
                         spec = importlib.util.spec_from_file_location(taskModule, filePath)
@@ -269,5 +269,23 @@ class ModuleLoader:
                             for attributeName in dir(module):
                                 attribute = getattr(module, attributeName)
                                 if isinstance(attribute, type) and issubclass(attribute, moduleBaseClass) and attribute is not moduleBaseClass:
-                                    classes[attribute.NAME()] = attribute
+                                    classes[attribute.NAME] = attribute
         return classes
+    
+
+if __name__ == '__main__':
+    def main():
+        filePath = '/Users/ralph/Desktop/downloads/pancreasdemo/1.dcm'
+        pixels = convertDicomToNumPyArray(filePath)
+        convertNumPyArrayToPngImage(pixels, '/Users/ralph/Desktop/downloads/pancreasdemo', pngImageFileName='1.dcm.png')
+        filePath = '/Users/ralph/Desktop/downloads/pancreasdemo-output/segmentations/1.dcm.seg.npy'
+        convertNumPyArrayToPngImage(filePath, '/Users/ralph/Desktop/downloads/pancreasdemo-output/segmentations', AlbertaColorMap())
+        # pixels = convertDicomToNumPyArray(dicomFilePath=filePath)
+        # pixels = applyColorMap(pixels=pixels, colorMap=AlbertaColorMap())
+        # import matplotlib.pyplot as plt
+        # fig = plt.figure(figsize=(10, 10))
+        # ax = fig.add_subplot(1, 1, 1)
+        # plt.imshow(pixels)
+        # ax.axis('off')
+        # plt.show()
+    main()

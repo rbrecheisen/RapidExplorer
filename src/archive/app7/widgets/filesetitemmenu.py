@@ -27,6 +27,16 @@ class FileSetItemMenu(QMenu):
         self._dataManager.deleteFileSet(fileSet=fileSet)
         self._treeView.clearFileSets()
         self._treeView.loadFileSetsFromDatabase()
+        # resultCode = self.showFileSetDeleteWarning()
+        # if resultCode == QMessageBox.Yes:
+        #     shutil.rmtree(fileSet.path())
+
+    def showFileSetDeleteWarning(self) -> int:
+        messageBox = QMessageBox(self)
+        messageBox.setWindowTitle('Warning')
+        messageBox.setText('Do you want to delete the physical files as well?')
+        messageBox.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        return messageBox.exec_()
 
     def show(self):
         self.exec_(self._position)

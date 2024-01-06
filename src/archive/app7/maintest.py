@@ -10,4 +10,4 @@ engine.ECHO = False
 if __name__ == '__main__':
     if os.path.isfile(engine.DATABASE):
         os.remove(engine.DATABASE)
-    pytest.main(['-s', 'src/app/test'])
+    pytest.main(['-s', 'src/experiments'])
