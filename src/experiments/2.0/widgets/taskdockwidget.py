@@ -1,5 +1,5 @@
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QWidget, QComboBox, QVBoxLayout, QHBoxLayout, QPushButton, QDialog, QProgressDialog, QCheckBox
+from PySide6.QtWidgets import QWidget, QComboBox, QVBoxLayout
 
 from widgets.dockwidget import DockWidget
 from tasks.taskwidgetmanager import TaskWidgetManager
@@ -12,7 +12,7 @@ class TaskDockWidget(DockWidget):
     def __init__(self, title: str) -> None:
         super(TaskDockWidget, self).__init__(title)
         self._tasksComboBox = None
-        self._placeHolderWidget = None
+        self._placeholderWidget = None
         self._taskWidgetManager = TaskWidgetManager()
         self.initUi()
 
@@ -22,11 +22,11 @@ class TaskDockWidget(DockWidget):
         for taskName in self._taskWidgetManager.taskNames():
             self._tasksComboBox.addItem(taskName)
         self._tasksComboBox.currentIndexChanged.connect(self.currentIndexChanged)
-        self._placeHolderWidget = QWidget()
-        self._placeHolderWidget.setLayout(QVBoxLayout())
+        self._placeholderWidget = QWidget()
+        self._placeholderWidget.setLayout(QVBoxLayout())
         layout = QVBoxLayout()
         layout.addWidget(self._tasksComboBox)
-        layout.addWidget(self._placeHolderWidget)
+        layout.addWidget(self._placeholderWidget)
         layout.setAlignment(Qt.AlignTop)
         widget = QWidget()
         widget.setLayout(layout)    
@@ -34,12 +34,12 @@ class TaskDockWidget(DockWidget):
         self.setMinimumHeight(200)
 
     def currentIndexChanged(self, index) -> None:
-        if self._placeHolderWidget.layout():
-            for i in reversed(range(self._placeHolderWidget.layout().count())): 
-                widgetToRemove = self._placeHolderWidget.layout().itemAt(i).widget()
-                self._placeHolderWidget.layout().removeWidget(widgetToRemove)
+        if self._placeholderWidget.layout():
+            for i in reversed(range(self._placeholderWidget.layout().count())): 
+                widgetToRemove = self._placeholderWidget.layout().itemAt(i).widget()
+                self._placeholderWidget.layout().removeWidget(widgetToRemove)
                 widgetToRemove.setParent(None)
         taskName = self._tasksComboBox.itemText(index)
         if taskName:
             taskWidget = self._taskWidgetManager.taskWidget(name=taskName)
-            self._placeHolderWidget.layout().addWidget(taskWidget)
+            self._placeholderWidget.layout().addWidget(taskWidget)

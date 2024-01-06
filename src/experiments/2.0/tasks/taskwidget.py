@@ -1,6 +1,7 @@
 import inspect
 
-from PySide6.QtWidgets import QWidget
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QProgressDialog
 
 from tasks.task import Task
 from tasks.taskwidgetexception import TaskWidgetException
@@ -22,9 +23,44 @@ class TaskWidget(QWidget):
             raise TaskWidgetException('TaskWidget: argument taskType should be a class')
         self._taskType = taskType
         self._task = None
+        self._placeholderWidget = None
+        self._progressBarDialog = None
+        self._startButton = None
+        self._cancelButton = None
+        self._test = False
+        self.initUi()
 
     def name(self) -> str:
         return self.__class__.__name__
+    
+    def setTest(self, test: bool) -> None:
+        self._test = test
+    
+    def initUi(self) -> None:
+        self._placeholderWidget = QWidget()
+        self._placeholderWidget.setLayout(QVBoxLayout())
+        self.initProgressBarDialog()
+        self._startButton = QPushButton('Start')
+        self._startButton.setObjectName('startButton') # for testing
+        self._startButton.clicked.connect(self.startTask)
+        self._cancelButton = QPushButton('Cancel')
+        self._cancelButton.setObjectName('cancelButton') # for testing
+        self._cancelButton.setEnabled(False)
+        self._cancelButton.clicked.connect(self.cancelTask)
+        buttonLayout = QHBoxLayout()
+        buttonLayout.addWidget(self._startButton)
+        buttonLayout.addWidget(self._cancelButton)
+        layout = QVBoxLayout()
+        layout.addWidget(self._placeholderWidget)
+        layout.addLayout(buttonLayout)
+        self.setLayout(layout)
+
+    def initProgressBarDialog(self) -> None:
+        self._progressBarDialog = QProgressDialog('Running task...', 'Abort', 0, 100, self)
+        self._progressBarDialog.setWindowModality(Qt.WindowModality.WindowModal)
+        self._progressBarDialog.setAutoReset(True)
+        self._progressBarDialog.setAutoClose(True)
+        self._progressBarDialog.close()
     
     # Execution
 
@@ -32,11 +68,18 @@ class TaskWidget(QWidget):
         self._task = self._taskType()
         LOGGER.info('TaskWidget: running task...')
         self._task.start()
+        self._cancelButton.setEnabled(True)
+        if not self._test:
+            self._progressBarDialog.show()
+            self._progressBarDialog.setValue(0)
 
     def cancelTask(self) -> None:
         if self._task:
             LOGGER.info('TaskWidget: cancelling task...')
             self._task.setStatusCanceling()
+            self._cancelButton.setEnabled(False)
+            if not self._test:
+                self._progressBarDialog.close()
         else:
             raise TaskWidgetException('TaskWidget: cannot cancel task, start it first')
         

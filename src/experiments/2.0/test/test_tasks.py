@@ -5,15 +5,17 @@ from PySide6.QtWidgets import QPushButton
 
 from tasks.dummytask.dummytaskwidget import DummyTaskWidget
 
-# button = widget.findChild(QPushButton, 'taskWidgetButton')
-# qtbot.addWidget(widget)
-# qtbot.mouseClick(button, Qt.LeftButton)
-
 
 def test_taskWidgetCanStartAndCancelTask(qtbot):
     widget = DummyTaskWidget()
-    widget.startTask()
+    qtbot.addWidget(widget)
+    # Start task
+    startButton = widget.findChild(QPushButton, 'startButton')
+    qtbot.mouseClick(startButton, Qt.LeftButton)
     assert widget.taskIsRunning()
+    # Check progress
     time.sleep(5)
-    widget.cancelTask()
+    # Cancel task
+    cancelButton = widget.findChild(QPushButton, 'cancelButton')
+    qtbot.mouseClick(cancelButton, Qt.LeftButton)
     assert widget.taskIsCanceling() or widget.taskIsCanceled()
