@@ -21,4 +21,4 @@ move /y %APPNAME%\run.sh %APPNAME%\%APPNAME%
 powershell Compress-Archive -Path %APPNAME% -DestinationPath %APPNAME%.zip
 
 if exist build rmdir /s /q build
-if exist %APPNAME% rmdir /s /q %APPNAME%
+@REM if exist %APPNAME% rmdir /s /q %APPNAME%
