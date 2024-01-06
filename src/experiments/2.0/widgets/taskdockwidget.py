@@ -41,5 +41,5 @@ class TaskDockWidget(DockWidget):
                 widgetToRemove.setParent(None)
         taskName = self._tasksComboBox.itemText(index)
         if taskName:
-            taskWidget = self._taskWidgetManager.createTaskWidget(name=taskName)
+            taskWidget = self._taskWidgetManager.taskWidget(name=taskName)
             self._placeHolderWidget.layout().addWidget(taskWidget)

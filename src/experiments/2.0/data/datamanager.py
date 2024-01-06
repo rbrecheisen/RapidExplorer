@@ -18,7 +18,7 @@ class DataManager:
         pass
 
     def createFile(self, filePath: str) -> FileSet:
-        LOGGER.info(f'DataManager.createFile() filePath={filePath}')
+        LOGGER.info(f'DataManager: creating file {filePath}...')
         with Session() as session:
             fileSetPath = os.path.split(filePath)[0]
             fileSetName = fileSetPath.split(os.path.sep)[-1]
@@ -33,7 +33,7 @@ class DataManager:
 
 
     def createFileSet(self, fileSetPath: str) -> FileSet:
-        LOGGER.info(f'DataManager.createFileSet() fileSetPath={fileSetPath}')
+        LOGGER.info(f'DataManager: creating fileset {fileSetPath}...')
         fileSetName = os.path.split(fileSetPath)[-1]
         with Session() as session:
             fileSetModel = FileSetModel(name=fileSetName, path=fileSetPath)
@@ -52,7 +52,7 @@ class DataManager:
         return fileSet
     
     def fileSet(self, id: str) -> FileSet:
-        LOGGER.info(f'DataManager.fileSet() id={id}')
+        LOGGER.info(f'DataManager: retrieving fileset {id}...')
         with Session() as session:
             fileSetModel = session.get(FileSetModel, id)
             if fileSetModel:
@@ -61,6 +61,7 @@ class DataManager:
         return None
     
     def fileSets(self) -> List[FileSet]:
+        LOGGER.info(f'DataManager: retrieving all filesets...')
         with Session() as session:
             fileSetModels = session.query(FileSetModel).all()
             fileSets = []
@@ -70,7 +71,7 @@ class DataManager:
         return fileSets
 
     def updateFileSet(self, fileSet: FileSet) -> FileSet:
-        LOGGER.info(f'DataManager.updateFileSet() fileSet={fileSet.name()}')
+        LOGGER.info(f'DataManager: updating fileSet {fileSet.name()}...')
         with Session() as session:
             fileSetModel = session.get(FileSetModel, fileSet.id())
             if fileSetModel:
@@ -80,7 +81,7 @@ class DataManager:
         return None
     
     def deleteFileSet(self, fileSet: FileSet) -> None:
-        LOGGER.info(f'DataManager.deleteFileSet() fileSet={fileSet.name()}')
+        LOGGER.info(f'DataManager: deleting fileset {fileSet.name()}...')
         with Session() as session:
             fileSetModel = session.get(FileSetModel, fileSet.id())
             session.delete(fileSetModel)
@@ -90,7 +91,7 @@ class DataManager:
                 cache.remove(file.id())
 
     def deleteAllFileSets(self) -> None:
-        LOGGER.info(f'DataManager.deleteAllFileSets()')
+        LOGGER.info(f'DataManager: deleting all filesets...')
         with Session() as session:
             cache = FileContentCache()
             fileSetModels = session.query(FileSetModel).all()

@@ -12,21 +12,21 @@ class DummyTask(Task):
 
     def run(self) -> None:
         self.setStatus(status=Task.RUNNING)
-        LOGGER.info('Running dummy task (takes about 5 seconds)...')
+        LOGGER.info('DummyTask: running...')
         canceled = False        
         for i in range(10):
-            LOGGER.info(f'Iteration: {i}')
+            LOGGER.info(f'DummyTask: processing step={i}')
             if self.status() == Task.CANCELLING:
-                LOGGER.info('Cancelling task...')
+                LOGGER.info('DummyTask: cancelling...')
                 canceled = True
                 break
             time.sleep(1)
         if canceled:
             self.setStatus(status=Task.CANCELED)
-            LOGGER.info('Task canceled')
+            LOGGER.info('DummyTask: canceled')
         else:
             self.setStatus(status=Task.FINISHED)
-            LOGGER.info('Task finished')
+            LOGGER.info('DummyTask: finished')
 
     def cancel(self) -> None:
         self.setStatus(status=Task.CANCELLING)
