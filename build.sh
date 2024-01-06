@@ -4,10 +4,9 @@ export APPNAME=MosamaticDesktop1.0
 
 rm -rf main.build ${APPNAME}
 
-echo "$(git rev-parse HEAD)" > gitcommitid.txt
+# echo "$(git rev-parse HEAD)" > gitcommitid.txt
 
 ~/.venv/MosamaticDesktop/bin/pyside6-rcc -o src/app/resources.py src/app/resources.qrc
-
 ~/.venv/MosamaticDesktop/bin/pyinstaller \
     --onefile \
     --hidden-import=pydicom.encoders.gdcm \
@@ -17,7 +16,7 @@ echo "$(git rev-parse HEAD)" > gitcommitid.txt
 mv dist ${APPNAME}
 cp settings.ini ${APPNAME}
 cp run.sh ${APPNAME}
-cp gitcommitid.txt ${APPNAME}
+# cp gitcommitid.txt ${APPNAME}
 mv ${APPNAME}/run.sh ${APPNAME}/${APPNAME}
 chmod +x ${APPNAME}/${APPNAME}
 
