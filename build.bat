@@ -4,13 +4,13 @@ set APPNAME=MosamaticDesktop
 if exist main.build rmdir /s /q main.build
 if exist %APPNAME% rmdir /s /q %APPNAME%
 
-@REM call %USERPROFILE%\.venv\MosamaticDesktop\Scripts\pyinstaller ^
-@REM     --onefile ^
-@REM     --hidden-import=pydicom.encoders.gdcm ^
-@REM     --hidden-import=pydicom.encoders.pylibjpeg ^
-@REM     src\app\main.py
+call %USERPROFILE%\.venv\MosamaticDesktop\Scripts\pyinstaller ^
+    --onefile ^
+    --hidden-import=pydicom.encoders.gdcm ^
+    --hidden-import=pydicom.encoders.pylibjpeg ^
+    src\app\main.py
 
-call %USERPROFILE%\.venv\MosamaticDesktop\Scripts\pyinstaller main.win.spec
+@REM call %USERPROFILE%\.venv\MosamaticDesktop\Scripts\pyinstaller main.win.spec
 
 if exist dist move /y dist %APPNAME%
 
