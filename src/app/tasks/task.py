@@ -23,6 +23,7 @@ class Task:
         self._status = Task.IDLE
         self._progress = 0
         self._thread = None
+        self._errors = []
         self._parameters = None
 
     def name(self) -> str:
@@ -35,6 +36,15 @@ class Task:
         if name in self._parameters.keys():
             return self._parameters[name]
         return None
+    
+    def errors(self) -> List[str]:
+        return self._errors
+    
+    def addError(self, message: str) -> None:
+        self._errors.append(message)
+
+    def hasErrors(self) -> bool:
+        return len(self._errors) > 0
     
     # Status
     

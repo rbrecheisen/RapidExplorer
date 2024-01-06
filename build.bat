@@ -16,9 +16,9 @@ if exist dist move /y dist %APPNAME%
 
 copy settings.ini %APPNAME%
 copy run.bat %APPNAME%
-move /y %APPNAME%\run.sh %APPNAME%\%APPNAME%
+move /y %APPNAME%\run.bat %APPNAME%\%APPNAME%.bat
 
 powershell Compress-Archive -Force -Path %APPNAME% -DestinationPath %APPNAME%.zip
 
 if exist build rmdir /s /q build
-@REM if exist %APPNAME% rmdir /s /q %APPNAME%
+if exist %APPNAME% rmdir /s /q %APPNAME%
