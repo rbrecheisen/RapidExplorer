@@ -1,7 +1,8 @@
 import os
+import sys
 
 from PySide6.QtCore import Qt, QSize, QSettings
-from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QFileDialog, QMenu, QProgressDialog, QMessageBox
+from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QFileDialog, QMenu
 from PySide6.QtGui import QAction, QGuiApplication
 
 from data.datamanager import DataManager
@@ -10,9 +11,13 @@ from widgets.viewersdockwidget import ViewersDockWidget
 from widgets.taskdockwidget import TaskDockWidget
 from widgets.mainviewerdockwidget import MainViewerDockWidget
 
+PLATFORM = sys.platform
+HOME = 'HOME' 
+if PLATFORM.startswith('win'):
+    HOME = 'USERPROFILE'
 WINDOWTITLE = 'Mosamatic Desktop 2.0'
-FILESETPATH = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset/scan1')
-FILEPATH = os.path.join(os.environ['HOME'], 'Desktop/downloads/dataset/scan1/image-00000.dcm')
+FILESETPATH = os.path.join(os.environ[HOME], 'Desktop', 'downloads', 'dataset', 'scan1')
+FILEPATH = os.path.join(os.environ[HOME], 'Desktop', 'downloads', 'dataset', 'scan1', 'image-00000.dcm')
 
 
 class MainWindow(QMainWindow):

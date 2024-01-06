@@ -10,7 +10,7 @@ rm -rf main.build ${APPNAME}
 #     --hidden-import=pydicom.encoders.pylibjpeg \
 #     src/app/main.py
 
-~/.venv/MosamaticDesktop/bin/pyinstaller main.spec
+~/.venv/MosamaticDesktop/bin/pyinstaller main.macos.spec
 
 mv dist ${APPNAME}
 cp settings.ini ${APPNAME}
