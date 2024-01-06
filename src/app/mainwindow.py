@@ -39,7 +39,6 @@ class MainWindow(QMainWindow):
     def initActionsAndMenus(self) -> None:
         importFileAction = QAction('Import File...', self)
         importFileSetAction = QAction('Import File Set...', self)
-        importFileSetWithFileTypeAction = QAction('Import File Set with File Type...', self)
         deleteAllFileSetsAction = QAction('Delete All Data from Database', self)
         resetLayoutAction = QAction('Reset Layout', self)
         showApplicationInfoAction = QAction('Show Application Info...', self)
@@ -52,7 +51,6 @@ class MainWindow(QMainWindow):
         dataMenu = QMenu('Data')
         dataMenu.addAction(importFileAction)
         dataMenu.addAction(importFileSetAction)
-        dataMenu.addAction(importFileSetWithFileTypeAction)
         dataMenu.addSeparator()
         dataMenu.addAction(deleteAllFileSetsAction)
         dataMenu.addSeparator()
