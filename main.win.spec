@@ -8,7 +8,7 @@ a = Analysis(
     pathex=[],
     binaries=[],
     datas=task_files,
-    hiddenimports=['pydicom.encoders.gdcm', 'pydicom.encoders.pylibjpeg', 'numpy==1.26.2'],
+    hiddenimports=['pydicom.encoders.gdcm', 'pydicom.encoders.pylibjpeg', 'numpy'],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
