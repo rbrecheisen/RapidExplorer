@@ -28,9 +28,10 @@ class TaskWidgetManager:
         return None
 
     def loadTaskWidgetTypes(self):
-        LOGGER.info('TaskWidgetManager: loading tasks...')
+        dirPath = os.path.dirname(os.path.realpath(__file__))
+        LOGGER.info(f'TaskWidgetManager: loading tasks from {dirPath}...')
         taskWidgets = ModuleLoader.loadModuleClasses(
-            moduleDirectoryPath=os.path.dirname(os.path.realpath(__file__)),
+            moduleDirectoryPath=dirPath,
             moduleBaseClass=TaskWidget,
             fileNameEndsWith='taskwidget.py',
         )
