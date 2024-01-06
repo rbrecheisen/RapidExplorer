@@ -60,6 +60,7 @@ class TaskWidget(QWidget):
         labelLayout.addItem(QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum))
         self._progressBar = QProgressBar(self)
         self._progressBar.setRange(0, 100)
+        self._progressBar.setValue(0)
         self._startButton = QPushButton('Start')
         self._startButton.setObjectName('startButton') # for testing
         self._startButton.clicked.connect(self.startTask)
