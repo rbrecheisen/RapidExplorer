@@ -1,5 +1,5 @@
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QWidget, QComboBox, QVBoxLayout
+from PySide6.QtWidgets import QWidget, QComboBox, QVBoxLayout, QSizePolicy
 
 from widgets.dockwidget import DockWidget
 from tasks.taskwidgetmanager import TaskWidgetManager

@@ -18,10 +18,8 @@ class FloatingPointParameter(Parameter):
         self._floatingPointSpinBox = QDoubleSpinBox(self)
         self._floatingPointSpinBox.setValue(self.defaultValue())
         self._floatingPointSpinBox.valueChanged.connect(self.valueChanged)
-        layout = QVBoxLayout()
-        layout.addWidget(QLabel(self.labelText()))
-        layout.addWidget(self._floatingPointSpinBox)
-        self.setLayout(layout)
+        self.layout().addWidget(QLabel(self.labelText()))
+        self.layout().addWidget(self._floatingPointSpinBox)
 
     def valueChanged(self, value: int) -> None:
         self.setValue(value)

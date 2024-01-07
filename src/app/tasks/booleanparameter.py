@@ -1,6 +1,7 @@
 from typing import Any
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QVBoxLayout, QCheckBox
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QVBoxLayout, QCheckBox
 
 from tasks.parameter import Parameter
 
@@ -17,10 +18,9 @@ class BooleanParameter(Parameter):
         self._booleanCheckBox.setText(self.labelText())
         if self.defaultValue() is not None:
             self._booleanCheckBox.setCheckState(Qt.Checked if self.defaultValue() else Qt.Unchecked)
+            self.stateChanged(state=self._booleanCheckBox.checkState())
         self._booleanCheckBox.stateChanged.connect(self.stateChanged)
-        layout = QVBoxLayout()
-        layout.addWidget(self._booleanCheckBox)
-        self.setLayout(layout)
+        self.layout().addWidget(self._booleanCheckBox)
 
     def stateChanged(self, state: int) -> None:
         self.setValue(True if state == Qt.Checked else False)

@@ -1,6 +1,6 @@
 from typing import Any
 
-from PySide6.QtWidgets import QWidget
+from PySide6.QtWidgets import QWidget, QVBoxLayout
 
 
 class Parameter(QWidget):
@@ -8,10 +8,16 @@ class Parameter(QWidget):
         super(Parameter, self).__init__(parent=parent)
         self._name = name
         self._labelText = labelText
+        if not optional:
+            self._labelText = labelText + '*'
         self._optional = optional
         self._visible = visible
         self._defaultValue = defaultValue
         self._value = None
+        self._layout = QVBoxLayout()
+        self._layout.setContentsMargins(5, 5, 5, 5)
+        self._layout.setSpacing(5)
+        self.setLayout(self._layout)
 
     def name(self) -> str:
         return self._name
@@ -33,3 +39,6 @@ class Parameter(QWidget):
     
     def setValue(self, value: Any) -> None:
         self._value = value
+
+    def layout(self) -> QVBoxLayout:
+        return self._layout

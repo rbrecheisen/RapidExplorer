@@ -1,6 +1,6 @@
 from typing import Any
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QVBoxLayout, QSizePolicy
+from PySide6.QtWidgets import QWidget, QLabel, QSizePolicy
 from PySide6.QtGui import QFont
 
 from tasks.parameter import Parameter
@@ -21,6 +21,4 @@ class LabelParameter(Parameter):
         label.setText(self.labelText())
         policy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
         label.setSizePolicy(policy)
-        layout = QVBoxLayout()
-        layout.addWidget(label)
-        self.setLayout(layout)
+        self.layout().addWidget(label)

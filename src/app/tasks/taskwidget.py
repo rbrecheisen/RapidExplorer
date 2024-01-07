@@ -3,14 +3,15 @@ import inspect
 from typing import Any, List
 
 from PySide6.QtCore import Qt, QThreadPool
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QProgressBar, QLabel
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QProgressBar, QLabel, QDialog, QMessageBox
 from PySide6.QtWidgets import QSpacerItem, QSizePolicy
-from PySide6.QtGui import QResizeEvent
 
 from tasks.task import Task
 from tasks.taskwidgetexception import TaskWidgetException
+from tasks.taskwidgetparameterdialog import TaskWidgetParameterDialog
 from tasks.taskprogressmonitor import TaskProgressMonitor
 from tasks.parameter import Parameter
+from tasks.descriptionparameter import DescriptionParameter
 from tasks.labelparameter import LabelParameter
 from tasks.filesetparameter import FileSetParameter
 from tasks.pathparameter import PathParameter
@@ -44,7 +45,7 @@ class TaskWidget(QWidget):
         self._progressBarLabel = None
         self._startButton = None
         self._cancelButton = None
-        self._placeholderWidget = None
+        self._settingsButton = None
         self._test = False
         self.initUi()
 
@@ -70,14 +71,13 @@ class TaskWidget(QWidget):
         self._cancelButton.setObjectName('cancelButton') # for testing
         self._cancelButton.setEnabled(False)
         self._cancelButton.clicked.connect(self.cancelTask)
+        self._settingsButton = QPushButton('Set Task Parameters...')
+        self._settingsButton.setObjectName('settingsButton') # for testing
+        self._settingsButton.clicked.connect(self.showTaskWidgetParameterDialog)
         buttonLayout = QHBoxLayout()
         buttonLayout.addWidget(self._startButton)
         buttonLayout.addWidget(self._cancelButton)
-        self._placeholderWidget = QWidget(self)
-        placeholderLayout = QVBoxLayout()
-        placeholderLayout.setContentsMargins(5, 0, 5, 0)
-        placeholderLayout.setSpacing(5)
-        self._placeholderWidget.setLayout(placeholderLayout)
+        buttonLayout.addWidget(self._settingsButton)
         layout = QVBoxLayout()
         layout.setAlignment(Qt.AlignTop)
         layout.setContentsMargins(5, 5, 5, 5)
@@ -86,64 +86,66 @@ class TaskWidget(QWidget):
             layout.addLayout(labelLayout)
         layout.addWidget(self._progressBar)
         layout.addLayout(buttonLayout)
-        layout.addWidget(self._placeholderWidget)
         self.setLayout(layout)
 
     # Task parameters
         
+    def taskParameter(self, name: str) -> Parameter:
+        if name in self._taskParameters.keys():
+            return self._taskParameters[name]
+        return None
+        
+    def addDescriptionParameter(self, name: str, description: str) -> Parameter:
+        parameter = DescriptionParameter(name=name, description=description)
+        self._taskParameters[parameter.name()] = parameter
+        return parameter
+
     def addLabelParameter(self, name: str, labelText: str, optional: bool=False, visible: bool=True, defaultValue: Any=None) -> Parameter:
         parameter = LabelParameter(name=name, labelText=labelText, optional=optional, visible=visible, defaultValue=defaultValue)
-        self._placeholderWidget.layout().addWidget(parameter)
         self._taskParameters[parameter.name()] = parameter
         return parameter
 
     def addFileSetParameter(self, name: str, labelText: str, optional: bool=False, visible: bool=True, defaultValue: Any=None) -> Parameter:
         parameter = FileSetParameter(name=name, labelText=labelText, optional=optional, visible=visible, defaultValue=defaultValue)
-        self._placeholderWidget.layout().addWidget(parameter)
         self._taskParameters[parameter.name()] = parameter
         return parameter
 
     def addPathParameter(self, name: str, labelText: str, optional: bool=False, visible: bool=True, defaultValue: Any=None) -> Parameter:
         parameter = PathParameter(name=name, labelText=labelText, optional=optional, visible=visible, defaultValue=defaultValue)
-        self._placeholderWidget.layout().addWidget(parameter)
         self._taskParameters[parameter.name()] = parameter
         return parameter
 
     def addTextParameter(self, name: str, labelText: str, optional: bool=False, visible: bool=True, defaultValue: Any=None) -> Parameter:
         parameter = TextParameter(name=name, labelText=labelText, optional=optional, visible=visible, defaultValue=defaultValue)
-        self._placeholderWidget.layout().addWidget(parameter)
         self._taskParameters[parameter.name()] = parameter
         return parameter
 
-    def addIntegerParameter(self, name: str, labelText: str, optional: bool=False, visible: bool=True, defaultValue: Any=None) -> Parameter:
-        parameter = IntegerParameter(name=name, labelText=labelText, optional=optional, visible=visible, defaultValue=defaultValue)
-        self._placeholderWidget.layout().addWidget(parameter)
+    def addIntegerParameter(self, name: str, labelText: str, optional: bool=False, visible: bool=True, defaultValue: Any=None, minimum: int=0, maximum: int=100, step: int=1) -> Parameter:
+        parameter = IntegerParameter(name=name, labelText=labelText, optional=optional, visible=visible, defaultValue=defaultValue, minimum=minimum, maximum=maximum, step=step)
+        LOGGER.info(f'TaskWidget.addIntegerParameter() value={parameter.name()}')
         self._taskParameters[parameter.name()] = parameter
         return parameter
 
     def addFloatingPointParameter(self, name: str, labelText: str, optional: bool=False, visible: bool=True, defaultValue: Any=None) -> Parameter:
         parameter = FloatingPointParameter(name=name, labelText=labelText, optional=optional, visible=visible, defaultValue=defaultValue)
-        self._placeholderWidget.layout().addWidget(parameter)
         self._taskParameters[parameter.name()] = parameter
         return parameter
     
     def addBooleanParameter(self, name: str, labelText: str, optional: bool=False, visible: bool=True, defaultValue: Any=None) -> Parameter:
         parameter = BooleanParameter(name=name, labelText=labelText, optional=optional, visible=visible, defaultValue=defaultValue)
-        self._placeholderWidget.layout().addWidget(parameter)
         self._taskParameters[parameter.name()] = parameter
         return parameter
 
     def addOptionGroupParameter(self, name: str, labelText: str, optional: bool=False, visible: bool=True, defaultValue: Any=None, options: List[str]=[]) -> Parameter:
         parameter = OptionGroupParameter(name=name, labelText=labelText, optional=optional, visible=visible, defaultValue=defaultValue, options=options)
-        self._placeholderWidget.layout().addWidget(parameter)
         self._taskParameters[parameter.name()] = parameter
         return parameter
 
     # Task execution
 
     def startTask(self) -> None:
-        LOGGER.info('TaskWidget: creating and running task...')
         self._task = self._taskType() # instantiate class
+        LOGGER.info(f'TaskWidget: creating and running task {self._task.name()}...')
         self._task.setParameters(parameters=self._taskParameters)
         self._task.start()
         self._cancelButton.setEnabled(True)
@@ -162,6 +164,13 @@ class TaskWidget(QWidget):
             if not self._test:
                 self._progressBarLabel.setText('0 %')
                 self._progressBar.setValue(0)
+
+    def showTaskWidgetParameterDialog(self) -> None:
+        dialog = TaskWidgetParameterDialog(title=self.name(), parameters=self._taskParameters)
+        result = dialog.show()
+        if result == QDialog.Accepted:
+            self._taskParameters = dialog.parameters()
+            self.validate()
         
     def taskProgress(self, progress: int) -> None:
         self._progressBarLabel.setText(f'{progress} %')
@@ -169,6 +178,14 @@ class TaskWidget(QWidget):
 
     def taskFinished(self, value: bool) -> None:
         self._cancelButton.setEnabled(False)
+
+    # Validation
+        
+    def validate(self) -> None:
+        raise NotImplementedError()
+    
+    def showValidationError(self, parameterName: str, message: str) -> None:
+        QMessageBox.critical(self, f'Validation Error for parameter "{parameterName}"', message)
 
     # Status (only used for testing)
         

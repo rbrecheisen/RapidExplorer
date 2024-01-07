@@ -33,7 +33,9 @@ class FileSetParameter(Parameter):
     def initUi(self) -> None:
         label = QLabel(self.labelText())
         comboBox = FileSetParameter.ComboBox(self)
-        layout = QVBoxLayout()
-        layout.addWidget(label)
-        layout.addWidget(comboBox)
-        self.setLayout(layout)
+        comboBox.currentTextChanged.connect(self.currentTextChanged)
+        self.layout().addWidget(label)
+        self.layout().addWidget(comboBox)
+
+    def currentTextChanged(self, text: str) -> None:
+        self.setValue(text)

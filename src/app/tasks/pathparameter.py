@@ -19,11 +19,9 @@ class PathParameter(Parameter):
         button.setFixedWidth(150)
         button.clicked.connect(self.showFileDialog)
         self._pathLineEdit = QLineEdit(self)
-        layout = QVBoxLayout()
-        layout.addWidget(QLabel(self.labelText()))
-        layout.addWidget(self._pathLineEdit)
-        layout.addWidget(button)
-        self.setLayout(layout)
+        self.layout().addWidget(QLabel(self.labelText()))
+        self.layout().addWidget(self._pathLineEdit)
+        self.layout().addWidget(button)
 
     def showFileDialog(self) -> None:
         dirPath = QFileDialog.getExistingDirectory(self, 'Select Path', '.')

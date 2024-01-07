@@ -1,7 +1,7 @@
 import os
 
 from PySide6.QtCore import Qt, QSize, QSettings
-from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QFileDialog, QMenu
+from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QFileDialog, QMenu, QSizePolicy
 from PySide6.QtGui import QAction, QGuiApplication
 
 from data.datamanager import DataManager
@@ -76,6 +76,7 @@ class MainWindow(QMainWindow):
     def initTaskDockWidget(self) -> None:
         self._tasksDockWidget = TaskDockWidget(title='Tasks')
         self._tasksDockWidget.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.BottomDockWidgetArea)
+        self._tasksDockWidget.setFixedHeight(200)
         self.addDockWidget(Qt.LeftDockWidgetArea, self._tasksDockWidget)
 
     def initMainViewerDockWidget(self) -> None:

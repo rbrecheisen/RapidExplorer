@@ -16,11 +16,10 @@ class TextParameter(Parameter):
 
     def initUi(self) -> None:
         self._pathLineEdit = QLineEdit(self)
+        self._pathLineEdit.setText(self.defaultValue())
         self._pathLineEdit.textChanged.connect(self.pathChanged)
-        layout = QVBoxLayout()
-        layout.addWidget(QLabel(self.labelText()))
-        layout.addWidget(self._pathLineEdit)
-        self.setLayout(layout)
+        self.layout().addWidget(QLabel(self.labelText()))
+        self.layout().addWidget(self._pathLineEdit)
 
     def pathChanged(self, text) -> None:
         self.setValue(text)

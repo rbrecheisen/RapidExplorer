@@ -21,10 +21,8 @@ class OptionGroupParameter(Parameter):
         if self.defaultValue() is not None:
             self._optionGroupComboBox.setCurrentText(self.defaultValue())
         self._optionGroupComboBox.currentTextChanged.connect(self.currentTextChanged)
-        layout = QVBoxLayout()
-        layout.addWidget(QLabel(self.labelText()))
-        layout.addWidget(self._optionGroupComboBox)
-        self.setLayout(layout)
+        self.layout().addWidget(QLabel(self.labelText()))
+        self.layout().addWidget(self._optionGroupComboBox)
 
     def currentTextChanged(self, text: str) -> None:
         self.setValue(text)
