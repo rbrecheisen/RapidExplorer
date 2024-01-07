@@ -40,3 +40,12 @@ class FileSetParameter(Parameter):
 
     def currentTextChanged(self, text: str) -> None:
         self.setValue(text)
+
+    def copy(self):
+        return FileSetParameter(
+            name=self.name(), 
+            labelText=self.labelText(), 
+            optional=self.optional(), 
+            visible=self.visible(), 
+            defaultValue=self.defaultValue()
+        )

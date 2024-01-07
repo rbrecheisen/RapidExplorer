@@ -2,8 +2,11 @@ from typing import Any
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout
 
-
 class Parameter(QWidget):
+    @classmethod
+    def NAME(cls):
+        return cls.__qualname__
+
     def __init__(self, name: str, labelText: str, optional: bool=False, visible: bool=True, defaultValue: Any=None, parent: QWidget=None) -> None:
         super(Parameter, self).__init__(parent=parent)
         self._name = name
@@ -42,3 +45,6 @@ class Parameter(QWidget):
 
     def layout(self) -> QVBoxLayout:
         return self._layout
+    
+    def copy(self):
+        raise NotImplementedError()

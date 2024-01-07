@@ -2,15 +2,15 @@ import inspect
 
 from typing import Any, List
 
-from PySide6.QtCore import Qt, QThreadPool
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QProgressBar, QLabel, QDialog, QMessageBox
 from PySide6.QtWidgets import QSpacerItem, QSizePolicy
 
 from tasks.task import Task
 from tasks.taskwidgetexception import TaskWidgetException
 from tasks.taskwidgetparameterdialog import TaskWidgetParameterDialog
-from tasks.taskprogressmonitor import TaskProgressMonitor
 from tasks.parameter import Parameter
+from tasks.parametercopier import ParameterCopier
 from tasks.descriptionparameter import DescriptionParameter
 from tasks.labelparameter import LabelParameter
 from tasks.filesetparameter import FileSetParameter
@@ -41,6 +41,10 @@ class TaskWidget(QWidget):
         self._taskType = taskType        
         self._task = None
         self._taskParameters = {}
+        # We need this class to copy parameters to the TaskWidgetParameterDialog, otherwise the
+        # parameters get deleted by C++ after the dialog closes.
+        self._taskParameterCopier = ParameterCopier()
+        ######
         self._progressBar = None
         self._progressBarLabel = None
         self._startButton = None
@@ -163,7 +167,13 @@ class TaskWidget(QWidget):
             self._progressBar.setValue(0)
 
     def showTaskWidgetParameterDialog(self) -> None:
-        dialog = TaskWidgetParameterDialog(title=self.name(), parameters=self._taskParameters)
+        # Hack: we need to explicitly copy each parameter before passing them to
+        # the TaskWidgetParameterDialog. If not, the Qt C++ backend will delete
+        # the parameters if we try to show the dialog twice.
+        parameters = {}
+        for parameter in self._taskParameters.values():
+            parameters[parameter.name()] = self._taskParameterCopier.makeCopy(parameter)
+        dialog = TaskWidgetParameterDialog(title=self.name(), parameters=parameters)
         result = dialog.show()
         if result == QDialog.Accepted:
             self._taskParameters = dialog.parameters()

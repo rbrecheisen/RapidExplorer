@@ -23,3 +23,12 @@ class FloatingPointParameter(Parameter):
 
     def valueChanged(self, value: int) -> None:
         self.setValue(value)
+    
+    def copy(self):
+        return FloatingPointParameter(
+            name=self.name(), 
+            labelText=self.labelText(), 
+            optional=self.optional(), 
+            visible=self.visible(), 
+            defaultValue=self.defaultValue()
+        )

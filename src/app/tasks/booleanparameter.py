@@ -24,3 +24,12 @@ class BooleanParameter(Parameter):
 
     def stateChanged(self, state: int) -> None:
         self.setValue(True if state == Qt.Checked else False)
+
+    def copy(self):
+        return BooleanParameter(
+            name=self.name(), 
+            labelText=self.labelText(), 
+            optional=self.optional(),             
+            visible=self.visible(), 
+            defaultValue=self.defaultValue()
+        )

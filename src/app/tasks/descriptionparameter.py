@@ -20,3 +20,9 @@ class DescriptionParameter(Parameter):
         policy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
         label.setSizePolicy(policy)
         self.layout().addWidget(label)
+
+    def copy(self):
+        return DescriptionParameter(
+            name=self.name(), 
+            description=self.labelText()
+        )

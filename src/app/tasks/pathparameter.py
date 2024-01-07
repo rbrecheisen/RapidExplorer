@@ -28,3 +28,12 @@ class PathParameter(Parameter):
         if dirPath:
             self._pathLineEdit.setText(dirPath)
             self.setValue(value=dirPath)
+
+    def copy(self):
+        return PathParameter(
+            name=self.name(), 
+            labelText=self.labelText(), 
+            optional=self.optional(), 
+            visible=self.visible(), 
+            defaultValue=self.defaultValue(),
+        )

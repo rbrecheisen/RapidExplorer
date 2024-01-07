@@ -17,6 +17,15 @@ class IntegerParameter(Parameter):
         self._integerSpinBox = None
         self.initUi()
 
+    def minimum(self) -> int:
+        return self._minimum
+    
+    def maximum(self) -> int:
+        return self._maximum
+    
+    def step(self) -> int:
+        return self._step
+
     def initUi(self) -> None:
         self._integerSpinBox = QSpinBox(self)
         self._integerSpinBox.setRange(self._minimum, self._maximum)
@@ -28,3 +37,15 @@ class IntegerParameter(Parameter):
 
     def valueChanged(self, value: int) -> None:
         self.setValue(value)
+
+    def copy(self):
+        return IntegerParameter(
+            name=self.name(), 
+            labelText=self.labelText(), 
+            optional=self.optional(), 
+            visible=self.visible(), 
+            defaultValue=self.defaultValue(),
+            minimum=self.minimum(),
+            maximum=self.maximum(),
+            step=self.step(),
+        )

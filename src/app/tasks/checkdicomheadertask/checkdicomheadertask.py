@@ -19,6 +19,7 @@ class CheckDicomHeaderTask(Task):
         canceled = False
         manager = DataManager()
 
+        # Prepare parameters, then run task
         inputFileSetName = self.parameter('inputFileSetName').value()
         inputFileSet = manager.fileSetByName(inputFileSetName)
         if inputFileSet is not None:
@@ -81,7 +82,7 @@ class CheckDicomHeaderTask(Task):
                 step += 1
 
                 # Wait a while...
-                time.sleep(0.05)
+                time.sleep(0)
 
             # Copy checked DICOM files to output fileset directory
             outputFileSetPath = os.path.join(outputFileSetPath, outputFileSetName)

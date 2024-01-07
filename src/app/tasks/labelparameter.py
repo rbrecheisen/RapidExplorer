@@ -22,3 +22,12 @@ class LabelParameter(Parameter):
         policy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
         label.setSizePolicy(policy)
         self.layout().addWidget(label)
+
+    def copy(self):
+        return LabelParameter(
+            name=self.name(), 
+            labelText=self.labelText(), 
+            optional=self.optional(), 
+            visible=self.visible(), 
+            defaultValue=self.defaultValue(),
+        )

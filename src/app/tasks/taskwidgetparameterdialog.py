@@ -1,7 +1,8 @@
 from typing import Dict
 
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QWidget, QDialog, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QMessageBox
+from PySide6.QtGui import QCloseEvent
+from PySide6.QtWidgets import QWidget, QDialog, QPushButton, QVBoxLayout, QHBoxLayout, QMessageBox
 
 from tasks.parameter import Parameter
 
@@ -52,6 +53,10 @@ class TaskWidgetParameterDialog(QDialog):
                     QMessageBox.critical(self, 'Error', f'Parameter {parameter.name()} cannot be empty!')
                     return
         self.accept()
+
+    # def closeEvent(self, event: QCloseEvent) -> None:
+    #     self.hide()
+    #     event.ignore()
 
     def show(self):
         return self.exec_()

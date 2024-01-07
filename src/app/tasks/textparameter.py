@@ -23,3 +23,12 @@ class TextParameter(Parameter):
 
     def pathChanged(self, text) -> None:
         self.setValue(text)
+
+    def copy(self):
+        return TextParameter(
+            name=self.name(), 
+            labelText=self.labelText(), 
+            optional=self.optional(), 
+            visible=self.visible(), 
+            defaultValue=self.defaultValue(),
+        )

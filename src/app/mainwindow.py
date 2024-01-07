@@ -106,18 +106,15 @@ class MainWindow(QMainWindow):
     def importFile(self) -> None:
         filePath, _ = QFileDialog.getOpenFileName(self, 'Open File', FILEPATH)
         if filePath:
-            fileSet = self._dataManager.createFile(filePath=filePath)
-            self._dataDockWidget.treeView().addFileSet(fileSet=fileSet)
+            self._dataManager.createFile(filePath=filePath)
 
     def importFileSet(self) -> None:
         fileSetPath = QFileDialog.getExistingDirectory(self, 'Open File Set', FILESETPATH)
         if fileSetPath:
-            fileSet = self._dataManager.createFileSet(fileSetPath=fileSetPath)
-            self._dataDockWidget.treeView().addFileSet(fileSet=fileSet)
+            self._dataManager.createFileSet(fileSetPath=fileSetPath)
 
     def deleteAllFileSets(self) -> None:
         self._dataManager.deleteAllFileSets()
-        self._dataDockWidget.treeView().clearFileSets()
 
     def dataUpdated(self, value) -> None:
         self._dataDockWidget.treeView().loadFileSetsFromDatabase()

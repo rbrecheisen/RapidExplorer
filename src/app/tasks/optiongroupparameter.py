@@ -13,6 +13,9 @@ class OptionGroupParameter(Parameter):
         self._optionGroupComboBox = None
         self.initUi()
 
+    def options(self) -> List[str]:
+        return self._options
+
     def initUi(self) -> None:
         self._optionGroupComboBox = QCheckBox(self)
         self._optionGroupComboBox.addItem(None)
@@ -26,3 +29,13 @@ class OptionGroupParameter(Parameter):
 
     def currentTextChanged(self, text: str) -> None:
         self.setValue(text)
+
+    def copy(self):
+        return OptionGroupParameter(
+            name=self.name(), 
+            labelText=self.labelText(), 
+            optional=self.optional(), 
+            visible=self.visible(), 
+            defaultValue=self.defaultValue(),
+            options=self.options(),
+        )
