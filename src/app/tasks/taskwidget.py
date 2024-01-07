@@ -4,12 +4,14 @@ from typing import Any, List
 
 from PySide6.QtCore import Qt, QThreadPool
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QProgressBar, QLabel
-from PySide6.QtWidgets import QComboBox, QSpacerItem, QSizePolicy
+from PySide6.QtWidgets import QSpacerItem, QSizePolicy
+from PySide6.QtGui import QResizeEvent
 
 from tasks.task import Task
 from tasks.taskwidgetexception import TaskWidgetException
 from tasks.taskprogressmonitor import TaskProgressMonitor
 from tasks.parameter import Parameter
+from tasks.labelparameter import LabelParameter
 from tasks.filesetparameter import FileSetParameter
 from tasks.pathparameter import PathParameter
 from tasks.textparameter import TextParameter
@@ -73,9 +75,13 @@ class TaskWidget(QWidget):
         buttonLayout.addWidget(self._cancelButton)
         self._placeholderWidget = QWidget(self)
         placeholderLayout = QVBoxLayout()
+        placeholderLayout.setContentsMargins(5, 0, 5, 0)
+        placeholderLayout.setSpacing(5)
         self._placeholderWidget.setLayout(placeholderLayout)
         layout = QVBoxLayout()
         layout.setAlignment(Qt.AlignTop)
+        layout.setContentsMargins(5, 5, 5, 5)
+        layout.setSpacing(5)
         if OperatingSystem.isDarwin():
             layout.addLayout(labelLayout)
         layout.addWidget(self._progressBar)
@@ -85,6 +91,12 @@ class TaskWidget(QWidget):
 
     # Task parameters
         
+    def addLabelParameter(self, name: str, labelText: str, optional: bool=False, visible: bool=True, defaultValue: Any=None) -> Parameter:
+        parameter = LabelParameter(name=name, labelText=labelText, optional=optional, visible=visible, defaultValue=defaultValue)
+        self._placeholderWidget.layout().addWidget(parameter)
+        self._taskParameters[parameter.name()] = parameter
+        return parameter
+
     def addFileSetParameter(self, name: str, labelText: str, optional: bool=False, visible: bool=True, defaultValue: Any=None) -> Parameter:
         parameter = FileSetParameter(name=name, labelText=labelText, optional=optional, visible=visible, defaultValue=defaultValue)
         self._placeholderWidget.layout().addWidget(parameter)

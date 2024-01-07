@@ -1,6 +1,6 @@
 import threading
 
-from typing import Dict
+from typing import Dict, List
 
 from tasks.parameter import Parameter
 
