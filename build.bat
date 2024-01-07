@@ -4,17 +4,9 @@ set APPNAME=MosamaticDesktop
 if exist main.build rmdir /s /q main.build
 if exist %APPNAME% rmdir /s /q %APPNAME%
 
-@REM call %USERPROFILE%\.venv\MosamaticDesktop\Scripts\pyinstaller
-@REM     --onefile
-@REM     --hidden-import=pydicom.encoders.gdcm
-@REM     --hidden-import=pydicom.encoders.pylibjpeg
-@REM     src\app\main.py
+call nuitka --standalone --mingw64 --include-package=pydicom --enable-plugin=pyside6 --nofollow-import-to=unittest src\app\main.py
 
-call nuitka --standalone --mingw64 src\app\main.py
-
-@REM call %USERPROFILE%\.venv\MosamaticDesktop\Scripts\pyinstaller main.win.spec
-
-if exist dist move /y dist %APPNAME%
+if exist main.dist move /y main.dist %APPNAME%
 
 copy settings.ini %APPNAME%
 copy run.bat %APPNAME%
@@ -22,5 +14,5 @@ move /y %APPNAME%\run.bat %APPNAME%\%APPNAME%.bat
 
 powershell Compress-Archive -Force -Path %APPNAME% -DestinationPath %APPNAME%.zip
 
-if exist build rmdir /s /q build
+if exist main.build rmdir /s /q build
 if exist %APPNAME% rmdir /s /q %APPNAME%
