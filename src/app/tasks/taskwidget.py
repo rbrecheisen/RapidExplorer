@@ -147,23 +147,20 @@ class TaskWidget(QWidget):
         self._task = self._taskType() # instantiate class
         LOGGER.info(f'TaskWidget: creating and running task {self._task.name()}...')
         self._task.setParameters(parameters=self._taskParameters)
+        self._task.signal().progress.connect(self.taskProgress)
+        self._task.signal().finished.connect(self.taskFinished)
         self._task.start()
         self._cancelButton.setEnabled(True)
-        if not self._test:
-            self._progressBarLabel.setText('0 %')
-            self._progressBar.setValue(0)
-            monitor = TaskProgressMonitor(
-                task=self._task, progress=self.taskProgress, finished=self.taskFinished)
-            QThreadPool.globalInstance().start(monitor)
+        self._progressBarLabel.setText('0 %')
+        self._progressBar.setValue(0)
 
     def cancelTask(self) -> None:
         if self._task:
             LOGGER.info('TaskWidget: cancelling task...')
             self._task.cancel()
             self._cancelButton.setEnabled(False)
-            if not self._test:
-                self._progressBarLabel.setText('0 %')
-                self._progressBar.setValue(0)
+            self._progressBarLabel.setText('0 %')
+            self._progressBar.setValue(0)
 
     def showTaskWidgetParameterDialog(self) -> None:
         dialog = TaskWidgetParameterDialog(title=self.name(), parameters=self._taskParameters)

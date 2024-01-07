@@ -10,11 +10,12 @@ class FileSetParameter(Parameter):
     class ComboBox(QComboBox):
         def __init__(self, parent: QWidget=None) -> None:
             super(FileSetParameter.ComboBox, self).__init__(parent=parent)
+            self._dataManager = DataManager()
             self.loadItems()
 
         def loadItems(self) -> None:
             self.addItem(None)
-            fileSets = DataManager().fileSets()
+            fileSets = self._dataManager.fileSets()
             for fileSet in fileSets:
                 self.addItem(fileSet.name())
 

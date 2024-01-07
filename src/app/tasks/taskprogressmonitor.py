@@ -31,4 +31,3 @@ class TaskProgressMonitor(QRunnable, QObject):
             else:
                 self._signal.finished.emit(True)
                 break
-            time.sleep(1)

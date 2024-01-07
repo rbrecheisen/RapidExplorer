@@ -2,10 +2,20 @@ import threading
 
 from typing import Dict, List
 
+from PySide6.QtCore import QObject, Signal
+
 from tasks.parameter import Parameter
+from logger import Logger
+from utils import createNameWithTimestamp
+
+LOGGER = Logger()
 
 
 class Task:
+    class TaskProgressSignal(QObject):
+        progress = Signal(int)
+        finished = Signal(bool)
+
     IDLE = 0
     START = 1
     RUNNING = 2
@@ -25,6 +35,7 @@ class Task:
         self._thread = None
         self._errors = []
         self._parameters = None
+        self._signal = self.TaskProgressSignal()
 
     def name(self) -> str:
         return self.__class__.__name__
@@ -36,6 +47,16 @@ class Task:
         if name in self._parameters.keys():
             return self._parameters[name]
         return None
+    
+    def parameterValuesAsString(self) -> str:
+        string = ''
+        for name in self._parameters.keys():
+            value = self._parameters[name].value()
+            string += f'{name}="{value}", '
+        return string[:-2]
+    
+    def signal(self):
+        return self._signal
     
     def errors(self) -> List[str]:
         return self._errors
@@ -101,8 +122,11 @@ class Task:
     def progress(self) -> int:
         return self._progress
     
-    def setProgress(self, step: int, nrSteps: int) -> None:
+    def updateProgress(self, step: int, nrSteps: int) -> None:
         self._progress = int(((step + 1) / (nrSteps)) * 100)
+        self._signal.progress.emit(self._progress)
+        if self._progress >= 100:
+            self._signal.finished.emit(True)
 
     # Execution
 
@@ -118,3 +142,9 @@ class Task:
     def cancel(self) -> None:
         self.setStatusCanceling()
         self._thread.join()
+
+    def generateFileSetName(self) -> str:
+        return createNameWithTimestamp(prefix=f'fileset-{self.name()}')
+    
+    def generateTimestampForFileSetName(self, name: str) -> str:
+        return createNameWithTimestamp(prefix=f'{name}')

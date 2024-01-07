@@ -2,20 +2,30 @@ import os
 
 from typing import List
 
+from PySide6.QtCore import QObject, Signal
+
 from data.session import Session
 from data.fileset import FileSet
 from data.models.filesetmodel import FileSetModel
 from data.file import File
 from data.models.filemodel import FileModel
 from data.filecontentcache import FileContentCache
+from singleton import singleton
 from logger import Logger
 
 LOGGER = Logger()
 
 
+@singleton
 class DataManager:
+    class DataManagerUpdatedSignal(QObject):
+        updated = Signal(bool)
+
     def __init__(self) -> None:
-        pass
+        self._signal = self.DataManagerUpdatedSignal()
+
+    def signal(self):
+        return self._signal
 
     def createFile(self, filePath: str) -> FileSet:
         LOGGER.info(f'DataManager: creating file {filePath}...')
@@ -29,6 +39,7 @@ class DataManager:
             session.add(fileModel)
             session.commit()
             fileSet = FileSet(model=fileSetModel)
+        self._signal.updated.emit(True)
         return fileSet
 
 
@@ -49,6 +60,7 @@ class DataManager:
                 file = File(model=fileModel)
                 fileSet.addFile(file)
                 nrFiles += 1
+        self._signal.updated.emit(True)
         return fileSet
     
     def fileSet(self, id: str) -> FileSet:
@@ -87,6 +99,7 @@ class DataManager:
                 fileSetModel.name = fileSet.name()
                 session.commit()
                 return FileSet(model=fileSetModel)
+        self._signal.updated.emit(True)
         return None
     
     def deleteFileSet(self, fileSet: FileSet) -> None:
@@ -98,6 +111,7 @@ class DataManager:
             cache = FileContentCache()
             for file in fileSet.files():
                 cache.remove(file.id())
+        self._signal.updated.emit(True)
 
     def deleteAllFileSets(self) -> None:
         LOGGER.info(f'DataManager: deleting all filesets...')
@@ -109,3 +123,4 @@ class DataManager:
                     cache.remove(fileModel.id)
                 session.delete(fileSetModel)
             session.commit()
+        self._signal.updated.emit(True)

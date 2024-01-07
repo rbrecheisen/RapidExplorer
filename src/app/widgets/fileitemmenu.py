@@ -6,7 +6,6 @@ from PySide6.QtCore import QPoint
 from PySide6.QtWidgets import QMenu, QTreeView
 
 from widgets.fileitem import FileItem
-from data.datamanager import DataManager
 
 PLATFORM = sys.platform
 
@@ -17,7 +16,6 @@ class FileItemMenu(QMenu):
         self._treeView = treeView
         self._fileItem = fileItem
         self._position = position
-        self._dataManager = DataManager()
         action = self.addAction('Find File in Finder/Explorer')
         action.triggered.connect(self.findFileInFinderOrExplorer)
 

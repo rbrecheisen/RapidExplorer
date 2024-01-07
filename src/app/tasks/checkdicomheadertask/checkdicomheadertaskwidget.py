@@ -12,8 +12,8 @@ class CheckDicomHeaderTaskWidget(TaskWidget):
             description='Check DICOM headers',
         )
         self.addFileSetParameter(
-            name='inputFileSet',
-            labelText='Input File Set',            
+            name='inputFileSetName',
+            labelText='Input File Set Name',
         )
         self.addTextParameter(
             name='requiredAttributes',

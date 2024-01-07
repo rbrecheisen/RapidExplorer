@@ -21,7 +21,7 @@ class DummyTask(Task):
                 break
             # Do your work and update progress based on nr. steps required
             LOGGER.info(f'DummyTask: iteration = {i}')
-            self.setProgress(step=i, nrSteps=nrIterations)
+            self.updateProgress(step=i, nrSteps=nrIterations)
             # Wait a bit
             time.sleep(1)
         # Terminate task either canceled, error or finished

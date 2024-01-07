@@ -16,6 +16,7 @@ class FileSetTreeView(QTreeView):
     def __init__(self) -> None:
         super(FileSetTreeView, self).__init__()
         self._model = None
+        self._dataManager = DataManager()
         self.initModel()
         self.loadFileSetsFromDatabase()
 
@@ -29,12 +30,11 @@ class FileSetTreeView(QTreeView):
         if isinstance(item, FileSetItem):
             fileSet = item.fileSet()
             fileSet.setName(item.text())
-            manager = DataManager()
-            manager.updateFileSet(fileSet=fileSet)
+            self._dataManager.updateFileSet(fileSet=fileSet)
 
     def loadFileSetsFromDatabase(self) -> None:
-        manager = DataManager()
-        for fileSet in manager.fileSets():
+        self.clearFileSets()
+        for fileSet in self._dataManager.fileSets():
             self.addFileSet(fileSet=fileSet)
 
     def addFileSet(self, fileSet: FileSet) -> None:
