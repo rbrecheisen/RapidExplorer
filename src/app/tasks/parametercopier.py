@@ -9,14 +9,13 @@ from logger import Logger
 LOGGER = Logger()
 
 
-# @singleton
+@singleton
 class ParameterCopier:
-    # @staticmethod
-    # def makeCopy(obj):
-    #     init_args = inspect.signature(obj.__class__.__init__).parameters
-    #     args_values = {arg: getattr(obj, arg) for arg in init_args if hasattr(obj, arg)}
-    #     return obj.__class__(**args_values)
-    
+    """ This class is needed because when we pass parameters to the TaskWidgetParameterDialog
+    they are deleted by the C++ backend after the dialog closes. Re-opening the dialog then
+    results in errors. By explicitly making a copy of the parameters BEFORE passing them to
+    the dialog, resolves this issue.
+    """
     def __init__(self) -> None:
         self._parameterClasses = ParameterLoader.loadParameterClasses(
             parameterDirectoryPath=os.path.dirname(os.path.realpath(__file__)),
@@ -29,5 +28,4 @@ class ParameterCopier:
         for cls in self._parameterClasses.values():
             # For some reason, isinstance(obj, cls) doesn't work...
             if obj.__class__.__name__ == cls.__name__:
-                LOGGER.info(f'ParameterCopier: copying parameter "{obj.name()}"')
                 return obj.copy()
