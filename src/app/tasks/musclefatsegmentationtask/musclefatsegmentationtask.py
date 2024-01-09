@@ -64,22 +64,30 @@ class MuscleFatSegmentationTask(Task):
         canceled = False
         manager = DataManager()
         
-        # Get parameters needed for this task
+        # Get input fileset
         inputFileSetName = self.parameter('inputFileSetName').value()
         inputFileSet = manager.fileSetByName(name=inputFileSetName)
-        if inputFileSet:
+        if inputFileSet:            
             self.addInfo(f'Input fileset: {inputFileSet.path()}')
+
+            # Get TensorFlow model files
             tensorFlowModelFileSetName = self.parameter('tensorFlowModelFileSetName').value()
             tensorFlowModelFileSet = manager.fileSetByName(tensorFlowModelFileSetName)
             if tensorFlowModelFileSet:
                 self.addInfo(f'TensorFlow model fileset: {tensorFlowModelFileSet.path()}')
+
+                # Get output fileset name
                 outputFileSetName = self.parameter('outputFileSetName').value()
                 if outputFileSetName is None:
                     outputFileSetName = self.generateTimestampForFileSetName(name=inputFileSetName)
                 self.addInfo(f'Output fileset name: {outputFileSetName}')
+
+                # Get output fileset path
                 outputFileSetPath = self.parameter('outputFileSetPath').value()
                 outputFileSetPath = os.path.join(outputFileSetPath, outputFileSetName)
                 self.addInfo(f'Output fileset: {outputFileSetPath}')
+
+                # Remove old output fileset directory if needed
                 overwriteOutputFileSet = self.parameter('overwriteOutputFileSet').value()
                 if overwriteOutputFileSet:
                     if os.path.isdir(outputFileSetPath):
