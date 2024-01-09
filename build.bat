@@ -1,6 +1,8 @@
 @echo off
 set APPNAME=MosamaticDesktop
 
+@rem Calling executable after compiling returns with no output at all...
+
 if exist main.build rmdir /s /q main.build
 if exist %APPNAME% rmdir /s /q %APPNAME%
 

@@ -53,6 +53,9 @@ class DataManager:
             fileSet = FileSet(model=fileSetModel)
             nrFiles = 0
             for fileName in os.listdir(fileSetPath):
+                if fileName.startswith('.'):
+                    LOGGER.info(f'Skipping file starting with ".": {fileName}')
+                    continue
                 filePath = os.path.join(fileSetPath, fileName)
                 fileModel = FileModel(name=fileName, path=filePath, fileSetModel=fileSetModel)
                 session.add(fileModel)

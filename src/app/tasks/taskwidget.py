@@ -9,6 +9,7 @@ from PySide6.QtWidgets import QSpacerItem, QSizePolicy
 from tasks.task import Task
 from tasks.taskwidgetexception import TaskWidgetException
 from tasks.taskwidgetparameterdialog import TaskWidgetParameterDialog
+from tasks.taskerrordialog import TaskErrorDialog
 from tasks.parameter import Parameter
 from tasks.parametercopier import ParameterCopier
 from tasks.descriptionparameter import DescriptionParameter
@@ -154,6 +155,7 @@ class TaskWidget(QWidget):
         self._task.signal().progress.connect(self.taskProgress)
         self._task.signal().finished.connect(self.taskFinished)
         self._task.start()
+        self._startButton.setEnabled(False)
         self._cancelButton.setEnabled(True)
         self._progressBarLabel.setText('0 %')
         self._progressBar.setValue(0)
@@ -163,6 +165,7 @@ class TaskWidget(QWidget):
             LOGGER.info('TaskWidget: cancelling task...')
             self._task.cancel()
             self._cancelButton.setEnabled(False)
+            self._startButton.setEnabled(True)
             self._progressBarLabel.setText('0 %')
             self._progressBar.setValue(0)
 
@@ -173,6 +176,7 @@ class TaskWidget(QWidget):
         parameters = {}
         for parameter in self._taskParameters.values():
             parameters[parameter.name()] = self._taskParameterCopier.makeCopy(parameter)
+        # Show task widget parameter dialog
         dialog = TaskWidgetParameterDialog(title=self.name(), parameters=parameters)
         result = dialog.show()
         if result == QDialog.Accepted:
@@ -185,6 +189,10 @@ class TaskWidget(QWidget):
 
     def taskFinished(self, value: bool) -> None:
         self._cancelButton.setEnabled(False)
+        self._startButton.setEnabled(True)
+        if self._task.hasErrors() or self._task.hasWarnings():
+            dialog = TaskErrorDialog(errors=self._task.errors(), warnings=self._task.warnings())
+            dialog.show()
 
     # Validation
         

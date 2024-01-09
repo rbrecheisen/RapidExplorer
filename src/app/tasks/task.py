@@ -34,6 +34,7 @@ class Task:
         self._progress = 0
         self._thread = None
         self._errors = []
+        self._warnings = []
         self._parameters = None
         self._signal = self.TaskProgressSignal()
 
@@ -66,6 +67,15 @@ class Task:
 
     def hasErrors(self) -> bool:
         return len(self._errors) > 0
+    
+    def warnings(self) -> List[str]:
+        return self._warnings
+    
+    def addWarning(self, message: str) -> None:
+        self._warnings.append(message)
+
+    def hasWarnings(self) -> bool:
+        return len(self._warnings) > 0
     
     # Status
     

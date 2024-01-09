@@ -21,8 +21,6 @@ class ParameterCopier:
             parameterDirectoryPath=os.path.dirname(os.path.realpath(__file__)),
             parameterBaseClass=Parameter,
         )
-        for className in self._parameterClasses.keys():
-            LOGGER.info(f'ParameterCopier: loaded parameter "{className}"')
 
     def makeCopy(self, obj):
         for cls in self._parameterClasses.values():
