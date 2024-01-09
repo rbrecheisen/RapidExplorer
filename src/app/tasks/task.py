@@ -35,6 +35,7 @@ class Task:
         self._thread = None
         self._errors = []
         self._warnings = []
+        self._info = []
         self._parameters = None
         self._signal = self.TaskProgressSignal()
 
@@ -62,7 +63,9 @@ class Task:
     def errors(self) -> List[str]:
         return self._errors
     
-    def addError(self, message: str) -> None:
+    def addError(self, message: str, toStdOut: bool=True) -> None:
+        if toStdOut:
+            LOGGER.error(message)
         self._errors.append(message)
 
     def hasErrors(self) -> bool:
@@ -71,11 +74,24 @@ class Task:
     def warnings(self) -> List[str]:
         return self._warnings
     
-    def addWarning(self, message: str) -> None:
+    def addWarning(self, message: str, toStdOut: bool=True) -> None:
+        if toStdOut:
+            LOGGER.warning(message)
         self._warnings.append(message)
 
     def hasWarnings(self) -> bool:
         return len(self._warnings) > 0
+    
+    def info(self) -> List[str]:
+        return self._info
+    
+    def addInfo(self, message: str, toStdOut: bool=True) -> None:
+        if toStdOut:
+            LOGGER.info(message)
+        self._info.append(message)
+
+    def hasInfo(self) -> bool:
+        return len(self._info) > 0
     
     # Status
     
@@ -133,10 +149,12 @@ class Task:
         return self._progress
     
     def updateProgress(self, step: int, nrSteps: int) -> None:
-        self._progress = int(((step + 1) / (nrSteps)) * 100)
-        self._signal.progress.emit(self._progress)
-        if self._progress >= 100:
-            self._signal.finished.emit(True)
+        if self._signal:
+            self._progress = int(((step + 1) / (nrSteps)) * 100)
+            self._signal.progress.emit(self._progress)
+            if self._progress >= 100:
+                self._signal.finished.emit(True)
+                self._signal = None
 
     # Execution
 

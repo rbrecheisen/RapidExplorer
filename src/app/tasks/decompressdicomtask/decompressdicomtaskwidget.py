@@ -1,10 +1,10 @@
 from tasks.taskwidget import TaskWidget
-from tasks.dummytask.dummytask import DummyTask
+from tasks.decompressdicomtask.decompressdicomtask import DecompressDicomTask
 
 
 class DecompressDicomTaskWidget(TaskWidget):
     def __init__(self) -> None:
-        super(DecompressDicomTaskWidget, self).__init__(taskType=DummyTask)
+        super(DecompressDicomTaskWidget, self).__init__(taskType=DecompressDicomTask)
         self.addDescriptionParameter(
             name='description',
             description='Decompresses JPEG200-compressed DICOM files for use in Slice-o-matic.'
@@ -28,8 +28,5 @@ class DecompressDicomTaskWidget(TaskWidget):
             defaultValue=True,
         )
 
-    def validate(self) -> None:
-        pass
-    
     def validate(self) -> None:
         pass

@@ -16,6 +16,11 @@ class CheckDicomHeaderTaskWidget(TaskWidget):
             labelText='Input File Set Name',
         )
         self.addTextParameter(
+            name='extensionsToIgnore',
+            labelText='Extensions to Ignore (comma-separated)',
+            defaultValue='tag'
+        )
+        self.addTextParameter(
             name='requiredAttributes',
             labelText='Required DICOM Attributes',
             defaultValue='Rows, Columns, PixelSpacing',

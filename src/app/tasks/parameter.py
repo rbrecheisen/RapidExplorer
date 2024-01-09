@@ -11,7 +11,7 @@ class Parameter(QWidget):
         super(Parameter, self).__init__(parent=parent)
         self._name = name
         self._labelText = labelText
-        if not optional:
+        if not optional and not self._labelText.endswith('*'):
             self._labelText = labelText + '*'
         self._optional = optional
         self._visible = visible

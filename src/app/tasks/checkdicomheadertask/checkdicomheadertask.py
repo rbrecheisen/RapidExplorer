@@ -1,5 +1,4 @@
 import os
-import time
 import shutil
 import pydicom
 import pydicom.errors
@@ -33,7 +32,7 @@ class CheckDicomHeaderTask(Task):
             overwriteOutputFileSet = self.parameter('overwriteOutputFileSet').value()
 
             # Run task
-            LOGGER.info(f'CheckDicomHeaderTask: running task ({self.parameterValuesAsString()})')
+            self.addInfo(f'Running task ({self.parameterValuesAsString()})')
             step = 0
             dicomFilesOk = []
             files = inputFileSet.files()
@@ -42,10 +41,10 @@ class CheckDicomHeaderTask(Task):
 
                 # Chec if the task should cancel
                 if self.statusIsCanceling():
+                    self.addInfo('Canceling task...')
                     canceled = True
                     break
                 try:
-
                     # Try reading file as DICOM (do not decompress because we don't read pixel data)
                     p = pydicom.dcmread(file.path(), stop_before_pixels=True)
                     
@@ -67,38 +66,32 @@ class CheckDicomHeaderTask(Task):
                             self.addError(f'rows={p.Columns}, should be {columns}')
                             rowsAndColumnsOk = False
                         if rowsAndColumnsOk:
-
-                            # All is well, add file to final set
                             dicomFilesOk.append(file)
                         else:
                             pass
                     else:
                         pass
                 except pydicom.errors.InvalidDicomError:
-                    self.addError(f'Not valid DICOM: {file.path()}')       
+                    self.addWarning(f'Skipping non-DICOM: {file.path()}')
 
                 # Update progress for this iteration         
                 self.updateProgress(step=step, nrSteps=nrSteps)
                 step += 1
 
-                # Wait a while...
-                time.sleep(0)
-
             # Copy checked DICOM files to output fileset directory
+            self.addInfo(f'Building output fileset: {outputFileSetPath}...')
             outputFileSetPath = os.path.join(outputFileSetPath, outputFileSetName)
             if overwriteOutputFileSet:
                 if os.path.isdir(outputFileSetPath):
                     shutil.rmtree(outputFileSetPath)
             os.makedirs(outputFileSetPath, exist_ok=False)
-            LOGGER.info(f'CheckDicomHeaderTask: writing checked DICOM files to {outputFileSetPath}...')
             for dicomFile in dicomFilesOk:
                 shutil.copy(dicomFile.path(), outputFileSetPath)
-
-            # Create output fileset
             manager.createFileSet(fileSetPath=outputFileSetPath)
             
             # Update final progress
             self.updateProgress(step=step, nrSteps=nrSteps)
+            self.addInfo('Finished')
         else:
             self.addError(f'Input fileset {inputFileSetName} does not exist')
 

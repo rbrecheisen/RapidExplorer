@@ -1,4 +1,5 @@
 import inspect
+import traceback
 
 from typing import Any, List
 
@@ -9,7 +10,7 @@ from PySide6.QtWidgets import QSpacerItem, QSizePolicy
 from tasks.task import Task
 from tasks.taskwidgetexception import TaskWidgetException
 from tasks.taskwidgetparameterdialog import TaskWidgetParameterDialog
-from tasks.taskerrordialog import TaskErrorDialog
+from tasks.taskruninfodialog import TaskRunInfoDialog
 from tasks.parameter import Parameter
 from tasks.parametercopier import ParameterCopier
 from tasks.descriptionparameter import DescriptionParameter
@@ -51,15 +52,12 @@ class TaskWidget(QWidget):
         self._startButton = None
         self._cancelButton = None
         self._settingsButton = None
-        self._test = False
+        self._runInfoButton = None
         self.initUi()
 
     def name(self) -> str:
         return self.__class__.__name__
     
-    def setTest(self, test: bool) -> None:
-        self._test = test
-
     def initUi(self) -> None:
         self._progressBarLabel = QLabel('0 %')
         labelLayout = QHBoxLayout()
@@ -79,10 +77,16 @@ class TaskWidget(QWidget):
         self._settingsButton = QPushButton('Set Task Parameters...')
         self._settingsButton.setObjectName('settingsButton') # for testing
         self._settingsButton.clicked.connect(self.showTaskWidgetParameterDialog)
+        self._runInfoButton = QPushButton('Run Info...')
+        self._runInfoButton.setObjectName('runInfoButton')
+        self._runInfoButton.setEnabled(False)
+        print('Just before connecting signal runInfoButton...')
+        self._runInfoButton.clicked.connect(self.showTaskRunInfoDialog)
         buttonLayout = QHBoxLayout()
         buttonLayout.addWidget(self._startButton)
         buttonLayout.addWidget(self._cancelButton)
         buttonLayout.addWidget(self._settingsButton)
+        buttonLayout.addWidget(self._runInfoButton)
         layout = QVBoxLayout()
         layout.setAlignment(Qt.AlignTop)
         layout.setContentsMargins(5, 5, 5, 5)
@@ -150,20 +154,20 @@ class TaskWidget(QWidget):
 
     def startTask(self) -> None:
         self._task = self._taskType() # instantiate class
-        LOGGER.info(f'TaskWidget: creating and running task {self._task.name()}...')
         self._task.setParameters(parameters=self._taskParameters)
         self._task.signal().progress.connect(self.taskProgress)
         self._task.signal().finished.connect(self.taskFinished)
         self._task.start()
         self._startButton.setEnabled(False)
         self._cancelButton.setEnabled(True)
+        self._runInfoButton.setEnabled(False)
         self._progressBarLabel.setText('0 %')
         self._progressBar.setValue(0)
 
     def cancelTask(self) -> None:
         if self._task:
-            LOGGER.info('TaskWidget: cancelling task...')
             self._task.cancel()
+            self._runInfoButton.setEnabled(True)
             self._cancelButton.setEnabled(False)
             self._startButton.setEnabled(True)
             self._progressBarLabel.setText('0 %')
@@ -182,17 +186,24 @@ class TaskWidget(QWidget):
         if result == QDialog.Accepted:
             self._taskParameters = dialog.parameters()
             self.validate()
+
+    def showTaskRunInfoDialog(self) -> None:
+        if self._task:
+            dialog = TaskRunInfoDialog(
+                taskName=self._task.name(), errors=self._task.errors(), warnings=self._task.warnings(), info=self._task.info())
+            dialog.show()
         
     def taskProgress(self, progress: int) -> None:
         self._progressBarLabel.setText(f'{progress} %')
         self._progressBar.setValue(progress)
 
     def taskFinished(self, value: bool) -> None:
+        # print('taskFinished')
+        self._runInfoButton.setEnabled(True)
         self._cancelButton.setEnabled(False)
         self._startButton.setEnabled(True)
-        if self._task.hasErrors() or self._task.hasWarnings():
-            dialog = TaskErrorDialog(errors=self._task.errors(), warnings=self._task.warnings())
-            dialog.show()
+        if self._task and (self._task.hasErrors() or self._task.hasWarnings()):
+            self.showTaskRunInfoDialog()
 
     # Validation
         

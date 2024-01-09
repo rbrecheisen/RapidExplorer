@@ -50,6 +50,9 @@ class Logger:
     def info(self, message: str) -> None:
         self._logger.info(message)
 
+    def warning(self, message: str) -> None:
+        self._logger.warning(message)
+
     def error(self, message: str) -> None:
         self._logger.error(message)
 
