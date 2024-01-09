@@ -1,4 +1,5 @@
 import os
+import shutil
 import pydicom
 import pydicom.errors
 import pandas as pd
@@ -9,7 +10,7 @@ from typing import List
 from tasks.task import Task
 from data.datamanager import DataManager
 from data.file import File
-from utils import getPixelsFromDicomObject, tagPixels,
+from utils import getPixelsFromDicomObject, tagPixels, isDicomFile
 from logger import Logger
 
 LOGGER = Logger()
@@ -22,13 +23,6 @@ class CalculateBodyCompositionMetricsTaskTask(Task):
 
     def __init__(self) -> None:
         super(CalculateBodyCompositionMetricsTaskTask, self).__init__()
-
-    def isDicomFile(file: File) -> bool:
-        try:
-            pydicom.dcmread(file.path(), stop_before_pixels=True)
-            return True
-        except pydicom.errors.InvalidDicomError:
-            return False
 
     def findSegmentationFileForDicomFile(self, dicomFile: File, segmentationFile: List[File]) -> str:
         for segmentationFile in segmentationFile.files():
@@ -105,9 +99,15 @@ class CalculateBodyCompositionMetricsTaskTask(Task):
                 step = 0
                 filePathTuples = []
                 for file in files:
+
+                    # Check if task was canceled first
+                    if self.statusIsCanceling():
+                        canceled = True
+                        break
+
                     filePathTuple = [None, None, None]
 
-                    if self.isDicomFile(file=file):
+                    if isDicomFile(filePath=file.path()):
                         filePathTuple[0] = file.path()
 
                         # Try to find TAG file
@@ -129,25 +129,26 @@ class CalculateBodyCompositionMetricsTaskTask(Task):
                                 # Build CSV file with predicted and true values
                             else:
                                 # Build CSV file with only predicted values
-                                pass                            
+                                pass    
+                        else:
+                            self.addError(f'Segmentation file {segmentationFile.name()} not found')                        
                 
+                    # Update progress based on nr. steps required. This will automatically
+                    # send sigals/events to the task widget
+                    self.updateProgress(step=i, nrSteps=nrSteps)
+                    step += 1
+                
+                # Build output fileset
+                self.addInfo(f'Building output fileset: {outputFileSetPath}...')
+                manager.createFileSet(fileSetPath=outputFileSetPath)
 
-        # Do iterations of the task
-        for i in range(nrIterations):
-            
-            # Check if task was canceled first
-            if self.statusIsCanceling():
-                canceled = True
-                break
-
-            # ==> Do file processing here...
-
-            # Update progress based on nr. steps required. This will automatically
-            # send sigals/events to the task widget
-            self.updateProgress(step=i, nrSteps=nrIterations)
-
-            # If necessary wait a bit
-            time.sleep(1)
+                # Update final progress
+                self.updateProgress(step=step, nrSteps=nrSteps)
+                self.addInfo('Finished')                
+            else:
+                self.addError(f'Segmentation fileset {inputSegmentationFileSetName} not found')
+        else:
+            self.addError(f'Input fileset {inputFileSetName} not found')
 
         # Terminate task either canceled, error or finished
         if canceled:
