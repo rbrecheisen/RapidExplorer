@@ -53,10 +53,14 @@ class TaskWidget(QWidget):
         self._cancelButton = None
         self._settingsButton = None
         self._runInfoButton = None
+        self._test = False
         self.initUi()
 
     def name(self) -> str:
         return self.__class__.__name__
+    
+    def setTest(self, test: bool) -> None:
+        self._test = test
     
     def initUi(self) -> None:
         self._progressBarLabel = QLabel('0 %')
@@ -80,7 +84,6 @@ class TaskWidget(QWidget):
         self._runInfoButton = QPushButton('Run Info...')
         self._runInfoButton.setObjectName('runInfoButton')
         self._runInfoButton.setEnabled(False)
-        print('Just before connecting signal runInfoButton...')
         self._runInfoButton.clicked.connect(self.showTaskRunInfoDialog)
         buttonLayout = QHBoxLayout()
         buttonLayout.addWidget(self._startButton)
@@ -167,11 +170,12 @@ class TaskWidget(QWidget):
     def cancelTask(self) -> None:
         if self._task:
             self._task.cancel()
-            self._runInfoButton.setEnabled(True)
-            self._cancelButton.setEnabled(False)
-            self._startButton.setEnabled(True)
-            self._progressBarLabel.setText('0 %')
-            self._progressBar.setValue(0)
+            if not self._test:
+                self._runInfoButton.setEnabled(True)
+                self._cancelButton.setEnabled(False)
+                self._startButton.setEnabled(True)
+                self._progressBarLabel.setText('0 %')
+                self._progressBar.setValue(0)
 
     def showTaskWidgetParameterDialog(self) -> None:
         # Hack: we need to explicitly copy each parameter before passing them to
@@ -194,16 +198,17 @@ class TaskWidget(QWidget):
             dialog.show()
         
     def taskProgress(self, progress: int) -> None:
-        self._progressBarLabel.setText(f'{progress} %')
-        self._progressBar.setValue(progress)
+        if not self._test:
+            self._progressBarLabel.setText(f'{progress} %')
+            self._progressBar.setValue(progress)
 
     def taskFinished(self, value: bool) -> None:
-        # print('taskFinished')
-        self._runInfoButton.setEnabled(True)
-        self._cancelButton.setEnabled(False)
-        self._startButton.setEnabled(True)
-        if self._task and (self._task.hasErrors() or self._task.hasWarnings()):
-            self.showTaskRunInfoDialog()
+        if not self._test:
+            self._runInfoButton.setEnabled(True)
+            self._cancelButton.setEnabled(False)
+            self._startButton.setEnabled(True)
+            if self._task and (self._task.hasErrors() or self._task.hasWarnings()):
+                self.showTaskRunInfoDialog()
 
     # Validation
         

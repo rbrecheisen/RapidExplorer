@@ -68,7 +68,7 @@ class DecompressDicomTask(Task):
             manager.createFileSet(fileSetPath=outputFileSetPath)
             self.addInfo('Finished')
         else:
-            self.addError(f'Input fileset {inputFileSetName} does not exist')
+            self.addError(f'Input fileset {inputFileSetName} not found')
 
         # Determine task final status
         if canceled:

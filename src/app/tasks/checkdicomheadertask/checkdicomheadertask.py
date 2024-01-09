@@ -21,7 +21,7 @@ class CheckDicomHeaderTask(Task):
         # Prepare parameters, then run task
         inputFileSetName = self.parameter('inputFileSetName').value()
         inputFileSet = manager.fileSetByName(inputFileSetName)
-        if inputFileSet is not None:
+        if inputFileSet:
             requiredAttributes = [x.strip() for x in self.parameter('requiredAttributes').value().split(',')]
             rows = self.parameter('rows').value()
             columns = self.parameter('columns').value()
@@ -87,13 +87,14 @@ class CheckDicomHeaderTask(Task):
             os.makedirs(outputFileSetPath, exist_ok=False)
             for dicomFile in dicomFilesOk:
                 shutil.copy(dicomFile.path(), outputFileSetPath)
+            
             manager.createFileSet(fileSetPath=outputFileSetPath)
             
             # Update final progress
             self.updateProgress(step=step, nrSteps=nrSteps)
             self.addInfo('Finished')
         else:
-            self.addError(f'Input fileset {inputFileSetName} does not exist')
+            self.addError(f'Input fileset {inputFileSetName} not found')
 
         # Determine task final status
         if canceled:

@@ -1,6 +1,6 @@
 from typing import Any, List
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QVBoxLayout, QCheckBox
+from PySide6.QtWidgets import QWidget, QLabel, QComboBox
 
 from tasks.parameter import Parameter
 
@@ -17,12 +17,13 @@ class OptionGroupParameter(Parameter):
         return self._options
 
     def initUi(self) -> None:
-        self._optionGroupComboBox = QCheckBox(self)
+        self._optionGroupComboBox = QComboBox(self)
         self._optionGroupComboBox.addItem(None)
         for option in self._options:
             self._optionGroupComboBox.addItem(option)
         if self.defaultValue() is not None:
             self._optionGroupComboBox.setCurrentText(self.defaultValue())
+            self.setValue(self.defaultValue())
         self._optionGroupComboBox.currentTextChanged.connect(self.currentTextChanged)
         self.layout().addWidget(QLabel(self.labelText()))
         self.layout().addWidget(self._optionGroupComboBox)
