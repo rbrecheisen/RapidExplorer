@@ -161,6 +161,7 @@ class TaskWidget(QWidget):
         self._task.signal().progress.connect(self.taskProgress)
         self._task.signal().finished.connect(self.taskFinished)
         self._task.start()
+        # self._task.run() 3 for debugging tasks
         self._startButton.setEnabled(False)
         self._cancelButton.setEnabled(True)
         self._runInfoButton.setEnabled(False)

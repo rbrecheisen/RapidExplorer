@@ -5,12 +5,13 @@ import pydicom.errors
 import pandas as pd
 import numpy as np
 
-from typing import List
+from typing import List, Dict
 
 from tasks.task import Task
 from data.datamanager import DataManager
 from data.file import File
-from utils import getPixelsFromDicomObject, tagPixels, isDicomFile
+from utils import getPixelsFromDicomObject, tagPixels, isDicomFile, calculateArea
+from utils import calculateMeanRadiationAttennuation, createNameWithTimestamp
 from logger import Logger
 
 LOGGER = Logger()
@@ -24,11 +25,11 @@ class CalculateBodyCompositionMetricsTaskTask(Task):
     def __init__(self) -> None:
         super(CalculateBodyCompositionMetricsTaskTask, self).__init__()
 
-    def findSegmentationFilePathForDicomFile(self, dicomFile: File, segmentationFile: List[File]) -> str:
-        for segmentationFile in segmentationFile.files():
+    def findSegmentationFilePathForDicomFile(self, dicomFile: File, segmentationFiles: List[File]) -> str:
+        for segmentationFile in segmentationFiles:
             segmentationFilePath = segmentationFile.path()
             segmentationFileName = os.path.split(segmentationFilePath)[1]
-            if dicomFile + '.seg.npy' == segmentationFileName:
+            if dicomFile.name() + '.seg.npy' == segmentationFileName:
                 return segmentationFilePath
         return None
 
@@ -52,6 +53,10 @@ class CalculateBodyCompositionMetricsTaskTask(Task):
     
     def loadTagFile(self, filePath: str):
         return tagPixels(tagFilePath=filePath)
+    
+    def printOutputMetricsForFile(self, outputMetricsForFile: Dict[str, float], filePath: str) -> None:
+        LOGGER.info(filePath)
+        LOGGER.info(outputMetricsForFile)
 
     def run(self) -> None:
 
@@ -72,7 +77,7 @@ class CalculateBodyCompositionMetricsTaskTask(Task):
 
                 # Get CSV file with patient heights
                 patientHeightsCsvFilePath = self.parameter('patientHeightsCsvFilePath').value()
-                if patientHeightsCsvFilePath:
+                if patientHeightsCsvFilePath and patientHeightsCsvFilePath != '':
                     self.addInfo(f'Patient Height CSV file: {patientHeightsCsvFilePath}')
                     patientHeightsDataFrame = pd.read_csv(patientHeightsCsvFilePath)
 
@@ -99,6 +104,7 @@ class CalculateBodyCompositionMetricsTaskTask(Task):
                 nrSteps = len(files) + 1
                 step = 0
                 filePathTuples = []
+                outputMetrics = {} # Contains BC metrics
                 for file in files:
 
                     # Check if task was canceled first
@@ -117,30 +123,55 @@ class CalculateBodyCompositionMetricsTaskTask(Task):
                             filePathTuple[2] = tagFilePath
 
                         # Get segmentation file for DICOM file
-                        segmentationFile = self.findSegmentationFilePathForDicomFile(dicomFile=file, segmentationFiles=inputSegmentationFileSet.files())
-                        if segmentationFile:
-                            filePathTuple[1] = segmentationFile.path()
+                        segmentationFilePath = self.findSegmentationFilePathForDicomFile(dicomFile=file, segmentationFiles=inputSegmentationFileSet.files())
+                        if segmentationFilePath:
+                            filePathTuple[1] = segmentationFilePath
                             filePathTuples.append(filePathTuple)
 
                             # Get DICOM pixels, pixel spacing, predicted segmentation labels and TAG labels if available
                             image, pixelSpacing = self.loadDicomFile(filePath=filePathTuple[0])
                             segmentation = self.loadSegmentationFile(filePath=filePathTuple[1])
+                            
+                            # Calculate metrics for predicted segmentation
+                            outputMetrics[filePathTuple[0]] = {}
+                            outputMetrics[filePathTuple[0]]['file'] = filePathTuple[0]
+                            outputMetrics[filePathTuple[0]]['muscle_area_pred'] = calculateArea(segmentation, CalculateBodyCompositionMetricsTaskTask.MUSCLE, pixelSpacing)
+                            outputMetrics[filePathTuple[0]]['vat_area_pred'] = calculateArea(segmentation, CalculateBodyCompositionMetricsTaskTask.VAT, pixelSpacing)
+                            outputMetrics[filePathTuple[0]]['sat_area_pred'] = calculateArea(segmentation, CalculateBodyCompositionMetricsTaskTask.SAT, pixelSpacing)
+                            outputMetrics[filePathTuple[0]]['muscle_ra_pred'] = calculateMeanRadiationAttennuation(image, segmentation, CalculateBodyCompositionMetricsTaskTask.MUSCLE)
+                            outputMetrics[filePathTuple[0]]['vat_ra_pred'] = calculateMeanRadiationAttennuation(image, segmentation, CalculateBodyCompositionMetricsTaskTask.VAT)
+                            outputMetrics[filePathTuple[0]]['sat_ra_pred'] = calculateMeanRadiationAttennuation(image, segmentation, CalculateBodyCompositionMetricsTaskTask.SAT)
+
                             if tagFilePath:
+                                # Calculate metrics for true segmentation based on TAG file
                                 tagImage = self.loadTagFile(filePath=filePathTuple[2])
-                                # Build CSV file with predicted and true values
-                            else:
-                                # Build CSV file with only predicted values
-                                pass    
+                                outputMetrics[filePathTuple[0]]['muscle_area_true'] = calculateArea(tagImage, CalculateBodyCompositionMetricsTaskTask.MUSCLE, pixelSpacing)
+                                outputMetrics[filePathTuple[0]]['vat_area_true'] = calculateArea(tagImage, CalculateBodyCompositionMetricsTaskTask.VAT, pixelSpacing)
+                                outputMetrics[filePathTuple[0]]['sat_area_true'] = calculateArea(tagImage, CalculateBodyCompositionMetricsTaskTask.SAT, pixelSpacing)
+                                outputMetrics[filePathTuple[0]]['muscle_ra_true'] = calculateMeanRadiationAttennuation(image, tagImage, CalculateBodyCompositionMetricsTaskTask.MUSCLE)
+                                outputMetrics[filePathTuple[0]]['vat_ra_true'] = calculateMeanRadiationAttennuation(image, tagImage, CalculateBodyCompositionMetricsTaskTask.VAT)
+                                outputMetrics[filePathTuple[0]]['sat_ra_true'] = calculateMeanRadiationAttennuation(image, tagImage, CalculateBodyCompositionMetricsTaskTask.SAT)
                         else:
-                            self.addError(f'Segmentation file {segmentationFile.name()} not found')                        
+                            self.addError(f'Segmentation file {segmentationFilePath.name()} not found')                        
                 
                     # Update progress based on nr. steps required. This will automatically
                     # send sigals/events to the task widget
-                    self.updateProgress(step=i, nrSteps=nrSteps)
+                    self.updateProgress(step=step, nrSteps=nrSteps)
                     step += 1
                 
                 # Build output fileset
                 self.addInfo(f'Building output fileset: {outputFileSetPath}...')
+                firstKey = next(iter(outputMetrics))
+                columns = list(outputMetrics[firstKey].keys())
+                data = {}
+                for column in columns:
+                    data[column] = []
+                for filePath in outputMetrics.keys():
+                    for column in columns:
+                        data[column].append(outputMetrics[filePath][column])
+                csvFilePath = os.path.join(outputFileSetPath, createNameWithTimestamp('scores') + '.csv')
+                df = pd.DataFrame(data=data)
+                df.to_csv(csvFilePath, index=False)
                 manager.createFileSet(fileSetPath=outputFileSetPath)
 
                 # Update final progress
