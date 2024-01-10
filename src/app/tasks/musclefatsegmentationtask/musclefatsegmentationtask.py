@@ -5,6 +5,7 @@ import zipfile
 import pydicom
 import pydicom.errors
 import numpy as np
+import tensorflow as tf  # Messes up logging
 
 from typing import List, Any
 
@@ -12,7 +13,10 @@ from tasks.task import Task
 from data.datamanager import DataManager
 from data.file import File
 from configuration import Configuration
+from logger import Logger
 from utils import getPixelsFromDicomObject, convertLabelsTo157, normalizeBetween
+
+LOGGER = Logger()
 
 
 class MuscleFatSegmentationTask(Task):
@@ -23,7 +27,6 @@ class MuscleFatSegmentationTask(Task):
         super(MuscleFatSegmentationTask, self).__init__()        
 
     def loadModelFiles(self, files: List[File]) -> List[Any]:
-        import tensorflow as tf
         configuration = Configuration()
         tensorFlowModel, tensorFlowContourModel, parameters = None, None, None
         for file in files:

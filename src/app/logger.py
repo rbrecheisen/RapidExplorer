@@ -20,6 +20,9 @@ class Logger:
         self._logger = logging.getLogger('MosamaticDesktop')
         self._logger.addHandler(self.standardOutputHandler())
         self._logger.addHandler(self.fileOutputHandler())
+        # This prevent logging to be propagated up to the root logger
+        # which TensorFlow might reconfigure
+        self._logger.propagate = False 
         self.enableInfo()
 
     def standardOutputHandler(self) -> logging.StreamHandler:
