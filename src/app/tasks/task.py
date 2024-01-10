@@ -42,6 +42,9 @@ class Task:
     def name(self) -> str:
         return self.__class__.__name__
     
+    def logger(self) -> Logger:
+        return LOGGER
+    
     def setParameters(self, parameters: Dict[str, Parameter]) -> None:
         self._parameters = parameters
     
@@ -86,8 +89,8 @@ class Task:
         return self._info
     
     def addInfo(self, message: str, toStdOut: bool=True) -> None:
-        # if toStdOut:
-        #     LOGGER.info(message)
+        if toStdOut:
+            LOGGER.info(message)
         self._info.append(message)
 
     def hasInfo(self) -> bool:

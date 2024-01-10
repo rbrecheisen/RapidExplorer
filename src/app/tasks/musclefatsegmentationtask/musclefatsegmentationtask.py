@@ -13,9 +13,6 @@ from data.datamanager import DataManager
 from data.file import File
 from configuration import Configuration
 from utils import getPixelsFromDicomObject, convertLabelsTo157, normalizeBetween
-from logger import Logger
-
-LOGGER = Logger()
 
 
 class MuscleFatSegmentationTask(Task):
@@ -23,7 +20,7 @@ class MuscleFatSegmentationTask(Task):
     PROBABILITIES = 1
 
     def __init__(self) -> None:
-        super(MuscleFatSegmentationTask, self).__init__()
+        super(MuscleFatSegmentationTask, self).__init__()        
 
     def loadModelFiles(self, files: List[File]) -> List[Any]:
         import tensorflow as tf
@@ -60,8 +57,6 @@ class MuscleFatSegmentationTask(Task):
         return mask
 
     def run(self) -> None:
-
-        print(f'Used loggin handlers in thread: {LOGGER.logHandlers()}')
 
         canceled = False
         manager = DataManager()
