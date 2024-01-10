@@ -24,11 +24,12 @@ class CalculateBodyCompositionMetricsTaskTask(Task):
     def __init__(self) -> None:
         super(CalculateBodyCompositionMetricsTaskTask, self).__init__()
 
-    def findSegmentationFileForDicomFile(self, dicomFile: File, segmentationFile: List[File]) -> str:
+    def findSegmentationFilePathForDicomFile(self, dicomFile: File, segmentationFile: List[File]) -> str:
         for segmentationFile in segmentationFile.files():
-            segmentationFileName = os.path.split(segmentationFile.path())[1]
+            segmentationFilePath = segmentationFile.path()
+            segmentationFileName = os.path.split(segmentationFilePath)[1]
             if dicomFile + '.seg.npy' == segmentationFileName:
-                return segmentationFile
+                return segmentationFilePath
         return None
 
     def findTagFilePathForDicomFile(self, dicomFile) -> str:
@@ -116,7 +117,7 @@ class CalculateBodyCompositionMetricsTaskTask(Task):
                             filePathTuple[2] = tagFilePath
 
                         # Get segmentation file for DICOM file
-                        segmentationFile = self.findSegmentationFileForDicomFile(dicomFile=file, segmentationFiles=inputSegmentationFileSet.files())
+                        segmentationFile = self.findSegmentationFilePathForDicomFile(dicomFile=file, segmentationFiles=inputSegmentationFileSet.files())
                         if segmentationFile:
                             filePathTuple[1] = segmentationFile.path()
                             filePathTuples.append(filePathTuple)

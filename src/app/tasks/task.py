@@ -86,8 +86,8 @@ class Task:
         return self._info
     
     def addInfo(self, message: str, toStdOut: bool=True) -> None:
-        if toStdOut:
-            LOGGER.info(message)
+        # if toStdOut:
+        #     LOGGER.info(message)
         self._info.append(message)
 
     def hasInfo(self) -> bool:

@@ -61,6 +61,8 @@ class MuscleFatSegmentationTask(Task):
 
     def run(self) -> None:
 
+        print(f'Used loggin handlers in thread: {LOGGER.logHandlers()}')
+
         canceled = False
         manager = DataManager()
         
