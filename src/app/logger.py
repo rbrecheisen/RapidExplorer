@@ -2,23 +2,27 @@ import os
 import sys
 import logging
 
+from typing import List
+
 from singleton import singleton
 from utils import createNameWithTimestamp
 
 LOGFILEPATH = os.environ.get('LOGFILEPATH', 'MosamaticDesktop.log')
-if os.path.isfile(LOGFILEPATH):
-    os.remove(LOGFILEPATH)
-with open(LOGFILEPATH, 'w') as f:
-    pass
 
 
 @singleton
 class Logger:
     def __init__(self) -> None:
-        os.remove(LOGFILEPATH)
+        if os.path.isfile(LOGFILEPATH):
+            os.remove(LOGFILEPATH)
+        with open(LOGFILEPATH, 'w') as f:
+            pass
         self._logger = logging.getLogger('MosamaticDesktop')
         self._logger.addHandler(self.standardOutputHandler())
         self._logger.addHandler(self.fileOutputHandler())
+        # This prevent logging to be propagated up to the root logger
+        # which TensorFlow might reconfigure
+        self._logger.propagate = False 
         self.enableInfo()
 
     def standardOutputHandler(self) -> logging.StreamHandler:
@@ -36,6 +40,9 @@ class Logger:
     def logFilePath(self) -> str:
         print(f'Logger.logFilePath() {LOGFILEPATH}')
         return LOGFILEPATH
+    
+    def logHandlers(self) -> List[logging.Handler]:
+        return self._logger.handlers
     
     def enableDebug(self) -> None:
         self._logger.setLevel(logging.DEBUG)

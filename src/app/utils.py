@@ -53,6 +53,14 @@ def duration(seconds: int) -> str:
     return '{} hours, {} minutes, {} seconds'.format(h, m, s)
 
 
+def isDicomFile(filePath: str) -> bool:
+    try:
+        pydicom.dcmread(filePath, stop_before_pixels=True)
+        return True
+    except pydicom.errors.InvalidDicomError:
+        return False
+
+
 def getPixelsFromDicomObject(p: pydicom.FileDataset, normalize: bool=False) -> np.array:
     pixels = p.pixel_array
     if not normalize:

@@ -13,7 +13,7 @@ class CheckDicomHeaderTaskWidget(TaskWidget):
         )
         self.addFileSetParameter(
             name='inputFileSetName',
-            labelText='Input File Set Name',
+            labelText='Input File Set',
         )
         self.addTextParameter(
             name='extensionsToIgnore',
