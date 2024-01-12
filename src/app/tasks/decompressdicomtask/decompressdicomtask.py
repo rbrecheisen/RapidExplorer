@@ -4,6 +4,8 @@ import pydicom
 import pydicom.errors
 
 from tasks.task import Task
+from data.filecontentcache import FileContentCache
+from data.filecontent import FileContent
 from logger import Logger
 
 LOGGER = Logger()
@@ -12,6 +14,7 @@ LOGGER = Logger()
 class DecompressDicomTask(Task):
     def __init__(self) -> None:
         super(DecompressDicomTask, self).__init__()
+        self._cache = FileContentCache()
 
     def execute(self) -> None:
 
@@ -44,8 +47,16 @@ class DecompressDicomTask(Task):
                     break
                 
                 try:
-                    p = pydicom.dcmread(file.path())
-                    p.decompress()
+                    # Try to load file content from cache first. If it's not available
+                    # read it from disk
+                    if self._cache.has(id=file.id()):
+                        content = self._cache.get(id=file.id())
+                        p = content.fileObject()
+                    else:
+                        p = pydicom.dcmread(file.path())
+                        p.decompress()
+                        self._cache.add(FileContent(file=file, fileObject=p))
+                        
                     outputFileName = file.name()
                     outputFilePath = os.path.join(outputFileSetPath, outputFileName)
                     p.save_as(outputFilePath)
