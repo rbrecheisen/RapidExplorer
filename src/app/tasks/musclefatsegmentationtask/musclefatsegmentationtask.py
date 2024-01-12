@@ -62,27 +62,45 @@ class MuscleFatSegmentationTask(Task):
         return mask
     
     def execute(self) -> None:
+
+        # Get input fileset
         inputFileSetName = self.parameter('inputFileSetName').value()
         inputFileSet = self.dataManager().fileSetByName(name=inputFileSetName)
-        if inputFileSet:            
+        if inputFileSet:   
+            self.addInfo(f'Input fileset: {inputFileSet.name()}')
+
+            # Get TensorFlow model fileset
+            self.addInfo('Loading TensorFlow model fileset...')
             tensorFlowModelFileSetName = self.parameter('tensorFlowModelFileSetName').value()
-            tensorFlowModelFileSet = manager.fileSetByName(tensorFlowModelFileSetName)
+            tensorFlowModelFileSet = self.dataManager().fileSetByName(tensorFlowModelFileSetName)
             if tensorFlowModelFileSet:
+                self.addInfo(f'TensorFlow model fileset: {tensorFlowModelFileSet.name()}')
+
+                # Setup output fileset path
                 outputFileSetName = self.parameter('outputFileSetName').value()
                 if outputFileSetName is None:
                     outputFileSetName = self.generateTimestampForFileSetName(name=inputFileSetName)
                 outputFileSetPath = self.parameter('outputFileSetPath').value()
                 outputFileSetPath = os.path.join(outputFileSetPath, outputFileSetName)
+
                 overwriteOutputFileSet = self.parameter('overwriteOutputFileSet').value()
+                self.addInfo(f'Overwrite output fileset: {overwriteOutputFileSet}')
                 if overwriteOutputFileSet:
                     if os.path.isdir(outputFileSetPath):
                         shutil.rmtree(outputFileSetPath)
                 os.makedirs(outputFileSetPath, exist_ok=False)
-                # Mode
+                self.addInfo(f'Output fileset path: {outputFileSetPath}')
+
+                # Get mode (ARGMAX or PROBABILITIES)
                 mode = self.parameter('mode').value()
-                # TensorFlow model files
+                modeText = 'ARGMAX' if mode == MuscleFatSegmentationTask.ARGMAX else 'PROBABILITIES'
+                self.addInfo(f'Mode: {modeText}')
+
+                # Load TensorFlow model files
                 model, contourModel, parameters = self.loadModelFiles(files=tensorFlowModelFileSet.files())
                 if model and parameters:
+
+                    # Start iterating of the files
                     step = 0
                     files = inputFileSet.files()
                     segmentationFiles = []
@@ -92,7 +110,6 @@ class MuscleFatSegmentationTask(Task):
                         # Check if task was canceled first
                         if self.statusIsCanceled():
                             self.addInfo('Canceling task...')
-                            # canceled = True
                             break
 
                         try:
@@ -105,7 +122,6 @@ class MuscleFatSegmentationTask(Task):
 
                             # If contour model provided, apply it to detect abdominal contour
                             if contourModel:
-                                self.addInfo('Applying contour model...')
                                 mask = self.predictContour(contourModel=contourModel, sourceImage=img1, parameters=parameters)
                                 img1 = normalizeBetween(img=img1, minBound=parameters['min_bound'], maxBound=parameters['max_bound'])
                                 img1 = img1 * mask
@@ -123,13 +139,11 @@ class MuscleFatSegmentationTask(Task):
                             # each pixel
                             if mode == 'ARGMAX':
                                 predMax = predSqueeze.argmax(axis=-1)
-                                self.addInfo('Generating maximum probability per pixel...')
                                 predMax = convertLabelsTo157(labelImage=predMax)
                                 segmentationFile = os.path.join(outputFileSetPath, f'{file.name()}.seg.npy')
                                 segmentationFiles.append(segmentationFile)
                                 np.save(segmentationFile, predMax)
                             elif self.mode() == 'PROBABILITIES':
-                                self.addInfo('Generating class probabilities per pixel...')
                                 segmentationFile = os.path.join(outputFileSetPath, f'{file.name()}.seg.prob.npy')
                                 segmentationFiles.append(segmentationFile)
                                 np.save(segmentationFile, predSqueeze)
@@ -142,7 +156,6 @@ class MuscleFatSegmentationTask(Task):
                         step += 1
 
                 # Build output fileset
-                self.addInfo(f'Building output fileset: {outputFileSetPath}...')
                 self.dataManager().createFileSet(fileSetPath=outputFileSetPath)
                 
                 # Update final progress

@@ -8,7 +8,6 @@ import numpy as np
 from typing import List, Dict
 
 from tasks.task import Task
-from data.datamanager import DataManager
 from data.file import File
 from utils import getPixelsFromDicomObject, tagPixels, isDicomFile, calculateArea
 from utils import calculateMeanRadiationAttennuation, createNameWithTimestamp
@@ -58,14 +57,10 @@ class CalculateBodyCompositionMetricsTaskTask(Task):
         LOGGER.info(filePath)
         LOGGER.info(outputMetricsForFile)
 
-    def run(self) -> None:
-
-        canceled = False
-        manager = DataManager()
-
+    def execute(self) -> None:
         # Get input DICOM fileset
         inputFileSetName = self.parameter('inputFileSetName').value()
-        inputFileSet = manager.fileSetByName(name=inputFileSetName)
+        inputFileSet = self.dataManager().fileSetByName(name=inputFileSetName)
         if inputFileSet:            
             self.addInfo(f'Input fileset: {inputFileSet.path()}')
 
@@ -99,7 +94,6 @@ class CalculateBodyCompositionMetricsTaskTask(Task):
                         shutil.rmtree(outputFileSetPath)
                 os.makedirs(outputFileSetPath, exist_ok=False)
 
-                self.addInfo(f'Running task ({self.parameterValuesAsString()})')
                 files = inputFileSet.files()
                 nrSteps = len(files) + 1
                 step = 0
@@ -108,8 +102,8 @@ class CalculateBodyCompositionMetricsTaskTask(Task):
                 for file in files:
 
                     # Check if task was canceled first
-                    if self.statusIsCanceling():
-                        canceled = True
+                    if self.statusIsCanceled():
+                        self.addInfo('Canceling task...')
                         break
 
                     filePathTuple = [None, None, None]
@@ -172,7 +166,8 @@ class CalculateBodyCompositionMetricsTaskTask(Task):
                 csvFilePath = os.path.join(outputFileSetPath, createNameWithTimestamp('scores') + '.csv')
                 df = pd.DataFrame(data=data)
                 df.to_csv(csvFilePath, index=False)
-                manager.createFileSet(fileSetPath=outputFileSetPath)
+
+                self.dataManager().createFileSet(fileSetPath=outputFileSetPath)
 
                 # Update final progress
                 self.updateProgress(step=step, nrSteps=nrSteps)
@@ -181,11 +176,3 @@ class CalculateBodyCompositionMetricsTaskTask(Task):
                 self.addError(f'Segmentation fileset {inputSegmentationFileSetName} not found')
         else:
             self.addError(f'Input fileset {inputFileSetName} not found')
-
-        # Terminate task either canceled, error or finished
-        if canceled:
-            self.setStatusCanceled()
-        elif self.hasErrors():
-            self.setStatusError()
-        else:
-            self.setStatusFinished()

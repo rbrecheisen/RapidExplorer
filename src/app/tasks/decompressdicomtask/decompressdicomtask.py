@@ -17,7 +17,7 @@ class DecompressDicomTask(Task):
 
         # Prepare parameters, then run task
         inputFileSetName = self.parameter('inputFileSetName').value()
-        inputFileSet = manager.fileSetByName(inputFileSetName)
+        inputFileSet = self.dataManager().fileSetByName(inputFileSetName)
         if inputFileSet is not None:
 
             outputFileSetPath = self.parameter('outputFileSetPath').value()
@@ -32,7 +32,7 @@ class DecompressDicomTask(Task):
                 if os.path.isdir(outputFileSetPath):
                     shutil.rmtree(outputFileSetPath)
             os.makedirs(outputFileSetPath, exist_ok=False)
-            
+
             step = 0
             files = inputFileSet.files()
             nrSteps = len(files)
@@ -57,7 +57,7 @@ class DecompressDicomTask(Task):
                 step += 1
 
             # Finalize task
-            manager.createFileSet(fileSetPath=outputFileSetPath)
+            self.dataManager().createFileSet(fileSetPath=outputFileSetPath)
             self.addInfo('Finished')
         else:
             self.addError(f'Input fileset {inputFileSetName} does not exist')
