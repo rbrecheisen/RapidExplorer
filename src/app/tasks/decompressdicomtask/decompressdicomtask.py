@@ -1,7 +1,7 @@
 import os
 import shutil
 
-from typing import List, Union
+from typing import List
 
 from tasks.task import Task
 from tasks.taskworkitem import TaskWorkItem
@@ -16,7 +16,7 @@ class DecompressDicomTask(Task):
         super(DecompressDicomTask, self).__init__()
         self._outputFileSetPath = None
 
-    def prepareWorkItems(self) -> Union[List[TaskWorkItem], str]:
+    def prepareWorkItems(self) -> List[TaskWorkItem] | str:
         inputFileSetName = self.parameter('inputFileSetName').value()
         inputFileSet = self.dataManager().fileSetByName(inputFileSetName)
         if inputFileSet:

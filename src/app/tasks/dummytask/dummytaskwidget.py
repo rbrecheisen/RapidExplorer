@@ -21,4 +21,5 @@ class DummyTaskWidget(TaskWidget):
         )
     
     def validate(self) -> None:
-        self.showValidationError(parameterName='Some parameter', message='Something wrong')
+        # self.showValidationError(parameterName='Some parameter', message='Something wrong')
+        pass

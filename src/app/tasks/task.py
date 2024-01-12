@@ -1,6 +1,6 @@
 import threading
 
-from typing import Dict, List, Union
+from typing import Dict, List
 
 from PySide6.QtCore import QObject, Signal
 
@@ -175,57 +175,69 @@ class Task:
         self.setStatusRunning()
 
     def run(self) -> None:
-        canceled = False
-        step = 0
+        self.addInfo(f'Executing {self.name()}({self.parameterValuesAsString()})...')
+        self.execute()
+        if not self.statusIsCanceled():
+            if self.hasErrors():
+                self.setStatusError()
+            else:
+                self.setStatusFinished()        
 
-        # Prepare task and work items
-        workItems, outputFileSetPath = self.prepareWorkItems()
-        nrSteps = len(workItems) + 2
-        self.updateProgress(step=step, nrSteps=nrSteps)
-        step += 1
+    def execute(self) -> None:
+        raise NotImplementedError()    
+
+    # def run(self) -> None:
+    #     canceled = False
+    #     step = 0
+
+    #     # Prepare task and work items
+    #     workItems, outputFileSetPath = self.prepareWorkItems()
+    #     nrSteps = len(workItems) + 2
+    #     self.updateProgress(step=step, nrSteps=nrSteps)
+    #     step += 1
         
-        # Run task
-        if nrSteps > 0:
-            self.addInfo(f'Running task with parameters ({self.parameterValuesAsString()})...')
-            for workItem in workItems:
-                if self.statusIsCanceling():
-                    self.addInfo('Canceling task...')
-                    canceled = True
-                    break
-                try:
-                    workItem.execute()
-                except TaskWorkItemException as e:
-                    self.addError(f'Error executing work item ({e})')
+    #     # Run task
+    #     if nrSteps > 0:
+    #         self.addInfo(f'Running task with parameters ({self.parameterValuesAsString()})...')
+    #         for workItem in workItems:
+    #             if self.statusIsCanceling():
+    #                 self.addInfo('Canceling task...')
+    #                 canceled = True
+    #                 break
+    #             try:
+    #                 workItem.execute()
+    #             except TaskWorkItemException as e:
+    #                 self.addError(f'Error executing work item ({e})')
                 
-                # Update progress
-                self.updateProgress(step=step, nrSteps=nrSteps)
-                step += 1
+    #             # Update progress
+    #             self.updateProgress(step=step, nrSteps=nrSteps)
+    #             step += 1
 
-            # Finalize task if needed
-            self.finalize()
+    #         # Finalize task if needed
+    #         self.finalize()
             
-            # Create output fileset
-            self._dataManager.createFileSet(fileSetPath=outputFileSetPath)
-            self.addInfo('Finished')
-        else:
-            self.addError('No work items available')
+    #         # Create output fileset
+    #         self._dataManager.createFileSet(fileSetPath=outputFileSetPath)
+    #         self.addInfo('Finished')
+    #     else:
+    #         self.addError('No work items available')
 
-        # Determine task final status
-        if canceled:
-            self.setStatusCanceled()
-        elif self.hasErrors():
-            self.setStatusError()
-        else:
-            self.setStatusFinished()
+    #     # Determine task final status
+    #     if canceled:
+    #         self.setStatusCanceled()
+    #     elif self.hasErrors():
+    #         self.setStatusError()
+    #     else:
+    #         self.setStatusFinished()
 
-    def prepareWorkItems(self) -> Union[List[TaskWorkItem], str]:
-        raise NotImplementedError()
+    # def prepareWorkItems(self) -> List[TaskWorkItem] | str:
+    #     raise NotImplementedError()
     
-    def finalize(self) -> None:
-        raise NotImplementedError()
+    # def finalize(self) -> None:
+    #     raise NotImplementedError()
     
     def cancel(self) -> None:
-        self.setStatusCanceling()
+        self.setStatusCanceled()
         self._thread.join()
 
     # Miscellaneous

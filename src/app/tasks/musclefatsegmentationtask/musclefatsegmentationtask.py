@@ -5,12 +5,13 @@ import zipfile
 import pydicom
 import pydicom.errors
 import numpy as np
-import tensorflow as tf  # Messes up logging
 
 from typing import List, Any
 
 from tasks.task import Task
-from data.datamanager import DataManager
+# from tasks.taskworkitem import TaskWorkItem
+# from tasks.musclefatsegmentationtask.musclefatsegmentationtaskworkitem import MuscleFatSegmentationTaskWorkItem
+# from data.datamanager import DataManager
 from data.file import File
 from configuration import Configuration
 from logger import Logger
@@ -27,6 +28,7 @@ class MuscleFatSegmentationTask(Task):
         super(MuscleFatSegmentationTask, self).__init__()        
 
     def loadModelFiles(self, files: List[File]) -> List[Any]:
+        import tensorflow as tf # Only load TensorFlow package here...
         configuration = Configuration()
         tensorFlowModel, tensorFlowContourModel, parameters = None, None, None
         for file in files:
@@ -58,53 +60,29 @@ class MuscleFatSegmentationTask(Task):
         pred_max = predSqueeze.argmax(axis=-1)
         mask = np.uint8(pred_max)
         return mask
-
-    def run(self) -> None:
-
-        canceled = False
-        manager = DataManager()
-        
-        # Get input fileset
+    
+    def execute(self) -> None:
         inputFileSetName = self.parameter('inputFileSetName').value()
-        inputFileSet = manager.fileSetByName(name=inputFileSetName)
+        inputFileSet = self.dataManager().fileSetByName(name=inputFileSetName)
         if inputFileSet:            
-            self.addInfo(f'Input fileset: {inputFileSet.path()}')
-
-            # Get TensorFlow model files
             tensorFlowModelFileSetName = self.parameter('tensorFlowModelFileSetName').value()
             tensorFlowModelFileSet = manager.fileSetByName(tensorFlowModelFileSetName)
             if tensorFlowModelFileSet:
-                self.addInfo(f'TensorFlow model fileset: {tensorFlowModelFileSet.path()}')
-
-                # Get output fileset name
                 outputFileSetName = self.parameter('outputFileSetName').value()
                 if outputFileSetName is None:
                     outputFileSetName = self.generateTimestampForFileSetName(name=inputFileSetName)
-                self.addInfo(f'Output fileset name: {outputFileSetName}')
-
-                # Get output fileset path
                 outputFileSetPath = self.parameter('outputFileSetPath').value()
                 outputFileSetPath = os.path.join(outputFileSetPath, outputFileSetName)
-                self.addInfo(f'Output fileset: {outputFileSetPath}')
-
-                # Remove old output fileset directory if needed
                 overwriteOutputFileSet = self.parameter('overwriteOutputFileSet').value()
                 if overwriteOutputFileSet:
                     if os.path.isdir(outputFileSetPath):
                         shutil.rmtree(outputFileSetPath)
                 os.makedirs(outputFileSetPath, exist_ok=False)
-
-                # Get mode
+                # Mode
                 mode = self.parameter('mode').value()
-                self.addInfo(f'Mode: {mode}')
-
-                # Get model files
-                self.addInfo(f'Loading TensorFlow model files...')
+                # TensorFlow model files
                 model, contourModel, parameters = self.loadModelFiles(files=tensorFlowModelFileSet.files())
                 if model and parameters:
-
-                    # Run task
-                    self.addInfo(f'Running task ({self.parameterValuesAsString()})')
                     step = 0
                     files = inputFileSet.files()
                     segmentationFiles = []
@@ -112,9 +90,9 @@ class MuscleFatSegmentationTask(Task):
                     for file in files:
 
                         # Check if task was canceled first
-                        if self.statusIsCanceling():
+                        if self.statusIsCanceled():
                             self.addInfo('Canceling task...')
-                            canceled = True
+                            # canceled = True
                             break
 
                         try:
@@ -165,7 +143,7 @@ class MuscleFatSegmentationTask(Task):
 
                 # Build output fileset
                 self.addInfo(f'Building output fileset: {outputFileSetPath}...')
-                manager.createFileSet(fileSetPath=outputFileSetPath)
+                self.dataManager().createFileSet(fileSetPath=outputFileSetPath)
                 
                 # Update final progress
                 self.updateProgress(step=step, nrSteps=nrSteps)
@@ -174,11 +152,3 @@ class MuscleFatSegmentationTask(Task):
                 self.addError(f'TensorFlow model fileset {tensorFlowModelFileSetName} not found')
         else:
             self.addError(f'Input fileset {inputFileSetName} not found')
-
-        # Terminate task either canceled, error or finished
-        if canceled:
-            self.setStatusCanceled()
-        elif self.hasErrors():
-            self.setStatusError()
-        else:
-            self.setStatusFinished()
