@@ -1,10 +1,13 @@
 import threading
 
-from typing import Dict, List
+from typing import Dict, List, Union
 
 from PySide6.QtCore import QObject, Signal
 
 from tasks.parameter import Parameter
+from tasks.taskworkitem import TaskWorkItem
+from tasks.taskworkitemexception import TaskWorkItemException
+from data.datamanager import DataManager
 from logger import Logger
 from utils import createNameWithTimestamp
 
@@ -37,6 +40,7 @@ class Task:
         self._warnings = []
         self._info = []
         self._parameters = None
+        self._dataManager = DataManager()
         self._signal = self.TaskProgressSignal()
 
     def name(self) -> str:
@@ -59,6 +63,9 @@ class Task:
     
     def signal(self):
         return self._signal
+    
+    def dataManager(self) -> DataManager:
+        return self._dataManager
     
     def errors(self) -> List[str]:
         return self._errors
@@ -157,7 +164,7 @@ class Task:
                 self._signal = None
 
     # Execution
-
+                
     def start(self) -> None:
         self.setStatusStart()
         self._thread = threading.Thread(target=self.run)
@@ -165,11 +172,60 @@ class Task:
         self.setStatusRunning()
 
     def run(self) -> None:
+        canceled = False
+        step = 0
+
+        # Prepare task and work items
+        workItems, outputFileSetPath = self.prepareWorkItems()
+        nrSteps = len(workItems) + 2
+        self.updateProgress(step=step, nrSteps=nrSteps)
+        step += 1
+        
+        # Run task
+        if nrSteps > 0:
+            self.addInfo(f'Running task with parameters ({self.parameterValuesAsString()})...')
+            for workItem in workItems:
+                if self.statusIsCanceling():
+                    self.addInfo('Canceling task...')
+                    canceled = True
+                    break
+                try:
+                    workItem.execute()
+                except TaskWorkItemException as e:
+                    self.addError(f'Error executing work item ({e})')
+                
+                # Update progress
+                self.updateProgress(step=step, nrSteps=nrSteps)
+                step += 1
+
+            # Finalize task if needed
+            self.finalize()
+            
+            # Create output fileset
+            self._dataManager.createFileSet(fileSetPath=outputFileSetPath)
+            self.addInfo('Finished')
+        else:
+            self.addError('No work items available')
+
+        # Determine task final status
+        if canceled:
+            self.setStatusCanceled()
+        elif self.hasErrors():
+            self.setStatusError()
+        else:
+            self.setStatusFinished()
+
+    def prepareWorkItems(self) -> Union[List[TaskWorkItem], str]:
+        raise NotImplementedError()
+    
+    def finalize(self) -> None:
         raise NotImplementedError()
     
     def cancel(self) -> None:
         self.setStatusCanceling()
         self._thread.join()
+
+    # Miscellaneous
 
     def generateFileSetName(self) -> str:
         return createNameWithTimestamp(prefix=f'fileset-{self.name()}')

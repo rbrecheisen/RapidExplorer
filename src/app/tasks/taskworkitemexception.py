@@ -1,0 +1,2 @@
+class TaskWorkItemException(Exception):
+    pass
