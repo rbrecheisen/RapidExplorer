@@ -1,13 +1,13 @@
 import threading
 
-from typing import Dict, List
+from typing import Dict, List, Any
 
 from PySide6.QtCore import QObject, Signal
 
 from tasks.parameter import Parameter
-from tasks.taskworkitem import TaskWorkItem
-from tasks.taskworkitemexception import TaskWorkItemException
 from data.datamanager import DataManager
+from data.filecontent import FileContent
+from data.filecontentcache import FileContentCache
 from logger import Logger
 from utils import createNameWithTimestamp
 
@@ -41,6 +41,7 @@ class Task:
         self._info = []
         self._parameters = None
         self._dataManager = DataManager()
+        self._cache = FileContentCache()
         self._signal = self.TaskProgressSignal()
 
     def name(self) -> str:
@@ -191,6 +192,15 @@ class Task:
     def cancel(self) -> None:
         self.setStatusCanceled()
         self._thread.join()
+
+    # Caching
+        
+    def loadFromCache(self, file: File) -> FileContent:
+        return self._cache.get(id=file.id())
+    
+    def writeToCache(self, file: File, fileObject: Any) -> None:
+        content = FileContent(file=file, fileObject=fileObject)
+        self._cache.add(content)
 
     # Miscellaneous
 
