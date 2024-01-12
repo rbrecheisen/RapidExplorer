@@ -9,9 +9,7 @@ import numpy as np
 from typing import List, Any
 
 from tasks.task import Task
-# from tasks.taskworkitem import TaskWorkItem
-# from tasks.musclefatsegmentationtask.musclefatsegmentationtaskworkitem import MuscleFatSegmentationTaskWorkItem
-# from data.datamanager import DataManager
+from ai.tensorflowmodel import TensorFlowModel
 from data.file import File
 from configuration import Configuration
 from logger import Logger
@@ -34,15 +32,19 @@ class MuscleFatSegmentationTask(Task):
         for file in files:
             filePath = file.path()
             if os.path.split(filePath)[1] == 'model.zip':
-                tensorFlowModelFileDirectory = configuration.taskConfigSubDirectory(taskname=__class__.__name__, dirName='tensorFlowModelFiles')
+                tensorFlowModelFileDirectory = configuration.taskConfigSubDirectory(taskName=__class__.__name__, dirName='tensorFlowModelFiles')
                 with zipfile.ZipFile(filePath) as zipObj:
                     zipObj.extractall(path=tensorFlowModelFileDirectory)
-                tensorFlowModel = tf.keras.models.load_model(tensorFlowModelFileDirectory, compile=False)
+                tensorFlowModel = TensorFlowModel()
+                tensorFlowModel.load(modelFilePath=tensorFlowModelFileDirectory)
+                # tensorFlowModel = tf.keras.models.load_model(tensorFlowModelFileDirectory, compile=False)
             elif os.path.split(filePath)[1] == 'contour_model.zip':
-                tensorFlowModelFileDirectory = configuration.taskConfigSubDirectory(taskname=__class__.__name__, dirName='tensorFlowModelFiles')
+                tensorFlowModelFileDirectory = configuration.taskConfigSubDirectory(taskName=__class__.__name__, dirName='tensorFlowModelFiles')
                 with zipfile.ZipFile(filePath) as zipObj:
                     zipObj.extractall(path=tensorFlowModelFileDirectory)
-                tensorFlowContourModel = tf.keras.models.load_model(tensorFlowModelFileDirectory, compile=False)
+                tensorFlowContourModel = TensorFlowModel()
+                tensorFlowContourModel.load(modelFilePath=tensorFlowModelFileDirectory)
+                # tensorFlowContourModel = tf.keras.models.load_model(tensorFlowModelFileDirectory, compile=False)
             elif os.path.split(filePath)[1] == 'params.json':
                 with open(filePath, 'r') as f:
                     parameters = json.load(f)
@@ -131,7 +133,7 @@ class MuscleFatSegmentationTask(Task):
                             img1 = img1.astype(np.float32)
                             img2 = np.expand_dims(img1, 0)
                             img2 = np.expand_dims(img2, -1)
-                            pred = model.predict([img2])
+                            pred = model.predict([img2]) ##### Move to separate AI class!
                             predSqueeze = np.squeeze(pred)
 
                             # Generate predicted output. Can be ARGMAX (pixel value with maximum probability) or

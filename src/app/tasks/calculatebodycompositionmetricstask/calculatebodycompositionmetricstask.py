@@ -50,12 +50,15 @@ class CalculateBodyCompositionMetricsTaskTask(Task):
     def loadSegmentationFile(self, filePath: str):
         return np.load(filePath)
     
-    def loadTagFile(self, filePath: str):
-        return tagPixels(tagFilePath=filePath)
+    def loadTagFile(self, filePath: str, shape: List[int]):
+        pixels = tagPixels(tagFilePath=filePath)
+        return pixels.reshape(shape)
     
-    def printOutputMetricsForFile(self, outputMetricsForFile: Dict[str, float], filePath: str) -> None:
-        LOGGER.info(filePath)
-        LOGGER.info(outputMetricsForFile)
+    def fileOutputMetricsToString(self, outputMetrics: Dict[str, float], fileName: str) -> None:
+        text = fileName + ':\n'
+        for metric, value in outputMetrics.items():
+            text += f'  - {metrics}: {value}\n'
+        self.addInfo(text)
 
     def execute(self) -> None:
         # Get input DICOM fileset
@@ -66,7 +69,7 @@ class CalculateBodyCompositionMetricsTaskTask(Task):
 
             # Get input segmentation fileset
             inputSegmentationFileSetName = self.parameter('inputSegmentationFileSetName').value()
-            inputSegmentationFileSet = manager.fileSetByName(inputSegmentationFileSetName)
+            inputSegmentationFileSet = self.dataManager().fileSetByName(inputSegmentationFileSetName)
             if inputSegmentationFileSet:
                 self.addInfo(f'Input segmentation fileset: {inputSegmentationFileSet.path()}')
 
@@ -138,13 +141,15 @@ class CalculateBodyCompositionMetricsTaskTask(Task):
 
                             if tagFilePath:
                                 # Calculate metrics for true segmentation based on TAG file
-                                tagImage = self.loadTagFile(filePath=filePathTuple[2])
+                                tagImage = self.loadTagFile(filePath=filePathTuple[2], shape=image.shape)
                                 outputMetrics[filePathTuple[0]]['muscle_area_true'] = calculateArea(tagImage, CalculateBodyCompositionMetricsTaskTask.MUSCLE, pixelSpacing)
                                 outputMetrics[filePathTuple[0]]['vat_area_true'] = calculateArea(tagImage, CalculateBodyCompositionMetricsTaskTask.VAT, pixelSpacing)
                                 outputMetrics[filePathTuple[0]]['sat_area_true'] = calculateArea(tagImage, CalculateBodyCompositionMetricsTaskTask.SAT, pixelSpacing)
                                 outputMetrics[filePathTuple[0]]['muscle_ra_true'] = calculateMeanRadiationAttennuation(image, tagImage, CalculateBodyCompositionMetricsTaskTask.MUSCLE)
                                 outputMetrics[filePathTuple[0]]['vat_ra_true'] = calculateMeanRadiationAttennuation(image, tagImage, CalculateBodyCompositionMetricsTaskTask.VAT)
                                 outputMetrics[filePathTuple[0]]['sat_ra_true'] = calculateMeanRadiationAttennuation(image, tagImage, CalculateBodyCompositionMetricsTaskTask.SAT)
+
+                            self.addInfo(self.fileOutputMetricsToString(outputMetrics=outputMetrics[filePathTuple[0]]))
                         else:
                             self.addError(f'Segmentation file {segmentationFilePath.name()} not found')                        
                 

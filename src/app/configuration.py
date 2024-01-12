@@ -17,8 +17,8 @@ class Configuration:
             os.makedirs(taskConfigDirectory, exist_ok=False)
         return taskConfigDirectory
     
-    def taskConfigSubDirectory(self, taskname: str, dirName: str) -> str:
-        taskConfigDirectory = self.taskConfigDirectory(taskName=taskname)
+    def taskConfigSubDirectory(self, taskName: str, dirName: str) -> str:
+        taskConfigDirectory = self.taskConfigDirectory(taskName=taskName)
         taskConfigSubDirectory = os.path.join(taskConfigDirectory, dirName)
         if not os.path.isdir(taskConfigSubDirectory):
             os.makedirs(taskConfigSubDirectory, exist_ok=False)
