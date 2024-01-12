@@ -73,10 +73,12 @@ class Task:
     def errors(self) -> List[str]:
         return self._errors
     
-    def addError(self, message: str, toStdOut: bool=True) -> None:
+    def addError(self, message: str, toStdOut: bool=True, cancel=False) -> None:
         if toStdOut:
             LOGGER.error(message)
         self._errors.append(message)
+        if cancel:
+            self.cancel()
 
     def hasErrors(self) -> bool:
         return len(self._errors) > 0
@@ -186,56 +188,6 @@ class Task:
     def execute(self) -> None:
         raise NotImplementedError()    
 
-    # def run(self) -> None:
-    #     canceled = False
-    #     step = 0
-
-    #     # Prepare task and work items
-    #     workItems, outputFileSetPath = self.prepareWorkItems()
-    #     nrSteps = len(workItems) + 2
-    #     self.updateProgress(step=step, nrSteps=nrSteps)
-    #     step += 1
-        
-    #     # Run task
-    #     if nrSteps > 0:
-    #         self.addInfo(f'Running task with parameters ({self.parameterValuesAsString()})...')
-    #         for workItem in workItems:
-    #             if self.statusIsCanceling():
-    #                 self.addInfo('Canceling task...')
-    #                 canceled = True
-    #                 break
-    #             try:
-    #                 workItem.execute()
-    #             except TaskWorkItemException as e:
-    #                 self.addError(f'Error executing work item ({e})')
-                
-    #             # Update progress
-    #             self.updateProgress(step=step, nrSteps=nrSteps)
-    #             step += 1
-
-    #         # Finalize task if needed
-    #         self.finalize()
-            
-    #         # Create output fileset
-    #         self._dataManager.createFileSet(fileSetPath=outputFileSetPath)
-    #         self.addInfo('Finished')
-    #     else:
-    #         self.addError('No work items available')
-
-    #     # Determine task final status
-    #     if canceled:
-    #         self.setStatusCanceled()
-    #     elif self.hasErrors():
-    #         self.setStatusError()
-    #     else:
-    #         self.setStatusFinished()
-
-    # def prepareWorkItems(self) -> List[TaskWorkItem] | str:
-    #     raise NotImplementedError()
-    
-    # def finalize(self) -> None:
-    #     raise NotImplementedError()
-    
     def cancel(self) -> None:
         self.setStatusCanceled()
         self._thread.join()
