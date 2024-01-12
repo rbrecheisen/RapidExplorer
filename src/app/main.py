@@ -3,13 +3,11 @@ import sys
 from PySide6.QtWidgets import QApplication
 
 from mainwindow import MainWindow
-from utils import SettingsIniFile
 
 
 def main():
-    settingsIniFile = SettingsIniFile()
     app = QApplication([])
-    mainWindow = MainWindow(settingsPath=settingsIniFile.path())
+    mainWindow = MainWindow()
     mainWindow.show()
     sys.exit(app.exec())
 

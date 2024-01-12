@@ -6,6 +6,7 @@ from PySide6.QtCore import QObject, Signal
 
 from tasks.parameter import Parameter
 from data.datamanager import DataManager
+from data.file import File
 from data.filecontent import FileContent
 from data.filecontentcache import FileContentCache
 from logger import Logger

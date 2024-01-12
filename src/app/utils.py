@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 from typing import Dict, Any, List
 
 from PySide6.QtGui import QImage
+from PySide6.QtCore import QSettings
 
 from singleton import singleton
 
@@ -237,17 +238,6 @@ def calculateMeanRadiationAttennuation(image, labels, label):
 
 
 @singleton
-class SettingsIniFile:
-    def __init__(self) -> None:
-        self._path = os.path.join(os.path.dirname(sys.executable), 'settings.ini')
-        if not os.path.isfile(self._path):
-            self._path = 'settings.ini'
-
-    def path(self) -> str:
-        return self._path
-    
-
-@singleton
 class GitCommit:
     def __init__(self) -> None:
         commitIdFilePath = os.path.join(os.path.dirname(sys.executable), 'gitcommitid.txt')
@@ -257,6 +247,32 @@ class GitCommit:
 
     def id(self) -> str:
         return self._commitId
+    
+
+@singleton
+class Configuration:
+    def __init__(self) -> None:
+        self._configDirectory = os.path.join(os.getenv('HOME'), '.mosamatic')
+
+    def configDirectory(self) -> str:
+        return self._configDirectory
+    
+    def taskConfigDirectory(self, taskName: str) -> str:
+        taskConfigDirectory = os.path.join(self._configDirectory, taskName)
+        if not os.path.isdir(taskConfigDirectory):
+            os.makedirs(taskConfigDirectory, exist_ok=False)
+        return taskConfigDirectory
+    
+    def taskConfigSubDirectory(self, taskName: str, dirName: str) -> str:
+        taskConfigDirectory = self.taskConfigDirectory(taskName=taskName)
+        taskConfigSubDirectory = os.path.join(taskConfigDirectory, dirName)
+        if not os.path.isdir(taskConfigSubDirectory):
+            os.makedirs(taskConfigSubDirectory, exist_ok=False)
+        return taskConfigSubDirectory
+    
+    def qSettings(self) -> QSettings:
+        settingsPath = self.configDirectory()
+        return QSettings(settingsPath, QSettings.Format.IniFormat)
     
 
 class ModuleLoader:

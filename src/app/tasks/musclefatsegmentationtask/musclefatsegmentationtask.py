@@ -11,9 +11,9 @@ from typing import List, Any
 from tasks.task import Task
 from ai.tensorflowmodel import TensorFlowModel
 from data.file import File
-from configuration import Configuration
 from logger import Logger
-from utils import getPixelsFromDicomObject, convertLabelsTo157, normalizeBetween
+from utils import getPixelsFromDicomObject, convertLabelsTo157
+from utils import normalizeBetween, Configuration
 
 LOGGER = Logger()
 

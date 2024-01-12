@@ -9,20 +9,17 @@ from widgets.datadockwidget import DataDockWidget
 from widgets.viewersdockwidget import ViewersDockWidget
 from widgets.taskdockwidget import TaskDockWidget
 from widgets.mainviewerdockwidget import MainViewerDockWidget
-from operatingsystem import OperatingSystem
+from utils import Configuration
 
-HOME = 'HOME' 
-if OperatingSystem.isWindows():
-    HOME = 'USERPROFILE'
-WINDOWTITLE = 'Mosamatic Desktop 2.0'
-FILESETPATH = os.path.join(os.environ[HOME], 'Desktop', 'downloads', 'dataset', 'scan1')
-FILEPATH = os.path.join(os.environ[HOME], 'Desktop', 'downloads', 'dataset', 'scan1', 'image-00000.dcm')
+WINDOWTITLE = 'Mosamatic Desktop 1.0'
+FILESETPATH = os.path.join(os.getenv('HOME'), 'Desktop', 'downloads', 'dataset', 'scan1')
+FILEPATH = os.path.join(os.getenv('HOME'), 'Desktop', 'downloads', 'dataset', 'scan1', 'image-00000.dcm')
 
 
 class MainWindow(QMainWindow):
-    def __init__(self, settingsPath: str) -> None:
+    def __init__(self) -> None:
         super(MainWindow, self).__init__()
-        self._settings = QSettings(settingsPath, QSettings.Format.IniFormat)
+        self._settings = Configuration().qSettings()
         self._dataDockWidget = None
         self._tasksDockWidget = None
         self._mainViewDockWidget = None
