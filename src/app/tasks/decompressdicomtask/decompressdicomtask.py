@@ -49,7 +49,7 @@ class DecompressDicomTask(Task):
                 try:
                     # Try to load file content from cache first. If it's not available
                     # read it from disk
-                    content = self.loadFromCache(file=file)
+                    content = self.readFromCache(file=file)
                     if not content:
                         p = pydicom.dcmread(file.path())
                         p.decompress()

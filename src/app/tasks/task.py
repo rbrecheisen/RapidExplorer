@@ -195,7 +195,7 @@ class Task:
 
     # Caching
         
-    def loadFromCache(self, file: File) -> FileContent:
+    def readFromCache(self, file: File) -> FileContent:
         return self._cache.get(id=file.id())
     
     def writeToCache(self, file: File, fileObject: Any) -> None:
