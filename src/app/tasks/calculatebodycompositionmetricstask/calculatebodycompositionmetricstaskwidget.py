@@ -19,7 +19,7 @@ class CalculateBodyCompositionMetricsTaskWidget(TaskWidget):
         )
         self.addPathParameter(
             name='patientHeightsCsvFilePath',
-            labelText='Patient Heights CSV File Path',
+            labelText='Patient Height CSV File Path (File Name, Height (m))',
             optional=True,
         )
         self.addPathParameter(
