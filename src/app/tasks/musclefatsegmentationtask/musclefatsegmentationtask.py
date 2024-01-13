@@ -175,7 +175,5 @@ class MuscleFatSegmentationTask(Task):
         for file in outputFileSet.files():
             if file.name().endswith('.seg.npy') or file.name().endswith('.seg.prob.npy'):
                 self.writeToCache(file=file, fileObject=np.load(file.path()))
-        
-        # Update final progress
-        self.updateProgress(step=step, nrSteps=nrSteps)
+
         self.addInfo('Finished')

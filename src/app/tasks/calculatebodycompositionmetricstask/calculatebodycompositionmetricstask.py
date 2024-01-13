@@ -199,7 +199,4 @@ class CalculateBodyCompositionMetricsTaskTask(Task):
         # Create new output fileset from the CSV file. No need to cache it because it's just
         # text and we're probably not going to use it further
         self.dataManager().createFileSet(fileSetPath=outputFileSetPath)
-
-        # Update final progress
-        self.updateProgress(step=step, nrSteps=nrSteps)
         self.addInfo('Finished')

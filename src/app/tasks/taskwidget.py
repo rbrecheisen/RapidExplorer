@@ -16,6 +16,7 @@ from tasks.parametercopier import ParameterCopier
 from tasks.descriptionparameter import DescriptionParameter
 from tasks.labelparameter import LabelParameter
 from tasks.filesetparameter import FileSetParameter
+from tasks.multifilesetparameter import MultiFileSetParameter
 from tasks.pathparameter import PathParameter
 from tasks.textparameter import TextParameter
 from tasks.integerparameter import IntegerParameter
@@ -119,6 +120,11 @@ class TaskWidget(QWidget):
 
     def addFileSetParameter(self, name: str, labelText: str, optional: bool=False, visible: bool=True, defaultValue: Any=None) -> Parameter:
         parameter = FileSetParameter(name=name, labelText=labelText, optional=optional, visible=visible, defaultValue=defaultValue)
+        self._taskParameters[parameter.name()] = parameter
+        return parameter
+    
+    def addMultiFileSetParameter(self, name: str, labelText: str, optional: bool=False, visible: bool=True, defaultValue: Any=None) -> Parameter:
+        parameter = MultiFileSetParameter(name=name, labelText=labelText, optional=optional, visible=visible, defaultValue=defaultValue)
         self._taskParameters[parameter.name()] = parameter
         return parameter
 

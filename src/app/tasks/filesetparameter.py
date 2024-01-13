@@ -1,6 +1,6 @@
 from typing import Any
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QComboBox
+from PySide6.QtWidgets import QWidget, QLabel, QComboBox
 
 from tasks.parameter import Parameter
 from data.datamanager import DataManager

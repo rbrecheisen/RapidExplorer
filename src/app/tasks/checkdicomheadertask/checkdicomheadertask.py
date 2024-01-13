@@ -25,6 +25,11 @@ class CheckDicomHeaderTask(Task):
         if outputFileSetName is None:
             outputFileSetName = self.generateTimestampForFileSetName(name=inputFileSetName)
         overwriteOutputFileSet = self.parameter('overwriteOutputFileSet').value()
+        outputFileSetPath = os.path.join(outputFileSetPath, outputFileSetName)
+        if overwriteOutputFileSet:
+            if os.path.isdir(outputFileSetPath):
+                shutil.rmtree(outputFileSetPath)
+        os.makedirs(outputFileSetPath, exist_ok=False)
 
         # Run task
         step = 0
@@ -73,17 +78,8 @@ class CheckDicomHeaderTask(Task):
             step += 1
 
         # Copy checked DICOM files to output fileset directory
-        self.addInfo(f'Building output fileset: {outputFileSetPath}...')
-        outputFileSetPath = os.path.join(outputFileSetPath, outputFileSetName)
-        if overwriteOutputFileSet:
-            if os.path.isdir(outputFileSetPath):
-                shutil.rmtree(outputFileSetPath)
-        os.makedirs(outputFileSetPath, exist_ok=False)
         for dicomFile in dicomFilesOk:
             shutil.copy(dicomFile.path(), outputFileSetPath)
         
         self.dataManager().createFileSet(fileSetPath=outputFileSetPath)
-        
-        # Update final progress
-        self.updateProgress(step=step, nrSteps=nrSteps)
         self.addInfo('Finished')
