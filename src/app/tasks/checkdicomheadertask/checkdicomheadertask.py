@@ -17,76 +17,73 @@ class CheckDicomHeaderTask(Task):
         # Prepare parameters, then run task
         inputFileSetName = self.parameter('inputFileSetName').value()
         inputFileSet = self.dataManager().fileSetByName(inputFileSetName)
-        if inputFileSet:
-            requiredAttributes = [x.strip() for x in self.parameter('requiredAttributes').value().split(',')]
-            rows = self.parameter('rows').value()
-            columns = self.parameter('columns').value()
-            outputFileSetPath = self.parameter('outputFileSetPath').value()
-            outputFileSetName = self.parameter('outputFileSetName').value()
-            if outputFileSetName is None:
-                outputFileSetName = self.generateTimestampForFileSetName(name=inputFileSetName)
-            overwriteOutputFileSet = self.parameter('overwriteOutputFileSet').value()
+        requiredAttributes = [x.strip() for x in self.parameter('requiredAttributes').value().split(',')]
+        rows = self.parameter('rows').value()
+        columns = self.parameter('columns').value()
+        outputFileSetPath = self.parameter('outputFileSetPath').value()
+        outputFileSetName = self.parameter('outputFileSetName').value()
+        if outputFileSetName is None:
+            outputFileSetName = self.generateTimestampForFileSetName(name=inputFileSetName)
+        overwriteOutputFileSet = self.parameter('overwriteOutputFileSet').value()
 
-            # Run task
-            step = 0
-            dicomFilesOk = []
-            files = inputFileSet.files()
-            nrSteps = len(files) + 1 # Add final step to build output fileset
-            for file in files:
+        # Run task
+        step = 0
+        dicomFilesOk = []
+        files = inputFileSet.files()
+        nrSteps = len(files) + 1 # Add final step to build output fileset
+        for file in files:
 
-                # Chec if the task should cancel
-                if self.statusIsCanceled():
-                    self.addInfo('Canceling task...')
-                    break
-                try:
-                    # Try reading file as DICOM (do not decompress because we don't read pixel data)
-                    # Don't use the cache because we're not reading pixels
-                    p = pydicom.dcmread(file.path(), stop_before_pixels=True)
-                    
-                    # Check if required attributes are present
-                    allAttributesOk = True
-                    for attribute in requiredAttributes:
-                        if attribute not in p:
-                            self.addError(f'Missing required attribute "{attribute}": {file.path()}')
-                            allAttributesOk = False
-                            break
-                    if allAttributesOk:
-                    
-                        # Check if DICOM file has required rows and columns
-                        rowsAndColumnsOk = True
-                        if p.Rows != rows:
-                            self.addError(f'rows={p.Rows}, should be {rows}')
-                            rowsAndColumnsOk = False
-                        if p.Columns != columns:
-                            self.addError(f'rows={p.Columns}, should be {columns}')
-                            rowsAndColumnsOk = False
-                        if rowsAndColumnsOk:
-                            dicomFilesOk.append(file)
-                        else:
-                            pass
+            # Chec if the task should cancel
+            if self.statusIsCanceled():
+                self.addInfo('Canceling task...')
+                break
+            try:
+                # Try reading file as DICOM (do not decompress because we don't read pixel data)
+                # Don't use the cache because we're not reading pixels
+                p = pydicom.dcmread(file.path(), stop_before_pixels=True)
+                
+                # Check if required attributes are present
+                allAttributesOk = True
+                for attribute in requiredAttributes:
+                    if attribute not in p:
+                        self.addError(f'Missing required attribute "{attribute}": {file.path()}')
+                        allAttributesOk = False
+                        break
+                if allAttributesOk:
+                
+                    # Check if DICOM file has required rows and columns
+                    rowsAndColumnsOk = True
+                    if p.Rows != rows:
+                        self.addError(f'rows={p.Rows}, should be {rows}')
+                        rowsAndColumnsOk = False
+                    if p.Columns != columns:
+                        self.addError(f'rows={p.Columns}, should be {columns}')
+                        rowsAndColumnsOk = False
+                    if rowsAndColumnsOk:
+                        dicomFilesOk.append(file)
                     else:
                         pass
-                except pydicom.errors.InvalidDicomError:
-                    self.addWarning(f'Skipping non-DICOM: {file.path()}')
+                else:
+                    pass
+            except pydicom.errors.InvalidDicomError:
+                self.addWarning(f'Skipping non-DICOM: {file.path()}')
 
-                # Update progress for this iteration         
-                self.updateProgress(step=step, nrSteps=nrSteps)
-                step += 1
-
-            # Copy checked DICOM files to output fileset directory
-            self.addInfo(f'Building output fileset: {outputFileSetPath}...')
-            outputFileSetPath = os.path.join(outputFileSetPath, outputFileSetName)
-            if overwriteOutputFileSet:
-                if os.path.isdir(outputFileSetPath):
-                    shutil.rmtree(outputFileSetPath)
-            os.makedirs(outputFileSetPath, exist_ok=False)
-            for dicomFile in dicomFilesOk:
-                shutil.copy(dicomFile.path(), outputFileSetPath)
-            
-            self.dataManager().createFileSet(fileSetPath=outputFileSetPath)
-            
-            # Update final progress
+            # Update progress for this iteration         
             self.updateProgress(step=step, nrSteps=nrSteps)
-            self.addInfo('Finished')
-        else:
-            self.addError(f'Input fileset {inputFileSetName} not found')
+            step += 1
+
+        # Copy checked DICOM files to output fileset directory
+        self.addInfo(f'Building output fileset: {outputFileSetPath}...')
+        outputFileSetPath = os.path.join(outputFileSetPath, outputFileSetName)
+        if overwriteOutputFileSet:
+            if os.path.isdir(outputFileSetPath):
+                shutil.rmtree(outputFileSetPath)
+        os.makedirs(outputFileSetPath, exist_ok=False)
+        for dicomFile in dicomFilesOk:
+            shutil.copy(dicomFile.path(), outputFileSetPath)
+        
+        self.dataManager().createFileSet(fileSetPath=outputFileSetPath)
+        
+        # Update final progress
+        self.updateProgress(step=step, nrSteps=nrSteps)
+        self.addInfo('Finished')

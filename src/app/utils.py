@@ -235,6 +235,11 @@ def calculateArea(labels, label, pixelSpacing):
     area = np.sum(mask) * (pixelSpacing[0] * pixelSpacing[1]) / 100.0
     return area
 
+
+def calculateIndex(area: float, height: float):
+    return area / (height * height)
+
+
 def calculateMeanRadiationAttennuation(image, labels, label):
     mask = np.copy(labels)
     mask[mask != label] = 0

@@ -82,112 +82,100 @@ class MuscleFatSegmentationTask(Task):
         # Get input fileset
         inputFileSetName = self.parameter('inputFileSetName').value()
         inputFileSet = self.dataManager().fileSetByName(name=inputFileSetName)
-        if inputFileSet:   
-            self.addInfo(f'Input fileset: {inputFileSet.name()}')
+        tensorFlowModelFileSetName = self.parameter('tensorFlowModelFileSetName').value()
+        tensorFlowModelFileSet = self.dataManager().fileSetByName(tensorFlowModelFileSetName)
+        # Setup output fileset path
+        outputFileSetName = self.parameter('outputFileSetName').value()
+        if outputFileSetName is None:
+            outputFileSetName = self.generateTimestampForFileSetName(name=inputFileSetName)
+        outputFileSetPath = self.parameter('outputFileSetPath').value()
+        outputFileSetPath = os.path.join(outputFileSetPath, outputFileSetName)
 
-            # Get TensorFlow model fileset
-            self.addInfo('Loading TensorFlow model fileset...')
-            tensorFlowModelFileSetName = self.parameter('tensorFlowModelFileSetName').value()
-            tensorFlowModelFileSet = self.dataManager().fileSetByName(tensorFlowModelFileSetName)
-            if tensorFlowModelFileSet:
-                self.addInfo(f'TensorFlow model fileset: {tensorFlowModelFileSet.name()}')
+        overwriteOutputFileSet = self.parameter('overwriteOutputFileSet').value()
+        self.addInfo(f'Overwrite output fileset: {overwriteOutputFileSet}')
+        if overwriteOutputFileSet:
+            if os.path.isdir(outputFileSetPath):
+                shutil.rmtree(outputFileSetPath)
+        os.makedirs(outputFileSetPath, exist_ok=False)
+        self.addInfo(f'Output fileset path: {outputFileSetPath}')
 
-                # Setup output fileset path
-                outputFileSetName = self.parameter('outputFileSetName').value()
-                if outputFileSetName is None:
-                    outputFileSetName = self.generateTimestampForFileSetName(name=inputFileSetName)
-                outputFileSetPath = self.parameter('outputFileSetPath').value()
-                outputFileSetPath = os.path.join(outputFileSetPath, outputFileSetName)
+        # Get mode (ARGMAX or PROBABILITIES)
+        modeText = self.parameter('mode').value()
+        mode = MuscleFatSegmentationTask.ARGMAX if modeText == 'ARGMAX' else MuscleFatSegmentationTask.PROBABILITIES
+        self.addInfo(f'Mode: {modeText}')
 
-                overwriteOutputFileSet = self.parameter('overwriteOutputFileSet').value()
-                self.addInfo(f'Overwrite output fileset: {overwriteOutputFileSet}')
-                if overwriteOutputFileSet:
-                    if os.path.isdir(outputFileSetPath):
-                        shutil.rmtree(outputFileSetPath)
-                os.makedirs(outputFileSetPath, exist_ok=False)
-                self.addInfo(f'Output fileset path: {outputFileSetPath}')
+        # Load TensorFlow model files
+        model, contourModel, parameters = self.loadModelFiles(files=tensorFlowModelFileSet.files())
+        if model and parameters:
 
-                # Get mode (ARGMAX or PROBABILITIES)
-                modeText = self.parameter('mode').value()
-                mode = MuscleFatSegmentationTask.ARGMAX if modeText == 'ARGMAX' else MuscleFatSegmentationTask.PROBABILITIES
-                self.addInfo(f'Mode: {modeText}')
+            # Start iterating of the files
+            step = 0
+            files = inputFileSet.files()
+            segmentationFiles = []
+            nrSteps = len(files) + 1
+            for file in files:
 
-                # Load TensorFlow model files
-                model, contourModel, parameters = self.loadModelFiles(files=tensorFlowModelFileSet.files())
-                if model and parameters:
+                # Check if task was canceled first
+                if self.statusIsCanceled():
+                    self.addInfo('Canceling task...')
+                    break
 
-                    # Start iterating of the files
-                    step = 0
-                    files = inputFileSet.files()
-                    segmentationFiles = []
-                    nrSteps = len(files) + 1
-                    for file in files:
+                try:
+                    # Read DICOM file (from cache first) and decompress if needed
+                    content = self.readFromCache(file=file)
+                    if not content:
+                        p = pydicom.dcmread(file.path())
+                        p.decompress()
+                        content = self.writeToCache(file, p)
+                    p = content.fileObject()
 
-                        # Check if task was canceled first
-                        if self.statusIsCanceled():
-                            self.addInfo('Canceling task...')
-                            break
+                    # Get pixels from DICOM file and normalize to positive range
+                    img1 = getPixelsFromDicomObject(p, normalize=True)
 
-                        try:
-                            # Read DICOM file (from cache first) and decompress if needed
-                            content = self.readFromCache(file=file)
-                            if not content:
-                                p = pydicom.dcmread(file.path())
-                                p.decompress()
-                                content = self.writeToCache(file, p)
-                            p = content.fileObject()
+                    # If contour model provided, apply it to detect abdominal contour
+                    if contourModel:
+                        mask = self.predictContour(contourModel=contourModel, sourceImage=img1, parameters=parameters)
+                        img1 = normalizeBetween(img=img1, minBound=parameters['min_bound'], maxBound=parameters['max_bound'])
+                        img1 = img1 * mask
+                    else:
+                        img1 = normalizeBetween(img=img1, minBound=parameters['min_bound'], maxBound=parameters['max_bound'])
 
-                            # Get pixels from DICOM file and normalize to positive range
-                            img1 = getPixelsFromDicomObject(p, normalize=True)
+                    img1 = img1.astype(np.float32)
+                    img2 = np.expand_dims(img1, 0)
+                    img2 = np.expand_dims(img2, -1)
+                    pred = model.predict([img2]) ##### Move to separate AI class!
+                    predSqueeze = np.squeeze(pred)
 
-                            # If contour model provided, apply it to detect abdominal contour
-                            if contourModel:
-                                mask = self.predictContour(contourModel=contourModel, sourceImage=img1, parameters=parameters)
-                                img1 = normalizeBetween(img=img1, minBound=parameters['min_bound'], maxBound=parameters['max_bound'])
-                                img1 = img1 * mask
-                            else:
-                                img1 = normalizeBetween(img=img1, minBound=parameters['min_bound'], maxBound=parameters['max_bound'])
+                    # Generate predicted output. Can be ARGMAX (pixel value with maximum probability) or
+                    # PROBABILITIES, i.e, the individual class probabilities (muscle, SAT and VAT) in 
+                    # each pixel
+                    if mode == MuscleFatSegmentationTask.ARGMAX:
+                        predMax = predSqueeze.argmax(axis=-1)
+                        predMax = convertLabelsTo157(labelImage=predMax)
+                        segmentationFile = os.path.join(outputFileSetPath, f'{file.name()}.seg.npy')
+                        segmentationFiles.append(segmentationFile)
+                        np.save(segmentationFile, predMax)
+                    elif mode == MuscleFatSegmentationTask.PROBABILITIES:
+                        segmentationFile = os.path.join(outputFileSetPath, f'{file.name()}.seg.prob.npy')
+                        segmentationFiles.append(segmentationFile)
+                        np.save(segmentationFile, predSqueeze)
 
-                            img1 = img1.astype(np.float32)
-                            img2 = np.expand_dims(img1, 0)
-                            img2 = np.expand_dims(img2, -1)
-                            pred = model.predict([img2]) ##### Move to separate AI class!
-                            predSqueeze = np.squeeze(pred)
+                except pydicom.errors.InvalidDicomError:
+                    self.addWarning(f'Skipping non-DICOM: {file.path()}')
 
-                            # Generate predicted output. Can be ARGMAX (pixel value with maximum probability) or
-                            # PROBABILITIES, i.e, the individual class probabilities (muscle, SAT and VAT) in 
-                            # each pixel
-                            if mode == MuscleFatSegmentationTask.ARGMAX:
-                                predMax = predSqueeze.argmax(axis=-1)
-                                predMax = convertLabelsTo157(labelImage=predMax)
-                                segmentationFile = os.path.join(outputFileSetPath, f'{file.name()}.seg.npy')
-                                segmentationFiles.append(segmentationFile)
-                                np.save(segmentationFile, predMax)
-                            elif mode == MuscleFatSegmentationTask.PROBABILITIES:
-                                segmentationFile = os.path.join(outputFileSetPath, f'{file.name()}.seg.prob.npy')
-                                segmentationFiles.append(segmentationFile)
-                                np.save(segmentationFile, predSqueeze)
-
-                        except pydicom.errors.InvalidDicomError:
-                            self.addWarning(f'Skipping non-DICOM: {file.path()}')
-
-                        # Update progress for this iteration         
-                        self.updateProgress(step=step, nrSteps=nrSteps)
-                        step += 1
-
-                # Build output fileset
-                outputFileSet = self.dataManager().createFileSet(fileSetPath=outputFileSetPath)
-
-                # Cache all files in the output fileset because it's very likely we'll be using these
-                # files again for further processing and visualization
-                for file in outputFileSet.files():
-                    if file.name().endswith('.seg.npy') or file.name().endswith('.seg.prob.npy'):
-                        self.writeToCache(file=file, fileObject=np.load(file.path()))
-                
-                # Update final progress
+                # Update progress for this iteration         
                 self.updateProgress(step=step, nrSteps=nrSteps)
-                self.addInfo('Finished')
-            else:
-                self.addError(f'TensorFlow model fileset {tensorFlowModelFileSetName} not found')
-        else:
-            self.addError(f'Input fileset {inputFileSetName} not found')
+                step += 1
+
+        # Build output fileset
+        outputFileSet = self.dataManager().createFileSet(fileSetPath=outputFileSetPath)
+
+        # Cache all files in the output fileset because it's very likely we'll be using these
+        # files again for further processing and visualization
+        for file in outputFileSet.files():
+            if file.name().endswith('.seg.npy') or file.name().endswith('.seg.prob.npy'):
+                self.writeToCache(file=file, fileObject=np.load(file.path()))
+        
+        # Update final progress
+        self.updateProgress(step=step, nrSteps=nrSteps)
+        self.addInfo('Finished')
