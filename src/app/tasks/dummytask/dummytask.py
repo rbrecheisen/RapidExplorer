@@ -9,6 +9,21 @@ LOGGER = Logger()
 
 
 class DummyTask(Task):
+    """
+    This is an example task that you can copy to implement your own tasks. 
+    The following methods are available from the base Task class:
+
+        - self.parameter(name)
+        - parameterValuesAsString()
+        - self.dataManager()
+        - self.addInfo(message)
+        - self.addError(message)
+        - self.addWarning(message)
+        - self.updateProgress(step, nrSteps)
+        - self.readFromCache(file))
+        - self.writeToCache(file, fileObject)
+        - self.generateTimestampForFileSetName(name)
+    """
     def __init__(self) -> None:
         super(DummyTask, self).__init__()
 

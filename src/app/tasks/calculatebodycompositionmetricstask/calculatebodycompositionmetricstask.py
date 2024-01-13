@@ -44,7 +44,7 @@ class CalculateBodyCompositionMetricsTaskTask(Task):
                 return file    
         return None
 
-    def loadDicomFile(self, file: str):
+    def loadDicomFile(self, file: File):
         content = self.readFromCache(file=file)
         if not content:
             p = pydicom.dcmread(file.path())
@@ -55,15 +55,15 @@ class CalculateBodyCompositionMetricsTaskTask(Task):
         pixels = getPixelsFromDicomObject(p, normalize=True)
         return pixels, pixelSpacing
 
-    def loadSegmentationFile(self, file: str):
+    def loadSegmentationFile(self, file: File):
         content = self.readFromCache(file=file.path())
         if not content:
-            labels = np.load(file)
+            labels = np.load(file.path())
             content = self.writeToCache(file, labels)
         labels = content.fileObject()
         return labels
     
-    def loadTagFile(self, file: str, shape: List[int]):
+    def loadTagFile(self, file: File, shape: List[int]):
         content = self.readFromCache(file=file.path())
         if not content:
             labels = tagPixels(tagFilePath=file.path())

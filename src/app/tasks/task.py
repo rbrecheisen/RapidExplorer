@@ -210,8 +210,5 @@ class Task:
 
     # Miscellaneous
 
-    def generateFileSetName(self) -> str:
-        return createNameWithTimestamp(prefix=f'fileset-{self.name()}')
-    
     def generateTimestampForFileSetName(self, name: str) -> str:
         return createNameWithTimestamp(prefix=f'{name}')

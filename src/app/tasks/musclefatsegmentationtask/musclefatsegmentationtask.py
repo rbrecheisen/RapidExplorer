@@ -36,29 +36,29 @@ class MuscleFatSegmentationTask(Task):
                         import tensorflow as tf # Only load TensorFlow package if necessary (takes some time)
                         tfLoaded = True
                     tensorFlowModelFileDirectory = configuration.taskConfigSubDirectory(taskName=__class__.__name__, dirName='tensorFlowModelFiles')
-                    with zipfile.ZipFile(filePath) as zipObj:
+                    with zipfile.ZipFile(file.path()) as zipObj:
                         zipObj.extractall(path=tensorFlowModelFileDirectory)
                     tensorFlowModel = TensorFlowModel()
                     tensorFlowModel.load(modelFilePath=tensorFlowModelFileDirectory)
                     content = self.writeToCache(file=file, fileObject=tensorFlowModel)
                 tensorFlowModel = content.fileObject()
-            elif os.path.split(filePath)[1] == 'contour_model.zip':
+            elif file.name() == 'contour_model.zip':
                 content = self.readFromCache(file=file)
                 if not content:
                     if not tfLoaded:
                         import tensorflow as tf # Only load TensorFlow package if necessary (takes some time)
                         tfLoaded = True
                     tensorFlowModelFileDirectory = configuration.taskConfigSubDirectory(taskName=__class__.__name__, dirName='tensorFlowModelFiles')
-                    with zipfile.ZipFile(filePath) as zipObj:
+                    with zipfile.ZipFile(file.path()) as zipObj:
                         zipObj.extractall(path=tensorFlowModelFileDirectory)
                     tensorFlowContourModel = TensorFlowModel()
                     tensorFlowContourModel.load(modelFilePath=tensorFlowModelFileDirectory)
                     content = self.writeToCache(file=file, fileObject=tensorFlowContourModel)
                 tensorFlowContourModel = content.fileObject()
-            elif os.path.split(filePath)[1] == 'params.json':
+            elif file.name() == 'params.json':
                 content = self.readFromCache(file=file)
                 if not content:
-                    with open(filePath, 'r') as f:
+                    with open(file.path(), 'r') as f:
                         parameters = json.load(f)
                         content = self.writeToCache(file=file, fileObject=parameters)
                 parameters = content.fileObject()
@@ -108,8 +108,8 @@ class MuscleFatSegmentationTask(Task):
                 self.addInfo(f'Output fileset path: {outputFileSetPath}')
 
                 # Get mode (ARGMAX or PROBABILITIES)
-                mode = self.parameter('mode').value()
-                modeText = 'ARGMAX' if mode == MuscleFatSegmentationTask.ARGMAX else 'PROBABILITIES'
+                modeText = self.parameter('mode').value()
+                mode = MuscleFatSegmentationTask.ARGMAX if modeText == 'ARGMAX' else MuscleFatSegmentationTask.PROBABILITIES
                 self.addInfo(f'Mode: {modeText}')
 
                 # Load TensorFlow model files
@@ -157,13 +157,13 @@ class MuscleFatSegmentationTask(Task):
                             # Generate predicted output. Can be ARGMAX (pixel value with maximum probability) or
                             # PROBABILITIES, i.e, the individual class probabilities (muscle, SAT and VAT) in 
                             # each pixel
-                            if mode == 'ARGMAX':
+                            if mode == MuscleFatSegmentationTask.ARGMAX:
                                 predMax = predSqueeze.argmax(axis=-1)
                                 predMax = convertLabelsTo157(labelImage=predMax)
                                 segmentationFile = os.path.join(outputFileSetPath, f'{file.name()}.seg.npy')
                                 segmentationFiles.append(segmentationFile)
                                 np.save(segmentationFile, predMax)
-                            elif self.mode() == 'PROBABILITIES':
+                            elif mode == MuscleFatSegmentationTask.PROBABILITIES:
                                 segmentationFile = os.path.join(outputFileSetPath, f'{file.name()}.seg.prob.npy')
                                 segmentationFiles.append(segmentationFile)
                                 np.save(segmentationFile, predSqueeze)

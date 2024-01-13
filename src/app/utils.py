@@ -60,6 +60,18 @@ def isDicomFile(filePath: str) -> bool:
         return True
     except pydicom.errors.InvalidDicomError:
         return False
+    
+
+def isNumPyFile(filePath: str) -> bool:
+    try:
+        np.load(filePath)
+        return True
+    except OSError:
+        return False
+    
+
+def isTagFile(filePath: str) -> bool:
+    return filePath.endswith('.tag')
 
 
 def getPixelsFromDicomObject(p: pydicom.FileDataset, normalize: bool=False) -> np.array:
@@ -168,7 +180,7 @@ def loadNumPyArray(filePath: str) -> np.array:
     return np.load(filePath)
 
 
-def convertDicomToNumPyArray(dicomFilePath: str, windowCenter: int=50, windowWidth: int=400, normalize=True) -> np.array:
+def convertDicomToNumPyArray(dicomFilePath: str, windowLevel: int=50, windowWidth: int=400, normalize=True) -> np.array:
     p = pydicom.dcmread(dicomFilePath)
     pixels = p.pixel_array
     pixels = pixels.reshape(p.Rows, p.Columns)
@@ -176,7 +188,7 @@ def convertDicomToNumPyArray(dicomFilePath: str, windowCenter: int=50, windowWid
         b = p.RescaleIntercept
         m = p.RescaleSlope
         pixels = m * pixels + b
-    pixels = applyWindowCenterAndWidth(pixels, windowCenter, windowWidth)
+    pixels = applyWindowCenterAndWidth(pixels, windowLevel, windowWidth)
     return pixels
 
 
