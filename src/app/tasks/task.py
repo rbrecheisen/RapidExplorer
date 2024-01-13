@@ -72,6 +72,8 @@ class Task:
     def dataManager(self) -> DataManager:
         return self._dataManager
     
+    # Logging
+    
     def errors(self) -> List[str]:
         return self._errors
     
@@ -202,6 +204,9 @@ class Task:
     def writeToCache(self, file: File, fileObject: Any) -> None:
         content = FileContent(file=file, fileObject=fileObject)
         self._cache.add(content)
+        # Return content rightaway for continued processing
+        # after updating cache
+        return content
 
     # Miscellaneous
 

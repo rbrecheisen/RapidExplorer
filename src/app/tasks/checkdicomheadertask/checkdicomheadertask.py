@@ -4,7 +4,6 @@ import pydicom
 import pydicom.errors
 
 from tasks.task import Task
-from data.datamanager import DataManager
 from logger import Logger
 
 LOGGER = Logger()
@@ -41,6 +40,7 @@ class CheckDicomHeaderTask(Task):
                     break
                 try:
                     # Try reading file as DICOM (do not decompress because we don't read pixel data)
+                    # Don't use the cache because we're not reading pixels
                     p = pydicom.dcmread(file.path(), stop_before_pixels=True)
                     
                     # Check if required attributes are present

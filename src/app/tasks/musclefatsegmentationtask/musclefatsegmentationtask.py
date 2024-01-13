@@ -26,28 +26,42 @@ class MuscleFatSegmentationTask(Task):
         super(MuscleFatSegmentationTask, self).__init__()        
 
     def loadModelFiles(self, files: List[File]) -> List[Any]:
-        import tensorflow as tf # Only load TensorFlow package here...
+        tfLoaded = False
         configuration = Configuration()
-        tensorFlowModel, tensorFlowContourModel, parameters = None, None, None
         for file in files:
-            filePath = file.path()
-            if os.path.split(filePath)[1] == 'model.zip':
-                tensorFlowModelFileDirectory = configuration.taskConfigSubDirectory(taskName=__class__.__name__, dirName='tensorFlowModelFiles')
-                with zipfile.ZipFile(filePath) as zipObj:
-                    zipObj.extractall(path=tensorFlowModelFileDirectory)
-                tensorFlowModel = TensorFlowModel()
-                tensorFlowModel.load(modelFilePath=tensorFlowModelFileDirectory)
-                # tensorFlowModel = tf.keras.models.load_model(tensorFlowModelFileDirectory, compile=False)
+            if file.name() == 'model.zip':
+                content = self.readFromCache(file=file)
+                if not content:
+                    if not tfLoaded:
+                        import tensorflow as tf # Only load TensorFlow package if necessary (takes some time)
+                        tfLoaded = True
+                    tensorFlowModelFileDirectory = configuration.taskConfigSubDirectory(taskName=__class__.__name__, dirName='tensorFlowModelFiles')
+                    with zipfile.ZipFile(filePath) as zipObj:
+                        zipObj.extractall(path=tensorFlowModelFileDirectory)
+                    tensorFlowModel = TensorFlowModel()
+                    tensorFlowModel.load(modelFilePath=tensorFlowModelFileDirectory)
+                    content = self.writeToCache(file=file, fileObject=tensorFlowModel)
+                tensorFlowModel = content.fileObject()
             elif os.path.split(filePath)[1] == 'contour_model.zip':
-                tensorFlowModelFileDirectory = configuration.taskConfigSubDirectory(taskName=__class__.__name__, dirName='tensorFlowModelFiles')
-                with zipfile.ZipFile(filePath) as zipObj:
-                    zipObj.extractall(path=tensorFlowModelFileDirectory)
-                tensorFlowContourModel = TensorFlowModel()
-                tensorFlowContourModel.load(modelFilePath=tensorFlowModelFileDirectory)
-                # tensorFlowContourModel = tf.keras.models.load_model(tensorFlowModelFileDirectory, compile=False)
+                content = self.readFromCache(file=file)
+                if not content:
+                    if not tfLoaded:
+                        import tensorflow as tf # Only load TensorFlow package if necessary (takes some time)
+                        tfLoaded = True
+                    tensorFlowModelFileDirectory = configuration.taskConfigSubDirectory(taskName=__class__.__name__, dirName='tensorFlowModelFiles')
+                    with zipfile.ZipFile(filePath) as zipObj:
+                        zipObj.extractall(path=tensorFlowModelFileDirectory)
+                    tensorFlowContourModel = TensorFlowModel()
+                    tensorFlowContourModel.load(modelFilePath=tensorFlowModelFileDirectory)
+                    content = self.writeToCache(file=file, fileObject=tensorFlowContourModel)
+                tensorFlowContourModel = content.fileObject()
             elif os.path.split(filePath)[1] == 'params.json':
-                with open(filePath, 'r') as f:
-                    parameters = json.load(f)
+                content = self.readFromCache(file=file)
+                if not content:
+                    with open(filePath, 'r') as f:
+                        parameters = json.load(f)
+                        content = self.writeToCache(file=file, fileObject=parameters)
+                parameters = content.fileObject()
             else:
                 pass
         return [tensorFlowModel, tensorFlowContourModel, parameters]
@@ -115,9 +129,13 @@ class MuscleFatSegmentationTask(Task):
                             break
 
                         try:
-                            # Read DICOM file and decompress if needed
-                            p = pydicom.dcmread(file.path())
-                            p.decompress()
+                            # Read DICOM file (from cache first) and decompress if needed
+                            content = self.readFromCache(file=file)
+                            if not content:
+                                p = pydicom.dcmread(file.path())
+                                p.decompress()
+                                content = self.writeToCache(file, p)
+                            p = content.fileObject()
 
                             # Get pixels from DICOM file and normalize to positive range
                             img1 = getPixelsFromDicomObject(p, normalize=True)
@@ -158,7 +176,13 @@ class MuscleFatSegmentationTask(Task):
                         step += 1
 
                 # Build output fileset
-                self.dataManager().createFileSet(fileSetPath=outputFileSetPath)
+                outputFileSet = self.dataManager().createFileSet(fileSetPath=outputFileSetPath)
+
+                # Cache all files in the output fileset because it's very likely we'll be using these
+                # files again for further processing and visualization
+                for file in outputFileSet.files():
+                    if file.name().endswith('.seg.npy') or file.name().endswith('.seg.prob.npy'):
+                        self.writeToCache(file=file, fileObject=np.load(file.path()))
                 
                 # Update final progress
                 self.updateProgress(step=step, nrSteps=nrSteps)

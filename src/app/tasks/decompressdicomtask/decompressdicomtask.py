@@ -53,7 +53,7 @@ class DecompressDicomTask(Task):
                     if not content:
                         p = pydicom.dcmread(file.path())
                         p.decompress()
-                        self.writeToCache(file, p)
+                        content = self.writeToCache(file, p)
                     p = content.fileObject()
 
                     outputFileName = file.name()

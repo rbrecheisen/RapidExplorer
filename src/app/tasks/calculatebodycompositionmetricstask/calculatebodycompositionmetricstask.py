@@ -9,6 +9,8 @@ from typing import List, Dict
 
 from tasks.task import Task
 from data.file import File
+from data.filecontent import FileContent
+from data.filecontentcache import FileContentCache
 from utils import getPixelsFromDicomObject, tagPixels, isDicomFile, calculateArea
 from utils import calculateMeanRadiationAttennuation, createNameWithTimestamp
 from logger import Logger
@@ -24,40 +26,55 @@ class CalculateBodyCompositionMetricsTaskTask(Task):
     def __init__(self) -> None:
         super(CalculateBodyCompositionMetricsTaskTask, self).__init__()
 
-    def findSegmentationFilePathForDicomFile(self, dicomFile: File, segmentationFiles: List[File]) -> str:
+    def findSegmentationFileForDicomFile(self, dicomFile: File, segmentationFiles: List[File]) -> File:
         for segmentationFile in segmentationFiles:
             segmentationFilePath = segmentationFile.path()
             segmentationFileName = os.path.split(segmentationFilePath)[1]
             if dicomFile.name() + '.seg.npy' == segmentationFileName:
-                return segmentationFilePath
+                return segmentationFile
         return None
 
-    def findTagFilePathForDicomFile(self, dicomFile) -> str:
-        tagFilePath = dicomFile.path() + '.tag'
-        if os.path.isfile(tagFilePath):
-            return tagFilePath
-        tagFilePath = dicomFile.path()[:-4] + '.tag'
-        if os.path.isfile(tagFilePath):
-            return tagFilePath
+    def findTagFileForDicomFile(self, dicomFile, files: List[File]) -> File:
+        tagFilePath1 = dicomFile.path() + '.tag'
+        tagFilePath2 = dicomFile.path()[:-4] + '.tag'
+        for file in files:            
+            if file.path() == tagFilePath1:
+                return file
+            if file.path() == tagFilePath2:
+                return file    
         return None
 
-    def loadDicomFile(self, filePath: str):
-        p = pydicom.dcmread(filePath)
+    def loadDicomFile(self, file: str):
+        content = self.readFromCache(file=file)
+        if not content:
+            p = pydicom.dcmread(file.path())
+            p.decompress()
+            content = self.writeToCache(file, p)
+        p = content.fileObject()
         pixelSpacing = p.PixelSpacing
         pixels = getPixelsFromDicomObject(p, normalize=True)
         return pixels, pixelSpacing
 
-    def loadSegmentationFile(self, filePath: str):
-        return np.load(filePath)
+    def loadSegmentationFile(self, file: str):
+        content = self.readFromCache(file=file.path())
+        if not content:
+            labels = np.load(file)
+            content = self.writeToCache(file, labels)
+        labels = content.fileObject()
+        return labels
     
-    def loadTagFile(self, filePath: str, shape: List[int]):
-        pixels = tagPixels(tagFilePath=filePath)
-        return pixels.reshape(shape)
+    def loadTagFile(self, file: str, shape: List[int]):
+        content = self.readFromCache(file=file.path())
+        if not content:
+            labels = tagPixels(tagFilePath=file.path())
+            content = self.writeToCache(file, labels)
+        labels = content.fileObject()
+        return labels.reshape(shape)
     
     def fileOutputMetricsToString(self, outputMetrics: Dict[str, float], fileName: str) -> None:
         text = fileName + ':\n'
         for metric, value in outputMetrics.items():
-            text += f'  - {metrics}: {value}\n'
+            text += f'  - {metric}: {value}\n'
         self.addInfo(text)
 
     def execute(self) -> None:
@@ -100,7 +117,7 @@ class CalculateBodyCompositionMetricsTaskTask(Task):
                 files = inputFileSet.files()
                 nrSteps = len(files) + 1
                 step = 0
-                filePathTuples = []
+                fileTuples = []
                 outputMetrics = {} # Contains BC metrics
                 for file in files:
 
@@ -109,56 +126,56 @@ class CalculateBodyCompositionMetricsTaskTask(Task):
                         self.addInfo('Canceling task...')
                         break
 
-                    filePathTuple = [None, None, None]
+                    fileTuple = [None, None, None]
 
                     if isDicomFile(filePath=file.path()):
-                        filePathTuple[0] = file.path()
+                        fileTuple[0] = file.path()
 
                         # Try to find TAG file
-                        tagFilePath = self.findTagFilePathForDicomFile(dicomFile=file)
-                        if tagFilePath:
-                            filePathTuple[2] = tagFilePath
+                        tagFile = self.findTagFileForDicomFile(dicomFile=file, files=files)
+                        if tagFile:
+                            fileTuple[2] = tagFile
 
                         # Get segmentation file for DICOM file
-                        segmentationFilePath = self.findSegmentationFilePathForDicomFile(dicomFile=file, segmentationFiles=inputSegmentationFileSet.files())
-                        if segmentationFilePath:
-                            filePathTuple[1] = segmentationFilePath
-                            filePathTuples.append(filePathTuple)
+                        segmentationFile = self.findSegmentationFileForDicomFile(dicomFile=file, segmentationFiles=inputSegmentationFileSet.files())
+                        if segmentationFile:
+                            fileTuple[1] = segmentationFile
+                            fileTuples.append(fileTuple)
 
                             # Get DICOM pixels, pixel spacing, predicted segmentation labels and TAG labels if available
-                            image, pixelSpacing = self.loadDicomFile(filePath=filePathTuple[0])
-                            segmentation = self.loadSegmentationFile(filePath=filePathTuple[1])
+                            image, pixelSpacing = self.loadDicomFile(file=fileTuple[0])
+                            segmentation = self.loadSegmentationFile(file=fileTuple[1])
                             
                             # Calculate metrics for predicted segmentation
-                            outputMetrics[filePathTuple[0]] = {}
-                            outputMetrics[filePathTuple[0]]['file'] = filePathTuple[0]
-                            outputMetrics[filePathTuple[0]]['muscle_area_pred'] = calculateArea(segmentation, CalculateBodyCompositionMetricsTaskTask.MUSCLE, pixelSpacing)
-                            outputMetrics[filePathTuple[0]]['vat_area_pred'] = calculateArea(segmentation, CalculateBodyCompositionMetricsTaskTask.VAT, pixelSpacing)
-                            outputMetrics[filePathTuple[0]]['sat_area_pred'] = calculateArea(segmentation, CalculateBodyCompositionMetricsTaskTask.SAT, pixelSpacing)
-                            outputMetrics[filePathTuple[0]]['muscle_ra_pred'] = calculateMeanRadiationAttennuation(image, segmentation, CalculateBodyCompositionMetricsTaskTask.MUSCLE)
-                            outputMetrics[filePathTuple[0]]['vat_ra_pred'] = calculateMeanRadiationAttennuation(image, segmentation, CalculateBodyCompositionMetricsTaskTask.VAT)
-                            outputMetrics[filePathTuple[0]]['sat_ra_pred'] = calculateMeanRadiationAttennuation(image, segmentation, CalculateBodyCompositionMetricsTaskTask.SAT)
+                            outputMetrics[fileTuple[0]] = {}
+                            outputMetrics[fileTuple[0]]['file'] = fileTuple[0]
+                            outputMetrics[fileTuple[0]]['muscle_area_pred'] = calculateArea(segmentation, CalculateBodyCompositionMetricsTaskTask.MUSCLE, pixelSpacing)
+                            outputMetrics[fileTuple[0]]['vat_area_pred'] = calculateArea(segmentation, CalculateBodyCompositionMetricsTaskTask.VAT, pixelSpacing)
+                            outputMetrics[fileTuple[0]]['sat_area_pred'] = calculateArea(segmentation, CalculateBodyCompositionMetricsTaskTask.SAT, pixelSpacing)
+                            outputMetrics[fileTuple[0]]['muscle_ra_pred'] = calculateMeanRadiationAttennuation(image, segmentation, CalculateBodyCompositionMetricsTaskTask.MUSCLE)
+                            outputMetrics[fileTuple[0]]['vat_ra_pred'] = calculateMeanRadiationAttennuation(image, segmentation, CalculateBodyCompositionMetricsTaskTask.VAT)
+                            outputMetrics[fileTuple[0]]['sat_ra_pred'] = calculateMeanRadiationAttennuation(image, segmentation, CalculateBodyCompositionMetricsTaskTask.SAT)
 
-                            if tagFilePath:
+                            if tagFile:
                                 # Calculate metrics for true segmentation based on TAG file
-                                tagImage = self.loadTagFile(filePath=filePathTuple[2], shape=image.shape)
-                                outputMetrics[filePathTuple[0]]['muscle_area_true'] = calculateArea(tagImage, CalculateBodyCompositionMetricsTaskTask.MUSCLE, pixelSpacing)
-                                outputMetrics[filePathTuple[0]]['vat_area_true'] = calculateArea(tagImage, CalculateBodyCompositionMetricsTaskTask.VAT, pixelSpacing)
-                                outputMetrics[filePathTuple[0]]['sat_area_true'] = calculateArea(tagImage, CalculateBodyCompositionMetricsTaskTask.SAT, pixelSpacing)
-                                outputMetrics[filePathTuple[0]]['muscle_ra_true'] = calculateMeanRadiationAttennuation(image, tagImage, CalculateBodyCompositionMetricsTaskTask.MUSCLE)
-                                outputMetrics[filePathTuple[0]]['vat_ra_true'] = calculateMeanRadiationAttennuation(image, tagImage, CalculateBodyCompositionMetricsTaskTask.VAT)
-                                outputMetrics[filePathTuple[0]]['sat_ra_true'] = calculateMeanRadiationAttennuation(image, tagImage, CalculateBodyCompositionMetricsTaskTask.SAT)
+                                tagImage = self.loadTagFile(file=fileTuple[2], shape=image.shape)
+                                outputMetrics[fileTuple[0]]['muscle_area_true'] = calculateArea(tagImage, CalculateBodyCompositionMetricsTaskTask.MUSCLE, pixelSpacing)
+                                outputMetrics[fileTuple[0]]['vat_area_true'] = calculateArea(tagImage, CalculateBodyCompositionMetricsTaskTask.VAT, pixelSpacing)
+                                outputMetrics[fileTuple[0]]['sat_area_true'] = calculateArea(tagImage, CalculateBodyCompositionMetricsTaskTask.SAT, pixelSpacing)
+                                outputMetrics[fileTuple[0]]['muscle_ra_true'] = calculateMeanRadiationAttennuation(image, tagImage, CalculateBodyCompositionMetricsTaskTask.MUSCLE)
+                                outputMetrics[fileTuple[0]]['vat_ra_true'] = calculateMeanRadiationAttennuation(image, tagImage, CalculateBodyCompositionMetricsTaskTask.VAT)
+                                outputMetrics[fileTuple[0]]['sat_ra_true'] = calculateMeanRadiationAttennuation(image, tagImage, CalculateBodyCompositionMetricsTaskTask.SAT)
 
-                            self.addInfo(self.fileOutputMetricsToString(outputMetrics=outputMetrics[filePathTuple[0]]))
+                            self.addInfo(self.fileOutputMetricsToString(outputMetrics=outputMetrics[fileTuple[0]]))
                         else:
-                            self.addError(f'Segmentation file {segmentationFilePath.name()} not found')                        
+                            self.addError(f'Segmentation file {segmentationFile.name()} not found')                        
                 
                     # Update progress based on nr. steps required. This will automatically
                     # send sigals/events to the task widget
                     self.updateProgress(step=step, nrSteps=nrSteps)
                     step += 1
                 
-                # Build output fileset
+                # Build output fileset using Pandas
                 self.addInfo(f'Building output fileset: {outputFileSetPath}...')
                 firstKey = next(iter(outputMetrics))
                 columns = list(outputMetrics[firstKey].keys())
@@ -172,6 +189,8 @@ class CalculateBodyCompositionMetricsTaskTask(Task):
                 df = pd.DataFrame(data=data)
                 df.to_csv(csvFilePath, index=False)
 
+                # Create new output fileset from the CSV file. No need to cache it because it's just
+                # text and we're probably not going to use it further
                 self.dataManager().createFileSet(fileSetPath=outputFileSetPath)
 
                 # Update final progress
