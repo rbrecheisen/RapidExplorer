@@ -2,11 +2,9 @@ import os
 import shutil
 import pydicom
 import pydicom.errors
-import 
 
 from tasks.task import Task
 from data.filecontentcache import FileContentCache
-from data.filecontent import FileContent
 from logger import Logger
 
 LOGGER = Logger()
