@@ -35,7 +35,7 @@ class CheckDicomHeaderTask(Task):
         step = 0
         dicomFilesOk = []
         files = inputFileSet.files()
-        nrSteps = len(files) + 1 # Add final step to build output fileset
+        nrSteps = len(files)
         for file in files:
 
             # Chec if the task should cancel

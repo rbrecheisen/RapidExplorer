@@ -105,7 +105,7 @@ class CalculateBodyCompositionMetricsTaskTask(Task):
         os.makedirs(outputFileSetPath, exist_ok=False)
 
         files = inputFileSet.files()
-        nrSteps = len(files) + 1
+        nrSteps = len(files)
         step = 0
         fileTuples = []
         outputMetrics = {} # Contains BC metrics

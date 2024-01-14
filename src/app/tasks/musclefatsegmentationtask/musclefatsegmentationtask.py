@@ -112,7 +112,7 @@ class MuscleFatSegmentationTask(Task):
             step = 0
             files = inputFileSet.files()
             segmentationFiles = []
-            nrSteps = len(files) + 1
+            nrSteps = len(files)
             for file in files:
 
                 # Check if task was canceled first

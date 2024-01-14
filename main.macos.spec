@@ -1,15 +1,28 @@
 # -*- mode: python ; coding: utf-8 -*-
 from PyInstaller.utils.hooks import collect_data_files
 
-# Manually adding tasks package
-task_files = [(os.path.join('src', 'app', 'tasks'), 'tasks')]
+# Manually adding datas
+datas = [
+    (os.path.join('src', 'app', 'tasks'), 'tasks'),
+    (os.path.join('src', 'app', 'ai'), 'ai'),
+]
+
+# Manually adding hidden imports
+hiddenimports = []
+with open('requirements.txt', 'r') as f:
+    for line in f.readlines():
+        line = line.strip()
+        if not line.startswith('#'):
+            hiddenimports.append(line)
+hiddenimports.extend(['pydicom.encoders.gdcm', 'pydicom.encoders.pylibjpeg'])
+print(hiddenimports)
 
 a = Analysis(
     ['src/app/main.py'],
     pathex=[],
     binaries=[],
-    datas=task_files,
-    hiddenimports=['pydicom.encoders.gdcm', 'pydicom.encoders.pylibjpeg'],
+    datas=datas,
+    hiddenimports=hiddenimports,
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
