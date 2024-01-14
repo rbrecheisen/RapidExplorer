@@ -12,8 +12,14 @@ if exist %APPNAME% rmdir /s /q %APPNAME%
 @REM     --nofollow-import-to=pytest ^
 @REM     src\app\main.py
 
+SETLOCAL ENABLEDELAYEDEXPANSION
+SET "HIDDEN_IMPORTS="
+FOR /F "tokens=*" %%i IN (requirements.txt) DO (
+    SET "HIDDEN_IMPORTS=!HIDDEN_IMPORTS! --hidden-import=%%i"
+)
+
 @REM call pyinstaller.exe main.win.spec
-call pyinstaller.exe --onefile src\app\main.py
+call pyinstaller.exe --onefile %HIDDEN_IMPORTS% src\app\main.py
 
 @REM if exist dist move /y dist %APPNAME%
 @REM copy settings.ini %APPNAME%
