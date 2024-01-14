@@ -28,3 +28,5 @@ call pyinstaller.exe --onefile %HIDDEN_IMPORTS% --hidden-import=pydicom.encoders
 @REM powershell Compress-Archive -Force -Path %APPNAME% -DestinationPath %APPNAME%.zip
 @REM if exist build rmdir /s /q build
 @REM if exist %APPNAME% rmdir /s /q %APPNAME%
+
+echo "Bla"
