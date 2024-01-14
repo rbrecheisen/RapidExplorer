@@ -1,17 +1,21 @@
 @echo off
+
 set APPNAME=MosamaticDesktop
 
 @rem Calling executable after compiling returns with no output at all...
 
-if exist main.build rmdir /s /q main.build
+@REM if exist main.build rmdir /s /q main.build
+if exist build rmdir /s /q build
 if exist %APPNAME% rmdir /s /q %APPNAME%
 
-call nuitka --standalone --mingw64 ^
-    --include-package=pydicom ^
-    --enable-plugin=pyside6 ^
-    --nofollow-import-to=unittest ^
-    --nofollow-import-to=pytest ^
-    src\app\main.py
+@REM call nuitka --standalone --mingw64 ^
+@REM     --include-package=pydicom ^
+@REM     --enable-plugin=pyside6 ^
+@REM     --nofollow-import-to=unittest ^
+@REM     --nofollow-import-to=pytest ^
+@REM     src\app\main.py
+
+call pyinstaller main.win.spec
 
 if exist main.dist move /y main.dist %APPNAME%
 
@@ -21,5 +25,6 @@ move /y %APPNAME%\run.bat %APPNAME%\%APPNAME%.bat
 
 powershell Compress-Archive -Force -Path %APPNAME% -DestinationPath %APPNAME%.zip
 
-if exist main.build rmdir /s /q build
+@REM if exist main.build rmdir /s /q main.build
+if exist build rmdir /s /q build
 if exist %APPNAME% rmdir /s /q %APPNAME%

@@ -2,7 +2,7 @@
 
 export APPNAME=MosamaticDesktop
 
-rm -rf main.build ${APPNAME}
+rm -rf build ${APPNAME}
 
 # ~/.venv/MosamaticDesktop/bin/pyinstaller \
 #     --onefile \
