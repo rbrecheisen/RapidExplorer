@@ -15,7 +15,7 @@ if exist %APPNAME% rmdir /s /q %APPNAME%
 @REM     --nofollow-import-to=pytest ^
 @REM     src\app\main.py
 
-call pyinstaller main.win.spec
+call pyinstaller.exe main.win.spec
 
 if exist main.dist move /y main.dist %APPNAME%
 
