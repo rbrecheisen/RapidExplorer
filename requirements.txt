@@ -1,26 +1,14 @@
-# Core packages
 numpy
 pandas
 pyside6
 sqlalchemy
 pendulum
-
-# DICOM
 pydicom 
 pylibjpeg[all]
 pyjpegls
 python-gdcm
-
-# Testing
 pytest
 pytest-qt
-
-# AI
 tensorflow
-
-# Deployment
 pyinstaller
-nuitka # for Windows
-
-# Graphics output
 matplotlib
