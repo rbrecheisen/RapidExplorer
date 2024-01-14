@@ -15,13 +15,10 @@ if exist %APPNAME% rmdir /s /q %APPNAME%
 @REM call pyinstaller.exe main.win.spec
 call pyinstaller.exe --onefile src\app\main.py
 
-if exist dist move /y dist %APPNAME%
-
-copy settings.ini %APPNAME%
-copy run.bat %APPNAME%
-move /y %APPNAME%\run.bat %APPNAME%\%APPNAME%.bat
-
-powershell Compress-Archive -Force -Path %APPNAME% -DestinationPath %APPNAME%.zip
-
-if exist build rmdir /s /q build
-if exist %APPNAME% rmdir /s /q %APPNAME%
+@REM if exist dist move /y dist %APPNAME%
+@REM copy settings.ini %APPNAME%
+@REM copy run.bat %APPNAME%
+@REM move /y %APPNAME%\run.bat %APPNAME%\%APPNAME%.bat
+@REM powershell Compress-Archive -Force -Path %APPNAME% -DestinationPath %APPNAME%.zip
+@REM if exist build rmdir /s /q build
+@REM if exist %APPNAME% rmdir /s /q %APPNAME%
