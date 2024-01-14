@@ -1,6 +1,9 @@
 @echo off
 setlocal
 
+@REM https://chat.openai.com/c/143bf330-901c-46ea-9115-03b450fdd07d
+@REM Also install Python 3 if needed
+
 set VENV_DIR=%USERPROFILE%\.mosamatic\MosamaticDesktop
 
 if not exist "%USERPROFILE%\.mosamatic\" mkdir "%USERPROFILE%\.mosamatic"

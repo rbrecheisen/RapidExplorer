@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# https://chat.openai.com/c/143bf330-901c-46ea-9115-03b450fdd07d
+# Also install Python3 if needed
+
 unzip -o MosamaticDesktop.zip
 
 VENV_DIR="$HOME/.mosamatic/MosamaticDesktop"
