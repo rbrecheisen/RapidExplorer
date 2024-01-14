@@ -26,5 +26,5 @@ move /y %APPNAME%\run.bat %APPNAME%\%APPNAME%.bat
 powershell Compress-Archive -Force -Path %APPNAME% -DestinationPath %APPNAME%.zip
 
 @REM if exist main.build rmdir /s /q main.build
-if exist build rmdir /s /q build
-if exist %APPNAME% rmdir /s /q %APPNAME%
+@REM if exist build rmdir /s /q build
+@REM if exist %APPNAME% rmdir /s /q %APPNAME%
