@@ -2,9 +2,6 @@
 
 set APPNAME=MosamaticDesktop
 
-@rem Calling executable after compiling returns with no output at all...
-
-@REM if exist main.build rmdir /s /q main.build
 if exist build rmdir /s /q build
 if exist %APPNAME% rmdir /s /q %APPNAME%
 
@@ -15,9 +12,10 @@ if exist %APPNAME% rmdir /s /q %APPNAME%
 @REM     --nofollow-import-to=pytest ^
 @REM     src\app\main.py
 
-call pyinstaller.exe main.win.spec
+@REM call pyinstaller.exe main.win.spec
+call pyinstaller.exe --onefile src\app\main.py
 
-if exist main.dist move /y main.dist %APPNAME%
+if exist dist move /y dist %APPNAME%
 
 copy settings.ini %APPNAME%
 copy run.bat %APPNAME%
@@ -25,6 +23,5 @@ move /y %APPNAME%\run.bat %APPNAME%\%APPNAME%.bat
 
 powershell Compress-Archive -Force -Path %APPNAME% -DestinationPath %APPNAME%.zip
 
-@REM if exist main.build rmdir /s /q main.build
-@REM if exist build rmdir /s /q build
-@REM if exist %APPNAME% rmdir /s /q %APPNAME%
+if exist build rmdir /s /q build
+if exist %APPNAME% rmdir /s /q %APPNAME%
