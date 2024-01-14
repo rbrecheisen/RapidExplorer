@@ -19,7 +19,7 @@ FOR /F "tokens=*" %%i IN (requirements.txt) DO (
 )
 
 @REM call pyinstaller.exe main.win.spec
-call pyinstaller.exe --onefile %HIDDEN_IMPORTS% --hidden-import=pydicom.encoders.gdcm --hidden-import=pydicom.encoders.pylibjpeg src\app\main.py
+call pyinstaller.exe --onefile %HIDDEN_IMPORTS% --hidden-import=pydicom.encoders.gdcm --hidden-import=pydicom.encoders.pylibjpeg src\app\main.py 
 
 @REM if exist dist move /y dist %APPNAME%
 @REM copy settings.ini %APPNAME%
