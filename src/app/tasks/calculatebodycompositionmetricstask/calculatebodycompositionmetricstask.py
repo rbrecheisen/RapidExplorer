@@ -76,8 +76,8 @@ class CalculateBodyCompositionMetricsTaskTask(Task):
             data['height'] = row['height']
         return data
     
-    def fileOutputMetricsToString(self, outputMetrics: Dict[str, float], fileName: str) -> None:
-        text = fileName + ':\n'
+    def fileOutputMetricsToString(self, outputMetrics: Dict[str, float]) -> None:
+        text = ''
         for metric, value in outputMetrics.items():
             text += f'  - {metric}: {value}\n'
         self.addInfo(text)
@@ -174,7 +174,7 @@ class CalculateBodyCompositionMetricsTaskTask(Task):
                         outputMetrics[fileTuple[0]]['vat_ra_true'] = calculateMeanRadiationAttennuation(image, tagImage, CalculateBodyCompositionMetricsTaskTask.VAT)
                         outputMetrics[fileTuple[0]]['sat_ra_true'] = calculateMeanRadiationAttennuation(image, tagImage, CalculateBodyCompositionMetricsTaskTask.SAT)
 
-                    self.addInfo(self.fileOutputMetricsToString(outputMetrics=outputMetrics[fileTuple[0]], fileName=fileTuple[0].name()))
+                    self.addInfo(self.fileOutputMetricsToString(outputMetrics=outputMetrics[fileTuple[0]]))
                 else:
                     self.addError(f'Segmentation file {segmentationFile.name()} not found')                        
         
