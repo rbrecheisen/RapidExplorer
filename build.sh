@@ -10,7 +10,13 @@ rm -rf build ${APPNAME}
 #     --hidden-import=pydicom.encoders.pylibjpeg \
 #     src/app/main.py
 
-pyinstaller main.macos.spec
+hidden_imports=""
+while IFS= read -r package || [[ -n "$package" ]]; do
+    hidden_imports+=" --hidden-import=$package"
+done < ./requirements.txt
+
+~/.venv/MosamaticDesktop/bin/pyinstaller main.macos.spec
+# ~/.venv/MosamaticDesktop/bin/pyinstaller --onefile ${hidden_imports} --hidden-import=pydicom.encoders.gdcm --hidden-import=pydicom.encoders.pylibjpeg src/app/main.py
 
 mv dist ${APPNAME}
 cp settings.ini ${APPNAME}

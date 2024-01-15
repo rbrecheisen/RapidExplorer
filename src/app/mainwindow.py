@@ -103,11 +103,13 @@ class MainWindow(QMainWindow):
     def importFile(self) -> None:
         filePath, _ = QFileDialog.getOpenFileName(self, 'Open File', FILEPATH)
         if filePath:
+            self._settings.setValue('lastDirectoryOpened', os.path.split(filePath)[0])
             self._dataManager.createFile(filePath=filePath)
 
     def importFileSet(self) -> None:
         fileSetPath = QFileDialog.getExistingDirectory(self, 'Open File Set', FILESETPATH)
         if fileSetPath:
+            self._settings.setValue('lastDirectoryOpened', fileSetPath)
             self._dataManager.createFileSet(fileSetPath=fileSetPath)
 
     def deleteAllFileSets(self) -> None:
