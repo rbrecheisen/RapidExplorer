@@ -254,6 +254,18 @@ def calculateMeanRadiationAttennuation(image, labels, label):
     return meanRadiationAttenuation
 
 
+def calculateDiceScore(groundTruth, prediction, label):
+    numerator = prediction[groundTruth == label]
+    numerator[numerator != label] = 0
+    n = groundTruth[prediction == label]
+    n[n != label] = 0
+    if np.sum(numerator) != np.sum(n):
+        raise RuntimeError('Mismatch in Dice score calculation!')
+    denominator = (np.sum(prediction[prediction == label]) + np.sum(groundTruth[groundTruth == label]))
+    diceScore = np.sum(numerator) * 2.0 / denominator
+    return diceScore
+
+
 @singleton
 class GitCommit:
     def __init__(self) -> None:

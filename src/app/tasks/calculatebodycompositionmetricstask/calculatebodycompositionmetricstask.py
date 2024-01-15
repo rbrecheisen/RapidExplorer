@@ -9,7 +9,7 @@ from typing import List, Dict
 
 from tasks.task import Task
 from data.file import File
-from utils import getPixelsFromDicomObject, tagPixels, isDicomFile, calculateArea, calculateIndex
+from utils import getPixelsFromDicomObject, tagPixels, isDicomFile, calculateArea, calculateIndex, calculateDiceScore
 from utils import calculateMeanRadiationAttennuation, createNameWithTimestamp
 from logger import Logger
 
@@ -173,6 +173,11 @@ class CalculateBodyCompositionMetricsTaskTask(Task):
                         outputMetrics[fileTuple[0]]['muscle_ra_true'] = calculateMeanRadiationAttennuation(image, tagImage, CalculateBodyCompositionMetricsTaskTask.MUSCLE)
                         outputMetrics[fileTuple[0]]['vat_ra_true'] = calculateMeanRadiationAttennuation(image, tagImage, CalculateBodyCompositionMetricsTaskTask.VAT)
                         outputMetrics[fileTuple[0]]['sat_ra_true'] = calculateMeanRadiationAttennuation(image, tagImage, CalculateBodyCompositionMetricsTaskTask.SAT)
+
+                        # Calculate Dice score between segmentation and TAG files
+                        outputMetrics[fileTuple[0]]['dice_muscle'] = calculateDiceScore(groundTruth=tagImage, prediction=segmentationFile, label=CalculateBodyCompositionMetricsTaskTask.MUSCLE)
+                        outputMetrics[fileTuple[0]]['dice_vat'] = calculateDiceScore(groundTruth=tagImage, prediction=segmentationFile, label=CalculateBodyCompositionMetricsTaskTask.VAT)
+                        outputMetrics[fileTuple[0]]['dice_sat'] = calculateDiceScore(groundTruth=tagImage, prediction=segmentationFile, label=CalculateBodyCompositionMetricsTaskTask.SAT)
 
                     self.addInfo(self.fileOutputMetricsToString(outputMetrics=outputMetrics[fileTuple[0]]))
                 else:
