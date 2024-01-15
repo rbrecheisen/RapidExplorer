@@ -175,9 +175,9 @@ class CalculateBodyCompositionMetricsTaskTask(Task):
                         outputMetrics[fileTuple[0]]['sat_ra_true'] = calculateMeanRadiationAttennuation(image, tagImage, CalculateBodyCompositionMetricsTaskTask.SAT)
 
                         # Calculate Dice score between segmentation and TAG files
-                        outputMetrics[fileTuple[0]]['dice_muscle'] = calculateDiceScore(groundTruth=tagImage, prediction=segmentationFile, label=CalculateBodyCompositionMetricsTaskTask.MUSCLE)
-                        outputMetrics[fileTuple[0]]['dice_vat'] = calculateDiceScore(groundTruth=tagImage, prediction=segmentationFile, label=CalculateBodyCompositionMetricsTaskTask.VAT)
-                        outputMetrics[fileTuple[0]]['dice_sat'] = calculateDiceScore(groundTruth=tagImage, prediction=segmentationFile, label=CalculateBodyCompositionMetricsTaskTask.SAT)
+                        outputMetrics[fileTuple[0]]['dice_muscle'] = calculateDiceScore(groundTruth=tagImage, prediction=segmentation, label=CalculateBodyCompositionMetricsTaskTask.MUSCLE)
+                        outputMetrics[fileTuple[0]]['dice_vat'] = calculateDiceScore(groundTruth=tagImage, prediction=segmentation, label=CalculateBodyCompositionMetricsTaskTask.VAT)
+                        outputMetrics[fileTuple[0]]['dice_sat'] = calculateDiceScore(groundTruth=tagImage, prediction=segmentation, label=CalculateBodyCompositionMetricsTaskTask.SAT)
 
                     self.addInfo(self.fileOutputMetricsToString(outputMetrics=outputMetrics[fileTuple[0]]))
                 else:
