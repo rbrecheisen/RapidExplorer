@@ -23,7 +23,7 @@ class MainWindow(QMainWindow):
         self._dataDockWidget = None
         self._tasksDockWidget = None
         self._mainViewDockWidget = None
-        self._viewsDockWidget = None
+        # self._viewsDockWidget = None
         self._defaultLayout = None       
         self._dataManager = DataManager()
         self._dataManager.signal().updated.connect(self.dataUpdated) 
@@ -36,7 +36,7 @@ class MainWindow(QMainWindow):
         self.initDataDockWidget()
         self.initTaskDockWidget()
         self.initMainViewerDockWidget()
-        self.initViewersDockWidget()
+        # self.initViewersDockWidget()
         self.initMainWindow()
 
     def initActionsAndMenus(self) -> None:
@@ -83,16 +83,16 @@ class MainWindow(QMainWindow):
         self._mainViewDockWidget.setAllowedAreas(Qt.RightDockWidgetArea | Qt.TopDockWidgetArea)
         self.addDockWidget(Qt.RightDockWidgetArea, self._mainViewDockWidget)
 
-    def initViewersDockWidget(self) -> None:
-        self._viewsDockWidget = ViewersDockWidget(title='Views')
-        self._viewsDockWidget.setAllowedAreas(Qt.RightDockWidgetArea | Qt.BottomDockWidgetArea)
-        self.addDockWidget(Qt.RightDockWidgetArea, self._viewsDockWidget)
+    # def initViewersDockWidget(self) -> None:
+    #     self._viewsDockWidget = ViewersDockWidget(title='Views')
+    #     self._viewsDockWidget.setAllowedAreas(Qt.RightDockWidgetArea | Qt.BottomDockWidgetArea)
+    #     self.addDockWidget(Qt.RightDockWidgetArea, self._viewsDockWidget)
 
     def initMainWindow(self) -> None:
         self.setCentralWidget(QWidget(self))
         self.centralWidget().hide()
         self.splitDockWidget(self._dataDockWidget, self._tasksDockWidget, Qt.Vertical)
-        self.splitDockWidget(self._mainViewDockWidget, self._viewsDockWidget, Qt.Vertical)
+        # self.splitDockWidget(self._mainViewDockWidget, self._viewsDockWidget, Qt.Vertical)
         self.setWindowTitle(WINDOWTITLE)
         self.setWindowSize()
         self.centerWindow()
