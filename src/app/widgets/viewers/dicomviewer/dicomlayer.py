@@ -12,20 +12,20 @@ from utils import readFromCache, writeToCache, applyWindowCenterAndWidth
 
 class DicomLayer(Layer):
     def __init__(self) -> None:
-        super(DicomLayer, self).__init__(name='dicom')
+        super(DicomLayer, self).__init__(name='dicom', opacity=1.0)
         self._qimage = None
-        self._windowLevel = 400
-        self._windowWidth = 50
+        self._windowLevel = 50
+        self._windowWidth = 400
 
     def data(self) -> pydicom.FileDataset:
         if self.file():
             content = readFromCache(file=self.file())
             if not content:
-                p = pydicom.dcmread(self.file().path())
-                p.decompress()
-                content = writeToCache(file=self.file(), fileObject=p)
-            p = content.fileObject()
-            return p
+                data = pydicom.dcmread(self.file().path())
+                data.decompress()
+                content = writeToCache(file=self.file(), fileObject=data)
+            data = content.fileObject()
+            return data
         return None
         
     def setWindowLevelAndWidth(self, windowLevel: int, windowWidth: int) -> None:

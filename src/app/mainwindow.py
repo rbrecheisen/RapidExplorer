@@ -149,10 +149,7 @@ class MainWindow(QMainWindow):
 
     # Exit
         
-    def closeEvent(self, event):
+    def exitApplication(self) -> None:
         self._settings.setValue('windowGeometry', self.saveGeometry())
         self._settings.setValue('windowState', self.saveState())
-        super().closeEvent(event)
-
-    def exitApplication(self) -> None:
         QApplication.exit()

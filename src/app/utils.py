@@ -317,7 +317,7 @@ class Configuration:
         return taskConfigSubDirectory
     
     def qSettings(self) -> QSettings:
-        settingsPath = self.configDirectory()
+        settingsPath = os.path.join(self.configDirectory(), 'settings.ini')
         return QSettings(settingsPath, QSettings.Format.IniFormat)
     
 
