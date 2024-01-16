@@ -6,7 +6,7 @@ import numpy as np
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QGraphicsView, QGraphicsScene, QComboBox, QSlider
 
-from utils import isDicomFile, isNumPyFile, isTagFile, tagPixels
+from utils import isDicomFile, isNumPyFile, isTagFile, tagPixels, readFromCache, writeToCache
 from data.fileset import FileSet
 from data.file import File
 from logger import Logger
@@ -60,7 +60,7 @@ class DicomViewer(QWidget):
 
     def setInputFileSet(self, fileSet: FileSet) -> None:
         for file in fileSet.files():
-            fileTuple = [None, None, None, None, None, None]
+            fileTuple = [None, None, None, None] # [DICOM File, pydicom.FileModel, NumPy File, TAG File]
             if isDicomFile(filePath=file.path()):
                 fileTuple[0] = file
                 dicomFile = pydicom.dcmread(file.path())
@@ -69,11 +69,11 @@ class DicomViewer(QWidget):
                 numpyFile = self.findNumPyFileForDicomFile(dicomFile=file, fileSet=fileSet)
                 if numpyFile:
                     fileTuple[2] = numpyFile
-                    fileTuple[3] = np.load(numpyFile.path())
+                    # fileTuple[3] = np.load(numpyFile.path())
                 tagFile = self.findTagFileForDicomFile(dicomFile=file, fileSet=fileSet)
                 if tagFile:
-                    fileTuple[4] = tagFile
-                    fileTuple[5] = tagPixels(tagFilePath=tagFile.path())
+                    fileTuple[3] = tagFile
+                    # fileTuple[5] = tagPixels(tagFilePath=tagFile.path())
                 self._fileTuples.append(fileTuple)
         self._fileTuples = sorted(self._fileTuples, key=lambda fileTuple: fileTuple[1].InstanceNumber)
         self.displayFileTuple(self._currentFileTupleIndex)
