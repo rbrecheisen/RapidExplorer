@@ -167,7 +167,7 @@ class DicomViewer(QWidget):
                 dicomInfoLayer.setInstanceNumber(instanceNumber=dicomLayer.data().InstanceNumber)
                 layerTuple[3] = dicomInfoLayer
                 self._layerTuples.append(layerTuple)
-        # Sort layers
+        # Sort layers (do this only for complete CT scans!)
         self._layerTuples = sorted(self._layerTuples, key=lambda layerTuple: layerTuple[0].data().InstanceNumber)
         # Update layer slider range
         self._layerTupleSlider.setRange(0, len(self._layerTuples) - 1)
