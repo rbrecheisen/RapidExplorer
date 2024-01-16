@@ -5,6 +5,7 @@ import pydicom.errors
 
 from tasks.task import Task
 from data.filecontentcache import FileContentCache
+from utils import readFromCache, writeToCache
 from logger import Logger
 
 LOGGER = Logger()
@@ -45,11 +46,11 @@ class DecompressDicomTask(Task):
             try:
                 # Try to load file content from cache first. If it's not available
                 # read it from disk
-                content = self.readFromCache(file=file)
+                content = readFromCache(file=file)
                 if not content:
                     p = pydicom.dcmread(file.path())
                     p.decompress()
-                    content = self.writeToCache(file, p)
+                    content = writeToCache(file, p)
                 p = content.fileObject()
 
                 outputFileName = file.name()

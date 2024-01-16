@@ -6,9 +6,6 @@ from PySide6.QtCore import QObject, Signal
 
 from tasks.parameter import Parameter
 from data.datamanager import DataManager
-from data.file import File
-from data.filecontent import FileContent
-from data.filecontentcache import FileContentCache
 from logger import Logger
 from utils import createNameWithTimestamp
 
@@ -195,18 +192,6 @@ class Task:
     def cancel(self) -> None:
         self.setStatusCanceled()
         self._thread.join()
-
-    # Caching
-        
-    def readFromCache(self, file: File) -> FileContent:
-        return self._cache.get(id=file.id())
-    
-    def writeToCache(self, file: File, fileObject: Any) -> None:
-        content = FileContent(file=file, fileObject=fileObject)
-        self._cache.add(content)
-        # Return content rightaway for continued processing
-        # after updating cache
-        return content
 
     # Miscellaneous
 

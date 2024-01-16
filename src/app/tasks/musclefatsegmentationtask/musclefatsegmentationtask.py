@@ -14,6 +14,7 @@ from data.file import File
 from logger import Logger
 from utils import getPixelsFromDicomObject, convertLabelsTo157
 from utils import normalizeBetween, Configuration
+from utils import readFromCache, writeToCache
 
 LOGGER = Logger()
 
@@ -30,7 +31,7 @@ class MuscleFatSegmentationTask(Task):
         configuration = Configuration()
         for file in files:
             if file.name() == 'model.zip':
-                content = self.readFromCache(file=file)
+                content = readFromCache(file=file)
                 if not content:
                     if not tfLoaded:
                         import tensorflow as tf # Only load TensorFlow package if necessary (takes some time)
@@ -40,10 +41,10 @@ class MuscleFatSegmentationTask(Task):
                         zipObj.extractall(path=tensorFlowModelFileDirectory)
                     tensorFlowModel = TensorFlowModel()
                     tensorFlowModel.load(modelFilePath=tensorFlowModelFileDirectory)
-                    content = self.writeToCache(file=file, fileObject=tensorFlowModel)
+                    content = writeToCache(file=file, fileObject=tensorFlowModel)
                 tensorFlowModel = content.fileObject()
             elif file.name() == 'contour_model.zip':
-                content = self.readFromCache(file=file)
+                content = readFromCache(file=file)
                 if not content:
                     if not tfLoaded:
                         import tensorflow as tf # Only load TensorFlow package if necessary (takes some time)
@@ -53,14 +54,14 @@ class MuscleFatSegmentationTask(Task):
                         zipObj.extractall(path=tensorFlowModelFileDirectory)
                     tensorFlowContourModel = TensorFlowModel()
                     tensorFlowContourModel.load(modelFilePath=tensorFlowModelFileDirectory)
-                    content = self.writeToCache(file=file, fileObject=tensorFlowContourModel)
+                    content = writeToCache(file=file, fileObject=tensorFlowContourModel)
                 tensorFlowContourModel = content.fileObject()
             elif file.name() == 'params.json':
-                content = self.readFromCache(file=file)
+                content = readFromCache(file=file)
                 if not content:
                     with open(file.path(), 'r') as f:
                         parameters = json.load(f)
-                        content = self.writeToCache(file=file, fileObject=parameters)
+                        content = writeToCache(file=file, fileObject=parameters)
                 parameters = content.fileObject()
             else:
                 pass
@@ -122,11 +123,11 @@ class MuscleFatSegmentationTask(Task):
 
                 try:
                     # Read DICOM file (from cache first) and decompress if needed
-                    content = self.readFromCache(file=file)
+                    content = readFromCache(file=file)
                     if not content:
                         p = pydicom.dcmread(file.path())
                         p.decompress()
-                        content = self.writeToCache(file, p)
+                        content = writeToCache(file, p)
                     p = content.fileObject()
 
                     # Get pixels from DICOM file and normalize to positive range

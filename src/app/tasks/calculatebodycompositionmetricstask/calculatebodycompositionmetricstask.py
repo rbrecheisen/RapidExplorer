@@ -10,7 +10,7 @@ from typing import List, Dict
 from tasks.task import Task
 from data.file import File
 from utils import getPixelsFromDicomObject, tagPixels, isDicomFile, calculateArea, calculateIndex, calculateDiceScore
-from utils import calculateMeanRadiationAttennuation, createNameWithTimestamp
+from utils import calculateMeanRadiationAttennuation, createNameWithTimestamp, readFromCache, writeToCache
 from logger import Logger
 
 LOGGER = Logger()
@@ -43,29 +43,29 @@ class CalculateBodyCompositionMetricsTaskTask(Task):
         return None
 
     def loadDicomFile(self, file: File):
-        content = self.readFromCache(file=file)
+        content = readFromCache(file=file)
         if not content:
             p = pydicom.dcmread(file.path())
             p.decompress()
-            content = self.writeToCache(file, p)
+            content = writeToCache(file, p)
         p = content.fileObject()
         pixelSpacing = p.PixelSpacing
         pixels = getPixelsFromDicomObject(p, normalize=True)
         return pixels, pixelSpacing
 
     def loadSegmentationFile(self, file: File):
-        content = self.readFromCache(file=file)
+        content = readFromCache(file=file)
         if not content:
             labels = np.load(file.path())
-            content = self.writeToCache(file, labels)
+            content = writeToCache(file, labels)
         labels = content.fileObject()
         return labels
     
     def loadTagFile(self, file: File, shape: List[int]):
-        content = self.readFromCache(file=file)
+        content = readFromCache(file=file)
         if not content:
             labels = tagPixels(tagFilePath=file.path())
-            content = self.writeToCache(file, labels)
+            content = writeToCache(file, labels)
         labels = content.fileObject()
         return labels.reshape(shape)
     

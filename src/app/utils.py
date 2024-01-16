@@ -18,6 +18,9 @@ from PySide6.QtGui import QImage
 from PySide6.QtCore import QSettings
 
 from singleton import singleton
+from data.file import File
+from data.filecontent import FileContent
+from data.filecontentcache import FileContentCache
 
 
 def createNameWithTimestamp(prefix: str='') -> str:
@@ -52,6 +55,19 @@ def duration(seconds: int) -> str:
     remainder = remainder - m * 60
     s = int(math.floor(remainder))
     return '{} hours, {} minutes, {} seconds'.format(h, m, s)
+
+
+def readFromCache(file: File) -> FileContent:
+    cache = FileContentCache()
+    return cache.get(id=file.id())
+
+def writeToCache(self, file: File, fileObject: Any) -> None:
+    content = FileContent(file=file, fileObject=fileObject)
+    cache = FileContentCache()
+    cache.add(content)
+    # Return content rightaway for continued processing
+    # after updating cache
+    return content
 
 
 def isDicomFile(filePath: str) -> bool:
