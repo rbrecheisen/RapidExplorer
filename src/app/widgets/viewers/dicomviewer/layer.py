@@ -1,5 +1,7 @@
 from PySide6.QtWidgets import QGraphicsItemGroup
 
+from data.file import File
+
 
 class Layer:
     def __init__(self, name: str, index: int=-1, opacity: float=0.5, visible: bool=True) -> None:
@@ -7,6 +9,7 @@ class Layer:
         self._index = index
         self._opacity = opacity
         self._visible = visible
+        self._file = None
 
     def name(self) -> str:
         return self._name
@@ -28,6 +31,12 @@ class Layer:
     
     def setVisible(self, visible) -> None:
         self._visible = visible
+
+    def file(self) -> File:
+        return self._file
+
+    def setFile(self, file: File) -> None:
+        self._file = file
 
     def createGraphicsItem(self) -> QGraphicsItemGroup:
         raise NotImplementedError('Not implemented')

@@ -12,8 +12,8 @@ from widgets.mainviewerdockwidget import MainViewerDockWidget
 from utils import Configuration
 
 WINDOWTITLE = 'Mosamatic Desktop 1.0'
-FILESETPATH = os.path.join(os.getenv('HOME'), 'Desktop', 'downloads', 'dataset', 'scan1')
-FILEPATH = os.path.join(os.getenv('HOME'), 'Desktop', 'downloads', 'dataset', 'scan1', 'image-00000.dcm')
+# FILESETPATH = os.path.join(os.getenv('HOME'), 'Desktop', 'downloads', 'dataset', 'scan1')
+# FILEPATH = os.path.join(os.getenv('HOME'), 'Desktop', 'downloads', 'dataset', 'scan1', 'image-00000.dcm')
 
 
 class MainWindow(QMainWindow):
@@ -101,19 +101,18 @@ class MainWindow(QMainWindow):
     # Event handlers
 
     def importFile(self) -> None:
-        filePath, _ = QFileDialog.getOpenFileName(self, 'Open File', FILEPATH)
+        lastDirectoryOpened = self._settings.value('lastDirectoryOpened')
+        filePath, _ = QFileDialog.getOpenFileName(self, 'Open File', lastDirectoryOpened)
         if filePath:
             self._settings.setValue('lastDirectoryOpened', os.path.split(filePath)[0])
             self._dataManager.createFile(filePath=filePath)
 
     def importFileSet(self) -> None:
-        fileSetPath = QFileDialog.getExistingDirectory(self, 'Open File Set', FILESETPATH)
+        lastDirectoryOpened = self._settings.value('lastDirectoryOpened')
+        fileSetPath = QFileDialog.getExistingDirectory(self, 'Open File Set', lastDirectoryOpened)
         if fileSetPath:
             self._settings.setValue('lastDirectoryOpened', fileSetPath)
-            from widgets.viewers.dicomviewer.dicomviewer import DicomViewer
             fs = self._dataManager.createFileSet(fileSetPath=fileSetPath)
-            viewer = DicomViewer(self)
-            viewer.setDicomFileSet(fs)
 
     def deleteAllFileSets(self) -> None:
         self._dataManager.deleteAllFileSets()
