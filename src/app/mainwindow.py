@@ -110,7 +110,10 @@ class MainWindow(QMainWindow):
         fileSetPath = QFileDialog.getExistingDirectory(self, 'Open File Set', FILESETPATH)
         if fileSetPath:
             self._settings.setValue('lastDirectoryOpened', fileSetPath)
-            self._dataManager.createFileSet(fileSetPath=fileSetPath)
+            from widgets.viewers.dicomviewer.dicomviewer import DicomViewer
+            fs = self._dataManager.createFileSet(fileSetPath=fileSetPath)
+            viewer = DicomViewer(self)
+            viewer.setDicomFileSet(fs)
 
     def deleteAllFileSets(self) -> None:
         self._dataManager.deleteAllFileSets()
