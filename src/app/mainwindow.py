@@ -49,7 +49,7 @@ class MainWindow(QMainWindow):
         importFileAction.triggered.connect(self.importFile)
         importFileSetAction.triggered.connect(self.importFileSet)
         deleteAllFileSetsAction.triggered.connect(self.deleteAllFileSets)
-        resetLayoutAction.triggered.connect(self.resetLayout)
+        # resetLayoutAction.triggered.connect(self.resetLayout)
         exitApplicationAction.triggered.connect(self.exitApplication)
         dataMenu = QMenu('Data')
         dataMenu.addAction(importFileAction)
@@ -58,12 +58,12 @@ class MainWindow(QMainWindow):
         dataMenu.addAction(deleteAllFileSetsAction)
         dataMenu.addSeparator()
         dataMenu.addAction(exitApplicationAction)
-        viewMenu = QMenu('View')
-        viewMenu.addAction(resetLayoutAction)
+        # viewMenu = QMenu('View')
+        # viewMenu.addAction(resetLayoutAction)
         aboutMenu = QMenu(f'About')
         aboutMenu.addAction(showApplicationInfoAction)
         self.menuBar().addMenu(dataMenu)
-        self.menuBar().addMenu(viewMenu)
+        # self.menuBar().addMenu(viewMenu)
         self.menuBar().addMenu(aboutMenu)
         self.menuBar().setNativeMenuBar(False)
 
@@ -94,9 +94,12 @@ class MainWindow(QMainWindow):
         self.splitDockWidget(self._dataDockWidget, self._tasksDockWidget, Qt.Vertical)
         # self.splitDockWidget(self._mainViewDockWidget, self._viewsDockWidget, Qt.Vertical)
         self.setWindowTitle(WINDOWTITLE)
-        self.setWindowSize()
+        # self.setWindowSize()
         self.centerWindow()
-        self.saveDefaultLayout()
+        # self.saveDefaultLayout()
+        # self.resetLayout()
+        self.restoreGeometry(self._settings.value('windowGeometry'))
+        self.restoreState(self._settings.value('windowState'))
 
     # Event handlers
 
@@ -128,21 +131,28 @@ class MainWindow(QMainWindow):
         y = (screen.height() - self.geometry().height()) / 2
         self.move(int(x), int(y))
 
-    def saveDefaultLayout(self) -> None:
-        self._defaultLayout = self.saveState()
+    # def saveDefaultLayout(self) -> None:
+    #     self._defaultLayout = self.saveState()
+    #     self._settings.setValue('defaultLayout', self._defaultLayout)
 
-    def resetLayout(self) -> None:
-        self.restoreState(self._defaultLayout)
+    # def resetLayout(self) -> None:
+    #     if not self._defaultLayout:
+    #         self._defaultLayout = self._settings.value('defaultLayout')
+    #     self.restoreState(self._defaultLayout)
 
-    def setWindowSize(self) -> None:
-        size = self._settings.value('mainWindowSize', None)
-        if not size:
-            size = QSize(970, 760)
-            self._settings.setValue('mainWindowSize', size)
-        self.resize(size)
+    # def setWindowSize(self) -> None:
+    #     size = self._settings.value('mainWindowSize', None)
+    #     if not size:
+    #         size = QSize(970, 760)
+    #         self._settings.setValue('mainWindowSize', size)
+    #     self.resize(size)
 
     # Exit
+        
+    def closeEvent(self, event):
+        self._settings.setValue('windowGeometry', self.saveGeometry())
+        self._settings.setValue('windowState', self.saveState())
+        super().closeEvent(event)
 
     def exitApplication(self) -> None:
-        self._settings.setValue('mainWindowSize', self.size())
         QApplication.exit()

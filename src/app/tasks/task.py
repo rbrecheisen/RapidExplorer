@@ -39,7 +39,6 @@ class Task:
         self._info = []
         self._parameters = None
         self._dataManager = DataManager()
-        self._cache = FileContentCache()
         self._signal = self.TaskProgressSignal()
 
     def name(self) -> str:

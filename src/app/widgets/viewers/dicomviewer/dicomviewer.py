@@ -103,4 +103,4 @@ class DicomViewer(QWidget):
         if len(self._layerTuples) > 0 and index < len(self._layerTuples):
             layerTuple = self._layerTuples[index]
             self._scene.clear()
-            self._scene.addItem(layerTuple.createGraphicsItem())
+            self._scene.addItem(layerTuple[0].createGraphicsItem())

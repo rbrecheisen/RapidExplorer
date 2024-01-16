@@ -23,7 +23,7 @@ class DicomLayer(Layer):
             if not content:
                 p = pydicom.dcmread(self.file().path())
                 p.decompress()
-                content = writeToCache(self.file(), fileObject=p)
+                content = writeToCache(file=self.file(), fileObject=p)
             p = content.fileObject()
             return p
         return None
@@ -49,7 +49,7 @@ class DicomLayer(Layer):
         if self.file() and not self._qimage:
             self._qimage = self.convertDataToQImage()
         if self._qimage:
-            pixmap = QPixmap.fromImage(self._image)
+            pixmap = QPixmap.fromImage(self._qimage)
             pixmapItem = QGraphicsPixmapItem(pixmap)
             pixmapItem.setOpacity(self.opacity())
             group.addToGroup(pixmapItem)
