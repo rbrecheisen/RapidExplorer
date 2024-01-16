@@ -18,6 +18,7 @@ from PySide6.QtGui import QImage
 from PySide6.QtCore import QSettings
 
 from singleton import singleton
+from operatingsystem import OperatingSystem
 from data.file import File
 from data.filecontent import FileContent
 from data.filecontentcache import FileContentCache
@@ -297,7 +298,7 @@ class GitCommit:
 @singleton
 class Configuration:
     def __init__(self) -> None:
-        self._configDirectory = os.path.join(os.getenv('HOME'), '.mosamatic')
+        self._configDirectory = os.path.join(OperatingSystem.homeDirectory(), '.mosamatic')
 
     def configDirectory(self) -> str:
         return self._configDirectory
