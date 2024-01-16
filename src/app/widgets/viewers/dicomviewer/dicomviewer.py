@@ -8,7 +8,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QGraphicsView, QGraphicsScen
 
 from widgets.viewers.dicomviewer.dicomlayer import DicomLayer
 from widgets.viewers.dicomviewer.dicominfolayer import DicomInfoLayer
-from widgets.viewers.dicomviewer.numpylayer import NumPyLayer
+from widgets.viewers.dicomviewer.segmentationlayer import SegmentationLayer
 from widgets.viewers.dicomviewer.taglayer import TagLayer
 from widgets.viewers.dicomviewer.filesetcombobox import FileSetComboBox
 from utils import isDicomFile
@@ -32,17 +32,21 @@ class DicomViewer(QWidget):
         # UI
         self._settingsWidget = None
         self._layerTupleSlider = None
+        self._dicomFileVisibleCheckBox = None
         self._dicomFileOpacityLabel = None
         self._dicomFileOpacitySlider = None
-        self._numpyFileOpacityLabel = None
-        self._numpyFileOpacitySlider = None
+        self._segmentationFileVisibleCheckBox = None
+        self._segmentationFileOpacityLabel = None
+        self._segmentationFileOpacitySlider = None
+        self._tagFileVisibleCheckBox = None
         self._tagFileOpacityLabel = None
         self._tagFileOpacitySlider = None
+        self._dicomFileInfoVisibleCheckBox = None
         self._dicomFileInfoOpacityLabel = None
         self._dicomFileInfoOpacitySlider = None
         self._inputFileSetComboBox = None
         # Miscellaneous
-        self._segmentationFile = False
+        self._segmentationFileVisible = False
         self._tagFile = False
         self._currentLayerTupleIndex = 0
         self._dataManager = DataManager()
@@ -54,20 +58,25 @@ class DicomViewer(QWidget):
         self.initSliders()
         self.initFileSetComboBox()
         layout = QGridLayout()
-        # TODO: Hide segmentation and TAG file sliders at first
-        layout.addWidget(self._graphicsView, 0, 0, 1, 2)
+        layout.addWidget(self._graphicsView, 0, 0, 1, 3)
         layout.addWidget(QLabel('Image'), 1, 0)
         layout.addWidget(self._layerTupleSlider, 1, 1)
-        layout.addWidget(QLabel('Opacity DICOM'), 2, 0)
-        layout.addWidget(self._dicomFileOpacitySlider, 2, 1)
-        layout.addWidget(QLabel('Opacity Segmentation'), 3, 0)
-        layout.addWidget(self._numpyFileOpacitySlider, 3, 1)
-        layout.addWidget(QLabel('Opacity TAG'), 4, 0)
-        layout.addWidget(self._tagFileOpacitySlider, 4, 1)
-        layout.addWidget(QLabel('Opacity DICOM Info'), 5, 0)
-        layout.addWidget(self._dicomFileInfoOpacitySlider, 5, 1)
-        layout.addWidget(QLabel('Input File Set'), 6, 0)
-        layout.addWidget(self._inputFileSetComboBox, 6, 1)
+
+        layout.addWidget(self._dicomFileVisibleCheckBox, 2, 0)
+        layout.addWidget(QLabel('Opacity DICOM'), 2, 1)
+        layout.addWidget(self._dicomFileOpacitySlider, 2, 2)
+        
+        layout.addWidget(QLabel('Opacity Segmentation'), 3, 1)
+        layout.addWidget(self._segmentationFileOpacitySlider, 3, 2)
+        
+        layout.addWidget(QLabel('Opacity TAG'), 4, 1)
+        layout.addWidget(self._tagFileOpacitySlider, 4, 2)
+        
+        layout.addWidget(QLabel('Opacity DICOM Info'), 5, 1)
+        layout.addWidget(self._dicomFileInfoOpacitySlider, 5, 2)
+        
+        layout.addWidget(QLabel('Input File Set'), 6, 1)
+        layout.addWidget(self._inputFileSetComboBox, 6, 2)
         self.setLayout(layout)
 
     def initGraphicsView(self) -> None:
@@ -83,29 +92,26 @@ class DicomViewer(QWidget):
         self._layerTupleSlider.setRange(0, 100)
         self._layerTupleSlider.valueChanged.connect(self.currentLayerTupleIndexChanged)
         # DicomLayer
-        self._dicomFileInfoOpacityLabel = QLabel('Opacity DICOM')
+        self._dicomFileVisibleCheckBox = QCheckBox(self)
+        self._dicomFileVisibleCheckBox.setCheckState(Qt.Checked)
+        self._dicomFileVisibleCheckBox.stateChanged.connect(self.toggleDicomFileVisible)
         self._dicomFileOpacitySlider = QSlider(Qt.Horizontal, self)
         self._dicomFileOpacitySlider.setRange(0, 100)
         self._dicomFileOpacitySlider.setValue(100)
         self._dicomFileOpacitySlider.valueChanged.connect(self.dicomFileOpacityChanged)
         # NumPyLayer
-        self._numpyFileOpacityLabel = QLabel('Opacity Segmentation')
-        self._numpyFileOpacityLabel.setVisible(False)
-        self._numpyFileOpacitySlider = QSlider(Qt.Horizontal, self)
-        self._numpyFileOpacitySlider.setRange(0, 100)
-        self._numpyFileOpacitySlider.setValue(50)
-        self._numpyFileOpacitySlider.valueChanged.connect(self.numpyFileOpacityChanged)
-        self._numpyFileOpacitySlider.setVisible(False)
+        self._segmentationFileOpacitySlider = QSlider(Qt.Horizontal, self)
+        self._segmentationFileOpacitySlider.setRange(0, 100)
+        self._segmentationFileOpacitySlider.setValue(50)
+        self._segmentationFileOpacitySlider.valueChanged.connect(self.segmentationFileOpacityChanged)
+        self._segmentationFileOpacitySlider.setVisible(False)
         # TagLayer
-        self._tagFileOpacityLabel = QLabel('Opacity TAG')
-        self._tagFileOpacityLabel.setVisible(False)
         self._tagFileOpacitySlider = QSlider(Qt.Horizontal, self)
         self._tagFileOpacitySlider.setRange(0, 100)
         self._tagFileOpacitySlider.setValue(50)
         self._tagFileOpacitySlider.valueChanged.connect(self.tagFileOpacityChanged)
         self._tagFileOpacitySlider.setVisible(False)
         # DicomInfoLayer
-        self._dicomFileInfoOpacityLabel = QLabel('Opacity DICOM Info')
         self._dicomFileInfoOpacitySlider = QSlider(Qt.Horizontal, self)
         self._dicomFileInfoOpacitySlider.setRange(0, 100)
         self._dicomFileInfoOpacitySlider.setValue(100)
@@ -115,7 +121,7 @@ class DicomViewer(QWidget):
         self._inputFileSetComboBox = FileSetComboBox(self)
         self._inputFileSetComboBox.currentTextChanged.connect(self.inputFileSetChanged)
 
-    def findNumPyFileForDicomFile(self, dicomFile: File, fileSet: FileSet) -> File:
+    def findSegmentationFileForDicomFile(self, dicomFile: File, fileSet: FileSet) -> File:
         for file in fileSet.files():
             if file.name() == dicomFile.name() + '.seg.npy':
                 return file
@@ -133,7 +139,7 @@ class DicomViewer(QWidget):
 
     def setInputFileSet(self, fileSet: FileSet) -> None:
         # Hide sliders
-        self._numpyFileOpacitySlider.setVisible(False)
+        self._segmentationFileOpacitySlider.setVisible(False)
         self._tagFileOpacitySlider.setVisible(False)
         # Build layers
         for file in fileSet.files():
@@ -143,12 +149,12 @@ class DicomViewer(QWidget):
                 dicomLayer.setFile(file=file)
                 dicomLayer.setWindowLevelAndWidth(windowLevel=self._windowLevel, windowWidth=self._windowWidth)
                 layerTuple[0] = dicomLayer
-                numpyFile = self.findNumPyFileForDicomFile(dicomFile=file, fileSet=fileSet)
-                if numpyFile:
-                    numpyLayer = NumPyLayer()
-                    numpyLayer.setFile(file=numpyFile)
-                    layerTuple[1] = numpyLayer
-                    self._numpyFileOpacitySlider.setVisible(True)
+                segmentationFile = self.findSegmentationFileForDicomFile(dicomFile=file, fileSet=fileSet)
+                if segmentationFile:
+                    segmentationLayer = SegmentationLayer()
+                    segmentationLayer.setFile(file=segmentationFile)
+                    layerTuple[1] = segmentationLayer
+                    self._segmentationFileOpacitySlider.setVisible(True)
                 tagFile = self.findTagFileForDicomFile(dicomFile=file, fileSet=fileSet)
                 if tagFile:
                     tagLayer = TagLayer()
@@ -173,13 +179,20 @@ class DicomViewer(QWidget):
             self._currentLayerTupleIndex = index
             self.displayLayerTuple(self._currentLayerTupleIndex)
 
+    def toggleDicomFileVisible(self, state) -> None:
+        print(state)
+        if self._layerTuples:
+            for layerTuple in self._layerTuples:
+                layerTuple[0].setVisible(True if state == Qt.Checked else False)
+            self.displayLayerTuple(self._currentLayerTupleIndex)
+
     def dicomFileOpacityChanged(self, value) -> None:
         if self._layerTuples:
             for layerTuple in self._layerTuples:
                 layerTuple[0].setOpacity(value / 100.0)
             self.displayLayerTuple(self._currentLayerTupleIndex)
 
-    def numpyFileOpacityChanged(self, value) -> None:
+    def segmentationFileOpacityChanged(self, value) -> None:
         if self._layerTuples:
             for layerTuple in self._layerTuples:
                 layerTuple[1].setOpacity(value / 100.0)

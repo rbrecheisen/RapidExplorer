@@ -48,7 +48,7 @@ class DicomLayer(Layer):
         group = QGraphicsItemGroup()
         if self.file() and not self._qimage:
             self._qimage = self.convertDataToQImage()
-        if self._qimage:
+        if self._qimage and self.visible():
             pixmap = QPixmap.fromImage(self._qimage)
             pixmapItem = QGraphicsPixmapItem(pixmap)
             pixmapItem.setOpacity(self.opacity())

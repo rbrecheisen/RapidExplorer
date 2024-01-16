@@ -7,9 +7,9 @@ from widgets.viewers.dicomviewer.layer import Layer
 from utils import convertNumPyArrayToRgbQImage, AlbertaColorMap, readFromCache, writeToCache
 
 
-class NumPyLayer(Layer):
+class SegmentationLayer(Layer):
     def __init__(self) -> None:
-        super(NumPyLayer, self).__init__(name='numpy')
+        super(SegmentationLayer, self).__init__(name='numpy')
         self._qimage = None
 
     def data(self) -> np.array:
