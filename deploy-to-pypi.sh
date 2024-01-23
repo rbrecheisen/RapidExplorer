@@ -1,7 +1,7 @@
 #!/bin/bash
-export PACKAGE=barbell2
-export TWINE_USERNAME=$(cat ${HOME}/pypiuser.txt)
-export TWINE_PASSWORD=$(cat ${HOME}/pypipassword.txt)
+export PACKAGE=mosamatic
+# export TWINE_USERNAME=$(cat ${HOME}/pypiuser.txt)
+# export TWINE_PASSWORD=$(cat ${HOME}/pypipassword.txt)
 # Check if Twine is installed for uploading the package
 which twine
 if [ "$?" == "1" ]; then
@@ -13,14 +13,14 @@ if [ "$?" == "1" ]; then
   fi
   python -m pip install twine wheel
 fi
-if [ ! -f "${HOME}/pypiuser.txt" ]; then
-  echo "Could not find ${HOME}/pypiuser.txt"
-  exit 0
-fi
-if [ ! -f "${HOME}/pypipassword.txt" ]; then
-  echo "Could not find ${HOME}/pypipassword.txt"
-  exit 0
-fi
+# if [ ! -f "${HOME}/pypiuser.txt" ]; then
+#   echo "Could not find ${HOME}/pypiuser.txt"
+#   exit 0
+# fi
+# if [ ! -f "${HOME}/pypipassword.txt" ]; then
+#   echo "Could not find ${HOME}/pypipassword.txt"
+#   exit 0
+# fi
 export CMD=${1}
 if [ "${CMD}" == "-h" ]; then
     echo "Usage: deploy.sh [patch|minor|major]"
@@ -42,8 +42,8 @@ read line
 if [ "${line}" != "yes" ]; then
   exit 0
 fi
-sed -i ".bak" "s/${OLD_VERSION}/${VERSION}/g" ${PACKAGE}/__init__.py
-rm ${PACKAGE}/__init__.py.bak
+# sed -i ".bak" "s/${OLD_VERSION}/${VERSION}/g" ${PACKAGE}/__init__.py
+# rm ${PACKAGE}/__init__.py.bak
 git status
 echo "Everything ready to be pushed to Git? Type "yes" to continue, or any other key to quit."
 read line
