@@ -1,5 +1,5 @@
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QWidget, QComboBox, QVBoxLayout, QSizePolicy
+from PySide6.QtWidgets import QWidget, QComboBox, QVBoxLayout, QProgressBar
 
 from widgets.dockwidget import DockWidget
 from tasks.taskwidgetmanager import TaskWidgetManager
@@ -9,11 +9,11 @@ LOGGER = Logger()
 
 
 class TaskDockWidget(DockWidget):
-    def __init__(self, title: str) -> None:
+    def __init__(self, title: str, progressBar: QProgressBar) -> None:
         super(TaskDockWidget, self).__init__(title)
         self._tasksComboBox = None
         self._placeholderWidget = None
-        self._taskWidgetManager = TaskWidgetManager()
+        self._taskWidgetManager = TaskWidgetManager(progressBar=progressBar)
         self.initUi()
 
     def initUi(self) -> None:

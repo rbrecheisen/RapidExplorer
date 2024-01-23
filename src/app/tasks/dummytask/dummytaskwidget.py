@@ -1,10 +1,12 @@
+from PySide6.QtWidgets import QProgressBar
+
 from tasks.taskwidget import TaskWidget
 from tasks.dummytask.dummytask import DummyTask
 
 
 class DummyTaskWidget(TaskWidget):
-    def __init__(self) -> None:
-        super(DummyTaskWidget, self).__init__(taskType=DummyTask)
+    def __init__(self, progressBar: QProgressBar) -> None:
+        super(DummyTaskWidget, self).__init__(taskType=DummyTask, progressBar=progressBar)
         self.addDescriptionParameter(
             name='description',
             description='This is some description of the dummy task'

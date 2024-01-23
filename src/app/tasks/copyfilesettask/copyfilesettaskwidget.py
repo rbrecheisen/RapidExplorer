@@ -1,10 +1,12 @@
+from PySide6.QtWidgets import QProgressBar
+
 from tasks.taskwidget import TaskWidget
 from tasks.copyfilesettask.copyfilesettask import CopyFileSetTask
 
 
 class CopyFileSetTaskWidget(TaskWidget):
-    def __init__(self) -> None:
-        super(CopyFileSetTaskWidget, self).__init__(taskType=CopyFileSetTask)
+    def __init__(self, progressBar: QProgressBar) -> None:
+        super(CopyFileSetTaskWidget, self).__init__(taskType=CopyFileSetTask, progressBar=progressBar)
         self.addDescriptionParameter(
             name='description',
             description='Copies one or more filesets to another fileset'

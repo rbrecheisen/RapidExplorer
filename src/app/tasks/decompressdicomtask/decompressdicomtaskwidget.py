@@ -1,10 +1,12 @@
+from PySide6.QtWidgets import QProgressBar
+
 from tasks.taskwidget import TaskWidget
 from tasks.decompressdicomtask.decompressdicomtask import DecompressDicomTask
 
 
 class DecompressDicomTaskWidget(TaskWidget):
-    def __init__(self) -> None:
-        super(DecompressDicomTaskWidget, self).__init__(taskType=DecompressDicomTask)
+    def __init__(self, progressBar: QProgressBar) -> None:
+        super(DecompressDicomTaskWidget, self).__init__(taskType=DecompressDicomTask, progressBar=progressBar)
         self.addDescriptionParameter(
             name='description',
             description='Decompresses JPEG200-compressed DICOM files for use in Slice-o-matic.'

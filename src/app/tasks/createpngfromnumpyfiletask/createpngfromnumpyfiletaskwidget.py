@@ -1,10 +1,12 @@
+from PySide6.QtWidgets import QProgressBar
+
 from tasks.taskwidget import TaskWidget
 from tasks.createpngfromnumpyfiletask.createpngfromnumpyfiletask import CreatePngFromNumPyFileTask
 
 
 class CreatePngFromNumPyFileTaskWidget(TaskWidget):
-    def __init__(self) -> None:
-        super(CreatePngFromNumPyFileTaskWidget, self).__init__(taskType=CreatePngFromNumPyFileTask)
+    def __init__(self, progressBar: QProgressBar) -> None:
+        super(CreatePngFromNumPyFileTaskWidget, self).__init__(taskType=CreatePngFromNumPyFileTask, progressBar=progressBar)
         self.addDescriptionParameter(
             name='description',
             description=f'Create PNGs From NumPy Files',

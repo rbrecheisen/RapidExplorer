@@ -1,10 +1,12 @@
+from PySide6.QtWidgets import QProgressBar
+
 from tasks.taskwidget import TaskWidget
 from tasks.createpngfromtagfiletask.createpngfromtagfiletask import CreatePngFromTagFileTask
 
 
 class CreatePngFromTagFileTaskWidget(TaskWidget):
-    def __init__(self) -> None:
-        super(CreatePngFromTagFileTaskWidget, self).__init__(taskType=CreatePngFromTagFileTask)
+    def __init__(self, progressBar: QProgressBar) -> None:
+        super(CreatePngFromTagFileTaskWidget, self).__init__(taskType=CreatePngFromTagFileTask, progressBar=progressBar)
         self.addDescriptionParameter(
             name='description',
             description=f'Create PNGs From TAG Files',

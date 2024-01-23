@@ -1,10 +1,12 @@
+from PySide6.QtWidgets import QProgressBar
+
 from tasks.taskwidget import TaskWidget
 from tasks.musclefatsegmentationtask.musclefatsegmentationtask import MuscleFatSegmentationTask
 
 
 class MuscleFatSegmentationTaskWidget(TaskWidget):
-    def __init__(self) -> None:
-        super(MuscleFatSegmentationTaskWidget, self).__init__(taskType=MuscleFatSegmentationTask)
+    def __init__(self, progressBar: QProgressBar) -> None:
+        super(MuscleFatSegmentationTaskWidget, self).__init__(taskType=MuscleFatSegmentationTask, progressBar=progressBar)
         self.addDescriptionParameter(
             name='description',
             description='Extract muscle and fat regions from L3 images'

@@ -1,5 +1,6 @@
 import os
-import sys
+
+from PySide6.QtWidgets import QProgressBar
 
 from typing import List
 
@@ -13,7 +14,8 @@ LOGGER = Logger()
 
 @singleton
 class TaskWidgetManager:
-    def __init__(self) -> None:
+    def __init__(self, progressBar: QProgressBar) -> None:
+        self._progressBar = progressBar
         self._taskWidgetTypes = self.loadTaskWidgetTypes()
         self._taskWidgets = {}
 
@@ -23,7 +25,7 @@ class TaskWidgetManager:
     def taskWidget(self, name) -> TaskWidget:
         if name in self._taskWidgetTypes.keys():
             if name not in self._taskWidgets.keys():
-                self._taskWidgets[name] = self._taskWidgetTypes[name]()
+                self._taskWidgets[name] = self._taskWidgetTypes[name](progressBar=self._progressBar)
             return self._taskWidgets[name]
         LOGGER.error(f'TaskWidgetManager: task {name} does not exist')
         return None

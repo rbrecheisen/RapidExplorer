@@ -1,10 +1,12 @@
+from PySide6.QtWidgets import QProgressBar
+
 from tasks.taskwidget import TaskWidget
 from tasks.createpngfromdicomfiletask.createpngfromdicomfiletask import CreatePngFromDicomFileTask
 
 
 class CreatePngFromDicomFileTaskWidget(TaskWidget):
-    def __init__(self) -> None:
-        super(CreatePngFromDicomFileTaskWidget, self).__init__(taskType=CreatePngFromDicomFileTask)
+    def __init__(self, progressBar: QProgressBar) -> None:
+        super(CreatePngFromDicomFileTaskWidget, self).__init__(taskType=CreatePngFromDicomFileTask, progressBar=progressBar)
         self.addDescriptionParameter(
             name='description',
             description=f'Create PNGs From DICOM Files',

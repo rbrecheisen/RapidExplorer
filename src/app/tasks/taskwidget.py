@@ -1,11 +1,9 @@
 import inspect
-import traceback
 
 from typing import Any, List
 
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QProgressBar, QLabel, QDialog, QMessageBox
-from PySide6.QtWidgets import QSpacerItem, QSizePolicy
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QProgressBar, QProgressBar, QDialog, QMessageBox
 
 from tasks.task import Task
 from tasks.taskwidgetexception import TaskWidgetException
@@ -23,7 +21,6 @@ from tasks.integerparameter import IntegerParameter
 from tasks.floatingpointparameter import FloatingPointParameter
 from tasks.booleanparameter import BooleanParameter
 from tasks.optiongroupparameter import OptionGroupParameter
-from operatingsystem import OperatingSystem
 from logger import Logger
 
 LOGGER = Logger()
@@ -37,19 +34,20 @@ class TaskWidget(QWidget):
         # Returns class name of child classes (and strips of last 6 characters to get the task name itself)
         return cls.__qualname__[:-6]
     
-    def __init__(self, taskType: Task) -> None:
+    def __init__(self, taskType: Task, progressBar: QProgressBar) -> None:
         super(TaskWidget, self).__init__()
         if not inspect.isclass(taskType):
             raise TaskWidgetException('TaskWidget: argument taskType should be a class')
         self._taskType = taskType        
+        self._progressBar = progressBar
         self._task = None
         self._taskParameters = {}
         # We need this class to copy parameters to the TaskWidgetParameterDialog, otherwise the
         # parameters get deleted by C++ after the dialog closes.
         self._taskParameterCopier = ParameterCopier()
         ######
-        self._progressBar = None
-        self._progressBarLabel = None
+        # self._progressBar = None
+        # self._progressBarLabel = None
         self._startButton = None
         self._cancelButton = None
         self._settingsButton = None
@@ -64,14 +62,14 @@ class TaskWidget(QWidget):
         self._test = test
     
     def initUi(self) -> None:
-        self._progressBarLabel = QLabel('0 %')
-        labelLayout = QHBoxLayout()
-        labelLayout.addItem(QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum))
-        labelLayout.addWidget(self._progressBarLabel)
-        labelLayout.addItem(QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum))
-        self._progressBar = QProgressBar(self)
-        self._progressBar.setRange(0, 100)
-        self._progressBar.setValue(0)
+        # self._progressBarLabel = QLabel('0 %')
+        # labelLayout = QHBoxLayout()
+        # labelLayout.addItem(QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum))
+        # labelLayout.addWidget(self._progressBarLabel)
+        # labelLayout.addItem(QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum))
+        # self._progressBar = QProgressBar(self)
+        # self._progressBar.setRange(0, 100)
+        # self._progressBar.setValue(0)
         self._startButton = QPushButton('Start')
         self._startButton.setObjectName('startButton') # for testing
         self._startButton.clicked.connect(self.startTask)
@@ -95,9 +93,9 @@ class TaskWidget(QWidget):
         layout.setAlignment(Qt.AlignTop)
         layout.setContentsMargins(5, 5, 5, 5)
         layout.setSpacing(5)
-        if OperatingSystem.isDarwin():
-            layout.addLayout(labelLayout)
-        layout.addWidget(self._progressBar)
+        # if OperatingSystem.isDarwin():
+        #     layout.addLayout(labelLayout)
+        # layout.addWidget(self._progressBar)
         layout.addLayout(buttonLayout)
         self.setLayout(layout)
 
@@ -167,11 +165,9 @@ class TaskWidget(QWidget):
         self._task.signal().progress.connect(self.taskProgress)
         self._task.signal().finished.connect(self.taskFinished)
         self._task.start()
-        # self._task.run() 3 for debugging tasks
         self._startButton.setEnabled(False)
         self._cancelButton.setEnabled(True)
         self._runInfoButton.setEnabled(False)
-        self._progressBarLabel.setText('0 %')
         self._progressBar.setValue(0)
 
     def cancelTask(self) -> None:
@@ -181,7 +177,6 @@ class TaskWidget(QWidget):
                 self._runInfoButton.setEnabled(True)
                 self._cancelButton.setEnabled(False)
                 self._startButton.setEnabled(True)
-                self._progressBarLabel.setText('0 %')
                 self._progressBar.setValue(0)
 
     def showTaskWidgetParameterDialog(self) -> None:
@@ -206,7 +201,6 @@ class TaskWidget(QWidget):
         
     def taskProgress(self, progress: int) -> None:
         if not self._test:
-            self._progressBarLabel.setText(f'{progress} %')
             self._progressBar.setValue(progress)
 
     def taskFinished(self, value: bool) -> None:

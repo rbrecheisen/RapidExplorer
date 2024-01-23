@@ -1,12 +1,14 @@
 from pydicom.datadict import keyword_dict
 
+from PySide6.QtWidgets import QProgressBar
+
 from tasks.taskwidget import TaskWidget
 from tasks.checkdicomheadertask.checkdicomheadertask import CheckDicomHeaderTask
 
 
 class CheckDicomHeaderTaskWidget(TaskWidget):
-    def __init__(self) -> None:
-        super(CheckDicomHeaderTaskWidget, self).__init__(taskType=CheckDicomHeaderTask)
+    def __init__(self, progressBar: QProgressBar) -> None:
+        super(CheckDicomHeaderTaskWidget, self).__init__(taskType=CheckDicomHeaderTask, progressBar=progressBar)
         self.addDescriptionParameter(
             name='description',
             description='Check DICOM headers',

@@ -1,19 +1,18 @@
 import os
 
-from PySide6.QtCore import Qt, QSize, QSettings
-from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QFileDialog, QMenu, QSizePolicy
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QFileDialog, QMenu, QProgressBar
 from PySide6.QtGui import QAction, QGuiApplication
 
 from data.datamanager import DataManager
 from widgets.datadockwidget import DataDockWidget
-from widgets.viewersdockwidget import ViewersDockWidget
 from widgets.taskdockwidget import TaskDockWidget
 from widgets.mainviewerdockwidget import MainViewerDockWidget
 from utils import Configuration
 
 WINDOWTITLE = 'Mosamatic Desktop 1.0'
-# FILESETPATH = os.path.join(os.getenv('HOME'), 'Desktop', 'downloads', 'dataset', 'scan1')
-# FILEPATH = os.path.join(os.getenv('HOME'), 'Desktop', 'downloads', 'dataset', 'scan1', 'image-00000.dcm')
+FILESETPATH = os.path.join(os.getenv('HOME'), 'Desktop', 'downloads', 'dataset', 'scan1')
+FILEPATH = os.path.join(os.getenv('HOME'), 'Desktop', 'downloads', 'dataset', 'scan1', 'image-00000.dcm')
 
 
 class MainWindow(QMainWindow):
@@ -23,8 +22,8 @@ class MainWindow(QMainWindow):
         self._dataDockWidget = None
         self._tasksDockWidget = None
         self._mainViewDockWidget = None
-        # self._viewsDockWidget = None
         self._defaultLayout = None       
+        self._progressBar = None
         self._dataManager = DataManager()
         self._dataManager.signal().updated.connect(self.dataUpdated) 
         self.initUi()
@@ -33,23 +32,21 @@ class MainWindow(QMainWindow):
 
     def initUi(self) -> None:
         self.initActionsAndMenus()
+        self.initProgressBar()
         self.initDataDockWidget()
         self.initTaskDockWidget()
         self.initMainViewerDockWidget()
-        # self.initViewersDockWidget()
         self.initMainWindow()
 
     def initActionsAndMenus(self) -> None:
         importFileAction = QAction('Import File...', self)
         importFileSetAction = QAction('Import File Set...', self)
         deleteAllFileSetsAction = QAction('Delete All Data from Database', self)
-        resetLayoutAction = QAction('Reset Layout', self)
         showApplicationInfoAction = QAction('Show Application Info...', self)
         exitApplicationAction = QAction('Exit', self)
         importFileAction.triggered.connect(self.importFile)
         importFileSetAction.triggered.connect(self.importFileSet)
         deleteAllFileSetsAction.triggered.connect(self.deleteAllFileSets)
-        # resetLayoutAction.triggered.connect(self.resetLayout)
         exitApplicationAction.triggered.connect(self.exitApplication)
         dataMenu = QMenu('Data')
         dataMenu.addAction(importFileAction)
@@ -58,14 +55,17 @@ class MainWindow(QMainWindow):
         dataMenu.addAction(deleteAllFileSetsAction)
         dataMenu.addSeparator()
         dataMenu.addAction(exitApplicationAction)
-        # viewMenu = QMenu('View')
-        # viewMenu.addAction(resetLayoutAction)
         aboutMenu = QMenu(f'About')
         aboutMenu.addAction(showApplicationInfoAction)
         self.menuBar().addMenu(dataMenu)
-        # self.menuBar().addMenu(viewMenu)
         self.menuBar().addMenu(aboutMenu)
         self.menuBar().setNativeMenuBar(False)
+
+    def initProgressBar(self) -> None:
+        self._progressBar = QProgressBar(self)
+        self._progressBar.setRange(0, 100)
+        self._progressBar.setValue(0)
+        self.statusBar().addPermanentWidget(self._progressBar)
 
     def initDataDockWidget(self) -> None:
         self._dataDockWidget = DataDockWidget(title='Data')
@@ -73,31 +73,22 @@ class MainWindow(QMainWindow):
         self.addDockWidget(Qt.LeftDockWidgetArea, self._dataDockWidget)
 
     def initTaskDockWidget(self) -> None:
-        self._tasksDockWidget = TaskDockWidget(title='Tasks')
+        self._tasksDockWidget = TaskDockWidget(title='Tasks', progressBar=self._progressBar)
         self._tasksDockWidget.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.BottomDockWidgetArea)
         self._tasksDockWidget.setFixedHeight(200)
         self.addDockWidget(Qt.LeftDockWidgetArea, self._tasksDockWidget)
 
     def initMainViewerDockWidget(self) -> None:
-        self._mainViewDockWidget = MainViewerDockWidget(title='Main View')
+        self._mainViewDockWidget = MainViewerDockWidget(title='Main View', progressBar=self._progressBar)
         self._mainViewDockWidget.setAllowedAreas(Qt.RightDockWidgetArea | Qt.TopDockWidgetArea)
         self.addDockWidget(Qt.RightDockWidgetArea, self._mainViewDockWidget)
-
-    # def initViewersDockWidget(self) -> None:
-    #     self._viewsDockWidget = ViewersDockWidget(title='Views')
-    #     self._viewsDockWidget.setAllowedAreas(Qt.RightDockWidgetArea | Qt.BottomDockWidgetArea)
-    #     self.addDockWidget(Qt.RightDockWidgetArea, self._viewsDockWidget)
 
     def initMainWindow(self) -> None:
         self.setCentralWidget(QWidget(self))
         self.centralWidget().hide()
         self.splitDockWidget(self._dataDockWidget, self._tasksDockWidget, Qt.Vertical)
-        # self.splitDockWidget(self._mainViewDockWidget, self._viewsDockWidget, Qt.Vertical)
         self.setWindowTitle(WINDOWTITLE)
-        # self.setWindowSize()
         self.centerWindow()
-        # self.saveDefaultLayout()
-        # self.resetLayout()
         self.restoreGeometry(self._settings.value('windowGeometry'))
         self.restoreState(self._settings.value('windowState'))
 
@@ -130,22 +121,6 @@ class MainWindow(QMainWindow):
         x = (screen.width() - self.geometry().width()) / 2
         y = (screen.height() - self.geometry().height()) / 2
         self.move(int(x), int(y))
-
-    # def saveDefaultLayout(self) -> None:
-    #     self._defaultLayout = self.saveState()
-    #     self._settings.setValue('defaultLayout', self._defaultLayout)
-
-    # def resetLayout(self) -> None:
-    #     if not self._defaultLayout:
-    #         self._defaultLayout = self._settings.value('defaultLayout')
-    #     self.restoreState(self._defaultLayout)
-
-    # def setWindowSize(self) -> None:
-    #     size = self._settings.value('mainWindowSize', None)
-    #     if not size:
-    #         size = QSize(970, 760)
-    #         self._settings.setValue('mainWindowSize', size)
-    #     self.resize(size)
 
     # Exit
         
