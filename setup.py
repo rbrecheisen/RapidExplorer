@@ -32,7 +32,7 @@ setup(
     keywords='mosamatic',
     name='mosamatic',
     packages=find_packages(),
-    install_requires=requirements,
+    setup_requires=requirements,
     entry_points={
         'console_scripts': [
             'mosamatic-desktop=main:main',
