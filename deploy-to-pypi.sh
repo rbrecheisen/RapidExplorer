@@ -60,6 +60,5 @@ if [ "$?" == "1" ]; then
     exit 1
 fi
 rm -rf build dist
-python install -e .
-# python setup.py sdist bdist_wheel
+python setup.py sdist bdist_wheel
 # twine upload --repository pypi dist/*
