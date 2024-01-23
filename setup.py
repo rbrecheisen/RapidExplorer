@@ -30,7 +30,7 @@ setup(
         'Programming Language :: Python :: 3.8',
     ],
     package_dir={
-        '': 'src/mosamatic',
+        '': 'src',
     },
     packages=find_packages(),
     description="Desktop tool for analyzing medical images",
