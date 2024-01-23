@@ -25,6 +25,8 @@ setup(
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
     ],
+    package_dir={'mosamatic': 'src/app'},
+    package=['mosamatic'],
     description="Desktop tool for analyzing medical images",
     install_requires=requirements,
     license="MIT license",
@@ -35,7 +37,7 @@ setup(
     setup_requires=requirements,
     entry_points={
         'console_scripts': [
-            'mosamatic-desktop=main:main',
+            'mosamatic-desktop=mosamatic.main:main',
         ],
     },
     version=os.environ['VERSION'],
