@@ -38,7 +38,7 @@ setup(
     license="MIT license",
     include_package_data=True,
     keywords='mosamaticdesktop',
-    name='mosamaticdesktop',
+    name='mosamatic',
     setup_requires=setup_requirements,
     tests_require=test_requirements,
     test_suite='tests',
