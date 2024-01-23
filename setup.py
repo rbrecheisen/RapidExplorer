@@ -27,7 +27,7 @@ setup(
     ],
     package_dir={'mosamatic': 'src/app'},
     package=['mosamatic'],
-    packages=find_packages(where='src/app'),
+    packages=find_packages(where='src'),
     description="Desktop tool for analyzing medical images",
     install_requires=requirements,
     license="MIT license",
