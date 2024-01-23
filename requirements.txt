@@ -12,3 +12,4 @@ pytest-qt
 tensorflow
 pyinstaller
 matplotlib
+twine
