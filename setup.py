@@ -27,13 +27,13 @@ setup(
     ],
     package_dir={'mosamatic': 'src/app'},
     package=['mosamatic'],
+    packages=find_packages(where='src/app'),
     description="Desktop tool for analyzing medical images",
     install_requires=requirements,
     license="MIT license",
     include_package_data=True,
     keywords='mosamatic',
     name='mosamatic',
-    packages=find_packages(),
     setup_requires=requirements,
     entry_points={
         'console_scripts': [
