@@ -10,6 +10,10 @@ with open('requirements.txt', 'r') as f:
         line = line.strip()
         requirements.append(line)
 
+setup_requirements = []
+
+test_requirements = []
+
 setup(
     author="Ralph Brecheisen",
     author_email='r.brecheisen@maastrichtuniversity.nl',
@@ -26,14 +30,16 @@ setup(
         'Programming Language :: Python :: 3.8',
     ],
     package_dir={'': 'mosamatic'},
-    packages=find_packages(where='mosamatic'),
+    packages=find_packages(include=['mosamatic', 'mosamatic.*']),
     description="Desktop tool for analyzing medical images",
     install_requires=requirements,
     license="MIT license",
     include_package_data=True,
     keywords='mosamatic',
     name='mosamatic',
-    setup_requires=requirements,
+    setup_requires=setup_requirements,
+    tests_require=test_requirements,
+    test_suite='tests',
     entry_points={
         'console_scripts': [
             'mosamatic-desktop=main:main',
