@@ -36,7 +36,7 @@ setup(
     setup_requires=requirements,
     entry_points={
         'console_scripts': [
-            'mosamatic-desktop=mosamatic.main:main',
+            'mosamatic-desktop=main:main',
         ],
     },
     version=os.environ['VERSION'],
