@@ -48,7 +48,7 @@ setup(
     test_suite='tests',
     entry_points={
         'console_scripts': [
-            'mosamatic-desktop=main:main',
+            'mosamatic-desktop=mosamaticdesktop.main:main',
         ],
     },
     version=os.environ['VERSION'],
