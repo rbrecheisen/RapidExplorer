@@ -29,7 +29,7 @@ setup(
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
     ],
-    package_dir={'': 'mosamatic'},
+    # package_dir={'': 'mosamatic'},
     packages=find_packages(include=['mosamatic', 'mosamatic.*']),
     description="Desktop tool for analyzing medical images",
     install_requires=requirements,
