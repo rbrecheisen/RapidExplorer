@@ -1,5 +1,5 @@
 #!/bin/bash
-export PACKAGE=mosamatic
+export PACKAGE=mosamaticdesktop
 # export TWINE_USERNAME=$(cat ${HOME}/pypiuser.txt)
 # export TWINE_PASSWORD=$(cat ${HOME}/pypipassword.txt)
 # Check if Twine is installed for uploading the package
