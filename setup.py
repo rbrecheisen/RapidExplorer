@@ -30,11 +30,7 @@ setup(
         'Programming Language :: Python :: 3.8',
     ],
     package_dir={
-        '': 'src/app',
-        # 'ai': 'src/app/ai',
-        # 'data': 'src/app/data',
-        # 'tasks': 'src/app/tasks',
-        # 'widgets': 'src/app/widgets',
+        '': 'src/mosamatic',
     },
     packages=find_packages(),
     description="Desktop tool for analyzing medical images",
@@ -48,7 +44,7 @@ setup(
     test_suite='tests',
     entry_points={
         'console_scripts': [
-            'mosamatic-desktop=mosamaticdesktop.main:main',
+            'mosamatic-desktop=main:main',
         ],
     },
     version=os.environ['VERSION'],

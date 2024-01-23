@@ -1,0 +1,2 @@
+class TaskWidgetException(Exception):
+    pass
