@@ -1,8 +1,8 @@
 from PySide6.QtCore import QPoint
 from PySide6.QtWidgets import QMenu, QTreeView, QMessageBox
 
-from widgets.filesetitem import FileSetItem
-from data.datamanager import DataManager
+from mosamaticdesktop.widgets.filesetitem import FileSetItem
+from mosamaticdesktop.data.datamanager import DataManager
 
 
 class FileSetItemMenu(QMenu):

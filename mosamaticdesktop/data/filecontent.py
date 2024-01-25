@@ -1,6 +1,6 @@
 from typing import Any
 
-from data.file import File
+from mosamaticdesktop.data.file import File
 
 
 class FileContent:

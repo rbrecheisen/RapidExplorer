@@ -3,10 +3,10 @@ import shutil
 import pydicom
 import pydicom.errors
 
-from tasks.task import Task
-from data.filecontentcache import FileContentCache
-from utils import readFromCache, writeToCache
-from logger import Logger
+from mosamaticdesktop.tasks.task import Task
+from mosamaticdesktop.data.filecontentcache import FileContentCache
+from mosamaticdesktop.utils import readFromCache, writeToCache
+from mosamaticdesktop.logger import Logger
 
 LOGGER = Logger()
 

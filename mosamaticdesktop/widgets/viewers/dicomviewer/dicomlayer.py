@@ -6,8 +6,8 @@ import numpy as np
 from PySide6.QtGui import QImage, QPixmap
 from PySide6.QtWidgets import QGraphicsItemGroup, QGraphicsPixmapItem
 
-from widgets.viewers.dicomviewer.layer import Layer
-from utils import readFromCache, writeToCache, applyWindowCenterAndWidth
+from mosamaticdesktop.widgets.viewers.dicomviewer.layer import Layer
+from mosamaticdesktop.utils import readFromCache, writeToCache, applyWindowCenterAndWidth
 
 
 class DicomLayer(Layer):

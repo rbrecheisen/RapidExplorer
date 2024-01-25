@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QProgressBar
 
-from tasks.taskwidget import TaskWidget
-from tasks.copyfilesettask.copyfilesettask import CopyFileSetTask
+from mosamaticdesktop.tasks.taskwidget import TaskWidget
+from mosamaticdesktop.tasks.copyfilesettask.copyfilesettask import CopyFileSetTask
 
 
 class CopyFileSetTaskWidget(TaskWidget):

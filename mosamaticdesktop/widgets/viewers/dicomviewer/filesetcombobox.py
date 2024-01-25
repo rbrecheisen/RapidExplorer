@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QWidget, QComboBox
 
-from data.datamanager import DataManager
+from mosamaticdesktop.data.datamanager import DataManager
 
 
 class FileSetComboBox(QComboBox):

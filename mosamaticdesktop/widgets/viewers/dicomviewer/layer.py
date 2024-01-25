@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QGraphicsItemGroup
 
-from data.file import File
+from mosamaticdesktop.data.file import File
 
 
 class Layer:

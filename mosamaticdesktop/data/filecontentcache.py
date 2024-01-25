@@ -1,5 +1,5 @@
-from singleton import singleton
-from data.filecontent import FileContent
+from mosamaticdesktop.singleton import singleton
+from mosamaticdesktop.data.filecontent import FileContent
 
 
 @singleton

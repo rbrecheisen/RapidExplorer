@@ -3,7 +3,7 @@ from typing import Any
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QVBoxLayout, QCheckBox
 
-from tasks.parameter import Parameter
+from mosamaticdesktop.tasks.parameter import Parameter
 
 
 class BooleanParameter(Parameter):

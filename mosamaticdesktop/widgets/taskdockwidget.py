@@ -1,9 +1,9 @@
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QWidget, QComboBox, QVBoxLayout, QProgressBar
 
-from widgets.dockwidget import DockWidget
-from tasks.taskwidgetmanager import TaskWidgetManager
-from logger import Logger
+from mosamaticdesktop.widgets.dockwidget import DockWidget
+from mosamaticdesktop.tasks.taskwidgetmanager import TaskWidgetManager
+from mosamaticdesktop.logger import Logger
 
 LOGGER = Logger()
 

@@ -3,8 +3,8 @@ import shutil
 import pydicom
 import pydicom.errors
 
-from tasks.task import Task
-from logger import Logger
+from mosamaticdesktop.tasks.task import Task
+from mosamaticdesktop.logger import Logger
 
 LOGGER = Logger()
 

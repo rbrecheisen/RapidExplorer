@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QProgressBar
 
-from tasks.taskwidget import TaskWidget
-from tasks.createpngfromdicomfiletask.createpngfromdicomfiletask import CreatePngFromDicomFileTask
+from mosamaticdesktop.tasks.taskwidget import TaskWidget
+from mosamaticdesktop.tasks.createpngfromdicomfiletask.createpngfromdicomfiletask import CreatePngFromDicomFileTask
 
 
 class CreatePngFromDicomFileTaskWidget(TaskWidget):

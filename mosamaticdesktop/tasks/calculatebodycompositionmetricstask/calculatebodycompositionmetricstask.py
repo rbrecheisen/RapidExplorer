@@ -7,11 +7,11 @@ import numpy as np
 
 from typing import List, Dict
 
-from tasks.task import Task
-from data.file import File
-from utils import getPixelsFromDicomObject, tagPixels, isDicomFile, calculateArea, calculateIndex, calculateDiceScore
-from utils import calculateMeanRadiationAttennuation, createNameWithTimestamp, readFromCache, writeToCache
-from logger import Logger
+from mosamaticdesktop.tasks.task import Task
+from mosamaticdesktop.data.file import File
+from mosamaticdesktop.utils import getPixelsFromDicomObject, tagPixels, isDicomFile, calculateArea, calculateIndex, calculateDiceScore
+from mosamaticdesktop.utils import calculateMeanRadiationAttennuation, createNameWithTimestamp, readFromCache, writeToCache
+from mosamaticdesktop.logger import Logger
 
 LOGGER = Logger()
 

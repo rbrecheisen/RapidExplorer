@@ -1,7 +1,7 @@
 from typing import List
 
-from data.models.filesetmodel import FileSetModel
-from data.file import File
+from mosamaticdesktop.data.models.filesetmodel import FileSetModel
+from mosamaticdesktop.data.file import File
 
 
 class FileSet:

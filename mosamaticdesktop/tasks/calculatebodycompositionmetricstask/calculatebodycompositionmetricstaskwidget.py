@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QProgressBar
 
-from tasks.taskwidget import TaskWidget
-from tasks.calculatebodycompositionmetricstask.calculatebodycompositionmetricstask import CalculateBodyCompositionMetricsTaskTask
+from mosamaticdesktop.tasks.taskwidget import TaskWidget
+from mosamaticdesktop.tasks.calculatebodycompositionmetricstask.calculatebodycompositionmetricstask import CalculateBodyCompositionMetricsTaskTask
 
 
 class CalculateBodyCompositionMetricsTaskWidget(TaskWidget):

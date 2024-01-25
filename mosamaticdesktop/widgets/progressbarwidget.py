@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QProgressBar
 
-from singleton import singleton
+from mosamaticdesktop.singleton import singleton
 
 
 @singleton

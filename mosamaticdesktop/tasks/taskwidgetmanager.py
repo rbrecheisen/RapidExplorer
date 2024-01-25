@@ -4,10 +4,10 @@ from PySide6.QtWidgets import QProgressBar
 
 from typing import List
 
-from tasks.taskwidget import TaskWidget
-from utils import ModuleLoader
-from singleton import singleton
-from logger import Logger
+from mosamaticdesktop.tasks.taskwidget import TaskWidget
+from mosamaticdesktop.utils import ModuleLoader
+from mosamaticdesktop.singleton import singleton
+from mosamaticdesktop.logger import Logger
 
 LOGGER = Logger()
 

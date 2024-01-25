@@ -2,8 +2,8 @@ import os
 
 from sqlalchemy import create_engine
 
-from singleton import singleton
-from data.models.basemodel import BaseModel
+from mosamaticdesktop.singleton import singleton
+from mosamaticdesktop.data.models.basemodel import BaseModel
 
 DATABASE = os.environ.get('DATABASE', 'db.sqlite3')
 DATABASEECHO = True if os.environ.get('DATABASEECHO', '0') =='1' else False

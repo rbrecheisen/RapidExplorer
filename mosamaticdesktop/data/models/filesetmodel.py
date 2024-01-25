@@ -4,8 +4,8 @@ from typing import List
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from data.models.basemodel import BaseModel
-from utils import createNameWithTimestamp
+from mosamaticdesktop.data.models.basemodel import BaseModel
+from mosamaticdesktop.utils import createNameWithTimestamp
 
 
 class FileSetModel(BaseModel):

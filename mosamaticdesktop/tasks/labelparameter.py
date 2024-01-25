@@ -3,7 +3,7 @@ from typing import Any
 from PySide6.QtWidgets import QWidget, QLabel, QSizePolicy
 from PySide6.QtGui import QFont
 
-from tasks.parameter import Parameter
+from mosamaticdesktop.tasks.parameter import Parameter
 
 
 class LabelParameter(Parameter):

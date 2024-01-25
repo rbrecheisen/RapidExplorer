@@ -1,6 +1,6 @@
 from sqlalchemy.orm import sessionmaker
 
-from data.engine import Engine
+from mosamaticdesktop.data.engine import Engine
 
 
 class Session:

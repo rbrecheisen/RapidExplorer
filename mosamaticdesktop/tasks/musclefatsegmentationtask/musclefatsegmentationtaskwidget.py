@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QProgressBar
 
-from tasks.taskwidget import TaskWidget
-from tasks.musclefatsegmentationtask.musclefatsegmentationtask import MuscleFatSegmentationTask
+from mosamaticdesktop.tasks.taskwidget import TaskWidget
+from mosamaticdesktop.tasks.musclefatsegmentationtask.musclefatsegmentationtask import MuscleFatSegmentationTask
 
 
 class MuscleFatSegmentationTaskWidget(TaskWidget):

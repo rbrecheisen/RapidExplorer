@@ -8,13 +8,13 @@ import numpy as np
 
 from typing import List, Any
 
-from tasks.task import Task
-from ai.tensorflowmodel import TensorFlowModel
-from data.file import File
-from logger import Logger
-from utils import getPixelsFromDicomObject, convertLabelsTo157
-from utils import normalizeBetween, Configuration
-from utils import readFromCache, writeToCache
+from mosamaticdesktop.tasks.task import Task
+from mosamaticdesktop.ai.tensorflowmodel import TensorFlowModel
+from mosamaticdesktop.data.file import File
+from mosamaticdesktop.logger import Logger
+from mosamaticdesktop.utils import getPixelsFromDicomObject, convertLabelsTo157
+from mosamaticdesktop.utils import normalizeBetween, Configuration
+from mosamaticdesktop.utils import readFromCache, writeToCache
 
 LOGGER = Logger()
 

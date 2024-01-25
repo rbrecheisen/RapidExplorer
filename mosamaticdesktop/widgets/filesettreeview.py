@@ -2,12 +2,12 @@ from PySide6.QtCore import Qt, QPoint
 from PySide6.QtWidgets import QTreeView
 from PySide6.QtGui import QResizeEvent, QStandardItemModel, QStandardItem, QMouseEvent
 
-from data.datamanager import DataManager
-from data.fileset import FileSet
-from widgets.fileitem import FileItem
-from widgets.fileitemmenu import FileItemMenu
-from widgets.filesetitem import FileSetItem
-from widgets.filesetitemmenu import FileSetItemMenu
+from mosamaticdesktop.data.datamanager import DataManager
+from mosamaticdesktop.data.fileset import FileSet
+from mosamaticdesktop.widgets.fileitem import FileItem
+from mosamaticdesktop.widgets.fileitemmenu import FileItemMenu
+from mosamaticdesktop.widgets.filesetitem import FileSetItem
+from mosamaticdesktop.widgets.filesetitemmenu import FileSetItemMenu
 
 FIRSTCOLUMNOFFSET = 100
 

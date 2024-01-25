@@ -4,14 +4,14 @@ from typing import List
 
 from PySide6.QtCore import QObject, Signal
 
-from data.session import Session
-from data.fileset import FileSet
-from data.models.filesetmodel import FileSetModel
-from data.file import File
-from data.models.filemodel import FileModel
-from data.filecontentcache import FileContentCache
-from singleton import singleton
-from logger import Logger
+from mosamaticdesktop.data.session import Session
+from mosamaticdesktop.data.fileset import FileSet
+from mosamaticdesktop.data.models.filesetmodel import FileSetModel
+from mosamaticdesktop.data.file import File
+from mosamaticdesktop.data.models.filemodel import FileModel
+from mosamaticdesktop.data.filecontentcache import FileContentCache
+from mosamaticdesktop.singleton import singleton
+from mosamaticdesktop.logger import Logger
 
 LOGGER = Logger()
 

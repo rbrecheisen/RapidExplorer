@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QProgressBar
 
-from tasks.taskwidget import TaskWidget
-from tasks.createarchivetask.createarchivetask import CreateArchiveTask
+from mosamaticdesktop.tasks.taskwidget import TaskWidget
+from mosamaticdesktop.tasks.createarchivetask.createarchivetask import CreateArchiveTask
 
 
 class CreateArchiveTaskWidget(TaskWidget):

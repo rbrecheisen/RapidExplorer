@@ -3,7 +3,7 @@ import uuid
 from sqlalchemy import String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from data.models.basemodel import BaseModel
+from mosamaticdesktop.data.models.basemodel import BaseModel
 
 
 class FileModel(BaseModel):

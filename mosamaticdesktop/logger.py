@@ -4,8 +4,8 @@ import logging
 
 from typing import List
 
-from singleton import singleton
-from utils import createNameWithTimestamp
+from mosamaticdesktop.singleton import singleton
+from mosamaticdesktop.utils import createNameWithTimestamp
 
 LOGFILEPATH = os.environ.get('LOGFILEPATH', 'MosamaticDesktop.log')
 

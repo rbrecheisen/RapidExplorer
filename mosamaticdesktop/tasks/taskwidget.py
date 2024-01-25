@@ -5,23 +5,23 @@ from typing import Any, List
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QProgressBar, QProgressBar, QDialog, QMessageBox
 
-from tasks.task import Task
-from tasks.taskwidgetexception import TaskWidgetException
-from tasks.taskwidgetparameterdialog import TaskWidgetParameterDialog
-from tasks.taskruninfodialog import TaskRunInfoDialog
-from tasks.parameter import Parameter
-from tasks.parametercopier import ParameterCopier
-from tasks.descriptionparameter import DescriptionParameter
-from tasks.labelparameter import LabelParameter
-from tasks.filesetparameter import FileSetParameter
-from tasks.multifilesetparameter import MultiFileSetParameter
-from tasks.pathparameter import PathParameter
-from tasks.textparameter import TextParameter
-from tasks.integerparameter import IntegerParameter
-from tasks.floatingpointparameter import FloatingPointParameter
-from tasks.booleanparameter import BooleanParameter
-from tasks.optiongroupparameter import OptionGroupParameter
-from logger import Logger
+from mosamaticdesktop.tasks.task import Task
+from mosamaticdesktop.tasks.taskwidgetexception import TaskWidgetException
+from mosamaticdesktop.tasks.taskwidgetparameterdialog import TaskWidgetParameterDialog
+from mosamaticdesktop.tasks.taskruninfodialog import TaskRunInfoDialog
+from mosamaticdesktop.tasks.parameter import Parameter
+from mosamaticdesktop.tasks.parametercopier import ParameterCopier
+from mosamaticdesktop.tasks.descriptionparameter import DescriptionParameter
+from mosamaticdesktop.tasks.labelparameter import LabelParameter
+from mosamaticdesktop.tasks.filesetparameter import FileSetParameter
+from mosamaticdesktop.tasks.multifilesetparameter import MultiFileSetParameter
+from mosamaticdesktop.tasks.pathparameter import PathParameter
+from mosamaticdesktop.tasks.textparameter import TextParameter
+from mosamaticdesktop.tasks.integerparameter import IntegerParameter
+from mosamaticdesktop.tasks.floatingpointparameter import FloatingPointParameter
+from mosamaticdesktop.tasks.booleanparameter import BooleanParameter
+from mosamaticdesktop.tasks.optiongroupparameter import OptionGroupParameter
+from mosamaticdesktop.logger import Logger
 
 LOGGER = Logger()
 

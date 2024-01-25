@@ -2,7 +2,7 @@ import os
 
 from PySide6.QtGui import QStandardItem, QFont
 
-from data.fileset import FileSet
+from mosamaticdesktop.data.fileset import FileSet
 
 
 class FileSetItem(QStandardItem):

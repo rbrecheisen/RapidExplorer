@@ -1,11 +1,11 @@
 import os
 import numpy as np
 
-from tasks.task import Task
-from utils import convertDicomToNumPyArray
-from utils import convertNumPyArrayToPngImage
-from utils import isDicomFile
-from logger import Logger
+from mosamaticdesktop.tasks.task import Task
+from mosamaticdesktop.utils import convertDicomToNumPyArray
+from mosamaticdesktop.utils import convertNumPyArrayToPngImage
+from mosamaticdesktop.utils import isDicomFile
+from mosamaticdesktop.logger import Logger
 
 LOGGER = Logger()
 

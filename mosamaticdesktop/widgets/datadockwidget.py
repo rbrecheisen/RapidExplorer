@@ -1,5 +1,5 @@
-from widgets.dockwidget import DockWidget
-from widgets.filesettreeview import FileSetTreeView
+from mosamaticdesktop.widgets.dockwidget import DockWidget
+from mosamaticdesktop.widgets.filesettreeview import FileSetTreeView
 
 
 class DataDockWidget(DockWidget):

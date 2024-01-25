@@ -3,9 +3,9 @@ import os
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QProgressBar
 
-from widgets.dockwidget import DockWidget
-from widgets.viewers.dicomviewer.dicomviewer import DicomViewer
-from data.datamanager import DataManager
+from mosamaticdesktop.widgets.dockwidget import DockWidget
+from mosamaticdesktop.widgets.viewers.dicomviewer.dicomviewer import DicomViewer
+from mosamaticdesktop.data.datamanager import DataManager
 
 
 class MainViewerDockWidget(DockWidget):

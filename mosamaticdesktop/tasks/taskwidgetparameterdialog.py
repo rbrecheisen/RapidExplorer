@@ -4,7 +4,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QCloseEvent
 from PySide6.QtWidgets import QWidget, QDialog, QPushButton, QVBoxLayout, QHBoxLayout, QMessageBox
 
-from tasks.parameter import Parameter
+from mosamaticdesktop.tasks.parameter import Parameter
 
 
 class TaskWidgetParameterDialog(QDialog):

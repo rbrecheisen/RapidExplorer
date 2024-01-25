@@ -2,7 +2,7 @@ from typing import Any
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QFileDialog, QLineEdit, QVBoxLayout, QPushButton
 
-from tasks.parameter import Parameter
+from mosamaticdesktop.tasks.parameter import Parameter
 
 
 class PathParameter(Parameter):

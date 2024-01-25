@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QProgressBar
 
-from tasks.taskwidget import TaskWidget
-from tasks.decompressdicomtask.decompressdicomtask import DecompressDicomTask
+from mosamaticdesktop.tasks.taskwidget import TaskWidget
+from mosamaticdesktop.tasks.decompressdicomtask.decompressdicomtask import DecompressDicomTask
 
 
 class DecompressDicomTaskWidget(TaskWidget):

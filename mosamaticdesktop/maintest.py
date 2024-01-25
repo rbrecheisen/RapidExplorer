@@ -1,7 +1,7 @@
 import os
 import pytest
 
-from data import engine
+from mosamaticdesktop.data import engine
 
 engine.DATABASE = 'db.test.sqlite3'
 engine.ECHO = False

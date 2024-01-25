@@ -2,7 +2,7 @@ from typing import Any, List
 
 from PySide6.QtWidgets import QWidget, QLabel, QComboBox
 
-from tasks.parameter import Parameter
+from mosamaticdesktop.tasks.parameter import Parameter
 
 
 class OptionGroupParameter(Parameter):

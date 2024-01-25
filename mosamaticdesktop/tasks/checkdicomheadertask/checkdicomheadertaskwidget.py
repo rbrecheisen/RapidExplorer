@@ -2,8 +2,8 @@ from pydicom.datadict import keyword_dict
 
 from PySide6.QtWidgets import QProgressBar
 
-from tasks.taskwidget import TaskWidget
-from tasks.checkdicomheadertask.checkdicomheadertask import CheckDicomHeaderTask
+from mosamaticdesktop.tasks.taskwidget import TaskWidget
+from mosamaticdesktop.tasks.checkdicomheadertask.checkdicomheadertask import CheckDicomHeaderTask
 
 
 class CheckDicomHeaderTaskWidget(TaskWidget):

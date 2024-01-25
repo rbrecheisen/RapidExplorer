@@ -4,11 +4,11 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QFileDialog, QMenu, QProgressBar
 from PySide6.QtGui import QAction, QGuiApplication
 
-from data.datamanager import DataManager
-from widgets.datadockwidget import DataDockWidget
-from widgets.taskdockwidget import TaskDockWidget
-from widgets.mainviewerdockwidget import MainViewerDockWidget
-from utils import Configuration
+from mosamaticdesktop.data.datamanager import DataManager
+from mosamaticdesktop.widgets.datadockwidget import DataDockWidget
+from mosamaticdesktop.widgets.taskdockwidget import TaskDockWidget
+from mosamaticdesktop.widgets.mainviewerdockwidget import MainViewerDockWidget
+from mosamaticdesktop.utils import Configuration
 
 WINDOWTITLE = 'Mosamatic Desktop 1.0'
 FILESETPATH = os.path.join(os.getenv('HOME'), 'Desktop', 'downloads', 'dataset', 'scan1')

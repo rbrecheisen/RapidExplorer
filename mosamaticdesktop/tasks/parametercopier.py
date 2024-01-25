@@ -1,10 +1,10 @@
 import os
 import inspect
 
-from utils import ParameterLoader
-from tasks.parameter import Parameter
-from singleton import singleton
-from logger import Logger
+from mosamaticdesktop.utils import ParameterLoader
+from mosamaticdesktop.tasks.parameter import Parameter
+from mosamaticdesktop.singleton import singleton
+from mosamaticdesktop.logger import Logger
 
 LOGGER = Logger()
 

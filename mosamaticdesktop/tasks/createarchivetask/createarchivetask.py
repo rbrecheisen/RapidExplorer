@@ -1,9 +1,9 @@
 import os
 import zipfile
 
-from tasks.task import Task
-from utils import createNameWithTimestamp
-from logger import Logger
+from mosamaticdesktop.tasks.task import Task
+from mosamaticdesktop.utils import createNameWithTimestamp
+from mosamaticdesktop.logger import Logger
 
 LOGGER = Logger()
 

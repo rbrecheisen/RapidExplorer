@@ -17,11 +17,11 @@ from typing import Dict, Any, List
 from PySide6.QtGui import QImage
 from PySide6.QtCore import QSettings
 
-from singleton import singleton
-from operatingsystem import OperatingSystem
-from data.file import File
-from data.filecontent import FileContent
-from data.filecontentcache import FileContentCache
+from mosamaticdesktop.singleton import singleton
+from mosamaticdesktop.operatingsystem import OperatingSystem
+from mosamaticdesktop.data.file import File
+from mosamaticdesktop.data.filecontent import FileContent
+from mosamaticdesktop.data.filecontentcache import FileContentCache
 
 
 def createNameWithTimestamp(prefix: str='') -> str:

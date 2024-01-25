@@ -1,6 +1,6 @@
 import numpy as np
 
-from ai.model import Model
+from mosamaticdesktop.ai.model import Model
 
 
 class PyTorchModel(Model):

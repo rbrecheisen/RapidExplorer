@@ -2,7 +2,7 @@ from typing import Any
 
 from PySide6.QtWidgets import QWidget, QLabel, QSpinBox
 
-from tasks.parameter import Parameter
+from mosamaticdesktop.tasks.parameter import Parameter
 
 
 class IntegerParameter(Parameter):

@@ -3,16 +3,16 @@ import threading
 from PySide6.QtCore import Qt, Signal, QObject
 from PySide6.QtWidgets import QWidget, QGraphicsView, QGraphicsScene, QProgressBar, QSlider, QCheckBox, QGridLayout, QLabel, QPushButton
 
-from widgets.viewers.dicomviewer.dicomlayer import DicomLayer
-from widgets.viewers.dicomviewer.dicominfolayer import DicomInfoLayer
-from widgets.viewers.dicomviewer.segmentationlayer import SegmentationLayer
-from widgets.viewers.dicomviewer.taglayer import TagLayer
-from widgets.viewers.dicomviewer.filesetcombobox import FileSetComboBox
-from utils import isDicomFile
-from data.fileset import FileSet
-from data.datamanager import DataManager
-from data.file import File
-from logger import Logger
+from mosamaticdesktop.widgets.viewers.dicomviewer.dicomlayer import DicomLayer
+from mosamaticdesktop.widgets.viewers.dicomviewer.dicominfolayer import DicomInfoLayer
+from mosamaticdesktop.widgets.viewers.dicomviewer.segmentationlayer import SegmentationLayer
+from mosamaticdesktop.widgets.viewers.dicomviewer.taglayer import TagLayer
+from mosamaticdesktop.widgets.viewers.dicomviewer.filesetcombobox import FileSetComboBox
+from mosamaticdesktop.utils import isDicomFile
+from mosamaticdesktop.data.fileset import FileSet
+from mosamaticdesktop.data.datamanager import DataManager
+from mosamaticdesktop.data.file import File
+from mosamaticdesktop.logger import Logger
 
 LOGGER = Logger()
 

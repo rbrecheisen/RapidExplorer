@@ -4,10 +4,10 @@ from typing import Dict, List, Any
 
 from PySide6.QtCore import QObject, Signal
 
-from tasks.parameter import Parameter
-from data.datamanager import DataManager
-from logger import Logger
-from utils import createNameWithTimestamp
+from mosamaticdesktop.tasks.parameter import Parameter
+from mosamaticdesktop.data.datamanager import DataManager
+from mosamaticdesktop.logger import Logger
+from mosamaticdesktop.utils import createNameWithTimestamp
 
 LOGGER = Logger()
 

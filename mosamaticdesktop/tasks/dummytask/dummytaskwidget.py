@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QProgressBar
 
-from tasks.taskwidget import TaskWidget
-from tasks.dummytask.dummytask import DummyTask
+from mosamaticdesktop.tasks.taskwidget import TaskWidget
+from mosamaticdesktop.tasks.dummytask.dummytask import DummyTask
 
 
 class DummyTaskWidget(TaskWidget):

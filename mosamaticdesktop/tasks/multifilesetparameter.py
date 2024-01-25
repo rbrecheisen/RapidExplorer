@@ -2,8 +2,8 @@ from typing import Any, List
 
 from PySide6.QtWidgets import QWidget, QHBoxLayout, QLabel, QComboBox, QListWidget, QPushButton
 
-from tasks.parameter import Parameter
-from data.datamanager import DataManager
+from mosamaticdesktop.tasks.parameter import Parameter
+from mosamaticdesktop.data.datamanager import DataManager
 
 
 class MultiFileSetParameter(Parameter):

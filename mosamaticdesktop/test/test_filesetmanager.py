@@ -1,4 +1,4 @@
-from data.datamanager import DataManager
+from mosamaticdesktop.data.datamanager import DataManager
 
 
 def test_managerCanCreateUpdateAndDeleteFileSet():

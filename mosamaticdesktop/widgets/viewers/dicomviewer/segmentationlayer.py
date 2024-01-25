@@ -3,8 +3,8 @@ import numpy as np
 from PySide6.QtGui import QImage, QPixmap
 from PySide6.QtWidgets import QGraphicsItemGroup, QGraphicsPixmapItem
 
-from widgets.viewers.dicomviewer.layer import Layer
-from utils import convertNumPyArrayToRgbQImage, AlbertaColorMap, readFromCache, writeToCache
+from mosamaticdesktop.widgets.viewers.dicomviewer.layer import Layer
+from mosamaticdesktop.utils import convertNumPyArrayToRgbQImage, AlbertaColorMap, readFromCache, writeToCache
 
 
 class SegmentationLayer(Layer):

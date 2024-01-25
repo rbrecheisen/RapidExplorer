@@ -5,7 +5,7 @@ import subprocess
 from PySide6.QtCore import QPoint
 from PySide6.QtWidgets import QMenu, QTreeView
 
-from widgets.fileitem import FileItem
+from mosamaticdesktop.widgets.fileitem import FileItem
 
 PLATFORM = sys.platform
 
