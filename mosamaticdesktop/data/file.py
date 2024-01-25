@@ -1,4 +1,4 @@
-from data.models.filemodel import FileModel
+from mosamaticdesktop.data.models.filemodel import FileModel
 
 
 class File:
