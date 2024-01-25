@@ -37,7 +37,7 @@ setup(
         'mosamaticdesktop', 
         'mosamaticdesktop.ai',
         'mosamaticdesktop.data',
-        'mosamaticdesktop.data.*',
+        'mosamaticdesktop.data.models',
         'mosamaticdesktop.tasks',
         'mosamaticdesktop.tasks.*',
         'mosamaticdesktop.widgets',
