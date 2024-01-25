@@ -33,7 +33,7 @@ setup(
         '': 'src',
     },
     package='mosamaticdesktop',
-    packages=find_packages(include==['mosamaticdesktop', 'mosamaticdesktop.*']),
+    packages=find_packages(include=['mosamaticdesktop', 'mosamaticdesktop.*']),
     description="Desktop tool for analyzing medical images",
     install_requires=requirements,
     license="MIT license",
