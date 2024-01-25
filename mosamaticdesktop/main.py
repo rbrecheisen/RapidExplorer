@@ -2,8 +2,8 @@ import sys
 
 from PySide6.QtWidgets import QApplication
 
-from mainwindow import MainWindow
-# from mosamaticdesktop.mainwindow import MainWindow
+# from mainwindow import MainWindow
+from mosamaticdesktop.mainwindow import MainWindow
 
 
 def main():
