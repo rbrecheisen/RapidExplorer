@@ -30,7 +30,7 @@ setup(
         'Programming Language :: Python :: 3.8',
     ],
     package_dir={
-        '': 'src',
+        'src': 'src/mosamaticdesktop',
     },
     # package='mosamaticdesktop',
     packages=find_packages(include=['mosamaticdesktop', 'mosamaticdesktop.*']),
