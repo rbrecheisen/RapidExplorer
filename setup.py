@@ -32,7 +32,7 @@ setup(
     package_dir={
         '': 'src',
     },
-    package='mosamaticdesktop',
+    # package='mosamaticdesktop',
     packages=find_packages(include=['mosamaticdesktop', 'mosamaticdesktop.*']),
     description="Desktop tool for analyzing medical images",
     install_requires=requirements,
