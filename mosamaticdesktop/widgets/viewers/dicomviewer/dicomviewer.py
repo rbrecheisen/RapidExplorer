@@ -44,7 +44,7 @@ class DicomViewer(QWidget):
         self._dicomFileInfoOpacitySlider = None
         self._inputFileSetComboBox = None
         # Miscellaneous
-        self._fullScan = True
+        self._fullScan = False
         self._fullScanCheckBox = None
         self._currentLayerTupleIndex = 0
         self._exportDirectory = None
@@ -59,7 +59,7 @@ class DicomViewer(QWidget):
         self.initSliders()
         self.initFileSetComboBox()
         self._fullScanCheckBox = QCheckBox('Full Scan')
-        self._fullScanCheckBox.setCheckState(Qt.Checked)
+        self._fullScanCheckBox.setCheckState(Qt.Checked if self._fullScan else Qt.Unchecked)
         self._fullScanCheckBox.stateChanged.connect(self.fullScanCheckBoxStateChanged)
         updateViewerButton = QPushButton('Update Viewer')
         updateViewerButton.clicked.connect(self.inputFileSetChanged)
