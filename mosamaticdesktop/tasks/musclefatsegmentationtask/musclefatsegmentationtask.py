@@ -97,7 +97,7 @@ class MuscleFatSegmentationTask(Task):
         if overwriteOutputFileSet:
             if os.path.isdir(outputFileSetPath):
                 shutil.rmtree(outputFileSetPath)
-        os.makedirs(outputFileSetPath, exist_ok=False)
+        os.makedirs(outputFileSetPath, exist_ok=True)
         self.addInfo(f'Output fileset path: {outputFileSetPath}')
 
         # Get mode (ARGMAX or PROBABILITIES)

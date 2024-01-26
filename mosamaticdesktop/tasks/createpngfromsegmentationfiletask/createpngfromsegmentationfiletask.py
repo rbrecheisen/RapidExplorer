@@ -11,9 +11,9 @@ from mosamaticdesktop.logger import Logger
 LOGGER = Logger()
 
 
-class CreatePngFromNumPyFileTask(Task):
+class CreatePngFromSegmentationFileTask(Task):
     def __init__(self) -> None:
-        super(CreatePngFromNumPyFileTask, self).__init__()
+        super(CreatePngFromSegmentationFileTask, self).__init__()
 
     def execute(self) -> None:
 
@@ -29,7 +29,7 @@ class CreatePngFromNumPyFileTask(Task):
         if overwriteOutputFileSet:
             if os.path.isdir(outputFileSetPath):
                 shutil.rmtree(outputFileSetPath)
-        os.makedirs(outputFileSetPath, exist_ok=False)
+        os.makedirs(outputFileSetPath, exist_ok=True)
 
         step = 0
         files = inputFileSet.files()

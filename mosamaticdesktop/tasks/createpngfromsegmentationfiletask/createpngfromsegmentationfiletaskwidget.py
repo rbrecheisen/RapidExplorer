@@ -1,12 +1,12 @@
 from PySide6.QtWidgets import QProgressBar
 
 from mosamaticdesktop.tasks.taskwidget import TaskWidget
-from mosamaticdesktop.tasks.createpngfromnumpyfiletask.createpngfromnumpyfiletask import CreatePngFromNumPyFileTask
+from mosamaticdesktop.tasks.createpngfromsegmentationfiletask.createpngfromsegmentationfiletask import CreatePngFromSegmentationFileTask
 
 
 class CreatePngFromNumPyFileTaskWidget(TaskWidget):
     def __init__(self, progressBar: QProgressBar) -> None:
-        super(CreatePngFromNumPyFileTaskWidget, self).__init__(taskType=CreatePngFromNumPyFileTask, progressBar=progressBar)
+        super(CreatePngFromNumPyFileTaskWidget, self).__init__(taskType=CreatePngFromSegmentationFileTask, progressBar=progressBar)
         self.addDescriptionParameter(
             name='description',
             description=f'Create PNGs From NumPy Files',
