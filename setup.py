@@ -46,7 +46,7 @@ setup(
     ]),
     include_package_data=True,
     package_data={
-        'mosamaticdesktop': ['scripts/*.bat'],
+        'mosamaticdesktop': ['scripts/*.bat', 'scripts/*.sh'],
     },
     description="Desktop tool for analyzing medical images",
     install_requires=requirements,

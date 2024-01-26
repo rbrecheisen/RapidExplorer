@@ -16,7 +16,7 @@ if not exist "%VENV_DIR%" (
 call "%VENV_DIR%\Scripts\activate"
 
 %USERPROFILE%/.mosamatic/MosamaticDesktop/bin/pip install --upgrade pip
-%USERPROFILE%/.mosamatic/MosamaticDesktop/bin/pip install mosamaticdesktop==1.1.0
+%USERPROFILE%/.mosamatic/MosamaticDesktop/bin/pip install mosamaticdesktop
 
 call "%VENV_DIR%\Scripts\deactivate.bat"
 

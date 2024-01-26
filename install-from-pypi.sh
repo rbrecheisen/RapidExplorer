@@ -14,10 +14,10 @@ python3 -m venv $VENV_DIR
 echo "Activating virtual environment and installing package requirements..."
 source $VENV_DIR/bin/activate
 $HOME/.mosamatic/MosamaticDesktop/bin/pip install --upgrade pip
-$HOME/.mosamatic/MosamaticDesktop/bin/pip install mosamaticdesktop==1.1.0
+$HOME/.mosamatic/MosamaticDesktop/bin/pip install mosamaticdesktop
 deactivate
 
 echo "Installing mosamatic.sh in /usr/local/bin..."
-cp mosamatic.sh /usr/local/bin
+cp $HOME/.mosamatic/MosamaticDesktop/lib/python3.11/site-packages/mosamaticdesktop/scripts/mosamatic.sh /usr/local/bin
 
 echo "Done"
