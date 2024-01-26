@@ -9,15 +9,14 @@ set VENV_DIR=%USERPROFILE%\.mosamatic\MosamaticDesktop
 if not exist "%USERPROFILE%\.mosamatic\" mkdir "%USERPROFILE%\.mosamatic"
 cd /d "%USERPROFILE%\.mosamatic"
 
-powershell -command "Expand-Archive -Path '..\MosamaticDesktop.zip' -DestinationPath '.' -Force"
-
 if not exist "%VENV_DIR%" (
     python -m venv "%VENV_DIR%"
 )
 
 call "%VENV_DIR%\Scripts\activate"
 
-pip install -r requirements.txt
+%USERPROFILE%/.mosamatic/MosamaticDesktop/bin/pip install --upgrade pip
+%USERPROFILE%/.mosamatic/MosamaticDesktop/bin/pip install mosamaticdesktop==1.1.0
 
 call "%VENV_DIR%\Scripts\deactivate.bat"
 endlocal
