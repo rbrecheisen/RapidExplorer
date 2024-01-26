@@ -1,7 +1,10 @@
+import os
+import shutil
 import threading
 
 from PySide6.QtCore import Qt, Signal, QObject
-from PySide6.QtWidgets import QWidget, QGraphicsView, QGraphicsScene, QProgressBar, QSlider, QCheckBox, QGridLayout, QLabel, QPushButton
+from PySide6.QtWidgets import QWidget, QGraphicsView, QGraphicsScene, QProgressBar, QSlider, QCheckBox, QGridLayout, QLabel, QPushButton, QHBoxLayout
+from PySide6.QtWidgets import QFileDialog
 
 from mosamaticdesktop.widgets.viewers.dicomviewer.dicomlayer import DicomLayer
 from mosamaticdesktop.widgets.viewers.dicomviewer.dicominfolayer import DicomInfoLayer
@@ -44,6 +47,7 @@ class DicomViewer(QWidget):
         self._fullScan = True
         self._fullScanCheckBox = None
         self._currentLayerTupleIndex = 0
+        self._exportDirectory = None
         self._dataManager = DataManager()
         self._layout = None
         self._progressSignal = self.ProgressSignal()
@@ -57,8 +61,12 @@ class DicomViewer(QWidget):
         self._fullScanCheckBox = QCheckBox('Full Scan')
         self._fullScanCheckBox.setCheckState(Qt.Checked)
         self._fullScanCheckBox.stateChanged.connect(self.fullScanCheckBoxStateChanged)
-        button = QPushButton('Update Viewer')
-        button.clicked.connect(self.inputFileSetChanged)
+        updateViewerButton = QPushButton('Update Viewer')
+        updateViewerButton.clicked.connect(self.inputFileSetChanged)
+        selectExportDirectoryButton = QPushButton('Select Export Directory')
+        selectExportDirectoryButton.clicked.connect(self.selectExportDirectory)
+        exportCurrentImageButton = QPushButton('Export Current Image to File')
+        exportCurrentImageButton.clicked.connect(self.exportCurrentImage)
         layout = QGridLayout()
         layout.addWidget(self._graphicsView, 0, 0, 1, 2)
         layout.addWidget(QLabel('Image'), 1, 0)
@@ -70,7 +78,11 @@ class DicomViewer(QWidget):
         layout.addWidget(QLabel('Input File Set'), 4, 0)
         layout.addWidget(self._inputFileSetComboBox, 4, 1)
         layout.addWidget(self._fullScanCheckBox, 5, 1)
-        layout.addWidget(button, 6, 1)
+        layout.addWidget(updateViewerButton, 6, 1)
+        buttonLayout = QHBoxLayout()
+        buttonLayout.addWidget(selectExportDirectoryButton)
+        buttonLayout.addWidget(exportCurrentImageButton)
+        layout.addLayout(buttonLayout, 7, 1)
         self.setLayout(layout)
 
     def initGraphicsView(self) -> None:
@@ -188,7 +200,20 @@ class DicomViewer(QWidget):
         if text:
             inputFileSet = self._dataManager.fileSetByName(text)
             self.startSetInputFileSet(fileSet=inputFileSet)
-            # self.setInputFileSet(inputFileSet)
+
+    def selectExportDirectory(self) -> None:
+        self._exportDirectory = QFileDialog.getExistingDirectory(self, 'Select Export Directory')
+        LOGGER.info(f'Selected export directory: {self._exportDirectory}')
+
+    def exportCurrentImage(self) -> None:
+        if self._currentLayerTupleIndex >= 0 and len(self._layerTuples) > 0:
+            if self._exportDirectory:
+                file = self._layerTuples[self._currentLayerTupleIndex][0].file()
+                if file:
+                    fileName = os.path.split(file.path())[1]
+                    exportedFilePath = os.path.join(self._exportDirectory, fileName)
+                    shutil.copy(file.path(), exportedFilePath)
+                    LOGGER.info(f'Exported file {file.path()} to export directory')
 
     def wheelEvent(self, event) -> None:
         delta = event.angleDelta().y()
