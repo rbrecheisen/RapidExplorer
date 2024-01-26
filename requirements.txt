@@ -12,5 +12,6 @@ pytest-qt
 tensorflow
 pyinstaller
 matplotlib
+totalsegmentator
 pillow
 twine
