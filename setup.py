@@ -44,10 +44,13 @@ setup(
         'mosamaticdesktop.widgets',
         'mosamaticdesktop.widgets.*',
     ]),
+    include_package_data=True,
+    package_data={
+        'mosamaticdesktop': ['scripts/*.bat'],
+    }
     description="Desktop tool for analyzing medical images",
     install_requires=requirements,
     license="MIT license",
-    include_package_data=True,
     keywords='mosamaticdesktop',
     name='mosamaticdesktop',
     setup_requires=setup_requirements,

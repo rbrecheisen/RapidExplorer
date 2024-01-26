@@ -19,4 +19,5 @@ call "%VENV_DIR%\Scripts\activate"
 %USERPROFILE%/.mosamatic/MosamaticDesktop/bin/pip install mosamaticdesktop==1.1.0
 
 call "%VENV_DIR%\Scripts\deactivate.bat"
+
 endlocal

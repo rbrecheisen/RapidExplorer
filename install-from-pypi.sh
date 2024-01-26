@@ -16,3 +16,8 @@ source $VENV_DIR/bin/activate
 $HOME/.mosamatic/MosamaticDesktop/bin/pip install --upgrade pip
 $HOME/.mosamatic/MosamaticDesktop/bin/pip install mosamaticdesktop==1.1.0
 deactivate
+
+echo "Installing mosamatic.sh in /usr/local/bin..."
+cp mosamatic.sh /usr/local/bin
+
+echo "Done"
