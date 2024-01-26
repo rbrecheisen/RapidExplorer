@@ -47,7 +47,7 @@ setup(
     include_package_data=True,
     package_data={
         'mosamaticdesktop': ['scripts/*.bat'],
-    }
+    },
     description="Desktop tool for analyzing medical images",
     install_requires=requirements,
     license="MIT license",
