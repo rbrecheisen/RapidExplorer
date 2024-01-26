@@ -51,7 +51,7 @@ class CheckDicomHeaderTask(Task):
                 allAttributesOk = True
                 for attribute in requiredAttributes:
                     if attribute not in p:
-                        self.addError(f'Missing required attribute "{attribute}": {file.path()}')
+                        self.addError(f'{file.path()}: Missing required attribute "{attribute}"')
                         allAttributesOk = False
                         break
                 if allAttributesOk:
@@ -59,10 +59,10 @@ class CheckDicomHeaderTask(Task):
                     # Check if DICOM file has required rows and columns
                     rowsAndColumnsOk = True
                     if p.Rows != rows:
-                        self.addError(f'rows={p.Rows}, should be {rows}')
+                        self.addError(f'{file.path()}: rows={p.Rows}, should be {rows}')
                         rowsAndColumnsOk = False
                     if p.Columns != columns:
-                        self.addError(f'rows={p.Columns}, should be {columns}')
+                        self.addError(f'{file.path()}: rows={p.Columns}, should be {columns}')
                         rowsAndColumnsOk = False
                     if rowsAndColumnsOk:
                         dicomFilesOk.append(file)
@@ -71,7 +71,7 @@ class CheckDicomHeaderTask(Task):
                 else:
                     pass
             except pydicom.errors.InvalidDicomError:
-                self.addWarning(f'Skipping non-DICOM: {file.path()}')
+                self.addWarning(f'{file.path()}: Skipping non-DICOM')
 
             # Update progress for this iteration         
             self.updateProgress(step=step, nrSteps=nrSteps)

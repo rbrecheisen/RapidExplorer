@@ -20,4 +20,5 @@ deactivate
 echo "Installing mosamatic.sh in /usr/local/bin..."
 cp $HOME/.mosamatic/MosamaticDesktop/lib/python3.11/site-packages/mosamaticdesktop/scripts/mosamatic.sh /usr/local/bin
 
-echo "Done"
+echo "Installation finished"
+ehco "You can now run Mosamatic by typing 'mosamatic.sh' and pressing enter."

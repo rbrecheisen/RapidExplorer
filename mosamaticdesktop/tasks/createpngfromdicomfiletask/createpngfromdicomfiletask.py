@@ -52,6 +52,7 @@ class CreatePngFromDicomFileTask(Task):
                     outputDirectoryPath=outputFileSetPath,
                     pngImageFileName=pngImageFileName,
                 )
+                self.addInfo(f'{file.path()} created {pngImageFileName}')
 
             # Update progress
             self.updateProgress(step=step, nrSteps=nrSteps)

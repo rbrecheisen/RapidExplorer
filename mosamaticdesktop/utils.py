@@ -12,6 +12,7 @@ import matplotlib
 matplotlib.use('Qt5Agg')
 import matplotlib.pyplot as plt
 
+from PIL import Image
 from typing import Dict, Any, List
 
 from PySide6.QtGui import QImage
@@ -219,22 +220,23 @@ def convertNumPyArrayToPngImage(
             raise RuntimeError('PNG file name required for NumPy array object')
     if colorMap:
         numpyArray = applyColorMap(pixels=numpyArray, colorMap=colorMap)
-    fig = plt.figure(figsize=(figureWidth, figureHeight))
-    ax = fig.add_subplot(1, 1, 1)
-    if colorMap:
-        plt.imshow(numpyArray)
-    else:
-        plt.imshow(numpyArray, cmap='gray')
-    ax.axis('off')
+    image = Image.fromarray(numpyArray)
+    # fig = plt.figure(figsize=(figureWidth, figureHeight))
+    # ax = fig.add_subplot(1, 1, 1)
+    # if colorMap:
+    #     plt.imshow(numpyArray)
+    # else:
+    #     plt.imshow(numpyArray, cmap='gray')
+    # ax.axis('off')
     if not pngImageFileName:
         numpyArrayFileName = os.path.split(numpyArrayFilePathOrObject)[1]
         pngImageFileName = numpyArrayFileName + '.png'      
     elif not pngImageFileName.endswith('.png'):
         pngImageFileName += '.png'
     pngImageFilePath = os.path.join(outputDirectoryPath, pngImageFileName)
-    # imageio.imwrite(pngImageFilePath, (numpyArray * 255).astype(np.uint8))
-    plt.savefig(pngImageFilePath, bbox_inches='tight')
-    plt.close('all')
+    # plt.savefig(pngImageFilePath, bbox_inches='tight')
+    # plt.close('all')
+    image.save(pngImageFilePath)
     return pngImageFilePath
 
 

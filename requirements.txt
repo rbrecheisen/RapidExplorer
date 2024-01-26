@@ -12,4 +12,5 @@ pytest-qt
 tensorflow
 pyinstaller
 matplotlib
+pillow
 twine
