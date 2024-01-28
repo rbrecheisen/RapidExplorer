@@ -11,6 +11,13 @@ from mosamaticdesktop.logger import Logger
 
 LOGGER = Logger()
 
+ROIS = [
+    'vertebrae_S1', 'vertebrae_C1', 'vertebrae_C2', 'vertebrae_C3', 'vertebrae_C4', 'vertebrae_C5', 'vertebrae_C6', 'vertebrae_C7', 
+    'vertebrae_L1', 'vertebrae_L2', 'vertebrae_L3', 'vertebrae_L4', 'vertebrae_L5', 'vertebrae_T1', 'vertebrae_T2', 'vertebrae_T3', 
+    'vertebrae_T4', 'vertebrae_T5', 'vertebrae_T6', 'vertebrae_T7', 'vertebrae_T8', 'vertebrae_T9', 'vertebrae_T10', 'vertebrae_T11', 
+    'vertebrae_T12'
+]
+
 
 class TotalSegmentatorSliceSelectionTask(Task):
     def __init__(self) -> None:
@@ -75,16 +82,21 @@ class TotalSegmentatorSliceSelectionTask(Task):
                         self.addInfo(f'Running TotalSegmentator on scan directory {scanDirectoryPath}...')
                         outputScanDirectoryPath = os.path.join(outputDirectoryPath, scanDirectoryName)
                         os.makedirs(outputScanDirectoryPath, exist_ok=True)
-                        # Running TS will result in separate directories with all the segmentation masks
-                        # We can delete all masks that are not the selected one
+                        # Run TotalSegmentator to extract all vertebrae. We need this in order to check whether
+                        # the vertebra have the correct order and do not overlap
                         start = currentTimeInSeconds()
                         totalsegmentator(
                             scanDirectoryPath, 
                             outputScanDirectoryPath, 
                             fast=True,
-                            roi_subset=[vertebra],
+                            roi_subset=ROIS,
                         )
                         self.addInfo(f'Elapsed: {elapsedSeconds(start)} seconds')
+
+                        # Run error checks on extracted vertebrae
+                        # https://github.com/MaastrichtU-CDS/2022_EvdWouwer_VertebraSegLabel/blob/main/TS_robustness_check.py
+
+                        # Select wanted vertebra
 
                         # Do slice selection on vertebra by taking middle slice
                         
