@@ -89,7 +89,7 @@ class TotalSegmentatorSliceSelectionTask(Task):
                             scanDirectoryPath, 
                             outputScanDirectoryPath, 
                             fast=True,
-                            roi_subset=ROIS,
+                            roi_subset=['liver_vessels'],
                         )
                         self.addInfo(f'Elapsed: {elapsedSeconds(start)} seconds')
 
