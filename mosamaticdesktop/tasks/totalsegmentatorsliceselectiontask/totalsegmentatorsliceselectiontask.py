@@ -23,6 +23,9 @@ class TotalSegmentatorSliceSelectionTask(Task):
     def __init__(self) -> None:
         super(TotalSegmentatorSliceSelectionTask, self).__init__()
 
+    def boundingBoxes(self, path: str):
+        pass
+
     def execute(self) -> None:
 
         # Get root directory path containing sub-directories for each CT scan
@@ -89,12 +92,13 @@ class TotalSegmentatorSliceSelectionTask(Task):
                             scanDirectoryPath, 
                             outputScanDirectoryPath, 
                             fast=True,
-                            roi_subset=['liver_vessels'],
+                            roi_subset=ROIS,
                         )
                         self.addInfo(f'Elapsed: {elapsedSeconds(start)} seconds')
 
-                        # Run error checks on extracted vertebrae
                         # https://github.com/MaastrichtU-CDS/2022_EvdWouwer_VertebraSegLabel/blob/main/TS_robustness_check.py
+                        # Run error checks on extracted vertebrae. Start with the order of their Z-coordinates
+                        boundingBoxes = self.boundingBoxes(path=outputScanDirectoryPath)
 
                         # Select wanted vertebra
 
