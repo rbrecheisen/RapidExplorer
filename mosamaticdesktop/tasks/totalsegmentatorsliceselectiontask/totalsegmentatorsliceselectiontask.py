@@ -2,7 +2,10 @@ import os
 import shutil
 import pydicom
 import pydicom.errors
+import nibabel as nib
+import numpy as np
 
+from typing import List, Dict, Union
 from totalsegmentator.python_api import totalsegmentator
 
 from mosamaticdesktop.tasks.task import Task
@@ -23,8 +26,54 @@ class TotalSegmentatorSliceSelectionTask(Task):
     def __init__(self) -> None:
         super(TotalSegmentatorSliceSelectionTask, self).__init__()
 
-    def boundingBoxes(self, path: str):
-        pass
+    def loadNiftiFileAndAffineMatrix(self, path: str) -> Union[np.array, np.array]:
+        niftiImage = nib.load(path)
+        return niftiImage.get_fdata(), niftiImage.affine
+
+    def calculateBoundingBoxInVoxelSpace(self, maskArray: np.array) -> List[int]:
+        if 1 in np.unique(maskArray):
+            indices = np.where(maskArray == 1)
+            minX, maxX = np.min(indices[0]), np.max(indices[0])
+            minY, maxY = np.min(indices[1]), np.max(indices[1])
+            minZ, maxZ = np.min(indices[2]), np.max(indices[2])
+            boundingBox = (minX, maxX, minY, maxY, minZ, maxZ)
+            return boundingBox
+        return None
+
+    def calculateBoundingBoxInPatientOrientationSpace(self, boundingBox: List[int], affineMatrix: np.array) -> List[float]:
+        min_x, max_x, min_y, max_y, min_z, max_z = boundingBox
+        voxelCorners = np.array([
+            [min_x, min_y, min_z, 1],
+            [min_x, min_y, max_z, 1],
+            [min_x, max_y, min_z, 1],
+            [min_x, max_y, max_z, 1],
+            [max_x, min_y, min_z, 1],
+            [max_x, min_y, max_z, 1],
+            [max_x, max_y, min_z, 1],
+            [max_x, max_y, max_z, 1]
+        ])
+        transformedCorners = affineMatrix.dot(voxelCorners.T).T
+        patientCoordinates = transformedCorners[:, :3]
+        min_phys_x, max_phys_x = np.min(patientCoordinates[:, 0]), np.max(patientCoordinates[:, 0])
+        min_phys_y, max_phys_y = np.min(patientCoordinates[:, 1]), np.max(patientCoordinates[:, 1])
+        min_phys_z, max_phys_z = np.min(patientCoordinates[:, 2]), np.max(patientCoordinates[:, 2])
+        boundingBoxInPatientOrientationSpace = (min_phys_x, max_phys_x, min_phys_y, max_phys_y, min_phys_z, max_phys_z)
+        return boundingBoxInPatientOrientationSpace
+
+    def calculateBoundingBoxes(self, path: str) -> Dict[str, np.array]:
+        boundingBoxes = {}
+        for niftiFileName in os.listdir(path):
+            roiName = niftiFileName[:-7]
+            niftiFilePath = os.path.join(path, niftiFileName)
+            maskArray, affineMatrix = self.loadNiftiFileAndAffineMatrix(path=niftiFilePath)
+            boundingBoxInVoxelSpace = self.calculateBoundingBoxInVoxelSpace(maskArray=maskArray)
+            if boundingBoxInVoxelSpace:
+                boundingBoxInPatientOrientationSpace = self.calculateBoundingBoxInPatientOrientationSpace(boundingBox=boundingBoxInVoxelSpace, affineMatrix=affineMatrix)
+                self.addInfo(f'{roiName}: {boundingBoxInPatientOrientationSpace}')
+                boundingBoxes[roiName] = boundingBoxInPatientOrientationSpace
+            else:
+                LOGGER.warning(f'{roiName}: empty mask')
+        return boundingBoxes
 
     def execute(self) -> None:
 
@@ -79,26 +128,32 @@ class TotalSegmentatorSliceSelectionTask(Task):
                                     self.addError(f'ImagePositionPatient attribute not in DICOM image')
                                     break
                             except pydicom.errors.InvalidDicomError:
-                                self.addError(f'Image {filePath} of scan {scanDirectoryName} is not valid DICOM')
-                                break
+                                self.addWarning(f'Image {filePath} of scan {scanDirectoryName} is not valid DICOM. Skipping...')
+                                continue
 
                         self.addInfo(f'Running TotalSegmentator on scan directory {scanDirectoryPath}...')
                         outputScanDirectoryPath = os.path.join(outputDirectoryPath, scanDirectoryName)
                         os.makedirs(outputScanDirectoryPath, exist_ok=True)
-                        # Run TotalSegmentator to extract all vertebrae. We need this in order to check whether
-                        # the vertebra have the correct order and do not overlap
-                        start = currentTimeInSeconds()
-                        totalsegmentator(
-                            scanDirectoryPath, 
-                            outputScanDirectoryPath, 
-                            fast=True,
-                            roi_subset=ROIS,
-                        )
-                        self.addInfo(f'Elapsed: {elapsedSeconds(start)} seconds')
+
+                        # # Run TotalSegmentator to extract all vertebrae. We need this in order to check whether
+                        # # the vertebra have the correct order and do not overlap
+                        # start = currentTimeInSeconds()
+                        # totalsegmentator(
+                        #     scanDirectoryPath, 
+                        #     outputScanDirectoryPath, 
+                        #     fast=True,
+                        #     roi_subset=ROIS,
+                        # )
+                        # self.addInfo(f'Elapsed: {elapsedSeconds(start)} seconds')
 
                         # https://github.com/MaastrichtU-CDS/2022_EvdWouwer_VertebraSegLabel/blob/main/TS_robustness_check.py
                         # Run error checks on extracted vertebrae. Start with the order of their Z-coordinates
-                        boundingBoxes = self.boundingBoxes(path=outputScanDirectoryPath)
+                        boundingBoxes = self.calculateBoundingBoxes(path=outputScanDirectoryPath)
+                        zMin = float('-inf')
+                        for roi in ROIS:
+                            if roi in boundingBoxes.keys():
+                                boundingBox = boundingBoxes[roi]
+                                self.addInfo(f'{roi}: zMin = {boundingBox[4]}')
 
                         # Select wanted vertebra
 
