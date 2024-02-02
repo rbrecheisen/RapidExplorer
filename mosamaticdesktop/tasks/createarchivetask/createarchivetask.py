@@ -15,7 +15,12 @@ class CreateArchiveTask(Task):
     def execute(self) -> None:
 
         # Get parameters needed for this task
-        inputFileSetName = self.parameter(name='inputFileSetName').value()
+        # inputFileSetName = self.parameter(name='inputFileSetName').value()
+        inputFileSets = []
+        inputFileSetNames = self.parameter('inputFileSetNames').value()
+        for inputFileSetName in inputFileSetNames:
+            inputFileSet = self.dataManager().fileSetByName(name=inputFileSetName)
+            inputFileSets.append(inputFileSet)
         inputFileSet = self.dataManager().fileSetByName(name=inputFileSetName)
         outputFileSetPath = self.parameter('outputFileSetPath').value()
         outputFileSetName = self.parameter('outputFileSetName').value()
@@ -28,17 +33,18 @@ class CreateArchiveTask(Task):
                 shutil.rmtree(outputFileSetPath)
         os.makedirs(outputFileSetPath, exist_ok=True)
 
-        zipFileName = createNameWithTimestamp(inputFileSet.name()) + '.zip'
+        zipFileName = createNameWithTimestamp(outputFileSetName) + '.zip'
         outputZipFilePath = os.path.join(outputFileSetPath, zipFileName)
 
         step = 0
-        files = inputFileSet.files()
+        files = []
+        for inputFileSet in inputFileSets:
+            files.extend(inputFileSet.files())
+        # files = inputFileSet.files()
         nrSteps = len(files)
         with zipfile.ZipFile(outputZipFilePath, 'w') as zipObj:
             for file in files:
                 zipObj.write(file.path(), arcname=os.path.basename(file.path()))
-
-                # Update progress
                 self.updateProgress(step=step, nrSteps=nrSteps)
                 step += 1
 

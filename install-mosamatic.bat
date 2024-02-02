@@ -23,6 +23,6 @@ call "%VENV_DIR%\Scripts\deactivate.bat"
 copy %USERPROFILE%\.mosamatic\MosamaticDesktop\Scripts\mosamatic.bat C:\Windows
 
 echo "Installation finished."
-echo "You can now run Mosamatic by typing 'mosamatic.bat' and pressing enter."
+echo "You can now run Mosamatic by typing 'mosamatic.bat' and pressing enter or by double-clicking the icon on your desktop."
 
 endlocal

@@ -11,9 +11,13 @@ class CreateArchiveTaskWidget(TaskWidget):
             name='description',
             description='Creates ZIP Archive From File Set'
         )
-        self.addFileSetParameter(
-            name='inputFileSetName',
-            labelText='Input File Set',
+        # self.addFileSetParameter(
+        #     name='inputFileSetName',
+        #     labelText='Input File Set',
+        # )
+        self.addMultiFileSetParameter(
+            name='inputFileSetNames',
+            labelText='Input File Sets',
         )
         self.addPathParameter(
             name='outputFileSetPath',
