@@ -16,4 +16,5 @@ totalsegmentator
 pillow
 twine
 nibabel
-openai-whisper # Also needs ffmpeg!
+openai-whisper  # Also needs ffmpeg  (install with HomeBrew)
+pyaudio         # Also needs PortAudio (install with HomeBrew)
