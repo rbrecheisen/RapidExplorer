@@ -6,16 +6,11 @@ import whisper
 # Requires installation of "ffmpeg" on your local system
 
 from mosamaticdesktop.tasks.task import Task
-from mosamaticdesktop.utils import Configuration
 
 
 class SpeechToTextConversionTask(Task):
     def __init__(self) -> None:
         super(SpeechToTextConversionTask, self).__init__()
-
-    def loadModelByName(self, modelName: str):
-        configuration = Configuration()
-        return configuration.languageModel(modelName=modelName)
 
     def execute(self) -> None:
         # Hack: some CA certificate does not seem to be installed and giving errors when connecting to OpenAI
@@ -37,7 +32,7 @@ class SpeechToTextConversionTask(Task):
         step = 0
         nrSteps = 2
         self.addInfo(f'Loading model {modelName}...')
-        model = self.loadModelByName(modelName=modelName)
+        model = whisper.load_model(modelName)
         self.updateProgress(step=step, nrSteps=nrSteps)
         step += 1
         self.addInfo(f'Transcribing audio file {inputFilePath}...')
