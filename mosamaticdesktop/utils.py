@@ -2,6 +2,7 @@ import os
 import time
 import sys
 import math
+import pickle
 import pendulum
 import importlib
 import pydicom
@@ -318,6 +319,26 @@ class Configuration:
         if not os.path.isdir(taskConfigSubDirectory):
             os.makedirs(taskConfigSubDirectory, exist_ok=False)
         return taskConfigSubDirectory
+    
+    def languageModelDirectory(self) -> str:
+        languageModelDirectory = os.path.join(self._configDirectory, 'LanguageModels')
+        if not os.path.isdir(languageModelDirectory):
+            os.makedirs(languageModelDirectory, exist_ok=False)
+        return languageModelDirectory
+    
+    def languageModel(self, modelName: str):
+        languageModelDirectory = self.languageModelDirectory()
+        languageModelFilePath = os.path.join(languageModelDirectory, modelName + '.pkl')
+        if os.path.isfile(languageModelFilePath):
+            with open(languageModelFilePath, 'rb') as f:
+                model = pickle.load(f)
+                return model
+        else:
+            import whisper
+            model = whisper.load_model(modelName)
+            with open(os.path.join(languageModelDirectory, modelName + '.pkl'), 'wb') as f:
+                pickle.dump(model, f)
+            return model
     
     def qSettings(self) -> QSettings:
         settingsPath = os.path.join(self.configDirectory(), 'settings.ini')
