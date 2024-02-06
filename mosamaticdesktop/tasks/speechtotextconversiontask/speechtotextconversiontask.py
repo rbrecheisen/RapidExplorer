@@ -43,10 +43,12 @@ class SpeechToTextConversionTask(Task):
         self.addInfo(f'Transcribing audio file {inputFilePath}...')
         modelOutput = model.transcribe(inputFilePath)
         self.updateProgress(step=step, nrSteps=nrSteps)
+        step += 1
 
         self.addInfo(f'Building output fileset: {outputFileSetPath}')
         with open(os.path.join(outputFileSetPath, 'modelOutput.txt'), 'w') as f:
             f.write(modelOutput['text'])
         self.dataManager().createFileSet(fileSetPath=outputFileSetPath)
         # Add warning to it automatically shows up with the transcribed text
+        self.updateProgress(step=step, nrSteps=nrSteps)
         self.addError(modelOutput['text'])

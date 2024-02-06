@@ -19,7 +19,7 @@ class SpeechToTextConversionTaskWidget(TaskWidget):
             name='modelName',
             labelText='Model Name',
             options=['base', 'medium', 'large'],
-            defaultValue='base',
+            defaultValue='large',
         )
         self.addPathParameter(
             name='outputFileSetPath',
