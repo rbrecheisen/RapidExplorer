@@ -4,9 +4,9 @@ from mosamaticdesktop.tasks.taskwidget import TaskWidget
 from mosamaticdesktop.tasks.createpngfromsegmentationfiletask.createpngfromsegmentationfiletask import CreatePngFromSegmentationFileTask
 
 
-class CreatePngFromNumPyFileTaskWidget(TaskWidget):
+class CreatePngFromSegmentationFileTaskWidget(TaskWidget):
     def __init__(self, progressBar: QProgressBar) -> None:
-        super(CreatePngFromNumPyFileTaskWidget, self).__init__(taskType=CreatePngFromSegmentationFileTask, progressBar=progressBar)
+        super(CreatePngFromSegmentationFileTaskWidget, self).__init__(taskType=CreatePngFromSegmentationFileTask, progressBar=progressBar)
         self.addDescriptionParameter(
             name='description',
             description=f'Create PNGs From NumPy Files',
