@@ -16,3 +16,4 @@ totalsegmentator
 pillow
 twine
 nibabel
+openai-whisper # Also needs ffmpeg!

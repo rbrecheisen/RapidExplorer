@@ -16,6 +16,7 @@ from mosamaticdesktop.tasks.labelparameter import LabelParameter
 from mosamaticdesktop.tasks.filesetparameter import FileSetParameter
 from mosamaticdesktop.tasks.multifilesetparameter import MultiFileSetParameter
 from mosamaticdesktop.tasks.pathparameter import PathParameter
+from mosamaticdesktop.tasks.filepathparameter import FilePathParameter
 from mosamaticdesktop.tasks.textparameter import TextParameter
 from mosamaticdesktop.tasks.integerparameter import IntegerParameter
 from mosamaticdesktop.tasks.floatingpointparameter import FloatingPointParameter
@@ -128,6 +129,11 @@ class TaskWidget(QWidget):
 
     def addPathParameter(self, name: str, labelText: str, optional: bool=False, visible: bool=True, defaultValue: Any=None) -> Parameter:
         parameter = PathParameter(name=name, labelText=labelText, optional=optional, visible=visible, defaultValue=defaultValue)
+        self._taskParameters[parameter.name()] = parameter
+        return parameter
+
+    def addFilePathParameter(self, name: str, labelText: str, optional: bool=False, visible: bool=True, defaultValue: Any=None) -> Parameter:
+        parameter = FilePathParameter(name=name, labelText=labelText, optional=optional, visible=visible, defaultValue=defaultValue)
         self._taskParameters[parameter.name()] = parameter
         return parameter
 
