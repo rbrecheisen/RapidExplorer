@@ -19,7 +19,7 @@ class TaskDockWidget(DockWidget):
     def initUi(self) -> None:
         self._tasksComboBox = QComboBox(self)
         self._tasksComboBox.addItem(None)
-        for taskName in self._taskWidgetManager.taskNames():
+        for taskName in sorted(self._taskWidgetManager.taskNames()):
             self._tasksComboBox.addItem(taskName)
         self._tasksComboBox.currentIndexChanged.connect(self.currentIndexChanged)
         self._placeholderWidget = QWidget()
