@@ -22,7 +22,7 @@ class NumPyToNiftiConverterTask(Task):
             transformationMatrix = np.eye(4)
         if numpyArray.ndim == 2:
             numpyArray = numpyArray[:, :, np.newaxis]
-        niftiImage = nib.Nifti1Image(numpyArray, transformationMatrix)
+        niftiImage = nib.Nifti1Image(numpyArray, transformationMatrix, dtype='int64')
         return niftiImage
 
     def execute(self) -> None:
@@ -60,6 +60,12 @@ class NumPyToNiftiConverterTask(Task):
             if self.statusIsCanceled():
                 self.addInfo('Canceling task...')
                 break
+
+            if not file.name().endswith('.npy'):
+                self.addWarning(f'Skipping non-NumPy file {file.name()}...')
+                self.updateProgress(step=step, nrSteps=nrSteps)
+                step += 1
+                continue
             
             try:
                 # Try to load file content from cache first. If it's not available
@@ -70,7 +76,7 @@ class NumPyToNiftiConverterTask(Task):
                     content = writeToCache(file, numpyArray)
                 numpyArray = content.fileObject()
                 # Buid output file path
-                outputFileName = file.name()
+                outputFileName = file.name()[:-4] + '.nii.gz'
                 outputFilePath = os.path.join(outputFileSetPath, outputFileName)
                 # Convert NumPy array to NIFTI format and save
                 niftiImage = self.convertNumPyToNifti(numpyArray=numpyArray, transformationMatrix=transformationMatrix)

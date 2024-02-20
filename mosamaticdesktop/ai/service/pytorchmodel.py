@@ -1,16 +1,15 @@
 import numpy as np
 
-from mosamaticdesktop.ai.model import Model
+from mosamaticdesktop.ai.service.model import Model
 
 
-class TensorFlowModel(Model):
+class PyTorchModel(Model):
     def __init__(self) -> None:
-        super(TensorFlowModel, self).__init__()
+        super(PyTorchModel, self).__init__()
         self._model = None
 
     def load(self, modelFilePath: str) -> None:
-        import tensorflow as tf
-        self._model = tf.keras.models.load_model(modelFilePath, compile=False)
+        pass
 
     def predict(self, input: np.array) -> np.array:
         if self._model:
