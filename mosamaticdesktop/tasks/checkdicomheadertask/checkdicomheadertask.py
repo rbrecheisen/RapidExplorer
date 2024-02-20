@@ -62,7 +62,7 @@ class CheckDicomHeaderTask(Task):
                         self.addError(f'{file.path()}: rows={p.Rows}, should be {rows}')
                         rowsAndColumnsOk = False
                     if p.Columns != columns:
-                        self.addError(f'{file.path()}: rows={p.Columns}, should be {columns}')
+                        self.addError(f'{file.path()}: columns={p.Columns}, should be {columns}')
                         rowsAndColumnsOk = False
                     if rowsAndColumnsOk:
                         dicomFilesOk.append(file)
