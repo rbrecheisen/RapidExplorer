@@ -83,11 +83,7 @@ def isDicomFile(filePath: str) -> bool:
     
 
 def isNumPyFile(filePath: str) -> bool:
-    try:
-        np.load(filePath)
-        return True
-    except OSError:
-        return False
+    return filePath.endswith('.npy')
     
 
 def isTagFile(filePath: str) -> bool:
