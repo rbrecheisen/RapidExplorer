@@ -36,7 +36,7 @@ setup(
     packages=find_packages(include=[
         'mosamaticdesktop', 
         'mosamaticdesktop.*', 
-        'mosamaticdesktop.ai',
+        'mosamaticdesktop.aiservice',
         'mosamaticdesktop.data',
         'mosamaticdesktop.data.models',
         'mosamaticdesktop.tasks',
@@ -59,7 +59,7 @@ setup(
     entry_points={
         'console_scripts': [
             'mosamatic-desktop=mosamaticdesktop.main:main',
-            'mosamatic-ai-service=mosamaticdesktop.ai.service.main:main',
+            'mosamatic-ai-service=mosamaticdesktop.aiservice.run:runServer',
         ],
     },
     version=os.environ['VERSION'],
