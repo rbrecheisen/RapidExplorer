@@ -61,8 +61,15 @@ class Task:
     def parameters(self) -> List[Parameter]:
         return self._parameters.values()
     
-    def setParameters(self, parameters: Dict[str, Parameter]) -> None:
-        self._parameters = parameters
+    # def setParameters(self, parameters: Dict[str, Parameter]) -> None:
+    #     self._parameters = parameters
+
+    def updateParameters(self, parameters: Dict[str, Parameter]) -> None:
+        for name in parameters.keys():
+            if name in parameters.keys():
+                self._parameters[name].setValue(parameters[name].value())
+            else:
+                LOGGER.warning(f'Task.updateParameters() parameter "{name}" does not exist')
     
     def parameter(self, name: str) -> Parameter:
         if name in self._parameters.keys():

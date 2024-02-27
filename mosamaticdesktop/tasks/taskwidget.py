@@ -146,7 +146,7 @@ class TaskWidget(QWidget):
         for taskParameterWidget in self._taskParameterWidgets.values():
             taskParameter = taskParameterWidget.parameter()
             parameters[taskParameter.name()] = taskParameter
-        self._task.setParameters(parameters=parameters)
+        self._task.updateParameters(parameters=parameters)
         self._task.signal().progress.connect(self.taskProgress)
         self._task.signal().finished.connect(self.taskFinished)
         # Start task
