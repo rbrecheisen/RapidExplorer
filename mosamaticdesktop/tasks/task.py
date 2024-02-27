@@ -48,7 +48,7 @@ class Task:
         self._errors = []
         self._warnings = []
         self._info = []
-        self._parameters = None
+        self._parameters = {}
         self._dataManager = DataManager()
         self._signal = self.TaskProgressSignal()
 
@@ -58,7 +58,7 @@ class Task:
     def logger(self) -> Logger:
         return LOGGER
     
-    def parameters(self) -> List[str, Parameter]:
+    def parameters(self) -> List[Parameter]:
         return self._parameters.values()
     
     def setParameters(self, parameters: Dict[str, Parameter]) -> None:

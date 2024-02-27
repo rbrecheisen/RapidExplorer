@@ -1,6 +1,6 @@
 import inspect
 
-from typing import Any, List
+from typing import Any, List, Dict
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QProgressBar, QProgressBar, QDialog, QMessageBox
@@ -12,16 +12,27 @@ from mosamaticdesktop.tasks.taskruninfodialog import TaskRunInfoDialog
 from mosamaticdesktop.tasks.parameterwidget import ParameterWidget
 from mosamaticdesktop.tasks.parameter import Parameter
 from mosamaticdesktop.tasks.parametercopier import ParameterCopier
+from mosamaticdesktop.tasks.descriptionparameter import DescriptionParameter
 from mosamaticdesktop.tasks.descriptionparameterwidget import DescriptionParameterWidget
+from mosamaticdesktop.tasks.labelparameter import LabelParameter
 from mosamaticdesktop.tasks.labelparameterwidget import LabelParameterWidget
+from mosamaticdesktop.tasks.filesetparameter import FileSetParameter
 from mosamaticdesktop.tasks.filesetparameterwidget import FileSetParameterWidget
+from mosamaticdesktop.tasks.multifilesetparameter import MultiFileSetParameter
 from mosamaticdesktop.tasks.multifilesetparameterwidget import MultiFileSetParameterWidget
+from mosamaticdesktop.tasks.pathparameter import PathParameter
 from mosamaticdesktop.tasks.pathparameterwidget import PathParameterWidget
+from mosamaticdesktop.tasks.filepathparameter import FilePathParameter
 from mosamaticdesktop.tasks.filepathparameterwidget import FilePathParameterWidget
+from mosamaticdesktop.tasks.textparameter import TextParameter
 from mosamaticdesktop.tasks.textparameterwidget import TextParameterWidget
+from mosamaticdesktop.tasks.integerparameter import IntegerParameter
 from mosamaticdesktop.tasks.integerparameterwidget import IntegerParameterWidget
+from mosamaticdesktop.tasks.floatingpointparameter import FloatingPointParameter
 from mosamaticdesktop.tasks.floatingpointparameterwidget import FloatingPointParameterWidget
+from mosamaticdesktop.tasks.booleanparameter import BooleanParameter
 from mosamaticdesktop.tasks.booleanparameterwidget import BooleanParameterWidget
+from mosamaticdesktop.tasks.optiongroupparameter import OptionGroupParameter
 from mosamaticdesktop.tasks.optiongroupparameterwidget import OptionGroupParameterWidget
 from mosamaticdesktop.logger import Logger
 
@@ -43,7 +54,7 @@ class TaskWidget(QWidget):
         self._taskType = taskType        
         self._progressBar = progressBar
         self._task = None
-        self._taskParameterWidgets = self.createTaskParameterWidgetsFromTask(taskType=self._taskType)
+        self._taskParameterWidgets = self.createTaskParameterWidgetsFromTask(taskType=taskType)
         # We need this class to copy parameters to the TaskWidgetParameterDialog, otherwise the
         # parameters get deleted by C++ after the dialog closes.
         self._taskParameterCopier = ParameterCopier()
@@ -96,17 +107,49 @@ class TaskWidget(QWidget):
             return self._taskParameterWidgets[name]
         return None
     
-    def createTaskParameterWidgetsFromTask(self, taskType: Task) -> List[ParameterWidget]:
-        for parameter in taskType.parameters():
-            pass
+    def createTaskParameterWidgetsFromTask(self, taskType: Task) -> Dict[str, ParameterWidget]:
+        widgets = {}
+        task = taskType()
+        for parameter in task.parameters():
+            if isinstance(parameter, DescriptionParameter):
+                widgets[parameter.name()] = DescriptionParameterWidget(parameter=parameter, parent=self)
+            elif isinstance(parameter, LabelParameter):
+                widgets[parameter.name()] = LabelParameterWidget(parameter=parameter, parent=self)
+            elif isinstance(parameter, FileSetParameter):
+                widgets[parameter.name()] = FileSetParameterWidget(parameter=parameter, parent=self)
+            elif isinstance(parameter, MultiFileSetParameter):
+                widgets[parameter.name()] = MultiFileSetParameterWidget(parameter=parameter, parent=self)
+            elif isinstance(parameter, PathParameter):
+                widgets[parameter.name()] = PathParameterWidget(parameter=parameter, parent=self)
+            elif isinstance(parameter, FilePathParameter):
+                widgets[parameter.name()] = FilePathParameterWidget(parameter=parameter, parent=self)
+            elif isinstance(parameter, TextParameter):
+                widgets[parameter.name()] = TextParameterWidget(parameter=parameter, parent=self)
+            elif isinstance(parameter, IntegerParameter):
+                widgets[parameter.name()] = IntegerParameterWidget(parameter=parameter, parent=self)
+            elif isinstance(parameter, FloatingPointParameter):
+                widgets[parameter.name()] = FloatingPointParameterWidget(parameter=parameter, parent=self)
+            elif isinstance(parameter, BooleanParameter):
+                widgets[parameter.name()] = BooleanParameterWidget(parameter=parameter, parent=self)
+            elif isinstance(parameter, IntegerParameter):
+                widgets[parameter.name()] = IntegerParameterWidget(parameter=parameter, parent=self)
+            elif isinstance(parameter, OptionGroupParameter):
+                widgets[parameter.name()] = OptionGroupParameterWidget(parameter=parameter, parent=self)
+        return widgets
         
     # Task execution
 
     def startTask(self) -> None:
         self._task = self._taskType() # instantiate class
-        self._task.setParameters(parameters=self._taskParameterWidgets)
+        # Map widgets back to parameters
+        parameters = {}
+        for taskParameterWidget in self._taskParameterWidgets.values():
+            taskParameter = taskParameterWidget.parameter()
+            parameters[taskParameter.name()] = taskParameter
+        self._task.setParameters(parameters=parameters)
         self._task.signal().progress.connect(self.taskProgress)
         self._task.signal().finished.connect(self.taskFinished)
+        # Start task
         self._task.start()
         self._startButton.setEnabled(False)
         self._cancelButton.setEnabled(True)
@@ -130,7 +173,7 @@ class TaskWidget(QWidget):
         for parameterWidget in self._taskParameterWidgets.values():
             parameterWidgets[parameterWidget.name()] = self._taskParameterCopier.makeCopy(parameterWidget)
         # Show task widget parameter dialog
-        dialog = TaskWidgetParameterDialog(title=self.name(), parametersWidgets=parameterWidgets)
+        dialog = TaskWidgetParameterDialog(title=self.name(), parametersWidgets=self._taskParameterWidgets)
         result = dialog.show()
         if result == QDialog.Accepted:
             self._taskParameterWidgets = dialog.parameterWidgets()
