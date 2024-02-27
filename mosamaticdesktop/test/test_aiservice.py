@@ -24,7 +24,14 @@ def tasks(token):
     response = requests.get(f'http://{HOST}:{PORT}/api/tasks/', headers={
         'Authorization': f'Bearer {token}',
     })
-    return response.json()
+    return response.json()['tasks']
+
+
+def task(token, name):
+    response = requests.get(f'http://{HOST}:{PORT}/api/tasks/{name}', headers={
+        'Authorization': f'Bearer {token}',
+    })
+    return response.json()['tasks']
 
 
 def createTask(token, name, parameters):
@@ -55,5 +62,5 @@ def test_AiService():
     """
     register('ralph', 'Arturo4ever', 'ralph.brecheisen@gmail.com', 'Ralph', 'Brecheisen')
     token = login('ralph', 'Arturo4ever')
-    data = tasks(token=token)
+    data = task(token=token, name='CopyFileSetTask')
     print(data)

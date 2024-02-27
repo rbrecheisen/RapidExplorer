@@ -31,10 +31,30 @@ def registerUser(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def tasks(request):
+    """
+    This endpoint returns a list of task configurations. Each task configuration
+    contains the task name and its parameters (names and types). 
+    """
     manager = TaskWidgetManager(None)
     taskNames = manager.taskNames()
-    print(taskNames)
-    return Response({'tasks': taskNames}, status=status.HTTP_200_OK)
+    taskWidgets = manager.taskWidgets()
+    data = {}
+    for taskName in taskNames:
+        data[taskName] = []
+        for taskParameter in taskWidgets[taskName].taskParameters():
+            data[taskName].append(taskParameter.toDict())
+    return Response({'tasks': data}, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def task(request, name):
+    manager = TaskWidgetManager(None)
+    taskWidget = manager.taskWidget(name=name)
+    data = {name: []}
+    for taskParameter in taskWidget.taskParameters():
+        data[name].append(taskParameter.toDict())
+    return Response(data, status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])

@@ -1,7 +1,7 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView, TokenObtainPairView
 
-from .views import api, registerUser, tasks, createTask, uploadDataToTask, taskStatus, downloadResultsFromTask
+from .views import api, registerUser, tasks, task, createTask, uploadDataToTask, taskStatus, downloadResultsFromTask
 
 
 urlpatterns = [
@@ -10,6 +10,7 @@ urlpatterns = [
     path('api/token/refresh', TokenRefreshView.as_view()),
     path('api/users/register', registerUser),
     path('api/tasks/', tasks),
+    path('api/tasks/<str:name>', task),
     path('api/tasks/create', createTask),
     path('api/tasks/<str:taskId>/upload', uploadDataToTask),
     path('api/tasks/<str:taskId>/status', taskStatus),

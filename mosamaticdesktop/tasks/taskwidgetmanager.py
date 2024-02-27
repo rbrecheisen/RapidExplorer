@@ -2,7 +2,7 @@ import os
 
 from PySide6.QtWidgets import QProgressBar
 
-from typing import List
+from typing import List, Dict
 
 from mosamaticdesktop.tasks.taskwidget import TaskWidget
 from mosamaticdesktop.utils import ModuleLoader
@@ -21,6 +21,9 @@ class TaskWidgetManager:
 
     def taskNames(self) -> List[str]:
         return list(self._taskWidgetTypes.keys())
+    
+    def taskWidgets(self) -> Dict[str, TaskWidget]:
+        return self._taskWidgets
     
     def taskWidget(self, name) -> TaskWidget:
         if name in self._taskWidgetTypes.keys():

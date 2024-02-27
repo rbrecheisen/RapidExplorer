@@ -9,20 +9,19 @@ from mosamaticdesktop.tasks.task import Task
 from mosamaticdesktop.tasks.taskwidgetexception import TaskWidgetException
 from mosamaticdesktop.tasks.taskwidgetparameterdialog import TaskWidgetParameterDialog
 from mosamaticdesktop.tasks.taskruninfodialog import TaskRunInfoDialog
-from mosamaticdesktop.tasks.parameterwidget import ParameterWidget
 from mosamaticdesktop.tasks.parameter import Parameter
 from mosamaticdesktop.tasks.parametercopier import ParameterCopier
-from mosamaticdesktop.tasks.descriptionparameterwidget import DescriptionParameterWidget
-from mosamaticdesktop.tasks.labelparameterwidget import LabelParameterWidget
-from mosamaticdesktop.tasks.filesetparameterwidget import FileSetParameterWidget
-from mosamaticdesktop.tasks.multifilesetparameterwidget import MultiFileSetParameterWidget
-from mosamaticdesktop.tasks.pathparameterwidget import PathParameterWidget
-from mosamaticdesktop.tasks.filepathparameterwidget import FilePathParameterWidget
-from mosamaticdesktop.tasks.textparameterwidget import TextParameterWidget
-from mosamaticdesktop.tasks.integerparameterwidget import IntegerParameterWidget
-from mosamaticdesktop.tasks.floatingpointparameterwidget import FloatingPointParameterWidget
-from mosamaticdesktop.tasks.booleanparameterwidget import BooleanParameterWidget
-from mosamaticdesktop.tasks.optiongroupparameterwidget import OptionGroupParameterWidget
+from mosamaticdesktop.tasks.descriptionparameter import DescriptionParameter
+from mosamaticdesktop.tasks.labelparameter import LabelParameter
+from mosamaticdesktop.tasks.filesetparameter import FileSetParameter
+from mosamaticdesktop.tasks.multifilesetparameter import MultiFileSetParameter
+from mosamaticdesktop.tasks.pathparameter import PathParameter
+from mosamaticdesktop.tasks.filepathparameter import FilePathParameter
+from mosamaticdesktop.tasks.textparameter import TextParameter
+from mosamaticdesktop.tasks.integerparameter import IntegerParameter
+from mosamaticdesktop.tasks.floatingpointparameter import FloatingPointParameter
+from mosamaticdesktop.tasks.booleanparameter import BooleanParameter
+from mosamaticdesktop.tasks.optiongroupparameter import OptionGroupParameter
 from mosamaticdesktop.logger import Logger
 
 LOGGER = Logger()
@@ -43,7 +42,7 @@ class TaskWidget(QWidget):
         self._taskType = taskType        
         self._progressBar = progressBar
         self._task = None
-        self._taskParameterWidgets = self.createTaskParameterWidgetsFromTask(taskType=self._taskType)
+        self._taskParameters = {}
         # We need this class to copy parameters to the TaskWidgetParameterDialog, otherwise the
         # parameters get deleted by C++ after the dialog closes.
         self._taskParameterCopier = ParameterCopier()
@@ -89,22 +88,74 @@ class TaskWidget(QWidget):
     # Task parameters
         
     def taskParameters(self) -> List[Parameter]:
-        return self._taskParameterWidgets
+        return self._taskParameters
         
     def taskParameter(self, name: str) -> Parameter:
-        if name in self._taskParameterWidgets.keys():
-            return self._taskParameterWidgets[name]
+        if name in self._taskParameters.keys():
+            return self._taskParameters[name]
         return None
-    
-    def createTaskParameterWidgetsFromTask(self, taskType: Task) -> List[ParameterWidget]:
-        for parameter in taskType.parameters():
-            pass
         
+    def addDescriptionParameter(self, name: str, description: str) -> Parameter:
+        parameter = DescriptionParameter(name=name, description=description)
+        self._taskParameters[parameter.name()] = parameter
+        return parameter
+
+    def addLabelParameter(self, name: str, labelText: str, optional: bool=False, visible: bool=True, defaultValue: Any=None) -> Parameter:
+        parameter = LabelParameter(name=name, labelText=labelText, optional=optional, visible=visible, defaultValue=defaultValue)
+        self._taskParameters[parameter.name()] = parameter
+        return parameter
+
+    def addFileSetParameter(self, name: str, labelText: str, optional: bool=False, visible: bool=True, defaultValue: Any=None) -> Parameter:
+        parameter = FileSetParameter(name=name, labelText=labelText, optional=optional, visible=visible, defaultValue=defaultValue)
+        self._taskParameters[parameter.name()] = parameter
+        return parameter
+    
+    def addMultiFileSetParameter(self, name: str, labelText: str, optional: bool=False, visible: bool=True, defaultValue: Any=None) -> Parameter:
+        parameter = MultiFileSetParameter(name=name, labelText=labelText, optional=optional, visible=visible, defaultValue=defaultValue)
+        self._taskParameters[parameter.name()] = parameter
+        return parameter
+
+    def addPathParameter(self, name: str, labelText: str, optional: bool=False, visible: bool=True, defaultValue: Any=None) -> Parameter:
+        parameter = PathParameter(name=name, labelText=labelText, optional=optional, visible=visible, defaultValue=defaultValue)
+        self._taskParameters[parameter.name()] = parameter
+        return parameter
+
+    def addFilePathParameter(self, name: str, labelText: str, optional: bool=False, visible: bool=True, defaultValue: Any=None) -> Parameter:
+        parameter = FilePathParameter(name=name, labelText=labelText, optional=optional, visible=visible, defaultValue=defaultValue)
+        self._taskParameters[parameter.name()] = parameter
+        return parameter
+
+    def addTextParameter(self, name: str, labelText: str, optional: bool=False, visible: bool=True, defaultValue: Any=None) -> Parameter:
+        parameter = TextParameter(name=name, labelText=labelText, optional=optional, visible=visible, defaultValue=defaultValue)
+        self._taskParameters[parameter.name()] = parameter
+        return parameter
+
+    def addIntegerParameter(self, name: str, labelText: str, optional: bool=False, visible: bool=True, defaultValue: Any=None, minimum: int=0, maximum: int=100, step: int=1) -> Parameter:
+        parameter = IntegerParameter(name=name, labelText=labelText, optional=optional, visible=visible, defaultValue=defaultValue, minimum=minimum, maximum=maximum, step=step)
+        LOGGER.info(f'TaskWidget.addIntegerParameter() value={parameter.name()}')
+        self._taskParameters[parameter.name()] = parameter
+        return parameter
+
+    def addFloatingPointParameter(self, name: str, labelText: str, optional: bool=False, visible: bool=True, defaultValue: Any=None) -> Parameter:
+        parameter = FloatingPointParameter(name=name, labelText=labelText, optional=optional, visible=visible, defaultValue=defaultValue)
+        self._taskParameters[parameter.name()] = parameter
+        return parameter
+    
+    def addBooleanParameter(self, name: str, labelText: str, optional: bool=False, visible: bool=True, defaultValue: Any=None) -> Parameter:
+        parameter = BooleanParameter(name=name, labelText=labelText, optional=optional, visible=visible, defaultValue=defaultValue)
+        self._taskParameters[parameter.name()] = parameter
+        return parameter
+
+    def addOptionGroupParameter(self, name: str, labelText: str, optional: bool=False, visible: bool=True, defaultValue: Any=None, options: List[str]=[]) -> Parameter:
+        parameter = OptionGroupParameter(name=name, labelText=labelText, optional=optional, visible=visible, defaultValue=defaultValue, options=options)
+        self._taskParameters[parameter.name()] = parameter
+        return parameter
+
     # Task execution
 
     def startTask(self) -> None:
         self._task = self._taskType() # instantiate class
-        self._task.setParameters(parameters=self._taskParameterWidgets)
+        self._task.setParameters(parameters=self._taskParameters)
         self._task.signal().progress.connect(self.taskProgress)
         self._task.signal().finished.connect(self.taskFinished)
         self._task.start()
@@ -126,14 +177,14 @@ class TaskWidget(QWidget):
         # Hack: we need to explicitly copy each parameter before passing them to
         # the TaskWidgetParameterDialog. If not, the Qt C++ backend will delete
         # the parameters if we try to show the dialog twice.
-        parameterWidgets = {}
-        for parameterWidget in self._taskParameterWidgets.values():
-            parameterWidgets[parameterWidget.name()] = self._taskParameterCopier.makeCopy(parameterWidget)
+        parameters = {}
+        for parameter in self._taskParameters.values():
+            parameters[parameter.name()] = self._taskParameterCopier.makeCopy(parameter)
         # Show task widget parameter dialog
-        dialog = TaskWidgetParameterDialog(title=self.name(), parametersWidgets=parameterWidgets)
+        dialog = TaskWidgetParameterDialog(title=self.name(), parametersWidgets=parameters)
         result = dialog.show()
         if result == QDialog.Accepted:
-            self._taskParameterWidgets = dialog.parameterWidgets()
+            self._taskParameters = dialog.parameterWidgets()
             self.validate()
 
     def showTaskRunInfoDialog(self) -> None:
