@@ -9,7 +9,7 @@ import numpy as np
 from typing import List, Any
 
 from mosamaticdesktop.tasks.task import Task
-from mosamaticdesktop.ai.service.tensorflowmodel import TensorFlowModel
+from mosamaticdesktop.tasks.musclefatsegmentationtask.tensorflowmodel import TensorFlowModel
 from mosamaticdesktop.data.file import File
 from mosamaticdesktop.logger import Logger
 from mosamaticdesktop.utils import getPixelsFromDicomObject, convertLabelsTo157

@@ -10,4 +10,6 @@ engine.ECHO = False
 if __name__ == '__main__':
     if os.path.isfile(engine.DATABASE):
         os.remove(engine.DATABASE)
-    pytest.main(['-s', 'src/app/test'])
+    # if os.path.isfile('mosamaticdesktop/aiservice/db.sqlite3'):
+    #     os.remove('mosamaticdesktop/aiservice/db.sqlite3')
+    pytest.main(['-s', 'mosamaticdesktop/test'])

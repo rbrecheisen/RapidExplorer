@@ -1,6 +1,6 @@
 import numpy as np
 
-from mosamaticdesktop.ai.service.model import Model
+from mosamaticdesktop.tasks.musclefatsegmentationtask.model import Model
 
 
 class PyTorchModel(Model):
