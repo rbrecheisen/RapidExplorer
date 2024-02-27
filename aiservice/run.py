@@ -8,6 +8,7 @@ def runserver():
     appPath = os.path.join(os.path.abspath(__file__))
     appPath = os.path.dirname(appPath)
     sys.path.append(appPath)
+    sys.path.append(os.path.join(appPath, '..')) # Required to find mosamaticdesktop packages
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'aiservice.settings')
     os.chdir(appPath)
     print('##############################################################################')
