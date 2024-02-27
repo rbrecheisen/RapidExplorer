@@ -2,7 +2,8 @@ import os
 import shutil
 import threading
 
-from PySide6.QtCore import Qt, Signal, QObject
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QWheelEvent #, Signal, QObject
 from PySide6.QtWidgets import QWidget, QGraphicsView, QGraphicsScene, QProgressBar, QSlider, QCheckBox, QGridLayout, QLabel, QPushButton, QHBoxLayout
 from PySide6.QtWidgets import QFileDialog
 
@@ -21,8 +22,14 @@ LOGGER = Logger()
 
 
 class DicomViewer(QWidget):
-    class ProgressSignal(QObject):
-        progress = Signal(int)
+    # class ProgressSignal(QObject):
+    #     progress = Signal(int)
+    class MyGraphicsView(QGraphicsView):
+        def __init__(self, parent=None):
+            super(DicomViewer.MyGraphicsView, self).__init__(parent)
+
+        def wheelEvent(self, event: QWheelEvent) -> None:
+            event.ignore()
 
     def __init__(self, progressBar: QProgressBar) -> None:
         super(DicomViewer, self).__init__()
@@ -50,8 +57,8 @@ class DicomViewer(QWidget):
         self._exportDirectory = None
         self._dataManager = DataManager()
         self._layout = None
-        self._progressSignal = self.ProgressSignal()
-        self._progressSignal.progress.connect(self.updateProgress)
+        # self._progressSignal = self.ProgressSignal()
+        # self._progressSignal.progress.connect(self.updateProgress)
         self.initUi()
 
     def initUi(self) -> None:
@@ -86,11 +93,13 @@ class DicomViewer(QWidget):
         self.setLayout(layout)
 
     def initGraphicsView(self) -> None:
-        self._graphicsView = QGraphicsView(self)
+        self._graphicsView = DicomViewer.MyGraphicsView(self)
         self._scene = QGraphicsScene(self)
         item = self._scene.addText('DICOM Viewer')
         item.setDefaultTextColor(Qt.blue)
         self._graphicsView.setScene(self._scene)
+        self._graphicsView.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self._graphicsView.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
     def initSliders(self) -> None:
         self._layerTupleSlider = QSlider(Qt.Horizontal, self)
@@ -126,14 +135,14 @@ class DicomViewer(QWidget):
                 pass
         return None
     
-    def startSetInputFileSet(self, fileSet: FileSet):
-        worker = threading.Thread(target=self.setInputFileSet, args=(fileSet, ))
-        worker.start()
+    # def startSetInputFileSet(self, fileSet: FileSet):
+    #     worker = threading.Thread(target=self.setInputFileSet, args=(fileSet, ))
+    #     worker.start()
 
     def setInputFileSet(self, fileSet: FileSet) -> None:
         self._segmentationFileOpacitySlider.setVisible(False)
         self._tagFileOpacitySlider.setVisible(False)
-        self._progressBar.setValue(0)
+        # self._progressBar.setValue(0)
         step = 0
         nrSteps = len(fileSet.files())
         for file in fileSet.files():
@@ -164,7 +173,7 @@ class DicomViewer(QWidget):
             progress = int(((step + 1) / (nrSteps)) * 100)
             # QObject::setParent: Cannot set parent, new parent is in a different thread
             # QObject::startTimer: Timers cannot be started from another thread
-            self._progressSignal.progress.emit(progress)
+            # self._progressSignal.progress.emit(progress)
             step += 1
         if self._fullScan:
             LOGGER.info('Sorting full scan images by instance number...')
@@ -172,8 +181,8 @@ class DicomViewer(QWidget):
         self._layerTupleSlider.setRange(0, len(self._layerTuples) - 1)
         self.displayLayerTuple(self._currentLayerTupleIndex)
 
-    def updateProgress(self, progress: int) -> None:
-        self._progressBar.setValue(progress)
+    # def updateProgress(self, progress: int) -> None:
+    #     self._progressBar.setValue(progress)
 
     def currentLayerTupleIndexChanged(self, index) -> None:
         if index > 0 and index < len(self._layerTuples):
@@ -198,8 +207,10 @@ class DicomViewer(QWidget):
     def inputFileSetChanged(self) -> None:
         text = self._inputFileSetComboBox.currentText()
         if text:
+            self.clearData()
             inputFileSet = self._dataManager.fileSetByName(text)
-            self.startSetInputFileSet(fileSet=inputFileSet)
+            # self.startSetInputFileSet(fileSet=inputFileSet)
+            self.setInputFileSet(fileSet=inputFileSet)
 
     def selectExportDirectory(self) -> None:
         self._exportDirectory = QFileDialog.getExistingDirectory(self, 'Select Export Directory')
@@ -241,5 +252,6 @@ class DicomViewer(QWidget):
 
     def clearData(self) -> None:
         self._scene.clear()
+        self._layerTuples = []
         item = self._scene.addText('DICOM Viewer')
         item.setDefaultTextColor(Qt.blue)
