@@ -26,6 +26,20 @@ class DummyTask(Task):
     """
     def __init__(self) -> None:
         super(DummyTask, self).__init__()
+        self.addDescriptionParameter(
+            name='description',
+            description='This is some description of the dummy task'
+        )
+        self.addIntegerParameter(
+            name='nrIterations', 
+            labelText='Nr. Iterations',
+            optional=False,
+            visible=True,
+            defaultValue=10,
+            minimum=0,
+            maximum=100,
+            step=1,
+        )
 
     def execute(self) -> None:
 

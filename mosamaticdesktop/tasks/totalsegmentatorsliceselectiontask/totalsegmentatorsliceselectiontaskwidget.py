@@ -14,33 +14,6 @@ ROIS = [
 class TotalSegmentatorSliceSelectionTaskWidget(TaskWidget):
     def __init__(self, progressBar: QProgressBar) -> None:
         super(TotalSegmentatorSliceSelectionTaskWidget, self).__init__(taskType=TotalSegmentatorSliceSelectionTask, progressBar=progressBar)
-        self.addDescriptionParameter(
-            name='description',
-            description='Extracts vertebral images from CT scans'
-        )
-        self.addPathParameter(
-            name='rootDirectoryPath',
-            labelText='Root Directory of CT Scans (Each Scan as Separate Sub-Directory)'
-        )
-        self.addOptionGroupParameter(
-            name='vertebra',
-            labelText='Vertebral ROI From TotalSegmentator Output',
-            options=ROIS,
-        )
-        self.addPathParameter(
-            name='outputDirectoryPath',
-            labelText='Output Directory with Selected Images'
-        )
-        self.addTextParameter(
-            name='outputDirectoryName',
-            labelText='Output Directory Name',
-            optional=True,
-        )
-        self.addBooleanParameter(
-            name='overwriteOutputDirectory',
-            labelText='Overwrite Output Directory',
-            defaultValue=True,
-        )
     
     def validate(self) -> None:
         pass

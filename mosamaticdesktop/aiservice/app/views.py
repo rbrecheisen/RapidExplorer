@@ -41,7 +41,7 @@ def tasks(request):
     data = {}
     for taskName in taskNames:
         data[taskName] = []
-        for taskParameter in taskWidgets[taskName].taskParameters():
+        for taskParameter in taskWidgets[taskName].taskParameterWidgets():
             data[taskName].append(taskParameter.toDict())
     return Response({'tasks': data}, status=status.HTTP_200_OK)
 
@@ -52,7 +52,7 @@ def task(request, name):
     manager = TaskWidgetManager(None)
     taskWidget = manager.taskWidget(name=name)
     data = {name: []}
-    for taskParameter in taskWidget.taskParameters():
+    for taskParameter in taskWidget.taskParameterWidgets():
         data[name].append(taskParameter.toDict())
     return Response(data, status=status.HTTP_200_OK)
 

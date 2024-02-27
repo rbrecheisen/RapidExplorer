@@ -12,6 +12,52 @@ LOGGER = Logger()
 class CheckDicomHeaderTask(Task):
     def __init__(self) -> None:
         super(CheckDicomHeaderTask, self).__init__()
+        self.addDescriptionParameter(
+            name='description',
+            description='Check DICOM headers',
+        )
+        self.addFileSetParameter(
+            name='inputFileSetName',
+            labelText='Input File Set',
+        )
+        self.addTextParameter(
+            name='extensionsToIgnore',
+            labelText='Extensions to Ignore (comma-separated)',
+            defaultValue='tag'
+        )
+        self.addTextParameter(
+            name='requiredAttributes',
+            labelText='Required DICOM Attributes',
+            defaultValue='Rows, Columns, PixelSpacing',
+        )
+        self.addIntegerParameter(
+            name='rows',
+            labelText='Rows',
+            defaultValue=512,
+            minimum=0,
+            maximum=1024,
+        )
+        self.addIntegerParameter(
+            name='columns',
+            labelText='Columns',
+            defaultValue=512,
+            minimum=0,
+            maximum=1024,
+        )
+        self.addPathParameter(
+            name='outputFileSetPath',
+            labelText='Output File Set Path',
+        )
+        self.addTextParameter(
+            name='outputFileSetName',
+            labelText='Output File Set Name',
+            optional=True,
+        )
+        self.addBooleanParameter(
+            name='overwriteOutputFileSet',
+            labelText='Overwrite Output File Set',
+            defaultValue=True,
+        )
 
     def execute(self) -> None:
         # Prepare parameters, then run task

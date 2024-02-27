@@ -9,6 +9,24 @@ from mosamaticdesktop.tasks.task import Task
 class SpeechRecordingTask(Task):
     def __init__(self) -> None:
         super(SpeechRecordingTask, self).__init__()
+        self.addDescriptionParameter(
+            name='description',
+            description='Records audio and saves it to .wav file',
+        )
+        self.addPathParameter(
+            name='outputFileSetPath',
+            labelText='Output File Set Path',
+        )
+        self.addTextParameter(
+            name='outputFileSetName',
+            labelText='Output File Set Name',
+            optional=True,
+        )
+        self.addBooleanParameter(
+            name='overwriteOutputFileSet',
+            labelText='Overwrite Output File Set',
+            defaultValue=True,
+        )
         self._frames = []
 
     def execute(self) -> None:

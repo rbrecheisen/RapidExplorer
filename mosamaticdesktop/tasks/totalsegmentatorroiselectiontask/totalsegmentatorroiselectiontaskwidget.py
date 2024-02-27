@@ -34,33 +34,6 @@ ROIS = [
 class TotalSegmentatorRoiSelectionTaskWidget(TaskWidget):
     def __init__(self, progressBar: QProgressBar) -> None:
         super(TotalSegmentatorRoiSelectionTaskWidget, self).__init__(taskType=TotalSegmentatorRoiSelectionTask, progressBar=progressBar)
-        self.addDescriptionParameter(
-            name='description',
-            description='Selects identical ROIs from TotalSegmentator outputs'
-        )
-        self.addPathParameter(
-            name='rootDirectoryPath',
-            labelText='Root Directory of TotalSegmentator Outputs'
-        )
-        self.addOptionGroupParameter(
-            name='roi',
-            labelText='ROI From TotalSegmentator Output',
-            options=ROIS,
-        )
-        self.addPathParameter(
-            name='outputFileSetPath',
-            labelText='Output File Set Path'
-        )
-        self.addTextParameter(
-            name='outputFileSetName',
-            labelText='Output File Set Name',
-            optional=True,
-        )
-        self.addBooleanParameter(
-            name='overwriteOutputFileSet',
-            labelText='Overwrite Output File Set',
-            defaultValue=True,
-        )
     
     def validate(self) -> None:
         pass

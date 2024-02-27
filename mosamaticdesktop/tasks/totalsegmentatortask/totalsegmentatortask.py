@@ -12,6 +12,28 @@ LOGGER = Logger()
 class TotalSegmentatorTask(Task):
     def __init__(self) -> None:
         super(TotalSegmentatorTask, self).__init__()
+        self.addDescriptionParameter(
+            name='description',
+            description='Extracts anatomical ROIs from list of full CT scans'
+        )
+        self.addPathParameter(
+            name='rootDirectoryPath',
+            labelText='Root Directory of CT Scans (Each Scan as Separate Sub-Directory)'
+        )
+        self.addPathParameter(
+            name='outputDirectoryPath',
+            labelText='Output Directory with Segmentations'
+        )
+        self.addTextParameter(
+            name='outputDirectoryName',
+            labelText='Output Directory Name',
+            optional=True,
+        )
+        self.addBooleanParameter(
+            name='overwriteOutputDirectory',
+            labelText='Overwrite Output Directory',
+            defaultValue=True,
+        )
 
     def execute(self) -> None:
 

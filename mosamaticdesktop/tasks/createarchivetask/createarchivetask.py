@@ -11,6 +11,28 @@ LOGGER = Logger()
 class CreateArchiveTask(Task):
     def __init__(self) -> None:
         super(CreateArchiveTask, self).__init__()
+        self.addDescriptionParameter(
+            name='description',
+            description='Creates ZIP Archive From File Set'
+        )
+        self.addMultiFileSetParameter(
+            name='inputFileSetNames',
+            labelText='Input File Sets',
+        )
+        self.addPathParameter(
+            name='outputFileSetPath',
+            labelText='Output File Set Path',
+        )
+        self.addTextParameter(
+            name='outputFileSetName',
+            labelText='Output File Set Name',
+            optional=True,
+        )
+        self.addBooleanParameter(
+            name='overwriteOutputFileSet',
+            labelText='Overwrite Output File Set',
+            defaultValue=True,
+        )
 
     def execute(self) -> None:
 

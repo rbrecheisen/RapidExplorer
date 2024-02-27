@@ -25,6 +25,33 @@ ROIS = [
 class TotalSegmentatorSliceSelectionTask(Task):
     def __init__(self) -> None:
         super(TotalSegmentatorSliceSelectionTask, self).__init__()
+        self.addDescriptionParameter(
+            name='description',
+            description='Extracts vertebral images from CT scans'
+        )
+        self.addPathParameter(
+            name='rootDirectoryPath',
+            labelText='Root Directory of CT Scans (Each Scan as Separate Sub-Directory)'
+        )
+        self.addOptionGroupParameter(
+            name='vertebra',
+            labelText='Vertebral ROI From TotalSegmentator Output',
+            options=ROIS,
+        )
+        self.addPathParameter(
+            name='outputDirectoryPath',
+            labelText='Output Directory with Selected Images'
+        )
+        self.addTextParameter(
+            name='outputDirectoryName',
+            labelText='Output Directory Name',
+            optional=True,
+        )
+        self.addBooleanParameter(
+            name='overwriteOutputDirectory',
+            labelText='Overwrite Output Directory',
+            defaultValue=True,
+        )
 
     def loadNiftiFileAndAffineMatrix(self, path: str) -> Union[np.array, np.array]:
         niftiImage = nib.load(path)

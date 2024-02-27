@@ -12,6 +12,33 @@ LOGGER = Logger()
 class TotalSegmentatorRoiSelectionTask(Task):
     def __init__(self) -> None:
         super(TotalSegmentatorRoiSelectionTask, self).__init__()
+        self.addDescriptionParameter(
+            name='description',
+            description='Selects identical ROIs from TotalSegmentator outputs'
+        )
+        self.addPathParameter(
+            name='rootDirectoryPath',
+            labelText='Root Directory of TotalSegmentator Outputs'
+        )
+        self.addOptionGroupParameter(
+            name='roi',
+            labelText='ROI From TotalSegmentator Output',
+            options=ROIS,
+        )
+        self.addPathParameter(
+            name='outputFileSetPath',
+            labelText='Output File Set Path'
+        )
+        self.addTextParameter(
+            name='outputFileSetName',
+            labelText='Output File Set Name',
+            optional=True,
+        )
+        self.addBooleanParameter(
+            name='overwriteOutputFileSet',
+            labelText='Overwrite Output File Set',
+            defaultValue=True,
+        )
 
     def execute(self) -> None:
 

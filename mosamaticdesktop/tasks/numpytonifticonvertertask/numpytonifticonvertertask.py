@@ -15,6 +15,33 @@ LOGGER = Logger()
 class NumPyToNiftiConverterTask(Task):
     def __init__(self) -> None:
         super(NumPyToNiftiConverterTask, self).__init__()
+        self.addDescriptionParameter(
+            name='description',
+            description='Converts 2D or 3D NumPy arrays to NIFTI format'
+        )
+        self.addFileSetParameter(
+            name='inputFileSetName',
+            labelText='Input File Set Name',
+        )
+        self.addTextParameter(
+            name='transformationMatrix',
+            labelText='Affine Transformation Matrix',
+            optional=True,
+        )
+        self.addPathParameter(
+            name='outputFileSetPath',
+            labelText='Output File Set Path',
+        )
+        self.addTextParameter(
+            name='outputFileSetName',
+            labelText='Output File Set Name',
+            optional=True,
+        )
+        self.addBooleanParameter(
+            name='overwriteOutputFileSet',
+            labelText='Overwrite Output File Set',
+            defaultValue=True,
+        )
         self._cache = FileContentCache()
 
     def convertNumPyToNifti(self, numpyArray, transformationMatrix=None):

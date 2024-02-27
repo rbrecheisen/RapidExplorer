@@ -15,6 +15,28 @@ LOGGER = Logger()
 class CreatePngFromSegmentationFileTask(Task):
     def __init__(self) -> None:
         super(CreatePngFromSegmentationFileTask, self).__init__()
+        self.addDescriptionParameter(
+            name='description',
+            description=f'Create PNGs From NumPy Files',
+        )
+        self.addFileSetParameter(
+            name='inputFileSetName',
+            labelText='Input File Set',
+        )
+        self.addPathParameter(
+            name='outputFileSetPath',
+            labelText='Output File Set Path',
+        )
+        self.addTextParameter(
+            name='outputFileSetName',
+            labelText='Output File Set Name',
+            optional=True,
+        )
+        self.addBooleanParameter(
+            name='overwriteOutputFileSet',
+            labelText='Overwrite Output File Set',
+            defaultValue=True,
+        )
 
     def execute(self) -> None:
 

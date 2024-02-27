@@ -10,6 +10,28 @@ LOGGER = Logger()
 class CopyFileSetTask(Task):
     def __init__(self) -> None:
         super(CopyFileSetTask, self).__init__()
+        self.addDescriptionParameter(
+            name='description',
+            description='Copies one or more filesets to another fileset'
+        )
+        self.addMultiFileSetParameter(
+            name='inputFileSetNames',
+            labelText='Input File Set Names',
+        )
+        self.addPathParameter(
+            name='outputFileSetPath',
+            labelText='Output File Set Path',
+        )
+        self.addTextParameter(
+            name='outputFileSetName',
+            labelText='Output File Set Name',
+            optional=True,
+        )
+        self.addBooleanParameter(
+            name='overwriteOutputFileSet',
+            labelText='Overwrite Output File Set',
+            defaultValue=True,
+        )
 
     def execute(self) -> None:
 

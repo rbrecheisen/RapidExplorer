@@ -99,10 +99,10 @@ class TaskWidget(QWidget):
 
     # Task parameters
         
-    def taskParameters(self) -> List[Parameter]:
+    def taskParameterWidgets(self) -> List[Parameter]:
         return self._taskParameterWidgets
         
-    def taskParameter(self, name: str) -> Parameter:
+    def taskParameterWidget(self, name: str) -> ParameterWidget:
         if name in self._taskParameterWidgets.keys():
             return self._taskParameterWidgets[name]
         return None

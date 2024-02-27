@@ -11,6 +11,34 @@ from mosamaticdesktop.tasks.task import Task
 class SpeechToTextConversionTask(Task):
     def __init__(self) -> None:
         super(SpeechToTextConversionTask, self).__init__()
+        self.addDescriptionParameter(
+            name='description',
+            description='Loads audio file (MP3) and converts it to text using Coqui-TTS package',
+        )
+        self.addFilePathParameter(
+            name='inputFilePath',
+            labelText='Input File Path to WAV Audio File',
+        )
+        self.addOptionGroupParameter(
+            name='modelName',
+            labelText='Model Name',
+            options=['base', 'medium', 'large'],
+            defaultValue='large',
+        )
+        self.addPathParameter(
+            name='outputFileSetPath',
+            labelText='Output File Set Path',
+        )
+        self.addTextParameter(
+            name='outputFileSetName',
+            labelText='Output File Set Name',
+            optional=True,
+        )
+        self.addBooleanParameter(
+            name='overwriteOutputFileSet',
+            labelText='Overwrite Output File Set',
+            defaultValue=True,
+        )
 
     def execute(self) -> None:
         # Hack: some CA certificate does not seem to be installed and giving errors when connecting to OpenAI

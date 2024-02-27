@@ -25,6 +25,38 @@ class MuscleFatSegmentationTask(Task):
 
     def __init__(self) -> None:
         super(MuscleFatSegmentationTask, self).__init__()        
+        self.addDescriptionParameter(
+            name='description',
+            description='Extract muscle and fat regions from L3 images'
+        )
+        self.addFileSetParameter(
+            name='inputFileSetName',
+            labelText='Input File Set',
+        )
+        self.addFileSetParameter(
+            name='tensorFlowModelFileSetName',
+            labelText='TensorFlow Model File Set',
+        )
+        self.addOptionGroupParameter(
+            name='mode',
+            labelText='Mode',
+            defaultValue='ARGMAX',
+            options=['ARGMAX', 'PROBABILITIES'],
+        )
+        self.addPathParameter(
+            name='outputFileSetPath',
+            labelText='Output File Set Path',
+        )
+        self.addTextParameter(
+            name='outputFileSetName',
+            labelText='Output File Set Name',
+            optional=True,
+        )
+        self.addBooleanParameter(
+            name='overwriteOutputFileSet',
+            labelText='Overwrite Output File Set',
+            defaultValue=True,
+        )
 
     def loadModelFiles(self, files: List[File]) -> List[Any]:
         tfLoaded = False
