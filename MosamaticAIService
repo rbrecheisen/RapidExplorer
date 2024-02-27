@@ -7,5 +7,5 @@ VENV_DIR="$HOME/.mosamatic/MosamaticDesktop"
 
 echo "Activating virtual environment and starting Mosamatic Desktop..."
 source $VENV_DIR/bin/activate
-$HOME/.mosamatic/MosamaticDesktop/bin/mosamatic-desktop
+$HOME/.mosamatic/MosamaticDesktop/bin/mosamatic-ai-service
 deactivate
