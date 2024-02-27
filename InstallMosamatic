@@ -18,9 +18,4 @@ $HOME/.mosamatic/MosamaticDesktop/bin/pip install --upgrade pip
 $HOME/.mosamatic/MosamaticDesktop/bin/pip install mosamaticdesktop
 deactivate
 
-echo "Creating desktop icon..."
-rm -f $HOME/Desktop/MosamaticDesktop
-ln -s $HOME/.mosamatic/MosamaticDesktop/bin/mosamatic-desktop $HOME/Desktop/MosamaticDesktop
-
 echo "Installation finished"
-echo "You can now run Mosamatic by typing 'mosamatic' and pressing enter or by double-clicking the icon on your desktop"
