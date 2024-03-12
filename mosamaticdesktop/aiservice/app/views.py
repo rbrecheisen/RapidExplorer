@@ -35,13 +35,14 @@ def tasks(request):
     This endpoint returns a list of task configurations. Each task configuration
     contains the task name and its parameters (names and types). 
     """
-    manager = TaskWidgetManager(None)
+    manager = TaskWidgetManager(None)    
     taskNames = manager.taskNames()
-    taskWidgets = manager.taskWidgets()
+    # taskWidgets = manager.taskWidgets()
     data = {}
     for taskName in taskNames:
         data[taskName] = []
-        for taskParameter in taskWidgets[taskName].taskParameterWidgets():
+        task = manager.task(name=taskName)
+        for taskParameter in task.parameters():
             data[taskName].append(taskParameter.toDict())
     return Response({'tasks': data}, status=status.HTTP_200_OK)
 
@@ -50,9 +51,9 @@ def tasks(request):
 @permission_classes([IsAuthenticated])
 def task(request, name):
     manager = TaskWidgetManager(None)
-    taskWidget = manager.taskWidget(name=name)
+    task = manager.task(name=name)
     data = {name: []}
-    for taskParameter in taskWidget.taskParameterWidgets():
+    for taskParameter in task.parameters():
         data[name].append(taskParameter.toDict())
     return Response(data, status=status.HTTP_200_OK)
 

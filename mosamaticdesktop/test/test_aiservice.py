@@ -31,7 +31,7 @@ def task(token, name):
     response = requests.get(f'http://{HOST}:{PORT}/api/tasks/{name}', headers={
         'Authorization': f'Bearer {token}',
     })
-    return response.json()['tasks']
+    return response.json()
 
 
 def createTask(token, name, parameters):
@@ -53,14 +53,14 @@ def test_AiService():
     """
     Steps to use the AI service:
     (1)  Register user and login
-    (2)  Retrieve task list (names + required/optional parameters)
-    (2)  Create task with given name and provide parameter values
-    (3)  Upload L3 images to task
-    (4)  Start task
-    (5)  Retrieve task status
-    (6)  If status = "finished", download output results
+    (2)  Upload L3 images to task and retrieve fileset name
+    (3)  Retrieve task definition you want and its parameters
+    (4)  Set task parameters, including fileset name uploaded data
+    (5)  Create task instance and submit parameters
+    (6)  Retrieve task status
+    (7)  If status = "finished", download output results
     """
     register('ralph', 'Arturo4ever', 'ralph.brecheisen@gmail.com', 'Ralph', 'Brecheisen')
     token = login('ralph', 'Arturo4ever')
-    data = task(token=token, name='CopyFileSetTask')
+    data = task(token=token, name='MuscleFatSegmentationTask')
     print(data)

@@ -10,9 +10,9 @@ import binascii
 import struct
 import pydicom.errors
 import numpy as np
-import matplotlib
-matplotlib.use('Qt5Agg')
-import matplotlib.pyplot as plt
+# import matplotlib
+# matplotlib.use('Qt5Agg')
+# import matplotlib.pyplot as plt
 
 from PIL import Image
 from typing import Dict, Any, List
