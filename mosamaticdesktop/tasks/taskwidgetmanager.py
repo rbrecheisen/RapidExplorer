@@ -18,18 +18,18 @@ class TaskWidgetManager:
     def __init__(self, progressBar: QProgressBar) -> None:
         self._progressBar = progressBar
         self._taskWidgetTypes = self.loadTaskWidgetTypes()
-        self._taskTypes = self.loadTaskTypes()
+        # self._taskTypes = self.loadTaskTypes()
         self._taskWidgets = {}
-        self._tasks = {}
+        # self._tasks = {}
 
     def taskNames(self) -> List[str]:
-        return list(self._taskTypes.keys())
+        return list(self._taskWidgetTypes.keys())
     
     def taskWidgets(self) -> Dict[str, TaskWidget]:
         return self._taskWidgets
     
-    def tasks(self) -> Dict[str, Task]:
-        return self._tasks
+    # def tasks(self) -> Dict[str, Task]:
+    #     return self._tasks
     
     def taskWidget(self, name) -> TaskWidget:
         if name in self._taskWidgetTypes.keys():
@@ -39,25 +39,25 @@ class TaskWidgetManager:
         LOGGER.error(f'TaskWidgetManager: task widget for task {name} does not exist')
         return None
     
-    def task(self, name) -> Task:
-        if name in self._taskTypes.keys():
-            if name not in self._tasks.keys():
-                self._tasks[name] = self._taskTypes[name]()
-            return self._tasks[name]
-        LOGGER.error(f'TaskWidgetManager: task {name} does not exist')
-        return None
+    # def task(self, name) -> Task:
+    #     if name in self._taskTypes.keys():
+    #         if name not in self._tasks.keys():
+    #             self._tasks[name] = self._taskTypes[name]()
+    #         return self._tasks[name]
+    #     LOGGER.error(f'TaskWidgetManager: task {name} does not exist')
+    #     return None
     
-    def loadTaskTypes(self):
-        moduleDirectoryPath = os.path.dirname(os.path.realpath(__file__))
-        LOGGER.info(f'TaskWidgetManager: loading tasks from {moduleDirectoryPath}...')
-        taskWidgets = ModuleLoader.loadModuleClasses(
-            moduleDirectoryPath=moduleDirectoryPath,
-            moduleBaseClass=Task,
-            fileNameEndsWith='task.py',
-        )
-        for taskName in taskWidgets.keys():
-            LOGGER.info(f'TaskWidgetManager: Loaded task type {taskName}')
-        return taskWidgets        
+    # def loadTaskTypes(self):
+    #     moduleDirectoryPath = os.path.dirname(os.path.realpath(__file__))
+    #     LOGGER.info(f'TaskWidgetManager: loading tasks from {moduleDirectoryPath}...')
+    #     taskWidgets = ModuleLoader.loadModuleClasses(
+    #         moduleDirectoryPath=moduleDirectoryPath,
+    #         moduleBaseClass=Task,
+    #         fileNameEndsWith='task.py',
+    #     )
+    #     for taskName in taskWidgets.keys():
+    #         LOGGER.info(f'TaskWidgetManager: Loaded task type {taskName}')
+    #     return taskWidgets        
 
     def loadTaskWidgetTypes(self):
         moduleDirectoryPath = os.path.dirname(os.path.realpath(__file__))
