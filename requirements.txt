@@ -8,7 +8,7 @@ pylibjpeg[all]
 pyjpegls
 python-gdcm
 pytest
-tensorflow
+tensorflow==2.15.0
 pyinstaller
 matplotlib
 totalsegmentator
