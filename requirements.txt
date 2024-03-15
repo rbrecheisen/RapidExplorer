@@ -8,7 +8,6 @@ pylibjpeg[all]
 pyjpegls
 python-gdcm
 pytest
-pytest-qt
 tensorflow
 pyinstaller
 matplotlib
@@ -18,6 +17,3 @@ twine
 nibabel
 openai-whisper  # Also needs ffmpeg  (install with HomeBrew)
 pyaudio         # Also needs PortAudio (install with HomeBrew)
-djangorestframework
-djangorestframework-simplejwt
-django-cors-headers
