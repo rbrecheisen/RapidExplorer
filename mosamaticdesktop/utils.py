@@ -65,6 +65,7 @@ def readFromCache(file: File) -> FileContent:
     cache = FileContentCache()
     return cache.get(id=file.id())
 
+
 def writeToCache(file: File, fileObject: Any) -> None:
     content = FileContent(file=file, fileObject=fileObject)
     cache = FileContentCache()
