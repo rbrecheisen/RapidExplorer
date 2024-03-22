@@ -23,7 +23,6 @@ class MainWindow(QMainWindow):
         self._tasksDockWidget = None
         self._mainViewDockWidget = None
         self._defaultLayout = None       
-        self._progressBar = None
         self._dataManager = DataManager()
         self._dataManager.signal().updated.connect(self.dataUpdated) 
         self.initUi()
@@ -32,7 +31,6 @@ class MainWindow(QMainWindow):
 
     def initUi(self) -> None:
         self.initActionsAndMenus()
-        self.initProgressBar()
         self.initDataDockWidget()
         self.initTaskDockWidget()
         self.initMainViewerDockWidget()
@@ -61,25 +59,19 @@ class MainWindow(QMainWindow):
         self.menuBar().addMenu(aboutMenu)
         self.menuBar().setNativeMenuBar(False)
 
-    def initProgressBar(self) -> None:
-        self._progressBar = QProgressBar(self)
-        self._progressBar.setRange(0, 100)
-        self._progressBar.setValue(0)
-        self.statusBar().addPermanentWidget(self._progressBar)
-
     def initDataDockWidget(self) -> None:
         self._dataDockWidget = DataDockWidget(title='Data')
         self._dataDockWidget.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.TopDockWidgetArea)
         self.addDockWidget(Qt.LeftDockWidgetArea, self._dataDockWidget)
 
     def initTaskDockWidget(self) -> None:
-        self._tasksDockWidget = TaskDockWidget(title='Tasks', progressBar=self._progressBar)
+        self._tasksDockWidget = TaskDockWidget(title='Tasks')
         self._tasksDockWidget.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.BottomDockWidgetArea)
         self._tasksDockWidget.setFixedHeight(200)
         self.addDockWidget(Qt.LeftDockWidgetArea, self._tasksDockWidget)
 
     def initMainViewerDockWidget(self) -> None:
-        self._mainViewDockWidget = MainViewerDockWidget(title='Main View', progressBar=self._progressBar)
+        self._mainViewDockWidget = MainViewerDockWidget(title='Main View')
         self._mainViewDockWidget.setAllowedAreas(Qt.RightDockWidgetArea | Qt.TopDockWidgetArea)
         self.addDockWidget(Qt.RightDockWidgetArea, self._mainViewDockWidget)
 

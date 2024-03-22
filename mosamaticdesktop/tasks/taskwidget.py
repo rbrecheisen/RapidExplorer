@@ -112,6 +112,12 @@ class TaskWidget(QDialog):
         buttonsWidget.setLayout(buttonsLayout)
         return buttonsWidget
     
+    def validate(self) -> None:
+        raise NotImplementedError()
+    
+    def showValidationError(self, parameterName: str, message: str) -> None:
+        QMessageBox.critical(self, f'Validation Error for parameter "{parameterName}"', message)
+
     def start(self) -> None:
         for parameter in self._parameterWidgets.values():
             if not parameter.optional():
@@ -119,13 +125,16 @@ class TaskWidget(QDialog):
                     QMessageBox.critical(self, 'Error', f'Parameter {parameter.name()} cannot be empty!')
                     return
         self._task = self._taskType()
-        # self._task.signal().progress.connect(self.taskProgress)
-        # self._task.signal().finished.connect(self.taskFinished)
+        self._task.updateParameters(self._parameterWidgets.values())
+        self._task.signal().progress.connect(self.progress)
         self._task.start()
         self._startButton.setEnabled(False)
         self._cancelButton.setEnabled(True)
         self._closeButton.setEnabled(False)
         self._progressBar.setValue(0)
+
+    def progress(self, progress: int) -> None:
+        self._progressBar.setValue(progress)
 
     def cancel(self) -> None:
         if self._task:

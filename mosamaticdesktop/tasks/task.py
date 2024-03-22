@@ -2,6 +2,8 @@ import threading
 
 from typing import Dict, List, Any
 
+from PySide6.QtCore import QObject, Signal
+
 from mosamaticdesktop.tasks.parameter import Parameter
 from mosamaticdesktop.tasks.descriptionparameter import DescriptionParameter
 from mosamaticdesktop.tasks.labelparameter import LabelParameter
@@ -22,6 +24,9 @@ LOGGER = Logger()
 
 
 class Task:
+    class TaskSignal(QObject):
+        progress = Signal(int)
+
     @classmethod
     def NAME(cls):
         # Returns class name of child classes
@@ -31,6 +36,13 @@ class Task:
         self._thread = None
         self._parameters = {}
         self._dataManager = DataManager()
+        self._signal = Task.TaskSignal()
+
+    def dataManager(self) -> DataManager:
+        return self._dataManager
+
+    def signal(self) -> TaskSignal:
+        return self._signal
 
     def start(self) -> None:
         self._thread = threading.Thread(target=self.run)
@@ -41,6 +53,11 @@ class Task:
 
     def execute(self) -> None:
         raise NotImplementedError()    
+
+    def updateProgress(self, step: int, nrSteps: int) -> None:
+        if self._signal:
+            self._progress = int(((step + 1) / (nrSteps)) * 100)
+            self._signal.progress.emit(self._progress)
 
     def cancel(self) -> None:
         self._thread.join()
@@ -59,6 +76,10 @@ class Task:
             value = self._parameters[name].value()
             string += f'{name}="{value}", '
         return string[:-2]
+    
+    def updateParameters(self, parameters: List[Parameter]):
+        for parameter in parameters:
+            self._parameters[parameter.name()] = parameter
     
     def addDescriptionParameter(self, name: str, description: str) -> Parameter:
         parameter = DescriptionParameter(name=name, description=description)

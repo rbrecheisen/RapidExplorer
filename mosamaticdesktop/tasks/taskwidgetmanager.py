@@ -1,7 +1,5 @@
 import os
 
-from PySide6.QtWidgets import QProgressBar
-
 from typing import List, Dict
 
 from mosamaticdesktop.tasks.taskwidget import TaskWidget
@@ -14,7 +12,7 @@ LOGGER = Logger()
 
 @singleton
 class TaskWidgetManager:
-    def __init__(self, progressBar: QProgressBar) -> None:
+    def __init__(self) -> None:
         self._taskWidgetTypes = self.loadTaskWidgetTypes()
         self._taskWidgets = {}
 

@@ -1,10 +1,9 @@
 import os
 import shutil
-import threading
 
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QWheelEvent #, Signal, QObject
-from PySide6.QtWidgets import QWidget, QGraphicsView, QGraphicsScene, QProgressBar, QSlider, QCheckBox, QGridLayout, QLabel, QPushButton, QHBoxLayout
+from PySide6.QtGui import QWheelEvent
+from PySide6.QtWidgets import QWidget, QGraphicsView, QGraphicsScene, QSlider, QCheckBox, QGridLayout, QLabel, QPushButton, QHBoxLayout
 from PySide6.QtWidgets import QFileDialog
 
 from mosamaticdesktop.widgets.viewers.dicomviewer.dicomlayer import DicomLayer
@@ -22,8 +21,6 @@ LOGGER = Logger()
 
 
 class DicomViewer(QWidget):
-    # class ProgressSignal(QObject):
-    #     progress = Signal(int)
     class MyGraphicsView(QGraphicsView):
         def __init__(self, parent=None):
             super(DicomViewer.MyGraphicsView, self).__init__(parent)
@@ -31,9 +28,8 @@ class DicomViewer(QWidget):
         def wheelEvent(self, event: QWheelEvent) -> None:
             event.ignore()
 
-    def __init__(self, progressBar: QProgressBar) -> None:
+    def __init__(self) -> None:
         super(DicomViewer, self).__init__()
-        self._progressBar = progressBar
         self._graphicsWidget = None
         self._graphicsView = None
         self._scene = None
@@ -57,8 +53,6 @@ class DicomViewer(QWidget):
         self._exportDirectory = None
         self._dataManager = DataManager()
         self._layout = None
-        # self._progressSignal = self.ProgressSignal()
-        # self._progressSignal.progress.connect(self.updateProgress)
         self.initUi()
 
     def initUi(self) -> None:
@@ -142,7 +136,6 @@ class DicomViewer(QWidget):
     def setInputFileSet(self, fileSet: FileSet) -> None:
         self._segmentationFileOpacitySlider.setVisible(False)
         self._tagFileOpacitySlider.setVisible(False)
-        # self._progressBar.setValue(0)
         step = 0
         nrSteps = len(fileSet.files())
         for file in fileSet.files():
@@ -170,19 +163,12 @@ class DicomViewer(QWidget):
                 dicomInfoLayer.setInstanceNumber(instanceNumber=dicomLayer.data().InstanceNumber)
                 layerTuple[3] = dicomInfoLayer
                 self._layerTuples.append(layerTuple)
-            progress = int(((step + 1) / (nrSteps)) * 100)
-            # QObject::setParent: Cannot set parent, new parent is in a different thread
-            # QObject::startTimer: Timers cannot be started from another thread
-            # self._progressSignal.progress.emit(progress)
             step += 1
         if self._fullScan:
             LOGGER.info('Sorting full scan images by instance number...')
             self._layerTuples = sorted(self._layerTuples, key=lambda layerTuple: layerTuple[0].data().InstanceNumber)
         self._layerTupleSlider.setRange(0, len(self._layerTuples) - 1)
         self.displayLayerTuple(self._currentLayerTupleIndex)
-
-    # def updateProgress(self, progress: int) -> None:
-    #     self._progressBar.setValue(progress)
 
     def currentLayerTupleIndexChanged(self, index) -> None:
         if index > 0 and index < len(self._layerTuples):

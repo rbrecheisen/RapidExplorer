@@ -101,8 +101,8 @@ class CheckDicomHeaderTask(Task):
                     pass
             except pydicom.errors.InvalidDicomError:
                 pass
+            self.updateProgress(step=step, nrSteps=nrSteps)
             step += 1
         for dicomFile in dicomFilesOk:
             shutil.copy(dicomFile.path(), outputFileSetPath)        
         self.dataManager().createFileSet(fileSetPath=outputFileSetPath)
-        self.addInfo('Finished')
