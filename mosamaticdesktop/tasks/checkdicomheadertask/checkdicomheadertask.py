@@ -100,9 +100,10 @@ class CheckDicomHeaderTask(Task):
                 else:
                     pass
             except pydicom.errors.InvalidDicomError:
-                pass
+                LOGGER.warning(f'File {file} is not a valid DICOM file')
             self.updateProgress(step=step, nrSteps=nrSteps)
             step += 1
+        LOGGER.info(f'Building output fileset...')
         for dicomFile in dicomFilesOk:
             shutil.copy(dicomFile.path(), outputFileSetPath)        
         self.dataManager().createFileSet(fileSetPath=outputFileSetPath)
