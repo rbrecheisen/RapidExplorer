@@ -58,6 +58,11 @@ if [ "$?" == "1" ]; then
     exit 1
 fi
 
+GIT_COMMIT_ID=$(git log -1 --format=%H)
+echo ${GIT_COMMIT_ID} > ./mosamaticdesktop/GIT_COMMIT_ID
+
+echo ${VERSION} > ./mosamaticdesktop/VERSION
+
 rm -rf build dist
 
 python setup.py sdist bdist_wheel
