@@ -5,7 +5,9 @@
 
 VENV_DIR="$HOME/.mosamatic/MosamaticDesktop"
 
-echo "Activating virtual environment and starting Mosamatic Desktop..."
+VERSION=$($HOME/.mosamatic/MosamaticDesktop/bin/pip list | grep mosamatic | awk '{print $2}')
+
+echo "Activating virtual environment and starting Mosamatic Desktop ${VERSION}..."
 source $VENV_DIR/bin/activate
 $HOME/.mosamatic/MosamaticDesktop/bin/mosamatic-desktop
 deactivate
