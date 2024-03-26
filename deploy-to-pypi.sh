@@ -30,6 +30,7 @@ fi
 export OLD_VERSION=$(cat VERSION)
 
 python versioning.py --major-minor=${CMD}
+cp VERSION ./mosamaticdesktop/VERSION
 export VERSION=$(cat VERSION)
 
 echo ""
@@ -59,9 +60,8 @@ if [ "$?" == "1" ]; then
 fi
 
 GIT_COMMIT_ID=$(git log -1 --format=%H)
-echo ${GIT_COMMIT_ID} > ./mosamaticdesktop/GIT_COMMIT_ID
-
-echo ${VERSION} > ./mosamaticdesktop/VERSION
+echo ${GIT_COMMIT_ID} > GIT_COMMIT_ID
+cp GIT_COMMIT_ID ./mosamaticdesktop/GIT_COMMIT_ID
 
 rm -rf build dist
 

@@ -16,9 +16,10 @@ FILEPATH = os.path.join(os.getenv('HOME'), 'Desktop', 'downloads', 'dataset', 's
 
 
 class MainWindow(QMainWindow):
-    def __init__(self, version: str) -> None:
+    def __init__(self, version: str, gitHubCommitId: str) -> None:
         super(MainWindow, self).__init__()
         self._version = version
+        self._gitHubCommitId = gitHubCommitId
         self._settings = Configuration().qSettings()
         self._dataDockWidget = None
         self._tasksDockWidget = None
