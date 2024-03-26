@@ -19,6 +19,7 @@ $HOME/.mosamatic/MosamaticDesktop/bin/pip install mosamaticdesktop
 $HOME/.mosamatic/MosamaticDesktop/bin/pip install --upgrade mosamaticdesktop # Hack: pip doesn't pick up latest version right away
 
 VERSION=$($HOME/.mosamatic/MosamaticDesktop/bin/pip list | grep mosamatic | awk '{print $2}')
+echo ${VERSION} > $HOME/.mosamatic/MosamaticDesktop/lib/python3.11/site-packages/mosamaticdesktop/VERSION
 
 deactivate
 

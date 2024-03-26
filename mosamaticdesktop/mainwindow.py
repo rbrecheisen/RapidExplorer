@@ -10,14 +10,15 @@ from mosamaticdesktop.widgets.taskdockwidget import TaskDockWidget
 from mosamaticdesktop.widgets.mainviewerdockwidget import MainViewerDockWidget
 from mosamaticdesktop.utils import Configuration
 
-WINDOWTITLE = 'Mosamatic Desktop 1.0'
+WINDOWTITLE = 'Mosamatic Desktop'
 FILESETPATH = os.path.join(os.getenv('HOME'), 'Desktop', 'downloads', 'dataset', 'scan1')
 FILEPATH = os.path.join(os.getenv('HOME'), 'Desktop', 'downloads', 'dataset', 'scan1', 'image-00000.dcm')
 
 
 class MainWindow(QMainWindow):
-    def __init__(self) -> None:
+    def __init__(self, version: str) -> None:
         super(MainWindow, self).__init__()
+        self._version = version
         self._settings = Configuration().qSettings()
         self._dataDockWidget = None
         self._tasksDockWidget = None
@@ -79,7 +80,7 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(QWidget(self))
         self.centralWidget().hide()
         self.splitDockWidget(self._dataDockWidget, self._tasksDockWidget, Qt.Vertical)
-        self.setWindowTitle(WINDOWTITLE)
+        self.setWindowTitle(f'{WINDOWTITLE} {self._version}')
         self.centerWindow()
         self.restoreGeometry(self._settings.value('windowGeometry'))
         self.restoreState(self._settings.value('windowState'))

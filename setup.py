@@ -59,7 +59,6 @@ setup(
     entry_points={
         'console_scripts': [
             'mosamatic-desktop=mosamaticdesktop.main:main',
-            'mosamatic-ai-service=mosamaticdesktop.aiservice.run:runserver',
         ],
     },
     version=os.environ['VERSION'],
