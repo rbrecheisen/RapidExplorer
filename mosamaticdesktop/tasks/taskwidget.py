@@ -135,6 +135,10 @@ class TaskWidget(QDialog):
 
     def progress(self, progress: int) -> None:
         self._progressBar.setValue(progress)
+        if progress >= 100:
+            self._cancelButton.setEnabled(False)
+            self._startButton.setEnabled(True)
+            self._closeButton.setEnabled(True)            
 
     def cancel(self) -> None:
         if self._task:

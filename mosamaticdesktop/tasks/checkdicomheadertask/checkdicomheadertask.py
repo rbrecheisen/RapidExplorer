@@ -85,13 +85,16 @@ class CheckDicomHeaderTask(Task):
                 allAttributesOk = True
                 for attribute in requiredAttributes:
                     if attribute not in p:
+                        LOGGER.warning(f'{file.path()}: attribute "{attribute}" not present')
                         allAttributesOk = False
                         break
                 if allAttributesOk:
                     rowsAndColumnsOk = True
                     if p.Rows != rows:
+                        LOGGER.warning(f'{file.path()}: nr. rows should be {rows} but is {p.Rows}')
                         rowsAndColumnsOk = False
                     if p.Columns != columns:
+                        LOGGER.warning(f'{file.path()}: Nr. columns should be {columns} but is {p.Columns}')
                         rowsAndColumnsOk = False
                     if rowsAndColumnsOk:
                         dicomFilesOk.append(file)
@@ -100,7 +103,7 @@ class CheckDicomHeaderTask(Task):
                 else:
                     pass
             except pydicom.errors.InvalidDicomError:
-                LOGGER.warning(f'File {file} is not a valid DICOM file')
+                LOGGER.warning(f'{file.path()} is not a valid DICOM file')
             self.updateProgress(step=step, nrSteps=nrSteps)
             step += 1
         LOGGER.info(f'Building output fileset...')
