@@ -41,7 +41,7 @@ class MainWindow(QMainWindow):
         importFileAction = QAction('Import File...', self)
         importFileSetAction = QAction('Import File Set...', self)
         deleteAllFileSetsAction = QAction('Delete All Data from Database', self)
-        showApplicationInfoAction = QAction('Show Application Info...', self)
+        # showApplicationInfoAction = QAction('Show Application Info...', self)
         exitApplicationAction = QAction('Exit', self)
         importFileAction.triggered.connect(self.importFile)
         importFileSetAction.triggered.connect(self.importFileSet)
@@ -54,10 +54,10 @@ class MainWindow(QMainWindow):
         dataMenu.addAction(deleteAllFileSetsAction)
         dataMenu.addSeparator()
         dataMenu.addAction(exitApplicationAction)
-        aboutMenu = QMenu(f'About')
-        aboutMenu.addAction(showApplicationInfoAction)
+        # aboutMenu = QMenu(f'About')
+        # aboutMenu.addAction(showApplicationInfoAction)
         self.menuBar().addMenu(dataMenu)
-        self.menuBar().addMenu(aboutMenu)
+        # self.menuBar().addMenu(aboutMenu)
         self.menuBar().setNativeMenuBar(False)
 
     def initDataDockWidget(self) -> None:
