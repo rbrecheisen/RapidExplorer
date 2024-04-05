@@ -8,6 +8,7 @@ from mosamaticdesktop.widgets.fileitem import FileItem
 from mosamaticdesktop.widgets.fileitemmenu import FileItemMenu
 from mosamaticdesktop.widgets.filesetitem import FileSetItem
 from mosamaticdesktop.widgets.filesetitemmenu import FileSetItemMenu
+from mosamaticdesktop.widgets.multifilesetitemmenu import MultiFileSetItemMenu
 
 FIRSTCOLUMNOFFSET = 100
 
@@ -25,6 +26,8 @@ class FileSetTreeView(QTreeView):
         self._model.setHorizontalHeaderLabels(['File Sets', 'Nr. Files'])
         self._model.itemChanged.connect(self.itemChanged)
         self.setModel(self._model)
+        self.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.setSelectionMode(QTreeView.ExtendedSelection)
 
     def itemChanged(self, item: QStandardItem) -> None:
         if isinstance(item, FileSetItem):
@@ -56,13 +59,23 @@ class FileSetTreeView(QTreeView):
         super(FileSetTreeView, self).mousePressEvent(event)
 
     def rightClickEvent(self, index: int, globalPos: QPoint) -> None:
-        item = self._model.itemFromIndex(index)
-        if isinstance(item, FileItem):
-            menu = FileItemMenu(self, item, globalPos)
-            menu.show()
-        elif isinstance(item, FileSetItem):
-            menu = FileSetItemMenu(self, item, globalPos)
-            menu.show()
+        selectedIndexes = self.selectionModel().selectedIndexes()
+        selectedItems = [self._model.itemFromIndex(idx) for idx in selectedIndexes]
+        if len(selectedItems) == 1:
+            item = selectedItems[0]
+            if isinstance(item, FileItem):
+                menu = FileItemMenu(self, item, globalPos)
+                menu.show()
+            elif isinstance(item, FileSetItem):
+                menu = FileSetItemMenu(self, item, globalPos)
+                menu.show()
+            else:
+                pass
+        elif len(selectedItems) > 1:
+            item = selectedItems[0]
+            if isinstance(item, FileSetItem):
+                menu = MultiFileSetItemMenu(self, selectedItems, globalPos)
+                menu.show()
         else:
             pass
 
