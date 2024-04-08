@@ -1,23 +1,13 @@
-#!/usr/bin/env python3
+#!/bin/bash
 
-import os
+# https://chat.openai.com/c/143bf330-901c-46ea-9115-03b450fdd07d
+# Also install Python3 if needed
 
-# Path to the virtual environment
-VENV_DIR = os.path.expanduser("~/.mosamatic/MosamaticDesktop")
+VENV_DIR="$HOME/.mosamatic/MosamaticDesktop"
 
-# Get the version of Mosamatic
-VERSION = os.popen(f"{VENV_DIR}/bin/pip list | grep mosamatic | awk '{{print $2}}'").read().strip()
+VERSION=$($HOME/.mosamatic/MosamaticDesktop/bin/pip list | grep mosamatic | awk '{print $2}')
 
-print(f"Activating virtual environment and starting Mosamatic Desktop {VERSION}...")
-
-# Activate the virtual environment
-activate_cmd = f"source {VENV_DIR}/bin/activate"
-os.system(activate_cmd)
-
-# Start Mosamatic Desktop
-mosamatic_cmd = f"{VENV_DIR}/bin/mosamatic-desktop"
-os.system(mosamatic_cmd)
-
-# Deactivate the virtual environment
-deactivate_cmd = "deactivate"
-os.system(deactivate_cmd)
+echo "Activating virtual environment and starting Mosamatic Desktop ${VERSION}..."
+source $VENV_DIR/bin/activate
+$HOME/.mosamatic/MosamaticDesktop/bin/mosamatic-desktop
+deactivate
