@@ -1,22 +1,26 @@
+import subprocess
 import os
 
 # Path to the virtual environment
 VENV_DIR = os.path.expanduser("~/.mosamatic/MosamaticDesktop")
 
-# Get the version of Mosamatic
-VERSION = os.popen(f"{VENV_DIR}/bin/pip list | grep mosamatic | awk '{{print $2}}'").read().strip()
+# Prepare the command to get the version of Mosamatic
+command_get_version = f"{VENV_DIR}/bin/pip list | grep mosamatic | awk '{{print $2}}'"
 
-print(f"Activating virtual environment and starting Mosamatic Desktop {VERSION}...")
+# Execute the command and get the version
+process = subprocess.Popen(command_get_version, shell=True, stdout=subprocess.PIPE, text=True)
+version = process.communicate()[0].strip()
 
-# Activate the virtual environment
-activate_cmd = f"source {VENV_DIR}/bin/activate"
-os.system(activate_cmd)
+print(f"Activating virtual environment and starting Mosamatic Desktop {version}...")
+
+# Environment setup for subprocesses
+env = os.environ.copy()
+env['VIRTUAL_ENV'] = VENV_DIR
+env['PATH'] = f"{VENV_DIR}/bin:" + env['PATH']
 
 # Start Mosamatic Desktop
 mosamatic_cmd = f"{VENV_DIR}/bin/mosamatic-desktop"
-os.system(mosamatic_cmd)
+process = subprocess.Popen(mosamatic_cmd, env=env, shell=True)
+process.wait()  # Wait for the process to complete
 
-# Deactivate the virtual environment
-deactivate_cmd = "deactivate"
-os.system(deactivate_cmd)
-
+print("Mosamatic Desktop closed, virtual environment deactivated.")
