@@ -11,8 +11,8 @@ from mosamaticdesktop.widgets.mainviewerdockwidget import MainViewerDockWidget
 from mosamaticdesktop.utils import Configuration
 
 WINDOWTITLE = 'Mosamatic Desktop'
-FILESETPATH = os.path.join(os.getenv('HOME'), 'Desktop', 'downloads', 'dataset', 'scan1')
-FILEPATH = os.path.join(os.getenv('HOME'), 'Desktop', 'downloads', 'dataset', 'scan1', 'image-00000.dcm')
+# FILESETPATH = os.path.join(os.getenv('HOME'), 'Desktop', 'downloads', 'dataset', 'scan1')
+# FILEPATH = os.path.join(os.getenv('HOME'), 'Desktop', 'downloads', 'dataset', 'scan1', 'image-00000.dcm')
 
 
 class MainWindow(QMainWindow):

@@ -1,4 +1,5 @@
 import os
+import json
 import shutil
 import pydicom
 import pydicom.errors
@@ -35,7 +36,7 @@ class CalculateBodyCompositionMetricsTaskTask(Task):
             name='inputSegmentationFileSetName',
             labelText='Input Segmentation File Set',
         )
-        self.addPathParameter(
+        self.addFilePathParameter(
             name='patientHeightsCsvFilePath',
             labelText='Patient Height CSV File Path (File Name, Height (m))',
             optional=True,
@@ -102,9 +103,8 @@ class CalculateBodyCompositionMetricsTaskTask(Task):
     
     def loadPatientHeights(self, df: pd.DataFrame) -> Dict[str, float]:
         data = {}
-        for idx, row in df.iterrows():
-            data['file'] = row['file']
-            data['height'] = row['height']
+        for _, row in df.iterrows():
+            data[row['file']] = float(row['height'])
         return data
     
     def fileOutputMetricsToString(self, outputMetrics: Dict[str, float]) -> str:
@@ -122,8 +122,9 @@ class CalculateBodyCompositionMetricsTaskTask(Task):
         patientHeightsCsvFilePath = self.parameter('patientHeightsCsvFilePath').value()
         patientHeights = None
         if patientHeightsCsvFilePath and patientHeightsCsvFilePath != '':
-            patientHeightsDataFrame = pd.read_csv(patientHeightsCsvFilePath)
+            patientHeightsDataFrame = pd.read_csv(patientHeightsCsvFilePath, sep='[,;]+', dtype=str)
             patientHeights = self.loadPatientHeights(df=patientHeightsDataFrame)
+            LOGGER.info(json.dumps(patientHeights, indent=4))
         outputFileSetName = self.parameter('outputFileSetName').value()
         if not outputFileSetName:
             outputFileSetName = self.generateTimestampForFileSetName(name=inputFileSetName)
@@ -164,16 +165,25 @@ class CalculateBodyCompositionMetricsTaskTask(Task):
                     outputMetrics[fileTuple[0]]['file'] = fileTuple[0].name()
                     outputMetrics[fileTuple[0]]['muscle_area_pred'] = calculateArea(segmentation, CalculateBodyCompositionMetricsTaskTask.MUSCLE, pixelSpacing)
                     if patientHeights:
-                        outputMetrics[fileTuple[0]]['muscle_index_pred'] = calculateIndex(
-                            area=outputMetrics[fileTuple[0]]['muscle_area_pred'], height=patientHeights[fileTuple[0].name()])
+                        if fileTuple[0].name() in patientHeights.keys():  
+                            outputMetrics[fileTuple[0]]['muscle_index_pred'] = calculateIndex(
+                                area=outputMetrics[fileTuple[0]]['muscle_area_pred'], height=patientHeights[fileTuple[0].name()])
+                        else:
+                            outputMetrics[fileTuple[0]]['muscle_index_pred'] = 0
                     outputMetrics[fileTuple[0]]['vat_area_pred'] = calculateArea(segmentation, CalculateBodyCompositionMetricsTaskTask.VAT, pixelSpacing)
                     if patientHeights:
-                        outputMetrics[fileTuple[0]]['vat_index_pred'] = calculateIndex(
-                            area=outputMetrics[fileTuple[0]]['vat_area_pred'], height=patientHeights[fileTuple[0].name()])
+                        if fileTuple[0].name() in patientHeights.keys():  
+                            outputMetrics[fileTuple[0]]['vat_index_pred'] = calculateIndex(
+                                area=outputMetrics[fileTuple[0]]['vat_area_pred'], height=patientHeights[fileTuple[0].name()])
+                        else:
+                            outputMetrics[fileTuple[0]]['vat_index_pred'] = 0
                     outputMetrics[fileTuple[0]]['sat_area_pred'] = calculateArea(segmentation, CalculateBodyCompositionMetricsTaskTask.SAT, pixelSpacing)
                     if patientHeights:
-                        outputMetrics[fileTuple[0]]['sat_index_pred'] = calculateIndex(
-                            area=outputMetrics[fileTuple[0]]['sat_area_pred'], height=patientHeights[fileTuple[0].name()])
+                        if fileTuple[0].name() in patientHeights.keys():
+                            outputMetrics[fileTuple[0]]['sat_index_pred'] = calculateIndex(
+                                area=outputMetrics[fileTuple[0]]['sat_area_pred'], height=patientHeights[fileTuple[0].name()])
+                        else:
+                            outputMetrics[fileTuple[0]]['sat_index_pred'] = 0
                     outputMetrics[fileTuple[0]]['muscle_ra_pred'] = calculateMeanRadiationAttennuation(image, segmentation, CalculateBodyCompositionMetricsTaskTask.MUSCLE)
                     outputMetrics[fileTuple[0]]['vat_ra_pred'] = calculateMeanRadiationAttennuation(image, segmentation, CalculateBodyCompositionMetricsTaskTask.VAT)
                     outputMetrics[fileTuple[0]]['sat_ra_pred'] = calculateMeanRadiationAttennuation(image, segmentation, CalculateBodyCompositionMetricsTaskTask.SAT)

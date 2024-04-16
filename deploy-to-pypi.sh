@@ -59,9 +59,9 @@ if [ "$?" == "1" ]; then
     exit 1
 fi
 
-GIT_COMMIT_ID=$(git log -1 --format=%H)
-echo ${GIT_COMMIT_ID} > GIT_COMMIT_ID
-cp GIT_COMMIT_ID ./mosamaticdesktop/GIT_COMMIT_ID
+# GIT_COMMIT_ID=$(git log -1 --format=%H)
+# echo ${GIT_COMMIT_ID} > GIT_COMMIT_ID
+# cp GIT_COMMIT_ID ./mosamaticdesktop/GIT_COMMIT_ID
 
 rm -rf build dist
 
