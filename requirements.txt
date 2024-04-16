@@ -17,3 +17,18 @@ twine
 nibabel
 openai-whisper  # Also needs ffmpeg  (install with HomeBrew)
 pyaudio         # Also needs PortAudio (install with HomeBrew)
+
+# Abhi's XNAT vertebrae selector
+fastapi
+uvicorn
+PyJWT
+python-decouple
+python-multipart
+tortoise-orm
+passlib
+bcrypt
+git+https://github.com/wasserth/TotalSegmentator.git
+pydicom
+nibabel
+xnat
+barbell2_bodycomp
