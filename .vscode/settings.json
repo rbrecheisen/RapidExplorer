@@ -1,0 +1,3 @@
+{
+    "git.sshCommand": "C:\\Windows\\System32\\OpenSSH\\ssh.exe -i C:\\.ssh\\id_rsa"
+}
