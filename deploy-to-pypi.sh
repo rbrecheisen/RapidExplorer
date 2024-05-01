@@ -69,4 +69,3 @@ python setup.py sdist bdist_wheel
 
 # twine upload --repository pypi dist/*
 twine upload --username "__token__" --password "$(cat /i//pypi-api.txt)" --repository pypi dist/*
-# bla
