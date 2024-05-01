@@ -25,11 +25,12 @@ call "%VENV_DIR%\Scripts\deactivate.bat"
 echo "Creating desktop shortcut for executable..."
 @REM SET ExePath=C:\Windows\mosmatic-desktop.exe
 SET ExePath=%USERPROFILE%\Apps\Mosamatic\MosamaticDesktop\Scripts\mosamatic-desktop.exe
-SET ShortcutName=Mosmatic Desktop
+SET ShortcutName=Mosamatic Desktop
 
 FOR /F "tokens=*" %%I IN ('reg query "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders" /v Desktop') DO SET DesktopPath=%%I
 SET DesktopPath=%DesktopPath:*REG_SZ=%
 SET DesktopPath=%DesktopPath:~1%
+SET "DesktopPath=%DesktopPath: =%"
 
 SET VBSFile=%temp%\tempshortcut.vbs
 (
@@ -42,7 +43,7 @@ echo oLink.Save
 
 cscript //nologo "%VBSFile%"
 
-del "%VBSFile%"
+@REM del "%VBSFile%"
 
 echo "Installation finished."
 echo "You can now run Mosamatic Desktop by double-clicking the shortcut on your desktop."
