@@ -12,6 +12,9 @@ tensorflow==2.15.0
 pyinstaller
 matplotlib
 totalsegmentator
+scipy
+skimage
+statistics
 pillow
 twine
 nibabel

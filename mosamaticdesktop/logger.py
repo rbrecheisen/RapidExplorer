@@ -13,13 +13,13 @@ LOGFILEPATH = os.environ.get('LOGFILEPATH', 'MosamaticDesktop.log')
 @singleton
 class Logger:
     def __init__(self) -> None:
-        if os.path.isfile(LOGFILEPATH):
-            os.remove(LOGFILEPATH)
-        with open(LOGFILEPATH, 'w') as f:
-            pass
+        # if os.path.isfile(LOGFILEPATH):
+        #     os.remove(LOGFILEPATH)
+        # with open(LOGFILEPATH, 'w') as f:
+        #     pass
         self._logger = logging.getLogger('MosamaticDesktop')
         self._logger.addHandler(self.standardOutputHandler())
-        self._logger.addHandler(self.fileOutputHandler())
+        # self._logger.addHandler(self.fileOutputHandler())
         # This prevent logging to be propagated up to the root logger
         # which TensorFlow might reconfigure
         self._logger.propagate = False 

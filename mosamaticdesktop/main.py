@@ -10,14 +10,14 @@ versionFile = os.path.join(os.path.split(os.path.abspath(__file__))[0], 'VERSION
 with open(versionFile) as f:
     VERSION = f.read()
 
-gitHubCommitIdFile = os.path.join(os.path.split(os.path.abspath(__file__))[0], 'GIT_COMMIT_ID')
-with open(gitHubCommitIdFile) as f:
-    GIT_COMMIT_ID = f.read()
+# gitHubCommitIdFile = os.path.join(os.path.split(os.path.abspath(__file__))[0], 'GIT_COMMIT_ID')
+# with open(gitHubCommitIdFile) as f:
+#     GIT_COMMIT_ID = f.read()
 
 
 def main():
     app = QApplication([])
-    mainWindow = MainWindow(version=VERSION, gitHubCommitId=GIT_COMMIT_ID)
+    mainWindow = MainWindow(version=VERSION, gitHubCommitId=None)
     mainWindow.show()
     sys.exit(app.exec())
     pass
