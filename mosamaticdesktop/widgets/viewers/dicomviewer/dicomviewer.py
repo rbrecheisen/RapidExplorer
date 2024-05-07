@@ -3,7 +3,7 @@ import shutil
 
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QWheelEvent
-from PySide6.QtWidgets import QWidget, QGraphicsView, QGraphicsScene, QSlider, QCheckBox, QGridLayout, QLabel, QPushButton, QHBoxLayout
+from PySide6.QtWidgets import QWidget, QGraphicsView, QGraphicsScene, QSlider, QCheckBox, QGridLayout, QLabel, QPushButton, QHBoxLayout, QMessageBox
 from PySide6.QtWidgets import QFileDialog
 
 from mosamaticdesktop.widgets.viewers.dicomviewer.dicomlayer import DicomLayer
@@ -47,6 +47,7 @@ class DicomViewer(QWidget):
         self._dicomFileInfoOpacitySlider = None
         self._inputFileSetComboBox = None
         # Miscellaneous
+        self._fileSetName = None
         self._fullScan = False
         self._fullScanCheckBox = None
         self._currentLayerTupleIndex = 0
@@ -134,6 +135,7 @@ class DicomViewer(QWidget):
     #     worker.start()
 
     def setInputFileSet(self, fileSet: FileSet) -> None:
+        self._fileSetName = fileSet.name()
         self._segmentationFileOpacitySlider.setVisible(False)
         self._tagFileOpacitySlider.setVisible(False)
         step = 0
@@ -208,9 +210,11 @@ class DicomViewer(QWidget):
                 file = self._layerTuples[self._currentLayerTupleIndex][0].file()
                 if file:
                     fileName = os.path.split(file.path())[1]
-                    exportedFilePath = os.path.join(self._exportDirectory, fileName)
+                    exportedFilePath = os.path.join(self._exportDirectory, f'{self._fileSetName}-{fileName}')
                     shutil.copy(file.path(), exportedFilePath)
                     LOGGER.info(f'Exported file {file.path()} to export directory')
+                    QMessageBox.information(self, 'Success', f'Succesfully saved file {file.name()} to {self._exportDirectory}')
+                    
 
     def wheelEvent(self, event) -> None:
         delta = event.angleDelta().y()
