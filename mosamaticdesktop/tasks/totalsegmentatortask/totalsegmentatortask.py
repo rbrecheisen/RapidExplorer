@@ -58,6 +58,11 @@ class TotalSegmentatorTask(Task):
             labelText='Enable Fast Calculation (for CPU only)',
             defaultValue=False,
         )
+        self.addBooleanParameter(
+            name='qualityCheck',
+            labelText='Perform Quality Check After Segmentation',
+            defaultValue=True.
+        )
         self.addTextParameter(
             name='outputDirectoryName',
             labelText='Output Directory Name',
@@ -84,6 +89,10 @@ class TotalSegmentatorTask(Task):
             # Get vertebra
             vertebra = self.parameter('vertebra').value()
             LOGGER.info(f'vertebra = {vertebra}')
+
+            # Quality check yes/no
+            qualityCheck = self.parameter('qualityCheck').value()
+            LOGGER.info(f'Quality check = {qualityCheck}')
 
             # Get device and fast options. Disable fast if we're using the GPU
             device = self.parameter('device').value().lower()
@@ -127,14 +136,16 @@ class TotalSegmentatorTask(Task):
                     totalsegmentator(
                         scanDirectoryPath, outputScanDirectoryPath, fast=fast, device=device)
                     roiFilePath = os.path.join(outputScanDirectoryPath, vertebra + '.nii.gz')
-                    totalsegmentator(
-                        scanDirectoryPath, outputScanDirectoryPath, fast=fast, device=device, ml=True)
-                    segmentationFilePath = os.path.join(outputDirectoryPath, scanDirectoryName + '.nii') # No .gz extension!
 
-                    # Get all-in-one segmentation and run quality check
-                    segmentation = nib.load(segmentationFilePath)
-                    checker = CheckSegmentation(segmentation=segmentation, scanName=scanDirectoryName)
-                    ok = checker.execute()
+                    ok = True
+                    if qualityCheck:
+                        totalsegmentator(
+                            scanDirectoryPath, outputScanDirectoryPath, fast=fast, device=device, ml=True)
+                        segmentationFilePath = os.path.join(outputDirectoryPath, scanDirectoryName + '.nii') # No .gz extension!
+                        segmentation = nib.load(segmentationFilePath)
+                        checker = CheckSegmentation(segmentation=segmentation, scanName=scanDirectoryName)
+                        ok = checker.execute()
+
                     if ok:
                         # Get requested ROI and select DICOM slice running through it
                         roi = nib.load(roiFilePath)
