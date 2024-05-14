@@ -61,7 +61,7 @@ class TotalSegmentatorTask(Task):
         self.addBooleanParameter(
             name='qualityCheck',
             labelText='Perform Quality Check After Segmentation',
-            defaultValue=True.
+            defaultValue=True,
         )
         self.addTextParameter(
             name='outputDirectoryName',

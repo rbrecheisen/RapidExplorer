@@ -13,7 +13,7 @@ pyinstaller
 matplotlib
 totalsegmentator
 scipy
-skimage
+scikit-image
 statistics
 pillow
 twine
