@@ -16,7 +16,8 @@ if not exist "%VENV_DIR%" (
 echo "Installing requirements..."
 call "%VENV_DIR%\Scripts\activate"
 %USERPROFILE%\Apps\Mosamatic\MosamaticDesktop\Scripts\python -m pip install --upgrade pip
-%USERPROFILE%\Apps\Mosamatic\MosamaticDesktop\Scripts\python -m pip install mosamaticdesktop
+@REM %USERPROFILE%\Apps\Mosamatic\MosamaticDesktop\Scripts\python -m pip install --upgrade scikit-image
+%USERPROFILE%\Apps\Mosamatic\MosamaticDesktop\Scripts\python -m pip install --upgrade mosamaticdesktop
 call "%VENV_DIR%\Scripts\deactivate.bat"
 
 @REM echo "Installing executable..."
@@ -49,3 +50,4 @@ echo "Installation finished."
 echo "You can now run Mosamatic Desktop by double-clicking the shortcut on your desktop."
 
 endlocal
+cmd

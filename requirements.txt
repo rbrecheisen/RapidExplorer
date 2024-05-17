@@ -9,7 +9,7 @@ pyjpegls
 python-gdcm
 pytest
 tensorflow==2.15.0
-pyinstaller
+# pyinstaller
 matplotlib
 totalsegmentator
 scipy
@@ -18,8 +18,8 @@ statistics
 pillow
 twine
 nibabel
-openai-whisper  # Also needs ffmpeg  (install with HomeBrew)
-pyaudio         # Also needs PortAudio (install with HomeBrew)
+# openai-whisper  # Also needs ffmpeg  (install with HomeBrew)
+# pyaudio         # Also needs PortAudio (install with HomeBrew)
 
 # # Abhi's XNAT vertebrae selector
 # fastapi
