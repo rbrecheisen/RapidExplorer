@@ -4,20 +4,21 @@ setlocal EnableDelayedExpansion
 @REM https://chat.openai.com/c/143bf330-901c-46ea-9115-03b450fdd07d
 @REM Also install Python 3 if needed
 
-set VENV_DIR=%USERPROFILE%\Mosamatic\MosamaticDesktop
+set VENV_DIR=%USERPROFILE%\.mosamatic\MosamaticDesktop
 
 echo "Creating virtual environment..."
 if not exist "%USERPROFILE%\.mosamatic" mkdir "%USERPROFILE%\.mosamatic"
 cd /d "%USERPROFILE%\.mosamatic"
-if not exist "%VENV_DIR%" (
-    python -m venv "%VENV_DIR%"
-)
+if exist "%VENV_DIR%" rmdir /S /Q %VENV_DIR%
+mkdir %VENV_DIR%
+python -m venv %VENV_DIR%
 
 echo "Installing requirements..."
 call "%VENV_DIR%\Scripts\activate"
 %USERPROFILE%\.mosamatic\MosamaticDesktop\Scripts\python -m pip cache purge
 %USERPROFILE%\.mosamatic\MosamaticDesktop\Scripts\python -m pip install --upgrade pip
 %USERPROFILE%\.mosamatic\MosamaticDesktop\Scripts\python -m pip install --upgrade scikit-image
+%USERPROFILE%\.mosamatic\MosamaticDesktop\Scripts\python -m pip install mosamaticdesktop
 %USERPROFILE%\.mosamatic\MosamaticDesktop\Scripts\python -m pip install --upgrade mosamaticdesktop
 call "%VENV_DIR%\Scripts\deactivate.bat"
 
