@@ -15,8 +15,9 @@ if not exist "%VENV_DIR%" (
 
 echo "Installing requirements..."
 call "%VENV_DIR%\Scripts\activate"
+%USERPROFILE%\Apps\Mosamatic\MosamaticDesktop\Scripts\python -m pip cache purge
 %USERPROFILE%\Apps\Mosamatic\MosamaticDesktop\Scripts\python -m pip install --upgrade pip
-@REM %USERPROFILE%\Apps\Mosamatic\MosamaticDesktop\Scripts\python -m pip install --upgrade scikit-image
+%USERPROFILE%\Apps\Mosamatic\MosamaticDesktop\Scripts\python -m pip install --upgrade scikit-image
 %USERPROFILE%\Apps\Mosamatic\MosamaticDesktop\Scripts\python -m pip install --upgrade mosamaticdesktop
 call "%VENV_DIR%\Scripts\deactivate.bat"
 
