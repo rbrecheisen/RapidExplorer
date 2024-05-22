@@ -33,6 +33,10 @@ class DataManager:
     
     def progressSignal(self):
         return self._progressSignal
+    
+    def getNumberOfFilesInDirectory(self, directoryPath) -> int:
+        # This count will include files starting with . so be careful
+        return len(os.listdir(directoryPath))
 
     def createFile(self, filePath: str) -> FileSet:
         with Session() as session:
