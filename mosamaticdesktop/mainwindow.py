@@ -9,6 +9,9 @@ from mosamaticdesktop.widgets.datadockwidget import DataDockWidget
 from mosamaticdesktop.widgets.taskdockwidget import TaskDockWidget
 from mosamaticdesktop.widgets.mainviewerdockwidget import MainViewerDockWidget
 from mosamaticdesktop.utils import Configuration
+from mosamaticdesktop.logger import Logger
+
+LOGGER = Logger()
 
 WINDOWTITLE = 'Mosamatic Desktop'
 # FILESETPATH = os.path.join(os.getenv('HOME'), 'Desktop', 'downloads', 'dataset', 'scan1')
@@ -41,16 +44,19 @@ class MainWindow(QMainWindow):
     def initActionsAndMenus(self) -> None:
         importFileAction = QAction('Import File...', self)
         importFileSetAction = QAction('Import File Set...', self)
+        importMultipleFileSetsAction = QAction('Import Multiple File Sets...', self)
         deleteAllFileSetsAction = QAction('Delete All Data from Database', self)
         # showApplicationInfoAction = QAction('Show Application Info...', self)
         exitApplicationAction = QAction('Exit', self)
         importFileAction.triggered.connect(self.importFile)
         importFileSetAction.triggered.connect(self.importFileSet)
+        importMultipleFileSetsAction.triggered.connect(self.importMultipleFileSets)
         deleteAllFileSetsAction.triggered.connect(self.deleteAllFileSets)
         exitApplicationAction.triggered.connect(self.exitApplication)
         dataMenu = QMenu('Data')
         dataMenu.addAction(importFileAction)
         dataMenu.addAction(importFileSetAction)
+        dataMenu.addAction(importMultipleFileSetsAction)
         dataMenu.addSeparator()
         dataMenu.addAction(deleteAllFileSetsAction)
         dataMenu.addSeparator()
@@ -100,7 +106,18 @@ class MainWindow(QMainWindow):
         fileSetPath = QFileDialog.getExistingDirectory(self, 'Open File Set', lastDirectoryOpened)
         if fileSetPath:
             self._settings.setValue('lastDirectoryOpened', fileSetPath)
-            fs = self._dataManager.createFileSet(fileSetPath=fileSetPath)
+            self._dataManager.createFileSet(fileSetPath=fileSetPath)
+
+    def importMultipleFileSets(self) -> None:
+        lastDirectoryOpened = self._settings.value('lastDirectoryOpened')
+        fileSetsRootDirectory = QFileDialog.getExistingDirectory(self, 'Open File Sets Root Directory', lastDirectoryOpened)
+        if fileSetsRootDirectory:
+            self._settings.setValue('lastDirectoryOpened', fileSetsRootDirectory)
+            for d in os.listdir(fileSetsRootDirectory):
+                dPath = os.path.join(fileSetsRootDirectory, d)
+                if os.path.isdir(dPath):
+                    LOGGER.info(f'Creating fileset from directory {dPath}...')
+                    self._dataManager.createFileSet(fileSetPath=dPath)
 
     def deleteAllFileSets(self) -> None:
         self._dataManager.deleteAllFileSets()
