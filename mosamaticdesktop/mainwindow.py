@@ -1,7 +1,7 @@
 import os
 
-from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QFileDialog, QMenu, QProgressBar
+from PySide6.QtCore import Qt, QObject, Signal
+from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QFileDialog, QMenu, QProgressBar, QStatusBar
 from PySide6.QtGui import QAction, QGuiApplication
 
 from mosamaticdesktop.data.datamanager import DataManager
@@ -29,6 +29,8 @@ class MainWindow(QMainWindow):
         self._mainViewDockWidget = None
         self._defaultLayout = None       
         self._dataManager = DataManager()
+        self._statusBar = None
+        self._progressBar = None
         self._dataManager.signal().updated.connect(self.dataUpdated) 
         self.initUi()
 
@@ -39,6 +41,7 @@ class MainWindow(QMainWindow):
         self.initDataDockWidget()
         self.initTaskDockWidget()
         # self.initMainViewerDockWidget()
+        self.initProgressAndStatusBar()
         self.initMainWindow()
 
     def initActionsAndMenus(self) -> None:
@@ -83,10 +86,19 @@ class MainWindow(QMainWindow):
         self._mainViewDockWidget.setAllowedAreas(Qt.RightDockWidgetArea | Qt.TopDockWidgetArea)
         self.addDockWidget(Qt.RightDockWidgetArea, self._mainViewDockWidget)
 
+    def initProgressAndStatusBar(self) -> None:
+        self._progressBar = QProgressBar(self)
+        self._progressBar.setMaximum(100)
+        self._progressBar.setMinimum(0)
+        self._progressBar.setValue(0)
+        self._statusBar = QStatusBar(self)
+        self._statusBar.addPermanentWidget(self._progressBar)        
+
     def initMainWindow(self) -> None:
         self.setCentralWidget(QWidget(self))
         self.centralWidget().hide()
         self.splitDockWidget(self._dataDockWidget, self._tasksDockWidget, Qt.Vertical)
+        self.setStatusBar(self._statusBar)
         self.setWindowTitle(f'{WINDOWTITLE} {self._version}')
         self.centerWindow()
         self.restoreGeometry(self._settings.value('windowGeometry'))

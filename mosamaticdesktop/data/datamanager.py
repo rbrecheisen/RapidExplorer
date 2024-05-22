@@ -21,11 +21,18 @@ class DataManager:
     class DataManagerUpdatedSignal(QObject):
         updated = Signal(bool)
 
+    class DataManagerProgressSignal(QObject):
+        progress = Signal(int)
+
     def __init__(self) -> None:
         self._signal = self.DataManagerUpdatedSignal()
+        self._progressSignal = self.DataManagerProgressSignal()
 
     def signal(self):
         return self._signal
+    
+    def progressSignal(self):
+        return self._progressSignal
 
     def createFile(self, filePath: str) -> FileSet:
         with Session() as session:
@@ -43,6 +50,8 @@ class DataManager:
 
 
     def createFileSet(self, fileSetPath: str) -> FileSet:
+        # TODO: Add progress signaling
+        # Try to determine the number of files before loading...
         fileSetName = os.path.split(fileSetPath)[-1]
         with Session() as session:
             fileSetModel = FileSetModel(name=fileSetName, path=fileSetPath)
