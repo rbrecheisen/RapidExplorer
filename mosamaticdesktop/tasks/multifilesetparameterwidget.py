@@ -75,6 +75,7 @@ class MultiFileSetParameterWidget(ParameterWidget):
             for selectedItem in selectedItems:
                 self._fileSetItemListWidget.addItem(selectedItem.text())
                 self._fileSetSelectionListWidget.takeItem(self._fileSetSelectionListWidget.row(selectedItem))
+            self.parameter().setValue(self.items())
 
     def removeFileSet(self):
         item = self._fileSetItemListWidget.currentItem()

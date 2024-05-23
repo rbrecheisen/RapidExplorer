@@ -1,4 +1,5 @@
 import os
+import shutil
 import zipfile
 
 from mosamaticdesktop.tasks.task import Task
