@@ -40,7 +40,7 @@ class MainWindow(QMainWindow):
         self.initActionsAndMenus()
         self.initDataDockWidget()
         self.initTaskDockWidget()
-        # self.initMainViewerDockWidget()
+        self.initMainViewerDockWidget()
         self.initProgressAndStatusBar()
         self.initMainWindow()
 
