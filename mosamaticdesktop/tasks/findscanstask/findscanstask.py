@@ -96,9 +96,9 @@ class FindScansTask(Task):
         outputDirectoryPath = self.parameter('outputDirectoryPath').value()
         overwriteOutputDirectory = self.parameter('overwriteOutputDirectory').value()
         if overwriteOutputDirectory:
-            if os.path.isdir(overwriteOutputDirectory):
-                shutil.rmtree(overwriteOutputDirectory)
-        os.makedirs(overwriteOutputDirectory, exist_ok=True)
+            if os.path.isdir(outputDirectoryPath):
+                shutil.rmtree(outputDirectoryPath)
+        os.makedirs(outputDirectoryPath, exist_ok=True)
 
         if rootDirectoryContainsSubjectDirectories:
             for subjectName in os.listdir(rootDirectoryPath):
