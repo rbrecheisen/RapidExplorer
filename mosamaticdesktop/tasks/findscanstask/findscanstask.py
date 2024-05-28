@@ -5,6 +5,7 @@ import pydicom.errors
 
 from typing import List
 from mosamaticdesktop.tasks.task import Task
+from mosamaticdesktop.utils import createNameWithTimestamp
 from mosamaticdesktop.logger import Logger
 
 LOGGER = Logger()
@@ -36,11 +37,16 @@ class FindScansTask(Task):
             name='outputDirectoryPath',
             labelText='Output Directory Path For Scans',
         )
-        # self.addBooleanParameter(
-        #     name='overwriteOutputDirectory',
-        #     labelText='Overwrite Output Directory',
-        #     defaultValue=True,
-        # )
+        self.addTextParameter(
+            name='outputDirectoryName',
+            labelText='Output Directory Name',
+            optional=True,
+        )
+        self.addBooleanParameter(
+            name='overwriteOutputDirectory',
+            labelText='Overwrite Output Directory',
+            defaultValue=True,
+        )
 
     def isDicomFile(self, fPath) -> bool:
         try:
@@ -105,11 +111,17 @@ class FindScansTask(Task):
         rootDirectoryPath = self.parameter('rootDirectoryPath').value()
         rootDirectoryContainsSubjectDirectories = self.parameter('rootDirectoryContainsSubjectDirectories').value()
         orientation = self.parameter('orientation').value()
+        outputDirectoryName = self.parameter('outputDirectoryName').value()
+        if outputDirectoryName is None:
+            outputDirectoryName = createNameWithTimestamp(name=outputDirectoryName)
         outputDirectoryPath = self.parameter('outputDirectoryPath').value()
-        # overwriteOutputDirectory = self.parameter('overwriteOutputDirectory').value()
-        # if overwriteOutputDirectory:
-        #     if os.path.isdir(outputDirectoryPath):
-        #         shutil.rmtree(outputDirectoryPath)
+        outputDirectoryPath = os.path.join(outputDirectoryPath, outputDirectoryName)
+        LOGGER.info(f'Output directory path: {outputDirectoryPath}')
+        # outputDirectoryPath = self.parameter('outputDirectoryPath').value()
+        overwriteOutputDirectory = self.parameter('overwriteOutputDirectory').value()
+        if overwriteOutputDirectory:
+            if os.path.isdir(outputDirectoryPath):
+                shutil.rmtree(outputDirectoryPath)
         os.makedirs(outputDirectoryPath, exist_ok=True)
 
         if rootDirectoryContainsSubjectDirectories:

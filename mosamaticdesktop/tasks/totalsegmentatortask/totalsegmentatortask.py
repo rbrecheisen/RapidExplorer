@@ -131,35 +131,38 @@ class TotalSegmentatorTask(Task):
                     outputScanDirectoryPath = os.path.join(outputDirectoryPath, scanDirectoryName)
                     os.makedirs(outputScanDirectoryPath, exist_ok=True)
 
-                    # Run Total Segmentator twice, once to get individual NIFTI files for each ROI. 
-                    # And once to store all labels in a single NIFTI. This volume will be used for quality checking
-                    totalsegmentator(
-                        scanDirectoryPath, outputScanDirectoryPath, fast=fast, device=device)
-                    roiFilePath = os.path.join(outputScanDirectoryPath, vertebra + '.nii.gz')
-
-                    ok = True
-                    if qualityCheck:
+                    try:
+                        # Run Total Segmentator twice, once to get individual NIFTI files for each ROI. 
+                        # And once to store all labels in a single NIFTI. This volume will be used for quality checking
                         totalsegmentator(
-                            scanDirectoryPath, outputScanDirectoryPath, fast=fast, device=device, ml=True)
-                        segmentationFilePath = os.path.join(outputDirectoryPath, scanDirectoryName + '.nii') # No .gz extension!
-                        segmentation = nib.load(segmentationFilePath)
-                        checker = CheckSegmentation(segmentation=segmentation, scanName=scanDirectoryName)
-                        ok = checker.execute()
+                            scanDirectoryPath, outputScanDirectoryPath, fast=fast, device=device)
+                        roiFilePath = os.path.join(outputScanDirectoryPath, vertebra + '.nii.gz')
 
-                    if ok:
-                        # Get requested ROI and select DICOM slice running through it
-                        roi = nib.load(roiFilePath)
-                        selector = SliceSelector(roi=roi, volume=segmentation, dicomDirectory=scanDirectoryPath)
-                        output_files = selector.execute()
-                        if len(output_files) > 0:
-                            LOGGER.info(f'Found median slice {output_files[0]} for {vertebra}')
-                            selectedSlice = os.path.join(selectedSlicesDirectoryPath, scanDirectoryName + '-' + vertebra + '-' + os.path.split(output_files[0])[1])
-                            shutil.copyfile(output_files[0], selectedSlice)
-                            LOGGER.info(f'Elapsed time after one scan: {elapsedSeconds(startTime)} seconds')
+                        ok = True
+                        if qualityCheck:
+                            totalsegmentator(
+                                scanDirectoryPath, outputScanDirectoryPath, fast=fast, device=device, ml=True)
+                            segmentationFilePath = os.path.join(outputDirectoryPath, scanDirectoryName + '.nii') # No .gz extension!
+                            segmentation = nib.load(segmentationFilePath)
+                            checker = CheckSegmentation(segmentation=segmentation, scanName=scanDirectoryName)
+                            ok = checker.execute()
+
+                        if ok:
+                            # Get requested ROI and select DICOM slice running through it
+                            roi = nib.load(roiFilePath)
+                            selector = SliceSelector(roi=roi, volume=segmentation, dicomDirectory=scanDirectoryPath)
+                            output_files = selector.execute()
+                            if len(output_files) > 0:
+                                LOGGER.info(f'Found median slice {output_files[0]} for {vertebra}')
+                                selectedSlice = os.path.join(selectedSlicesDirectoryPath, scanDirectoryName + '-' + vertebra + '-' + os.path.split(output_files[0])[1])
+                                shutil.copyfile(output_files[0], selectedSlice)
+                                LOGGER.info(f'Elapsed time after one scan: {elapsedSeconds(startTime)} seconds')
+                            else:
+                                LOGGER.error(f'Output of slice selector contains more than one file')
                         else:
-                            LOGGER.error(f'Output of slice selector contains more than one file')
-                    else:
-                        LOGGER.error(f'Error checking segmentation')
+                            LOGGER.error(f'Error checking segmentation')
+                    except Exception as e:
+                        LOGGER.error(f'Exception running Total Segmentator on DICOM files in {scanDirectoryPath} ({e})')
 
                     self.updateProgress(step=step, nrSteps=nrSteps)
                     step += 1
