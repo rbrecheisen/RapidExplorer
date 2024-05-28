@@ -15,7 +15,7 @@ class FindScansTask(Task):
         super(FindScansTask, self).__init__()
         self.addDescriptionParameter(
             name='description',
-            description='Searches for scans in root directory'
+            description='Searches recursively for scans in root directory'
         )
         self.addPathParameter(
             name='rootDirectoryPath',
@@ -36,11 +36,11 @@ class FindScansTask(Task):
             name='outputDirectoryPath',
             labelText='Output Directory Path For Scans',
         )
-        self.addBooleanParameter(
-            name='overwriteOutputDirectory',
-            labelText='Overwrite Output Directory',
-            defaultValue=True,
-        )
+        # self.addBooleanParameter(
+        #     name='overwriteOutputDirectory',
+        #     labelText='Overwrite Output Directory',
+        #     defaultValue=True,
+        # )
 
     def isDicomFile(self, fPath) -> bool:
         try:
@@ -57,7 +57,7 @@ class FindScansTask(Task):
         
     def getOrientation(self, fPath) -> str:
         p = pydicom.dcmread(fPath, stop_before_pixels=True)
-        if p.ImageOrientationPatient is not None and len(p.ImageOrientationPatient) == 6:
+        if 'ImageOrientationPatient' in p and p.ImageOrientationPatient is not None and len(p.ImageOrientationPatient) == 6:
             axial = [1, 0, 0, 0, 1, 0]
             sagittal = [0, 1, 0, 0, 0, -1]
             coronal = [1, 0, 0, 0, 0, -1]
@@ -83,16 +83,22 @@ class FindScansTask(Task):
         return scans
     
     def saveScans(self, scans, directory, subjectName=None) -> None:
-        scanNr = 0
+        scanNr = 1
         for key in scans.keys():
+            baseDirectory = directory
             if subjectName:
+                # baseDirectory = os.path.join(baseDirectory, subjectName)
+                # os.makedirs(baseDirectory, exist_ok=True)
                 scanName = '{}-scan-{:02d}'.format(subjectName, scanNr)
             else:
                 scanName = 'scan-{:02d}'.format(scanNr)
-            filePath = scans[key]
-            fileName = os.path.split(filePath)[1]
-            os.makedirs(os.path.join(directory, scanName), exist_ok=True)
-            shutil.copy(filePath, os.path.join(directory, scanName, fileName))
+            scanDirectory = os.path.join(baseDirectory, scanName)
+            os.makedirs(scanDirectory, exist_ok=True)
+            filePaths = scans[key]
+            for filePath in filePaths:
+                fileName = os.path.split(filePath)[1]
+                shutil.copy(filePath, os.path.join(scanDirectory, fileName))
+            LOGGER.info(f'Saved scan {scanName} to directory {scanDirectory}')
             scanNr += 1
 
     def execute(self) -> None:
@@ -100,18 +106,23 @@ class FindScansTask(Task):
         rootDirectoryContainsSubjectDirectories = self.parameter('rootDirectoryContainsSubjectDirectories').value()
         orientation = self.parameter('orientation').value()
         outputDirectoryPath = self.parameter('outputDirectoryPath').value()
-        overwriteOutputDirectory = self.parameter('overwriteOutputDirectory').value()
-        if overwriteOutputDirectory:
-            if os.path.isdir(outputDirectoryPath):
-                shutil.rmtree(outputDirectoryPath)
+        # overwriteOutputDirectory = self.parameter('overwriteOutputDirectory').value()
+        # if overwriteOutputDirectory:
+        #     if os.path.isdir(outputDirectoryPath):
+        #         shutil.rmtree(outputDirectoryPath)
         os.makedirs(outputDirectoryPath, exist_ok=True)
 
         if rootDirectoryContainsSubjectDirectories:
+            step = 0
+            nrSteps = len(os.listdir(rootDirectoryPath))
             for subjectName in os.listdir(rootDirectoryPath):
                 subjectDirPath = os.path.join(rootDirectoryPath, subjectName)
                 if os.path.isdir(subjectDirPath):
                     scans = self.loadScans(subjectDirPath, orientation)
                     self.saveScans(scans, outputDirectoryPath, subjectName)
+                    self.updateProgress(step, nrSteps)
+                    step += 1
         else:
             scans = self.loadScans(rootDirectoryPath, orientation)
             self.saveScans(scans, outputDirectoryPath)
+        LOGGER.info('Finished')
