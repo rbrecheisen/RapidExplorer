@@ -49,6 +49,12 @@ class FindScansTask(Task):
         except pydicom.errors.InvalidDicomError:
             return False
         
+    def dicomFileHasSeriesInstanceUID(self, fPath) -> bool:
+        if self.isDicomFile(fPath):
+            if 'SeriesInstanceUID' in pydicom.dcmread(fPath, stop_before_pixels=True):
+                return True
+        return False
+        
     def getOrientation(self, fPath) -> str:
         p = pydicom.dcmread(fPath, stop_before_pixels=True)
         if p.ImageOrientationPatient is not None and len(p.ImageOrientationPatient) == 6:
@@ -69,7 +75,7 @@ class FindScansTask(Task):
         for root, dirs, files in os.walk(directory):
             for f in files:
                 fPath = os.path.join(root, f)
-                if self.isDicomFile(fPath) and self.getOrientation(fPath) == orientation:
+                if self.dicomFileHasSeriesInstanceUID(fPath) and self.getOrientation(fPath) == orientation:
                     p = pydicom.dcmread(fPath, stop_before_pixels=True)
                     if p.SeriesInstanceUID not in scans.keys():
                         scans[p.SeriesInstanceUID] = []

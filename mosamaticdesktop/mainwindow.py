@@ -19,6 +19,9 @@ WINDOWTITLE = 'Mosamatic Desktop'
 
 
 class MainWindow(QMainWindow):
+    class FileSetLoadedSignal(QObject):
+        loaded = Signal(bool)
+
     def __init__(self, version: str, gitHubCommitId: str) -> None:
         super(MainWindow, self).__init__()
         self._version = version
@@ -30,7 +33,9 @@ class MainWindow(QMainWindow):
         self._defaultLayout = None       
         self._dataManager = DataManager()
         self._statusBar = None
+        self._progress = 0
         self._progressBar = None
+        self._fileSetLoadedSignal = self.FileSetLoadedSignal()
         self._dataManager.signal().updated.connect(self.dataUpdated) 
         self.initUi()
 
@@ -87,6 +92,7 @@ class MainWindow(QMainWindow):
         self.addDockWidget(Qt.RightDockWidgetArea, self._mainViewDockWidget)
 
     def initProgressAndStatusBar(self) -> None:
+        self._progress = 0
         self._progressBar = QProgressBar(self)
         self._progressBar.setMaximum(100)
         self._progressBar.setMinimum(0)
@@ -103,6 +109,11 @@ class MainWindow(QMainWindow):
         self.centerWindow()
         self.restoreGeometry(self._settings.value('windowGeometry'))
         self.restoreState(self._settings.value('windowState'))
+
+    def updateProgressBar(self, step: int, nrSteps: int) -> None:
+        self._progress = int(((step + 1) / (nrSteps)) * 100)
+        self._progressBar.setValue(self._progress)
+        return step + 1
 
     # Event handlers
 
@@ -125,11 +136,16 @@ class MainWindow(QMainWindow):
         fileSetsRootDirectory = QFileDialog.getExistingDirectory(self, 'Open File Sets Root Directory', lastDirectoryOpened)
         if fileSetsRootDirectory:
             self._settings.setValue('lastDirectoryOpened', fileSetsRootDirectory)
+            self._progressBar.setValue(0)
+            self._progress = 0
+            nrSteps = len(os.listdir(fileSetsRootDirectory))
+            step = 0
             for d in os.listdir(fileSetsRootDirectory):
                 dPath = os.path.join(fileSetsRootDirectory, d)
                 if os.path.isdir(dPath):
                     LOGGER.info(f'Creating fileset from directory {dPath}...')
                     self._dataManager.createFileSet(fileSetPath=dPath)
+                    step = self.updateProgressBar(step, nrSteps)
 
     def deleteAllFileSets(self) -> None:
         self._dataManager.deleteAllFileSets()
