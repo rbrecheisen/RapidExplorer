@@ -2,8 +2,10 @@ import os
 import shutil
 import zipfile
 
-DATADIR = 'D:\\Mosamatic\\T4\\POLYTRAUMA-AnnaVanDijk'
-DATADIROUTPUT = 'D:\\Mosamatic\\T4\\POLYTRAUMA-AnnaVanDijk-Output'
+# DATADIR = 'D:\\Mosamatic\\T4\\POLYTRAUMA-AnnaVanDijk'
+# DATADIROUTPUT = 'D:\\Mosamatic\\T4\\POLYTRAUMA-AnnaVanDijk-Output'
+DATADIR = 'D:\\Mosamatic\\T4\\POLYTRAUMA-AnnaVanDijk2\\Data'
+DATADIROUTPUT = 'D:\\Mosamatic\\T4\\POLYTRAUMA-AnnaVanDijk2\\DataOutput'
 os.makedirs(DATADIROUTPUT, exist_ok=False)
 
 
