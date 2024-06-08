@@ -76,5 +76,5 @@ rd /s /q dist
 python setup.py sdist bdist_wheel
 
 rem twine upload --repository pypi dist/*
-for /f %%i in (C:\i\pypi-api.txt) do set PYPITOKEN=%%i
-twine upload --username "__token__" --password "%PYPITOKEN%" --repository pypi dist\*
+for /f %%i in (I:\\pypi-api.txt) do set PYPITOKEN=%%i
+twine upload --username "__token__" --password "%PYPITOKEN%" --repository pypi dist\\*
