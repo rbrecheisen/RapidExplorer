@@ -2,6 +2,7 @@ import os
 import shutil
 import nibabel as nib
 import warnings
+import torch
 
 from totalsegmentator.python_api import totalsegmentator
 
@@ -38,10 +39,6 @@ class TotalSegmentatorTask(Task):
             name='rootDirectoryPath',
             labelText='Root Directory of CT Scans (each scan in separate subdirectory)'
         )
-        self.addPathParameter(
-            name='outputDirectoryPath',
-            labelText='Output Directory for Segmentations'
-        )
         self.addOptionGroupParameter(
             name='vertebra',
             labelText='Select Vertebral Level',
@@ -63,6 +60,10 @@ class TotalSegmentatorTask(Task):
             labelText='Perform Quality Check After Segmentation',
             defaultValue=True,
         )
+        self.addPathParameter(
+            name='outputDirectoryPath',
+            labelText='Output Directory'
+        )
         self.addTextParameter(
             name='outputDirectoryName',
             labelText='Output Directory Name',
@@ -76,99 +77,104 @@ class TotalSegmentatorTask(Task):
 
     def execute(self) -> None:
 
-        # Get root directory path containing sub-directories for each CT scan
-        rootDirectoryPath = self.parameter('rootDirectoryPath').value()
-        if rootDirectoryPath:
-            outputDirectoryName = self.parameter('outputDirectoryName').value()
-            if outputDirectoryName is None:
-                outputDirectoryName = createNameWithTimestamp(name=outputDirectoryName)
-            outputDirectoryPath = self.parameter('outputDirectoryPath').value()
-            outputDirectoryPath = os.path.join(outputDirectoryPath, outputDirectoryName)
-            LOGGER.info(f'Output directory path: {outputDirectoryPath}')
+        # Check we have a GPU available
+        if torch.cuda.is_available():
 
-            # Get vertebra
-            vertebra = self.parameter('vertebra').value()
-            LOGGER.info(f'vertebra = {vertebra}')
+            # Get root directory path containing sub-directories for each CT scan
+            rootDirectoryPath = self.parameter('rootDirectoryPath').value()
+            if rootDirectoryPath:
+                outputDirectoryName = self.parameter('outputDirectoryName').value()
+                if outputDirectoryName is None:
+                    outputDirectoryName = createNameWithTimestamp(name=outputDirectoryName)
+                outputDirectoryPath = self.parameter('outputDirectoryPath').value()
+                outputDirectoryPath = os.path.join(outputDirectoryPath, outputDirectoryName)
+                LOGGER.info(f'Output directory path: {outputDirectoryPath}')
 
-            # Quality check yes/no
-            qualityCheck = self.parameter('qualityCheck').value()
-            LOGGER.info(f'Quality check = {qualityCheck}')
+                # Get vertebra
+                vertebra = self.parameter('vertebra').value()
+                LOGGER.info(f'vertebra = {vertebra}')
 
-            # Get device and fast options. Disable fast if we're using the GPU
-            device = self.parameter('device').value().lower()
-            fast = self.parameter('fast').value()
-            if device == 'gpu' and fast:
-                fast = False
-            LOGGER.info(f'device = {device}, fast = {fast}')
+                # Quality check yes/no
+                qualityCheck = self.parameter('qualityCheck').value()
+                LOGGER.info(f'Quality check = {qualityCheck}')
 
-            # Check whether to overwrite previous output directory
-            overwriteOutputDirectory = self.parameter('overwriteOutputDirectory').value()
-            LOGGER.info(f'Overwrite output fileset: {overwriteOutputDirectory}')
-            if overwriteOutputDirectory:
-                if os.path.isdir(outputDirectoryPath):
-                    shutil.rmtree(outputDirectoryPath)
-            os.makedirs(outputDirectoryPath, exist_ok=True)
+                # Get device and fast options. Disable fast if we're using the GPU
+                device = self.parameter('device').value().lower()
+                fast = self.parameter('fast').value()
+                if device == 'gpu' and fast:
+                    fast = False
+                LOGGER.info(f'device = {device}, fast = {fast}')
 
-            selectedSlicesDirectoryPath = os.path.join(outputDirectoryPath, 'slices')
-            if os.path.isdir(selectedSlicesDirectoryPath):
-                shutil.rmtree(selectedSlicesDirectoryPath)
-            os.makedirs(selectedSlicesDirectoryPath, exist_ok=False)
+                # Check whether to overwrite previous output directory
+                overwriteOutputDirectory = self.parameter('overwriteOutputDirectory').value()
+                LOGGER.info(f'Overwrite output fileset: {overwriteOutputDirectory}')
+                if overwriteOutputDirectory:
+                    if os.path.isdir(outputDirectoryPath):
+                        shutil.rmtree(outputDirectoryPath)
+                os.makedirs(outputDirectoryPath, exist_ok=True)
 
-            # Each CT scan's files should be in a separate subdirectory inside the root directory
-            step = 0
-            nrSteps = 0
-            for scanDirectoryName in os.listdir(rootDirectoryPath):
-                scanDirectoryPath = os.path.join(rootDirectoryPath, scanDirectoryName)
-                if os.path.isdir(scanDirectoryPath):
-                    nrSteps += 1
+                selectedSlicesDirectoryPath = os.path.join(outputDirectoryPath, 'slices')
+                if os.path.isdir(selectedSlicesDirectoryPath):
+                    shutil.rmtree(selectedSlicesDirectoryPath)
+                os.makedirs(selectedSlicesDirectoryPath, exist_ok=False)
 
-            startTimeTotal = currentTimeInSeconds()
-            for scanDirectoryName in os.listdir(rootDirectoryPath):
-                scanDirectoryPath = os.path.join(rootDirectoryPath, scanDirectoryName)
-                if os.path.isdir(scanDirectoryPath):
-                    startTime = currentTimeInSeconds()
-                    LOGGER.info(f'Running TotalSegmentator on scan directory {scanDirectoryPath}...')
-                    outputScanDirectoryPath = os.path.join(outputDirectoryPath, scanDirectoryName)
-                    os.makedirs(outputScanDirectoryPath, exist_ok=True)
+                # Each CT scan's files should be in a separate subdirectory inside the root directory
+                step = 0
+                nrSteps = 0
+                for scanDirectoryName in os.listdir(rootDirectoryPath):
+                    scanDirectoryPath = os.path.join(rootDirectoryPath, scanDirectoryName)
+                    if os.path.isdir(scanDirectoryPath):
+                        nrSteps += 1
 
-                    try:
-                        # Run Total Segmentator twice, once to get individual NIFTI files for each ROI. 
-                        # And once to store all labels in a single NIFTI. This volume will be used for quality checking
-                        totalsegmentator(
-                            scanDirectoryPath, outputScanDirectoryPath, fast=fast, device=device)
-                        roiFilePath = os.path.join(outputScanDirectoryPath, vertebra + '.nii.gz')
+                startTimeTotal = currentTimeInSeconds()
+                for scanDirectoryName in os.listdir(rootDirectoryPath):
+                    scanDirectoryPath = os.path.join(rootDirectoryPath, scanDirectoryName)
+                    if os.path.isdir(scanDirectoryPath):
+                        startTime = currentTimeInSeconds()
+                        LOGGER.info(f'Running TotalSegmentator on scan directory {scanDirectoryPath}...')
+                        outputScanDirectoryPath = os.path.join(outputDirectoryPath, scanDirectoryName)
+                        os.makedirs(outputScanDirectoryPath, exist_ok=True)
 
-                        ok = True
-                        if qualityCheck:
+                        try:
+                            # Run Total Segmentator twice, once to get individual NIFTI files for each ROI. 
+                            # And once to store all labels in a single NIFTI. This volume will be used for quality checking
                             totalsegmentator(
-                                scanDirectoryPath, outputScanDirectoryPath, fast=fast, device=device, ml=True)
-                            segmentationFilePath = os.path.join(outputDirectoryPath, scanDirectoryName + '.nii') # No .gz extension!
-                            segmentation = nib.load(segmentationFilePath)
-                            checker = CheckSegmentation(segmentation=segmentation, scanName=scanDirectoryName)
-                            ok = checker.execute()
+                                scanDirectoryPath, outputScanDirectoryPath, fast=fast, device=device)
+                            roiFilePath = os.path.join(outputScanDirectoryPath, vertebra + '.nii.gz')
 
-                        if ok:
-                            # Get requested ROI and select DICOM slice running through it
-                            roi = nib.load(roiFilePath)
-                            selector = SliceSelector(roi=roi, volume=segmentation, dicomDirectory=scanDirectoryPath)
-                            output_files = selector.execute()
-                            if len(output_files) > 0:
-                                LOGGER.info(f'Found median slice {output_files[0]} for {vertebra}')
-                                selectedSlice = os.path.join(selectedSlicesDirectoryPath, scanDirectoryName + '-' + vertebra + '-' + os.path.split(output_files[0])[1])
-                                shutil.copyfile(output_files[0], selectedSlice)
-                                LOGGER.info(f'Elapsed time after one scan: {elapsedSeconds(startTime)} seconds')
+                            ok = True
+                            if qualityCheck:
+                                totalsegmentator(
+                                    scanDirectoryPath, outputScanDirectoryPath, fast=fast, device=device, ml=True)
+                                segmentationFilePath = os.path.join(outputDirectoryPath, scanDirectoryName + '.nii') # No .gz extension!
+                                segmentation = nib.load(segmentationFilePath)
+                                checker = CheckSegmentation(segmentation=segmentation, scanName=scanDirectoryName)
+                                ok = checker.execute()
+
+                            if ok:
+                                # Get requested ROI and select DICOM slice running through it
+                                roi = nib.load(roiFilePath)
+                                selector = SliceSelector(roi=roi, volume=segmentation, dicomDirectory=scanDirectoryPath)
+                                output_files = selector.execute()
+                                if len(output_files) > 0:
+                                    LOGGER.info(f'Found median slice {output_files[0]} for {vertebra}')
+                                    selectedSlice = os.path.join(selectedSlicesDirectoryPath, scanDirectoryName + '-' + vertebra + '-' + os.path.split(output_files[0])[1])
+                                    shutil.copyfile(output_files[0], selectedSlice)
+                                    LOGGER.info(f'Elapsed time after one scan: {elapsedSeconds(startTime)} seconds')
+                                else:
+                                    LOGGER.error(f'Output of slice selector contains more than one file')
                             else:
-                                LOGGER.error(f'Output of slice selector contains more than one file')
-                        else:
-                            LOGGER.error(f'Error checking segmentation')
-                    except Exception as e:
-                        LOGGER.error(f'Exception running Total Segmentator on DICOM files in {scanDirectoryPath} ({e})')
+                                LOGGER.error(f'Error checking segmentation')
+                        except Exception as e:
+                            LOGGER.error(f'Exception running Total Segmentator on DICOM files in {scanDirectoryPath} ({e})')
 
-                    self.updateProgress(step=step, nrSteps=nrSteps)
-                    step += 1
+                        self.updateProgress(step=step, nrSteps=nrSteps)
+                        step += 1
 
-            self.dataManager().createFileSet(fileSetPath=selectedSlicesDirectoryPath)
-            LOGGER.info(f'Total elapsed time: {elapsedSeconds(startTimeTotal)} seconds')
+                self.dataManager().createFileSet(fileSetPath=selectedSlicesDirectoryPath)
+                LOGGER.info(f'Total elapsed time: {elapsedSeconds(startTimeTotal)} seconds')
 
-            LOGGER.info('Finished')
-            LOGGER.info(f'Results can be found in: {outputDirectoryPath}')
+                LOGGER.info('Finished')
+                LOGGER.info(f'Results can be found in: {outputDirectoryPath}')
+            else:
+                LOGGER.error(f'PyTorch: no GPU found. This is going to take forever...')
