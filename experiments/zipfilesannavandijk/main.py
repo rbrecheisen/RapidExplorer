@@ -4,8 +4,11 @@ import zipfile
 
 # DATADIR = 'D:\\Mosamatic\\T4\\POLYTRAUMA-AnnaVanDijk'
 # DATADIROUTPUT = 'D:\\Mosamatic\\T4\\POLYTRAUMA-AnnaVanDijk-Output'
-DATADIR = 'D:\\Mosamatic\\T4\\POLYTRAUMA-AnnaVanDijk2\\DataDeel1'
-DATADIROUTPUT = 'D:\\Mosamatic\\T4\\POLYTRAUMA-AnnaVanDijk2\\DataOutputDeel1'
+# DATADIR = 'D:\\Mosamatic\\T4\\POLYTRAUMA-AnnaVanDijk2\\DataDeel1'
+# DATADIROUTPUT = 'D:\\Mosamatic\\T4\\POLYTRAUMA-AnnaVanDijk2\\DataOutputDeel1'
+DATADIR = 'D:\\Mosamatic\\T4\\17-06-2024'
+DATADIROUTPUT = 'D:\\Mosamatic\\T4\\17-06-2024_Output'
+
 os.makedirs(DATADIROUTPUT, exist_ok=False)
 
 
