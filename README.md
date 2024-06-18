@@ -5,13 +5,12 @@ It uses Total Segmentator () for this purpose by first extracting the L3 vertebr
 position (by inspecting the ImagePositionPatient attribute).
 
 # Install
-Installing Mosamatic Desktop is as simple as running <br>
-<br>
-<code>pip install mosamaticdesktop</code><br>
-<br>
-In order to use the automatic slice selection task you need a CUDA-enabled PyTorch setup. You can pre-install this PyTorch version by running<br>
-<br>
-<code>pip install torch==2.3.1+cu121 torchvision==0.18.1+cu121 torchaudio=2.3.1+cu121 -f https://download.pytorch.org/whl/torch_stable.html</code><br>
+Installing Mosamatic Desktop is as simple as running either InstallMosamatic.bat (Windows) or InstallMosamatic.sh (Linux/MacOS), depending on your platform.
+
+These installation scripts will setup a virtual Python environment for installing and running Mosamatic Desktop. They will also install additional Python pacakages that allow
+you to use the GPU on your system (if present). Note that the automatic slice selection task will be very slow if there is no GPU support on your system. You can check whether
+you have GPU support by going to "About" > "Application Info" in the main menu of Mosamatic Desktop. If it says "GPU Enabled: True" you're good to go.
 
 # Run
-Running Mosamatic Desktop
+Running Mosamatic Desktop can be done by executing the Mosamatic.bat or Mosamatic.sh scripts. Both will first enable the virtual Python environment Mosamatic Desktop was 
+installed in, and then run the tool itself.
