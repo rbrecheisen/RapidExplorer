@@ -20,13 +20,10 @@ call "%VENV_DIR%\Scripts\activate"
 %USERPROFILE%\.mosamatic\MosamaticDesktop\Scripts\python -m pip install --upgrade scikit-image
 %USERPROFILE%\.mosamatic\MosamaticDesktop\Scripts\python -m pip install mosamaticdesktop
 %USERPROFILE%\.mosamatic\MosamaticDesktop\Scripts\python -m pip install --upgrade mosamaticdesktop
+%USERPROFILE%\.mosamatic\MosamaticDesktop\Scripts\python -m pip install torch==2.3.1+cu121 torchvision==0.18.1+cu121 -f https://download.pytorch.org/whl/torch_stable.html
 call "%VENV_DIR%\Scripts\deactivate.bat"
 
-@REM echo "Installing executable..."
-@REM copy %USERPROFILE%\.mosamatic\MosamaticDesktop\Scripts\mosamatic-desktop.exe C:\Windows
-
 echo "Creating desktop shortcut for executable..."
-@REM SET ExePath=C:\Windows\mosmatic-desktop.exe
 SET ExePath=%USERPROFILE%\.mosamatic\MosamaticDesktop\Scripts\mosamatic-desktop.exe
 SET ShortcutName=Mosamatic Desktop
 
@@ -45,8 +42,7 @@ echo oLink.Save
 ) > !VBSFile!
 
 cscript //nologo "%VBSFile%"
-
-@REM del "%VBSFile%"
+del "%VBSFile%"
 
 echo "Installation finished."
 echo "You can now run Mosamatic Desktop by double-clicking the shortcut on your desktop."

@@ -1,7 +1,7 @@
 import os
 
 from PySide6.QtCore import Qt, QObject, Signal
-from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QFileDialog, QMenu, QProgressBar, QStatusBar
+from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QFileDialog, QMenu, QProgressBar, QStatusBar, QMessageBox
 from PySide6.QtGui import QAction, QGuiApplication
 
 from mosamaticdesktop.data.datamanager import DataManager
@@ -55,12 +55,13 @@ class MainWindow(QMainWindow):
         importFileSetAction = QAction('Import File Set...', self)
         importMultipleFileSetsAction = QAction('Import Multiple File Sets...', self)
         deleteAllFileSetsAction = QAction('Delete All Data from Database', self)
-        # showApplicationInfoAction = QAction('Show Application Info...', self)
+        showApplicationInfoAction = QAction('Show Application Info...', self)
         exitApplicationAction = QAction('Exit', self)
         importFileAction.triggered.connect(self.importFile)
         importFileSetAction.triggered.connect(self.importFileSet)
         importMultipleFileSetsAction.triggered.connect(self.importMultipleFileSets)
         deleteAllFileSetsAction.triggered.connect(self.deleteAllFileSets)
+        showApplicationInfoAction.triggered.connect(self.showApplicationInfo)
         exitApplicationAction.triggered.connect(self.exitApplication)
         dataMenu = QMenu('Data')
         dataMenu.addAction(importFileAction)
@@ -70,10 +71,10 @@ class MainWindow(QMainWindow):
         dataMenu.addAction(deleteAllFileSetsAction)
         dataMenu.addSeparator()
         dataMenu.addAction(exitApplicationAction)
-        # aboutMenu = QMenu(f'About')
-        # aboutMenu.addAction(showApplicationInfoAction)
+        aboutMenu = QMenu(f'About')
+        aboutMenu.addAction(showApplicationInfoAction)
         self.menuBar().addMenu(dataMenu)
-        # self.menuBar().addMenu(aboutMenu)
+        self.menuBar().addMenu(aboutMenu)
         self.menuBar().setNativeMenuBar(False)
 
     def initDataDockWidget(self) -> None:
@@ -161,6 +162,11 @@ class MainWindow(QMainWindow):
         x = (screen.width() - self.geometry().width()) / 2
         y = (screen.height() - self.geometry().height()) / 2
         self.move(int(x), int(y))
+
+    def showApplicationInfo(self) -> None:
+        import torch
+        text = f'GPU Enabled: {torch.cuda.is_available()}'
+        QMessageBox.information(self, 'Application Info', text)
 
     # Exit
         
