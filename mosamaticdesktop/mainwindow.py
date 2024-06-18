@@ -25,6 +25,7 @@ class MainWindow(QMainWindow):
     def __init__(self, version: str, gitHubCommitId: str) -> None:
         super(MainWindow, self).__init__()
         self._version = version
+        LOGGER.info(f'Running Mosamatic Desktop {self._version}...')
         self._gitHubCommitId = gitHubCommitId
         self._settings = Configuration().qSettings()
         self._dataDockWidget = None

@@ -14,6 +14,9 @@ setup_requirements = []
 
 test_requirements = []
 
+with open('VERSION') as f:
+    VERSION = f.read()
+
 setup(
     author="Ralph Brecheisen",
     author_email='r.brecheisen@maastrichtuniversity.nl',
@@ -61,6 +64,6 @@ setup(
             'mosamatic-desktop=mosamaticdesktop.main:main',
         ],
     },
-    version=os.environ['VERSION'],
+    version=VERSION,
     zip_safe=False,
 )
