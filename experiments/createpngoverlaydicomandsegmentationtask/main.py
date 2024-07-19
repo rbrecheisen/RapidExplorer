@@ -20,7 +20,7 @@ def main():
         black_pixels = (segmentation_image[:, :, 0:3] == 0).all(axis=2)
         segmentation_image[black_pixels, 3] = 0
 
-        alpha = 0.5
+        alpha = 0.75
         
         fig, ax = plt.subplots()
         ax.imshow(dicom_image, alpha=1)
