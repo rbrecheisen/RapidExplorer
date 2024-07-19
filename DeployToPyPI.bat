@@ -3,7 +3,6 @@ setlocal EnableDelayedExpansion
 
 set PACKAGE=mosamaticdesktop
 
-echo "1"
 where twine >nul 2>&1
 if %errorlevel% neq 0 (
   echo "You do not seem to have Twine installed (wrong venv?). It is needed to upload to PyPI"
@@ -15,28 +14,23 @@ if %errorlevel% neq 0 (
   python -m pip install twine wheel
 )
 
-echo "2"
 set CMD=%1
 if "%CMD%" == "-h" (
     echo "Usage: deploy.bat [patch^|minor^|major]"
     exit /b 0
 )
 
-echo "3"
 if not "%CMD%" == "" if not "%CMD%" == "patch" if not "%CMD%" == "minor" if not "%CMD%" == "major" (
     echo "Illegal argument %CMD%"
     exit /b 1
 )
 
-echo "4"
 if "%CMD%" == "" (
   set CMD=minor
 )
 
-echo "5"
 for /f %%i in (VERSION) do set OLD_VERSION=%%i
 
-echo "6"
 python versioning.py --major-minor=%CMD%
 copy VERSION .\mosamaticdesktop\VERSION
 for /f %%i in (VERSION) do set VERSION=%%i
