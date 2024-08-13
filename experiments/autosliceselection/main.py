@@ -5,6 +5,10 @@ import torch
 import pydicom
 
 from totalsegmentator.python_api import totalsegmentator
+from scipy.ndimage import label, distance_transform_edt
+from skimage.segmentation import watershed
+from skimage.feature import peak_local_max
+from skimage.morphology import ball
 
 
 DIRCTSCANS = 'D:\\Mosamatic\\AutoSliceSelectionBibiToine\\CTscans'
@@ -103,6 +107,25 @@ def check_z_coordinates_in_order(non_zero_vertebral_rois):
         z_max_last = z_max
 
 
+def get_largest_component_from_vertebral_roi(vertebral_roi):
+    data = vertebral_roi.get_fdata().astype(np.int32)
+    distance = distance_transform_edt(data)
+    local_maxi = np.zeros_like(data, dtype=bool)
+    local_maxi[tuple(peak_local_max(distance, labels=data, footprint=ball(2)).T)] = True
+    if local_maxi.shape != data.shape:
+        local_maxi = np.reshape(local_maxi, data.shape)
+    assert local_maxi.shape == data.shape, "Shape mismatch between local_maxi and data."
+    markers, _ = label(local_maxi)
+    assert markers.shape == data.shape, "Shape mismatch between markers and data."
+    labels = watershed(-distance, markers, mask=data)
+    sizes = np.bincount(labels.ravel())
+    sizes = sizes[1:]
+    largest_component = np.argmax(sizes) + 1
+    largest_mask = np.where(labels == largest_component, 1, 0)
+    largest_mask_image = nib.Nifti1Image(largest_mask.astype(np.uint8), vertebral_roi.affine)
+    return largest_mask_image
+
+
 def main():
     assert torch.cuda.is_available(), 'PyTorch GPU support is not availble'
     for ct_scan_dir_name in os.listdir(DIRCTSCANS):
@@ -113,10 +136,20 @@ def main():
         os.makedirs(segmentation_output_dir_path, exist_ok=True)
         totalsegmentator(ct_scan_dir_path, segmentation_output_dir_path, fast=FAST, device=DEVICE)
         non_zero_vertebral_rois = get_non_zero_vertebral_rois(segmentation_output_dir_path)
-        check_z_coordinates_ct_images_match_nifti_volume(ct_scan_dir_path, os.path.join(segmentation_output_dir_path, SELECTEDVERTEBRALROI + '.nii.gz'))
-        check_vertebral_rois_exists(segmentation_output_dir_path)
-        check_nr_voxels_selected_roi_within_range(non_zero_vertebral_rois)
-        check_z_coordinates_in_order(non_zero_vertebral_rois)
+
+        # The non-zero ROIs are NIFTI files, so get the L3 one and apply the ChatGPT code to extract the largest vertebral body from the mask
+        for vertebral_roi in non_zero_vertebral_rois:
+            vertebral_roi_file_path = vertebral_roi.file_map['image'].filename
+            vertebral_roi_name = os.path.split(vertebral_roi_file_path)[1][:-7]
+            if vertebral_roi_name == SELECTEDVERTEBRALROI:
+                vertebral_roi_largest_component = get_largest_component_from_vertebral_roi(vertebral_roi)
+                nib.save(vertebral_roi_largest_component, f'{SELECTEDVERTEBRALROI}_largest.nii.gz')
+                break
+
+        # check_z_coordinates_ct_images_match_nifti_volume(ct_scan_dir_path, os.path.join(segmentation_output_dir_path, SELECTEDVERTEBRALROI + '.nii.gz'))
+        # check_vertebral_rois_exists(segmentation_output_dir_path)
+        # check_nr_voxels_selected_roi_within_range(non_zero_vertebral_rois)
+        # check_z_coordinates_in_order(non_zero_vertebral_rois)
         break
 
 
