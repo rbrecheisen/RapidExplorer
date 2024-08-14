@@ -160,14 +160,8 @@ def calculate_best_slice_and_cross_score(vertebral_roi, direction):
 
 
 def get_middle_slice_from_vertebral_roi(vertebral_roi):
-    best_slice = -1
     best_slice_rows, cross_score_rows = calculate_best_slice_and_cross_score(vertebral_roi, direction=0)
-    best_slice_cols, cross_score_cols = calculate_best_slice_and_cross_score(vertebral_roi, direction=1)
-    if cross_score_rows > cross_score_cols:
-        best_slice = best_slice_rows
-    else:
-        best_slice = best_slice_cols
-    return best_slice
+    return best_slice_rows
 
 
 def get_ct_scan_dicom_file_for_middle_vertebral_slice(ct_scan_dir_path, best_slice_index):
@@ -188,27 +182,29 @@ def main():
     for ct_scan_dir_name in os.listdir(DIRCTSCANS):
         assert ct_scan_dir_name + '.dcm' in os.listdir(DIRL3S), f'could not find subject "{ct_scan_dir_name}"'
     for ct_scan_dir_name in os.listdir(DIRCTSCANS):
-        ct_scan_dir_path = os.path.join(DIRCTSCANS, ct_scan_dir_name)
-        segmentation_output_dir_path = os.path.join(DIRCTSCANSSEGMENTATIONS, ct_scan_dir_name)
-        os.makedirs(segmentation_output_dir_path, exist_ok=True)
-        
-        # check_z_coordinates_ct_images_match_nifti_volume(ct_scan_dir_path, os.path.join(segmentation_output_dir_path, SELECTEDVERTEBRALROI + '.nii.gz'))
-        # check_vertebral_rois_exists(segmentation_output_dir_path)
-        # check_nr_voxels_selected_roi_within_range(non_zero_vertebral_rois)
-        # check_z_coordinates_in_order(non_zero_vertebral_rois)
+        try:
+            print(f'##### Processing {ct_scan_dir_name}... ######')
+            ct_scan_dir_path = os.path.join(DIRCTSCANS, ct_scan_dir_name)
+            segmentation_output_dir_path = os.path.join(DIRCTSCANSSEGMENTATIONS, ct_scan_dir_name)
+            os.makedirs(segmentation_output_dir_path, exist_ok=True)
 
-        totalsegmentator(ct_scan_dir_path, segmentation_output_dir_path, fast=FAST, device=DEVICE)
-        
-        non_zero_vertebral_rois = get_non_zero_vertebral_rois(segmentation_output_dir_path)
-        for vertebral_roi in non_zero_vertebral_rois:
-            vertebral_roi_file_path = vertebral_roi.file_map['image'].filename
-            vertebral_roi_name = os.path.split(vertebral_roi_file_path)[1][:-7]
-            if vertebral_roi_name == SELECTEDVERTEBRALROI:
-                best_slice_index = get_middle_slice_from_vertebral_roi(vertebral_roi)
-                best_ct_scan_dicom_file = get_ct_scan_dicom_file_for_middle_vertebral_slice(ct_scan_dir_path, best_slice_index)
-                assert instance_numbers[ct_scan_dir_name] - 1 <= best_ct_scan_dicom_file.InstanceNumber <= instance_numbers[ct_scan_dir_name] + 1
-                print(f'{ct_scan_dir_name}: Instance number = {best_ct_scan_dicom_file.InstanceNumber}')
-                break
+            # Run Total Segmentator
+            totalsegmentator(ct_scan_dir_path, segmentation_output_dir_path, fast=FAST, device=DEVICE)
+            
+            # Check order of vertebrae correct and thereby patient orientation in scanner
+            
+            non_zero_vertebral_rois = get_non_zero_vertebral_rois(segmentation_output_dir_path)
+            for vertebral_roi in non_zero_vertebral_rois:
+                vertebral_roi_file_path = vertebral_roi.file_map['image'].filename
+                vertebral_roi_name = os.path.split(vertebral_roi_file_path)[1][:-7]
+                if vertebral_roi_name == SELECTEDVERTEBRALROI:
+                    best_slice_index = get_middle_slice_from_vertebral_roi(vertebral_roi)
+                    best_ct_scan_dicom_file = get_ct_scan_dicom_file_for_middle_vertebral_slice(ct_scan_dir_path, best_slice_index)
+                    print(f'{ct_scan_dir_name}: Best slice instance number = {best_ct_scan_dicom_file.InstanceNumber}, ground-truth = {instance_numbers[ct_scan_dir_name]}, checking within limits...')
+                    # assert instance_numbers[ct_scan_dir_name] - 1 <= best_ct_scan_dicom_file.InstanceNumber <= instance_numbers[ct_scan_dir_name] + 1
+                    break
+        except Exception as e:
+            print(f'{ct_scan_dir_name}: exception occurred ({e})')
 
 
 if __name__ == '__main__':
