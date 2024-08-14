@@ -1,6 +1,7 @@
 import os
 import nibabel as nib
 import numpy as np
+import pydicom.errors
 import torch
 import pydicom
 
@@ -22,6 +23,19 @@ VERTEBRAL_ROIS = [
     'vertebrae_T4', 'vertebrae_T5', 'vertebrae_T6', 'vertebrae_T7', 'vertebrae_T8', 'vertebrae_T9', 'vertebrae_T10', 'vertebrae_T11', 
     'vertebrae_T12'
 ]
+
+
+def load_instance_numbers(L3_dir_path):
+    instance_numbers = {}
+    for f in os.listdir(L3_dir_path):
+        f_path = os.path.join(L3_dir_path, f)
+        subject_name = f[:-4] if f.endswith('.dcm') else f
+        try:
+            p = pydicom.dcmread(f_path, stop_before_pixels=True)
+            instance_numbers[subject_name] = p.InstanceNumber
+        except pydicom.errors.InvalidDicomError:
+            pass
+    return instance_numbers
 
 
 def check_z_coordinates_ct_images_match_nifti_volume(ct_scan_dir_path, nifti_volume_file_path):
@@ -107,50 +121,94 @@ def check_z_coordinates_in_order(non_zero_vertebral_rois):
         z_max_last = z_max
 
 
-def get_largest_component_from_vertebral_roi(vertebral_roi):
-    data = vertebral_roi.get_fdata().astype(np.int32)
-    distance = distance_transform_edt(data)
-    local_maxi = np.zeros_like(data, dtype=bool)
-    local_maxi[tuple(peak_local_max(distance, labels=data, footprint=ball(2)).T)] = True
-    if local_maxi.shape != data.shape:
-        local_maxi = np.reshape(local_maxi, data.shape)
-    assert local_maxi.shape == data.shape, "Shape mismatch between local_maxi and data."
-    markers, _ = label(local_maxi)
-    assert markers.shape == data.shape, "Shape mismatch between markers and data."
-    labels = watershed(-distance, markers, mask=data)
-    sizes = np.bincount(labels.ravel())
-    sizes = sizes[1:]
-    largest_component = np.argmax(sizes) + 1
-    largest_mask = np.where(labels == largest_component, 1, 0)
-    largest_mask_image = nib.Nifti1Image(largest_mask.astype(np.uint8), vertebral_roi.affine)
-    return largest_mask_image
+# def get_largest_component_from_vertebral_roi(vertebral_roi):
+#     data = vertebral_roi.get_fdata().astype(np.int32)
+#     distance = distance_transform_edt(data)
+#     local_maxi = np.zeros_like(data, dtype=bool)
+#     local_maxi[tuple(peak_local_max(distance, labels=data, footprint=ball(2)).T)] = True
+#     if local_maxi.shape != data.shape:
+#         local_maxi = np.reshape(local_maxi, data.shape)
+#     assert local_maxi.shape == data.shape, "Shape mismatch between local_maxi and data."
+#     markers, _ = label(local_maxi)
+#     assert markers.shape == data.shape, "Shape mismatch between markers and data."
+#     labels = watershed(-distance, markers, mask=data)
+#     sizes = np.bincount(labels.ravel())
+#     sizes = sizes[1:]
+#     largest_component = np.argmax(sizes) + 1
+#     largest_mask = np.where(labels == largest_component, 1, 0)
+#     largest_mask_image = nib.Nifti1Image(largest_mask.astype(np.uint8), vertebral_roi.affine)
+#     return largest_mask_image
+
+
+def calculate_best_slice_and_cross_score(vertebral_roi, direction):
+    L3_mask = vertebral_roi.get_fdata()
+    max_lateral_extent = 0
+    best_slice = None
+    for i in range(L3_mask.shape[2]):
+        slice_mask = L3_mask[:, :, i]
+        non_zero_coords = np.where(slice_mask)
+        if len(non_zero_coords[direction]) > 0:
+            lateral_extent = non_zero_coords[direction].max() - non_zero_coords[direction].min()
+            if lateral_extent > max_lateral_extent:
+                max_lateral_extent = lateral_extent
+                best_slice = i
+    best_slice_mask = L3_mask[:, :, best_slice]
+    row_sum = np.sum(best_slice_mask, axis=1)
+    col_sum = np.sum(best_slice_mask, axis=0)
+    cross_score = row_sum.max() + col_sum.max()
+    return best_slice, cross_score
+
+
+def get_middle_slice_from_vertebral_roi(vertebral_roi):
+    best_slice = -1
+    best_slice_rows, cross_score_rows = calculate_best_slice_and_cross_score(vertebral_roi, direction=0)
+    best_slice_cols, cross_score_cols = calculate_best_slice_and_cross_score(vertebral_roi, direction=1)
+    if cross_score_rows > cross_score_cols:
+        best_slice = best_slice_rows
+    else:
+        best_slice = best_slice_cols
+    return best_slice
+
+
+def get_ct_scan_dicom_file_for_middle_vertebral_slice(ct_scan_dir_path, best_slice_index):
+    ct_scan_dicom_files = []
+    for f in os.listdir(ct_scan_dir_path):
+        f_path = os.path.join(ct_scan_dir_path, f)
+        try:
+            ct_scan_dicom_files.append(pydicom.dcmread(f_path))
+        except pydicom.errors.InvalidDicomError:
+            pass
+    ct_scan_dicom_files.sort(key=lambda x: x.SliceLocation)
+    return ct_scan_dicom_files[len(ct_scan_dicom_files) - best_slice_index - 1]
 
 
 def main():
-    assert torch.cuda.is_available(), 'PyTorch GPU support is not availble'
+    assert torch.cuda.is_available(), 'PyTorch GPU support is not available'
+    instance_numbers = load_instance_numbers(DIRL3S)
     for ct_scan_dir_name in os.listdir(DIRCTSCANS):
         assert ct_scan_dir_name + '.dcm' in os.listdir(DIRL3S), f'could not find subject "{ct_scan_dir_name}"'
     for ct_scan_dir_name in os.listdir(DIRCTSCANS):
         ct_scan_dir_path = os.path.join(DIRCTSCANS, ct_scan_dir_name)
         segmentation_output_dir_path = os.path.join(DIRCTSCANSSEGMENTATIONS, ct_scan_dir_name)
         os.makedirs(segmentation_output_dir_path, exist_ok=True)
-        totalsegmentator(ct_scan_dir_path, segmentation_output_dir_path, fast=FAST, device=DEVICE)
-        non_zero_vertebral_rois = get_non_zero_vertebral_rois(segmentation_output_dir_path)
-
-        # The non-zero ROIs are NIFTI files, so get the L3 one and apply the ChatGPT code to extract the largest vertebral body from the mask
-        for vertebral_roi in non_zero_vertebral_rois:
-            vertebral_roi_file_path = vertebral_roi.file_map['image'].filename
-            vertebral_roi_name = os.path.split(vertebral_roi_file_path)[1][:-7]
-            if vertebral_roi_name == SELECTEDVERTEBRALROI:
-                vertebral_roi_largest_component = get_largest_component_from_vertebral_roi(vertebral_roi)
-                nib.save(vertebral_roi_largest_component, f'{SELECTEDVERTEBRALROI}_largest.nii.gz')
-                break
-
+        
         # check_z_coordinates_ct_images_match_nifti_volume(ct_scan_dir_path, os.path.join(segmentation_output_dir_path, SELECTEDVERTEBRALROI + '.nii.gz'))
         # check_vertebral_rois_exists(segmentation_output_dir_path)
         # check_nr_voxels_selected_roi_within_range(non_zero_vertebral_rois)
         # check_z_coordinates_in_order(non_zero_vertebral_rois)
-        break
+
+        totalsegmentator(ct_scan_dir_path, segmentation_output_dir_path, fast=FAST, device=DEVICE)
+        
+        non_zero_vertebral_rois = get_non_zero_vertebral_rois(segmentation_output_dir_path)
+        for vertebral_roi in non_zero_vertebral_rois:
+            vertebral_roi_file_path = vertebral_roi.file_map['image'].filename
+            vertebral_roi_name = os.path.split(vertebral_roi_file_path)[1][:-7]
+            if vertebral_roi_name == SELECTEDVERTEBRALROI:
+                best_slice_index = get_middle_slice_from_vertebral_roi(vertebral_roi)
+                best_ct_scan_dicom_file = get_ct_scan_dicom_file_for_middle_vertebral_slice(ct_scan_dir_path, best_slice_index)
+                assert instance_numbers[ct_scan_dir_name] - 1 <= best_ct_scan_dicom_file.InstanceNumber <= instance_numbers[ct_scan_dir_name] + 1
+                print(f'{ct_scan_dir_name}: Instance number = {best_ct_scan_dicom_file.InstanceNumber}')
+                break
 
 
 if __name__ == '__main__':
