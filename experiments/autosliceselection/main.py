@@ -1,4 +1,5 @@
 import os
+import json
 import nibabel as nib
 import numpy as np
 import pydicom.errors
@@ -179,6 +180,7 @@ def get_ct_scan_dicom_file_for_middle_vertebral_slice(ct_scan_dir_path, best_sli
 def main():
     assert torch.cuda.is_available(), 'PyTorch GPU support is not available'
     instance_numbers = load_instance_numbers(DIRL3S)
+    results = {}
     for ct_scan_dir_name in os.listdir(DIRCTSCANS):
         assert ct_scan_dir_name + '.dcm' in os.listdir(DIRL3S), f'could not find subject "{ct_scan_dir_name}"'
     for ct_scan_dir_name in os.listdir(DIRCTSCANS):
@@ -200,11 +202,13 @@ def main():
                 if vertebral_roi_name == SELECTEDVERTEBRALROI:
                     best_slice_index = get_middle_slice_from_vertebral_roi(vertebral_roi)
                     best_ct_scan_dicom_file = get_ct_scan_dicom_file_for_middle_vertebral_slice(ct_scan_dir_path, best_slice_index)
+                    results[ct_scan_dir_name] = [best_ct_scan_dicom_file.InstanceNumber, instance_numbers[ct_scan_dir_name]]
                     print(f'{ct_scan_dir_name}: Best slice instance number = {best_ct_scan_dicom_file.InstanceNumber}, ground-truth = {instance_numbers[ct_scan_dir_name]}, checking within limits...')
-                    # assert instance_numbers[ct_scan_dir_name] - 1 <= best_ct_scan_dicom_file.InstanceNumber <= instance_numbers[ct_scan_dir_name] + 1
                     break
         except Exception as e:
             print(f'{ct_scan_dir_name}: exception occurred ({e})')
+    with open('results.json', 'w') as f:
+        json.dump(results, f, indent=4)
 
 
 if __name__ == '__main__':
