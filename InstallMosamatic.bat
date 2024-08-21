@@ -45,7 +45,7 @@ cscript //nologo "%VBSFile%"
 del "%VBSFile%"
 
 echo "Installation finished."
-echo "You can now run Mosamatic Desktop by double-clicking the shortcut on your desktop."
+echo "You can now close this window and run Mosamatic Desktop by double-clicking the shortcut on your desktop."
 
 endlocal
 cmd
