@@ -4,6 +4,24 @@ setlocal EnableDelayedExpansion
 @REM https://chat.openai.com/c/143bf330-901c-46ea-9115-03b450fdd07d
 @REM Also install Python 3 if needed
 
+echo "Checking if Python 3.11 already installed..."
+where python >nul 2>&1
+if %ERRORLEVEL% == 0 (
+    echo "Python already installed"
+    goto :INSTALLMOSAMATIC
+)
+
+echo "Installing Python 3.11..."
+set PYTHON_DOWNLOAD_URL=https://www.python.org/ftp/python/3.11.0/python-3.11.0-amd64.exe
+set TEMP_PATH=%TEMP%\python-3.11.0-amd64.exe
+powershell -Command "Invoke-WebRequest -Uri %PYTHON_DOWNLOAD_URL% -OutFile %TEMP_PATH%"
+%TEMP_PATH% /quiet InstallAllUsers=1 PrependPath=1
+del %TEMP_PATH%
+echo "Python 3.11 installation completed"
+
+:INSTALLMOSAMATIC
+
+echo "Installing Mosamatic..."
 set VENV_DIR=%USERPROFILE%\.mosamatic\MosamaticDesktop
 
 echo "Creating virtual environment..."
