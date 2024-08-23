@@ -1,0 +1,247 @@
+{
+    "Patient01": {
+        "vertebrae_L1": 168,
+        "vertebrae_L2": 151,
+        "vertebrae_L3": 135,
+        "vertebrae_L4": 119,
+        "vertebrae_L5": 105
+    },
+    "Patient02": {
+        "vertebrae_L1": 191,
+        "vertebrae_L2": 175,
+        "vertebrae_L3": 158,
+        "vertebrae_L4": 144,
+        "vertebrae_L5": 130
+    },
+    "Patient03": {
+        "vertebrae_L1": 175,
+        "vertebrae_L2": 163,
+        "vertebrae_L3": 135,
+        "vertebrae_L4": 120,
+        "vertebrae_L5": 105
+    },
+    "Patient04": {
+        "vertebrae_L1": 160,
+        "vertebrae_L2": 146,
+        "vertebrae_L3": 130,
+        "vertebrae_L4": 117,
+        "vertebrae_L5": 102
+    },
+    "Patient05": {
+        "vertebrae_L1": 188,
+        "vertebrae_L2": 171,
+        "vertebrae_L3": 151,
+        "vertebrae_L4": 134,
+        "vertebrae_L5": 120
+    },
+    "Patient06": {
+        "vertebrae_L1": 261,
+        "vertebrae_L2": 302,
+        "vertebrae_L3": 351,
+        "vertebrae_L4": 403,
+        "vertebrae_L5": 448
+    },
+    "Patient07": {
+        "vertebrae_L1": 182,
+        "vertebrae_L2": 167,
+        "vertebrae_L3": 151,
+        "vertebrae_L4": 136,
+        "vertebrae_L5": 120
+    },
+    "Patient08": {
+        "vertebrae_L1": 175,
+        "vertebrae_L2": 161,
+        "vertebrae_L3": 143,
+        "vertebrae_L4": 129,
+        "vertebrae_L5": 116
+    },
+    "Patient09": {
+        "vertebrae_L1": 189,
+        "vertebrae_L2": 174,
+        "vertebrae_L3": 158,
+        "vertebrae_L4": 143,
+        "vertebrae_L5": 128
+    },
+    "Patient10": {
+        "vertebrae_L1": 180,
+        "vertebrae_L2": 165,
+        "vertebrae_L3": 147,
+        "vertebrae_L4": 134,
+        "vertebrae_L5": 117
+    },
+    "Patient11": {
+        "vertebrae_L1": 164,
+        "vertebrae_L2": 148,
+        "vertebrae_L3": 131,
+        "vertebrae_L4": 117,
+        "vertebrae_L5": 101
+    },
+    "Patient13": {
+        "vertebrae_L1": 177,
+        "vertebrae_L2": 159,
+        "vertebrae_L3": 141,
+        "vertebrae_L4": 126,
+        "vertebrae_L5": 111
+    },
+    "Patient14": {
+        "vertebrae_L1": 169,
+        "vertebrae_L2": 157,
+        "vertebrae_L3": 142,
+        "vertebrae_L4": 126,
+        "vertebrae_L5": 112
+    },
+    "Patient15": {
+        "vertebrae_L1": 163,
+        "vertebrae_L2": 148,
+        "vertebrae_L3": 132,
+        "vertebrae_L4": 116,
+        "vertebrae_L5": 102
+    },
+    "Patient16": {
+        "vertebrae_L1": 547,
+        "vertebrae_L2": 502,
+        "vertebrae_L3": 453,
+        "vertebrae_L4": 412,
+        "vertebrae_L5": 359
+    },
+    "Patient17": {
+        "vertebrae_L1": 176,
+        "vertebrae_L2": 161,
+        "vertebrae_L3": 140,
+        "vertebrae_L4": 122,
+        "vertebrae_L5": 106
+    },
+    "Patient18": {
+        "vertebrae_L1": 165,
+        "vertebrae_L2": 148,
+        "vertebrae_L3": 128,
+        "vertebrae_L4": 111,
+        "vertebrae_L5": 93
+    },
+    "Patient19": {
+        "vertebrae_L1": 179,
+        "vertebrae_L2": 163,
+        "vertebrae_L3": 146,
+        "vertebrae_L4": 131,
+        "vertebrae_L5": 116
+    },
+    "Patient20": {
+        "vertebrae_L1": 163,
+        "vertebrae_L2": 148,
+        "vertebrae_L3": 132,
+        "vertebrae_L4": 116,
+        "vertebrae_L5": 104
+    },
+    "Patient21": {
+        "vertebrae_L1": 197,
+        "vertebrae_L2": 180,
+        "vertebrae_L3": 161,
+        "vertebrae_L4": 144,
+        "vertebrae_L5": 128
+    },
+    "Patient22": {
+        "vertebrae_L1": 187,
+        "vertebrae_L2": 170,
+        "vertebrae_L3": 151,
+        "vertebrae_L4": 137,
+        "vertebrae_L5": 121
+    },
+    "Patient23": {
+        "vertebrae_L1": 264,
+        "vertebrae_L2": 250,
+        "vertebrae_L3": 234,
+        "vertebrae_L4": 218,
+        "vertebrae_L5": 204
+    },
+    "Patient24": {
+        "vertebrae_L1": 153,
+        "vertebrae_L2": 140,
+        "vertebrae_L3": 126,
+        "vertebrae_L4": 113,
+        "vertebrae_L5": 98
+    },
+    "Patient25": {
+        "vertebrae_L1": 175,
+        "vertebrae_L2": 158,
+        "vertebrae_L3": 143,
+        "vertebrae_L4": 132,
+        "vertebrae_L5": 117
+    },
+    "Patient26": {
+        "vertebrae_L1": 192,
+        "vertebrae_L2": 177,
+        "vertebrae_L3": 161,
+        "vertebrae_L4": 145,
+        "vertebrae_L5": 130
+    },
+    "Patient27": {
+        "vertebrae_L1": 36,
+        "vertebrae_L2": 48,
+        "vertebrae_L3": 63,
+        "vertebrae_L4": 77,
+        "vertebrae_L5": 92
+    },
+    "Patient28": {
+        "vertebrae_L1": 178,
+        "vertebrae_L2": 163,
+        "vertebrae_L3": 149,
+        "vertebrae_L4": 134,
+        "vertebrae_L5": 119
+    },
+    "Patient29": {
+        "vertebrae_L1": 163,
+        "vertebrae_L2": 151,
+        "vertebrae_L3": 137,
+        "vertebrae_L4": 120,
+        "vertebrae_L5": 106
+    },
+    "Patient30": {
+        "vertebrae_L1": 186,
+        "vertebrae_L2": 170,
+        "vertebrae_L3": 154,
+        "vertebrae_L4": 140,
+        "vertebrae_L5": 124
+    },
+    "Patient31": {
+        "vertebrae_L1": 174,
+        "vertebrae_L2": 157,
+        "vertebrae_L3": 138,
+        "vertebrae_L4": 123,
+        "vertebrae_L5": 108
+    },
+    "Patient32": {
+        "vertebrae_L1": 161,
+        "vertebrae_L2": 148,
+        "vertebrae_L3": 145,
+        "vertebrae_L4": 130,
+        "vertebrae_L5": 108
+    },
+    "Patient33": {
+        "vertebrae_L1": 79,
+        "vertebrae_L2": 88,
+        "vertebrae_L3": 97,
+        "vertebrae_L4": 114,
+        "vertebrae_L5": 129
+    },
+    "Patient34": {
+        "vertebrae_L1": 173,
+        "vertebrae_L2": 157,
+        "vertebrae_L3": 140,
+        "vertebrae_L4": 121,
+        "vertebrae_L5": 111
+    },
+    "Patient35": {
+        "vertebrae_L1": 172,
+        "vertebrae_L2": 151,
+        "vertebrae_L3": 140,
+        "vertebrae_L4": 123,
+        "vertebrae_L5": 107
+    },
+    "Patient36": {
+        "vertebrae_L1": 166,
+        "vertebrae_L2": 151,
+        "vertebrae_L3": 134,
+        "vertebrae_L4": 119,
+        "vertebrae_L5": 103
+    }
+}

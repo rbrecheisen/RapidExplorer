@@ -84,7 +84,7 @@ def check_nr_voxels_selected_roi_within_range(non_zero_vertebral_rois):
         vertebral_roi_name = os.path.split(vertebral_roi_file_path)[1][:-7]
         data = vertebral_roi.get_fdata()
         nr_voxels = np.sum(data==1)
-        if vertebral_roi_name == SELECTEDVERTEBRALROI:
+        if vertebral_roi_name in SELECTEDVERTEBRALROIS:
             selected_nr_voxels = nr_voxels
             continue
         if nr_voxels < minimum:
@@ -179,23 +179,21 @@ def get_ct_scan_dicom_file_for_middle_vertebral_slice(ct_scan_dir_path, best_sli
 
 def main():
     assert torch.cuda.is_available(), 'PyTorch GPU support is not available'
+
     results = {}
     for ct_scan_dir_name in os.listdir(DIRCTSCANS):
-        assert ct_scan_dir_name + '.dcm' in os.listdir(DIRL3S), f'could not find subject "{ct_scan_dir_name}"'
-    for ct_scan_dir_name in os.listdir(DIRCTSCANS):
         try:
+
             print(f'##### Processing {ct_scan_dir_name}... ######')
-            
             results[ct_scan_dir_name] = {}
             ct_scan_dir_path = os.path.join(DIRCTSCANS, ct_scan_dir_name)
             segmentation_output_dir_path = os.path.join(DIRCTSCANSSEGMENTATIONS, ct_scan_dir_name)
             os.makedirs(segmentation_output_dir_path, exist_ok=True)
 
-            # Run Total Segmentator
+            print(f'{ct_scan_dir_name}: Running Total Segmentator...')
             totalsegmentator(ct_scan_dir_path, segmentation_output_dir_path, fast=FAST, device=DEVICE)
-            
-            # Check order of vertebrae correct and thereby patient orientation in scanner
-            
+
+            print(f'{ct_scan_dir_name}: Finding best slices...')            
             non_zero_vertebral_rois = get_non_zero_vertebral_rois(segmentation_output_dir_path)
             for vertebral_roi in non_zero_vertebral_rois:
                 vertebral_roi_file_path = vertebral_roi.file_map['image'].filename
@@ -204,9 +202,11 @@ def main():
                     best_slice_index = get_middle_slice_from_vertebral_roi(vertebral_roi)
                     best_ct_scan_dicom_file = get_ct_scan_dicom_file_for_middle_vertebral_slice(ct_scan_dir_path, best_slice_index)
                     results[ct_scan_dir_name][vertebral_roi_name] = best_ct_scan_dicom_file.InstanceNumber
-                    # print(f'{ct_scan_dir_name}: Best slice instance number = {best_ct_scan_dicom_file.InstanceNumber}, ground-truth = {instance_numbers[ct_scan_dir_name]}, checking within limits...')
+                    print(f'{ct_scan_dir_name}[{vertebral_roi_name}]: best slice = {results[ct_scan_dir_name][vertebral_roi_name]}')
+
         except Exception as e:
             print(f'{ct_scan_dir_name}: exception occurred ({e})')
+
     with open('results.json', 'w') as f:
         json.dump(results, f, indent=4)
 
