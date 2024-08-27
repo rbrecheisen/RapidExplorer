@@ -5,6 +5,7 @@ import numpy as np
 import pydicom.errors
 import torch
 import pydicom
+import pandas as pd
 
 from totalsegmentator.python_api import totalsegmentator
 from scipy.ndimage import label, distance_transform_edt
@@ -16,6 +17,7 @@ from skimage.morphology import ball
 DIRCTSCANS = 'D:\\Mosamatic\\Nik Pelzer\\CTscans'
 DIRCTSCANSSEGMENTATIONS = 'D:\\Mosamatic\\Nik Pelzer\\CTscansSegmentations'
 DIRL3S = 'D:\\Mosamatic\\Nik Pelzer\\L3s'
+GROUNDTRUTHCOORDS = 'D:\\Mosamatic\\Nik Pelzer\\Truth_reference_selected_slices.csv'
 DEVICE = 'gpu'
 FAST = False
 SELECTEDVERTEBRALROIS = ['vertebrae_L1', 'vertebrae_L2', 'vertebrae_L3', 'vertebrae_L4', 'vertebrae_L5']
@@ -141,7 +143,7 @@ def check_z_coordinates_in_order(non_zero_vertebral_rois):
 #     return largest_mask_image
 
 
-def calculate_best_slice_and_cross_score(vertebral_roi, direction):
+def calculate_best_slice_idx(vertebral_roi, direction):
     L3_mask = vertebral_roi.get_fdata()
     max_lateral_extent = 0
     best_slice = None
@@ -154,15 +156,38 @@ def calculate_best_slice_and_cross_score(vertebral_roi, direction):
                 max_lateral_extent = lateral_extent
                 best_slice = i
     best_slice_mask = L3_mask[:, :, best_slice]
-    row_sum = np.sum(best_slice_mask, axis=1)
-    col_sum = np.sum(best_slice_mask, axis=0)
-    cross_score = row_sum.max() + col_sum.max()
-    return best_slice, cross_score
+    # row_sum = np.sum(best_slice_mask, axis=1)
+    # col_sum = np.sum(best_slice_mask, axis=0)
+    # cross_score = row_sum.max() + col_sum.max()
+    return best_slice #, cross_score
 
 
-def get_middle_slice_from_vertebral_roi(vertebral_roi):
-    best_slice_rows, cross_score_rows = calculate_best_slice_and_cross_score(vertebral_roi, direction=0)
-    return best_slice_rows
+def calculate_best_slice_z_coordinate(vertebral_roi, direction):
+    L3_mask = vertebral_roi.get_fdata()
+    affine = vertebral_roi.affine  # Extract the affine matrix from the NIFTI image
+    max_lateral_extent = 0
+    best_slice = None
+    for i in range(L3_mask.shape[2]):
+        slice_mask = L3_mask[:, :, i]
+        non_zero_coords = np.where(slice_mask)
+        if len(non_zero_coords[direction]) > 0:
+            lateral_extent = non_zero_coords[direction].max() - non_zero_coords[direction].min()
+            if lateral_extent > max_lateral_extent:
+                max_lateral_extent = lateral_extent
+                best_slice = i
+    if best_slice is not None:
+        # Convert the best slice index to a Z-coordinate using the affine matrix
+        voxel_coord = [0, 0, best_slice, 1]  # Assuming 0 for X and Y (can be changed as needed)
+        real_world_coord = affine.dot(voxel_coord)
+        z_coordinate = real_world_coord[2]  # Extract the Z-coordinate
+        return z_coordinate
+    else:
+        return None
+
+
+def get_middle_slice_z_coordinate_from_vertebral_roi(vertebral_roi):
+    z_coordinate = calculate_best_slice_z_coordinate(vertebral_roi, direction=0)
+    return z_coordinate
 
 
 def get_ct_scan_dicom_file_for_middle_vertebral_slice(ct_scan_dir_path, best_slice_index):
@@ -177,9 +202,43 @@ def get_ct_scan_dicom_file_for_middle_vertebral_slice(ct_scan_dir_path, best_sli
     return ct_scan_dicom_files[len(ct_scan_dicom_files) - best_slice_index - 1]
 
 
+def get_ct_scan_dicom_file_for_middle_vertebral_slice_z_coordinate(ct_scan_dir_path, best_z_coordinate):
+    ct_scan_dicom_files = []
+    for f in os.listdir(ct_scan_dir_path):
+        f_path = os.path.join(ct_scan_dir_path, f)
+        try:
+            dicom_file = pydicom.dcmread(f_path)
+            ct_scan_dicom_files.append(dicom_file)
+        except pydicom.errors.InvalidDicomError:
+            pass
+    ct_scan_dicom_files.sort(key=lambda x: x.SliceLocation)
+    closest_dicom_file = min(ct_scan_dicom_files, key=lambda x: abs(x.ImagePositionPatient[2] - best_z_coordinate))
+    return closest_dicom_file
+
+
+def load_ground_truth_data_nik_pelzer():
+    results = {}
+    df = pd.read_csv(GROUNDTRUTHCOORDS, sep=';', index_col='PatientID')
+    for idx, row in df.iterrows():
+        patient_name = f'Patient{idx:02}'
+        if patient_name not in results.keys():
+            results[patient_name] = {}
+        if row['Vertebra'] == 'L1M':
+            results[patient_name]['vertebrae_L1'] = row['Z']
+        if row['Vertebra'] == 'L2M':
+            results[patient_name]['vertebrae_L2'] = row['Z']
+        if row['Vertebra'] == 'L3M':
+            results[patient_name]['vertebrae_L3'] = row['Z']
+        if row['Vertebra'] == 'L4M':
+            results[patient_name]['vertebrae_L4'] = row['Z']
+        if row['Vertebra'] == 'L5M':
+            results[patient_name]['vertebrae_L5'] = row['Z']
+    return results
+
+
 def main():
     assert torch.cuda.is_available(), 'PyTorch GPU support is not available'
-
+    results_gt = load_ground_truth_data_nik_pelzer()
     results = {}
     for ct_scan_dir_name in os.listdir(DIRCTSCANS):
         try:
@@ -199,10 +258,17 @@ def main():
                 vertebral_roi_file_path = vertebral_roi.file_map['image'].filename
                 vertebral_roi_name = os.path.split(vertebral_roi_file_path)[1][:-7]
                 if vertebral_roi_name in SELECTEDVERTEBRALROIS:
-                    best_slice_index = get_middle_slice_from_vertebral_roi(vertebral_roi)
-                    best_ct_scan_dicom_file = get_ct_scan_dicom_file_for_middle_vertebral_slice(ct_scan_dir_path, best_slice_index)
-                    results[ct_scan_dir_name][vertebral_roi_name] = best_ct_scan_dicom_file.InstanceNumber
-                    print(f'{ct_scan_dir_name}[{vertebral_roi_name}]: best slice = {results[ct_scan_dir_name][vertebral_roi_name]}')
+                    # best_slice_index = get_middle_slice_from_vertebral_roi(vertebral_roi)
+                    # best_ct_scan_dicom_file = get_ct_scan_dicom_file_for_middle_vertebral_slice(ct_scan_dir_path, best_slice_index)
+                    # results[ct_scan_dir_name][vertebral_roi_name] = best_ct_scan_dicom_file.InstanceNumber
+                    # print(f'{ct_scan_dir_name}[{vertebral_roi_name}]: best slice = {results[ct_scan_dir_name][vertebral_roi_name]}')
+                    best_z_coordinate = get_middle_slice_z_coordinate_from_vertebral_roi(vertebral_roi)
+                    best_ct_scan_dicom_file = get_ct_scan_dicom_file_for_middle_vertebral_slice_z_coordinate(ct_scan_dir_path, best_z_coordinate)
+                    results[ct_scan_dir_name][vertebral_roi_name] = [
+                        best_ct_scan_dicom_file.ImagePositionPatient[2], results_gt[ct_scan_dir_name][vertebral_roi_name]
+                    ]
+                    print(f'{ct_scan_dir_name}[{vertebral_roi_name}]: best slice Z-coordinate = {results[ct_scan_dir_name][vertebral_roi_name]}')
+            # break
 
         except Exception as e:
             print(f'{ct_scan_dir_name}: exception occurred ({e})')

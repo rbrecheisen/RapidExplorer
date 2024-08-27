@@ -1,0 +1,772 @@
+{
+    "Patient01": {
+        "vertebrae_L1": [
+            53.3,
+            53.3
+        ],
+        "vertebrae_L2": [
+            19.3,
+            21.3
+        ],
+        "vertebrae_L3": [
+            -12.7,
+            -12.7
+        ],
+        "vertebrae_L4": [
+            -44.7,
+            -46.7
+        ],
+        "vertebrae_L5": [
+            -72.7,
+            -80.7
+        ]
+    },
+    "Patient02": {
+        "vertebrae_L1": [
+            501.3,
+            497.3
+        ],
+        "vertebrae_L2": [
+            469.3,
+            467.3
+        ],
+        "vertebrae_L3": [
+            435.3,
+            433.3
+        ],
+        "vertebrae_L4": [
+            407.3,
+            399.3
+        ],
+        "vertebrae_L5": [
+            379.3,
+            365.3
+        ]
+    },
+    "Patient03": {
+        "vertebrae_L1": [
+            429.3,
+            443.3
+        ],
+        "vertebrae_L2": [
+            405.3,
+            413.3
+        ],
+        "vertebrae_L3": [
+            349.3,
+            381.3
+        ],
+        "vertebrae_L4": [
+            319.3,
+            347.3
+        ],
+        "vertebrae_L5": [
+            289.3,
+            313.3
+        ]
+    },
+    "Patient04": {
+        "vertebrae_L1": [
+            441.6,
+            447.6
+        ],
+        "vertebrae_L2": [
+            413.6,
+            419.6
+        ],
+        "vertebrae_L3": [
+            381.6,
+            389.6
+        ],
+        "vertebrae_L4": [
+            355.6,
+            357.6
+        ],
+        "vertebrae_L5": [
+            325.6,
+            321.6
+        ]
+    },
+    "Patient05": {
+        "vertebrae_L1": [
+            447.7,
+            451.7
+        ],
+        "vertebrae_L2": [
+            413.7,
+            417.7
+        ],
+        "vertebrae_L3": [
+            373.7,
+            379.7
+        ],
+        "vertebrae_L4": [
+            339.7,
+            339.7
+        ],
+        "vertebrae_L5": [
+            311.7,
+            299.7
+        ]
+    },
+    "Patient06": {
+        "vertebrae_L1": [
+            -157.0,
+            151.0
+        ],
+        "vertebrae_L2": [
+            -185.7,
+            187.0
+        ],
+        "vertebrae_L3": [
+            -220.0,
+            223.0
+        ],
+        "vertebrae_L4": [
+            -256.4,
+            263.0
+        ],
+        "vertebrae_L5": [
+            -287.9,
+            301.0
+        ]
+    },
+    "Patient07": {
+        "vertebrae_L1": [
+            -73.4,
+            -33.4
+        ],
+        "vertebrae_L2": [
+            -103.4,
+            -65.4
+        ],
+        "vertebrae_L3": [
+            -135.4,
+            -99.4
+        ],
+        "vertebrae_L4": [
+            -165.4,
+            -137.4
+        ],
+        "vertebrae_L5": [
+            -197.4,
+            -175.4
+        ]
+    },
+    "Patient08": {
+        "vertebrae_L1": [
+            377.8,
+            377.8
+        ],
+        "vertebrae_L2": [
+            349.8,
+            347.8
+        ],
+        "vertebrae_L3": [
+            313.8,
+            315.8
+        ],
+        "vertebrae_L4": [
+            285.8,
+            283.8
+        ],
+        "vertebrae_L5": [
+            259.8,
+            247.8
+        ]
+    },
+    "Patient09": {
+        "vertebrae_L1": [
+            404.3,
+            414.3
+        ],
+        "vertebrae_L2": [
+            374.3,
+            380.3
+        ],
+        "vertebrae_L3": [
+            342.3,
+            344.3
+        ],
+        "vertebrae_L4": [
+            312.3,
+            308.3
+        ],
+        "vertebrae_L5": [
+            282.3,
+            268.3
+        ]
+    },
+    "Patient10": {
+        "vertebrae_L1": [
+            -671.3,
+            -661.3
+        ],
+        "vertebrae_L2": [
+            -701.3,
+            -695.3
+        ],
+        "vertebrae_L3": [
+            -737.3,
+            -731.3
+        ],
+        "vertebrae_L4": [
+            -763.3,
+            -767.3
+        ],
+        "vertebrae_L5": [
+            -797.3,
+            -807.3
+        ]
+    },
+    "Patient11": {
+        "vertebrae_L1": [
+            293.5,
+            297.5
+        ],
+        "vertebrae_L2": [
+            261.5,
+            265.5
+        ],
+        "vertebrae_L3": [
+            227.5,
+            229.5
+        ],
+        "vertebrae_L4": [
+            199.5,
+            193.5
+        ],
+        "vertebrae_L5": [
+            167.5,
+            155.5
+        ]
+    },
+    "Patient13": {
+        "vertebrae_L1": [
+            465.2,
+            471.2
+        ],
+        "vertebrae_L2": [
+            429.2,
+            435.2
+        ],
+        "vertebrae_L3": [
+            393.2,
+            397.2
+        ],
+        "vertebrae_L4": [
+            363.2,
+            357.2
+        ],
+        "vertebrae_L5": [
+            333.2,
+            317.2
+        ]
+    },
+    "Patient14": {
+        "vertebrae_L1": [
+            -296.2,
+            -288.2
+        ],
+        "vertebrae_L2": [
+            -320.2,
+            -322.2
+        ],
+        "vertebrae_L3": [
+            -350.2,
+            -356.2
+        ],
+        "vertebrae_L4": [
+            -382.2,
+            -392.2
+        ],
+        "vertebrae_L5": [
+            -410.2,
+            -428.2
+        ]
+    },
+    "Patient15": {
+        "vertebrae_L1": [
+            -210.5,
+            -202.5
+        ],
+        "vertebrae_L2": [
+            -240.5,
+            -236.5
+        ],
+        "vertebrae_L3": [
+            -272.5,
+            -272.5
+        ],
+        "vertebrae_L4": [
+            -304.5,
+            -308.5
+        ],
+        "vertebrae_L5": [
+            -332.5,
+            -342.5
+        ]
+    },
+    "Patient16": {
+        "vertebrae_L1": [
+            412.0,
+            422.3
+        ],
+        "vertebrae_L2": [
+            380.5,
+            388.3
+        ],
+        "vertebrae_L3": [
+            346.2,
+            350.3
+        ],
+        "vertebrae_L4": [
+            317.5,
+            312.3
+        ],
+        "vertebrae_L5": [
+            280.4,
+            272.3
+        ]
+    },
+    "Patient17": {
+        "vertebrae_L1": [
+            -804.4,
+            -802.4
+        ],
+        "vertebrae_L2": [
+            -834.4,
+            -838.4
+        ],
+        "vertebrae_L3": [
+            -876.4,
+            -878.4
+        ],
+        "vertebrae_L4": [
+            -912.4,
+            -920.4
+        ],
+        "vertebrae_L5": [
+            -944.4,
+            -962.4
+        ]
+    },
+    "Patient18": {
+        "vertebrae_L1": [
+            -383.3,
+            -375.3
+        ],
+        "vertebrae_L2": [
+            -417.3,
+            -411.3
+        ],
+        "vertebrae_L3": [
+            -457.3,
+            -451.3
+        ],
+        "vertebrae_L4": [
+            -491.3,
+            -493.3
+        ],
+        "vertebrae_L5": [
+            -527.3,
+            -537.3
+        ]
+    },
+    "Patient19": {
+        "vertebrae_L1": [
+            614.7,
+            624.7
+        ],
+        "vertebrae_L2": [
+            582.7,
+            590.7
+        ],
+        "vertebrae_L3": [
+            548.7,
+            554.7
+        ],
+        "vertebrae_L4": [
+            518.7,
+            514.7
+        ],
+        "vertebrae_L5": [
+            488.7,
+            476.7
+        ]
+    },
+    "Patient20": {
+        "vertebrae_L1": [
+            384.1,
+            392.1
+        ],
+        "vertebrae_L2": [
+            354.1,
+            360.1
+        ],
+        "vertebrae_L3": [
+            322.1,
+            322.1
+        ],
+        "vertebrae_L4": [
+            290.1,
+            284.1
+        ],
+        "vertebrae_L5": [
+            266.1,
+            252.1
+        ]
+    },
+    "Patient21": {
+        "vertebrae_L1": [
+            -532.8,
+            -528.8
+        ],
+        "vertebrae_L2": [
+            -566.8,
+            -566.8
+        ],
+        "vertebrae_L3": [
+            -604.8,
+            -606.8
+        ],
+        "vertebrae_L4": [
+            -638.8,
+            -648.8
+        ],
+        "vertebrae_L5": [
+            -670.8,
+            -690.8
+        ]
+    },
+    "Patient22": {
+        "vertebrae_L1": [
+            579.7,
+            587.7
+        ],
+        "vertebrae_L2": [
+            545.7,
+            553.7
+        ],
+        "vertebrae_L3": [
+            507.7,
+            515.7
+        ],
+        "vertebrae_L4": [
+            479.7,
+            477.7
+        ],
+        "vertebrae_L5": [
+            447.7,
+            437.7
+        ]
+    },
+    "Patient23": {
+        "vertebrae_L1": [
+            584.3,
+            594.3
+        ],
+        "vertebrae_L2": [
+            556.3,
+            562.3
+        ],
+        "vertebrae_L3": [
+            524.3,
+            524.3
+        ],
+        "vertebrae_L4": [
+            492.3,
+            484.3
+        ],
+        "vertebrae_L5": [
+            464.3,
+            442.3
+        ]
+    },
+    "Patient24": {
+        "vertebrae_L1": [
+            423.1,
+            437.1
+        ],
+        "vertebrae_L2": [
+            397.1,
+            407.1
+        ],
+        "vertebrae_L3": [
+            369.1,
+            375.1
+        ],
+        "vertebrae_L4": [
+            343.1,
+            339.1
+        ],
+        "vertebrae_L5": [
+            313.1,
+            303.1
+        ]
+    },
+    "Patient25": {
+        "vertebrae_L1": [
+            -241.4,
+            -239.4
+        ],
+        "vertebrae_L2": [
+            -275.4,
+            -277.4
+        ],
+        "vertebrae_L3": [
+            -305.4,
+            -313.4
+        ],
+        "vertebrae_L4": [
+            -327.4,
+            -351.4
+        ],
+        "vertebrae_L5": [
+            -357.4,
+            -383.4
+        ]
+    },
+    "Patient26": {
+        "vertebrae_L1": [
+            411.1,
+            419.1
+        ],
+        "vertebrae_L2": [
+            381.1,
+            389.1
+        ],
+        "vertebrae_L3": [
+            349.1,
+            355.1
+        ],
+        "vertebrae_L4": [
+            317.1,
+            315.1
+        ],
+        "vertebrae_L5": [
+            287.1,
+            273.1
+        ]
+    },
+    "Patient27": {
+        "vertebrae_L1": [
+            -288.9,
+            284.9
+        ],
+        "vertebrae_L2": [
+            -312.9,
+            316.9
+        ],
+        "vertebrae_L3": [
+            -342.9,
+            346.9
+        ],
+        "vertebrae_L4": [
+            -370.9,
+            374.9
+        ],
+        "vertebrae_L5": [
+            -400.9,
+            406.9
+        ]
+    },
+    "Patient28": {
+        "vertebrae_L1": [
+            -502.8,
+            -498.8
+        ],
+        "vertebrae_L2": [
+            -532.8,
+            -532.8
+        ],
+        "vertebrae_L3": [
+            -560.8,
+            -568.8
+        ],
+        "vertebrae_L4": [
+            -590.8,
+            -602.8
+        ],
+        "vertebrae_L5": [
+            -620.8,
+            -638.8
+        ]
+    },
+    "Patient29": {
+        "vertebrae_L1": [
+            232.7,
+            242.7
+        ],
+        "vertebrae_L2": [
+            208.7,
+            206.7
+        ],
+        "vertebrae_L3": [
+            180.7,
+            170.7
+        ],
+        "vertebrae_L4": [
+            146.7,
+            132.7
+        ],
+        "vertebrae_L5": [
+            118.7,
+            98.7
+        ]
+    },
+    "Patient30": {
+        "vertebrae_L1": [
+            325.6,
+            333.6
+        ],
+        "vertebrae_L2": [
+            293.6,
+            299.6
+        ],
+        "vertebrae_L3": [
+            261.6,
+            265.6
+        ],
+        "vertebrae_L4": [
+            233.6,
+            227.6
+        ],
+        "vertebrae_L5": [
+            201.6,
+            185.6
+        ]
+    },
+    "Patient31": {
+        "vertebrae_L1": [
+            374.5,
+            380.5
+        ],
+        "vertebrae_L2": [
+            340.5,
+            344.5
+        ],
+        "vertebrae_L3": [
+            302.5,
+            306.5
+        ],
+        "vertebrae_L4": [
+            272.5,
+            268.5
+        ],
+        "vertebrae_L5": [
+            242.5,
+            234.5
+        ]
+    },
+    "Patient32": {
+        "vertebrae_L1": [
+            451.5,
+            459.5
+        ],
+        "vertebrae_L2": [
+            425.5,
+            427.5
+        ],
+        "vertebrae_L3": [
+            419.5,
+            391.5
+        ],
+        "vertebrae_L4": [
+            389.5,
+            351.5
+        ],
+        "vertebrae_L5": [
+            345.5,
+            315.5
+        ]
+    },
+    "Patient33": {
+        "vertebrae_L1": [
+            -344.0,
+            348.0
+        ],
+        "vertebrae_L2": [
+            -362.0,
+            382.0
+        ],
+        "vertebrae_L3": [
+            -380.0,
+            422.0
+        ],
+        "vertebrae_L4": [
+            -414.0,
+            464.0
+        ],
+        "vertebrae_L5": [
+            -444.0,
+            502.0
+        ]
+    },
+    "Patient34": {
+        "vertebrae_L1": [
+            380.9,
+            386.9
+        ],
+        "vertebrae_L2": [
+            348.9,
+            348.9
+        ],
+        "vertebrae_L3": [
+            314.9,
+            310.9
+        ],
+        "vertebrae_L4": [
+            276.9,
+            270.9
+        ],
+        "vertebrae_L5": [
+            256.9,
+            232.9
+        ]
+    },
+    "Patient35": {
+        "vertebrae_L1": [
+            386.1,
+            390.1
+        ],
+        "vertebrae_L2": [
+            344.1,
+            356.1
+        ],
+        "vertebrae_L3": [
+            322.1,
+            318.1
+        ],
+        "vertebrae_L4": [
+            288.1,
+            284.1
+        ],
+        "vertebrae_L5": [
+            256.1,
+            252.1
+        ]
+    },
+    "Patient36": {
+        "vertebrae_L1": [
+            456.9,
+            460.9
+        ],
+        "vertebrae_L2": [
+            426.9,
+            430.9
+        ],
+        "vertebrae_L3": [
+            392.9,
+            396.9
+        ],
+        "vertebrae_L4": [
+            362.9,
+            360.9
+        ],
+        "vertebrae_L5": [
+            330.9,
+            318.9
+        ]
+    }
+}
