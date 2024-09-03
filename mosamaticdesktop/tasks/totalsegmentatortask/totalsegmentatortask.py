@@ -9,8 +9,9 @@ from totalsegmentator.python_api import totalsegmentator
 from mosamaticdesktop.tasks.task import Task
 from mosamaticdesktop.logger import Logger
 from mosamaticdesktop.utils import createNameWithTimestamp
-from mosamaticdesktop.tasks.totalsegmentatortask.checksegmentation import CheckSegmentation
-from mosamaticdesktop.tasks.totalsegmentatortask.sliceselector import SliceSelector
+# from mosamaticdesktop.tasks.totalsegmentatortask.checksegmentation import CheckSegmentation
+# from mosamaticdesktop.tasks.totalsegmentatortask.sliceselector import SliceSelector
+from mosamaticdesktop.tasks.totalsegmentatortask.sliceselector2 import SliceSelector
 from mosamaticdesktop.utils import currentTimeInSeconds, elapsedSeconds
 
 warnings.filterwarnings('ignore', 'Invalid value for VR UI')
@@ -18,10 +19,7 @@ warnings.filterwarnings('ignore', 'Invalid value for VR UI')
 LOGGER = Logger()
 
 ROIS = [
-    'vertebrae_S1', 'vertebrae_C1', 'vertebrae_C2', 'vertebrae_C3', 'vertebrae_C4', 'vertebrae_C5', 'vertebrae_C6', 'vertebrae_C7', 
-    'vertebrae_L1', 'vertebrae_L2', 'vertebrae_L3', 'vertebrae_L4', 'vertebrae_L5', 'vertebrae_T1', 'vertebrae_T2', 'vertebrae_T3', 
-    'vertebrae_T4', 'vertebrae_T5', 'vertebrae_T6', 'vertebrae_T7', 'vertebrae_T8', 'vertebrae_T9', 'vertebrae_T10', 'vertebrae_T11', 
-    'vertebrae_T12'
+    'vertebrae_L3',
 ]
 
 
@@ -55,11 +53,6 @@ class TotalSegmentatorTask(Task):
             labelText='Enable Fast Calculation (for CPU only)',
             defaultValue=False,
         )
-        self.addBooleanParameter(
-            name='qualityCheck',
-            labelText='Perform Quality Check After Segmentation',
-            defaultValue=True,
-        )
         self.addPathParameter(
             name='outputDirectoryPath',
             labelText='Output Directory'
@@ -68,11 +61,6 @@ class TotalSegmentatorTask(Task):
             name='outputDirectoryName',
             labelText='Output Directory Name',
             optional=True,
-        )
-        self.addBooleanParameter(
-            name='overwriteOutputDirectory',
-            labelText='Overwrite Output Directory',
-            defaultValue=True,
         )
 
     def execute(self) -> None:
@@ -88,15 +76,12 @@ class TotalSegmentatorTask(Task):
                     outputDirectoryName = createNameWithTimestamp(name=outputDirectoryName)
                 outputDirectoryPath = self.parameter('outputDirectoryPath').value()
                 outputDirectoryPath = os.path.join(outputDirectoryPath, outputDirectoryName)
+                os.makedirs(outputDirectoryPath, exist_ok=False)
                 LOGGER.info(f'Output directory path: {outputDirectoryPath}')
 
                 # Get vertebra
                 vertebra = self.parameter('vertebra').value()
                 LOGGER.info(f'vertebra = {vertebra}')
-
-                # Quality check yes/no
-                qualityCheck = self.parameter('qualityCheck').value()
-                LOGGER.info(f'Quality check = {qualityCheck}')
 
                 # Get device and fast options. Disable fast if we're using the GPU
                 device = self.parameter('device').value().lower()
@@ -105,17 +90,7 @@ class TotalSegmentatorTask(Task):
                     fast = False
                 LOGGER.info(f'device = {device}, fast = {fast}')
 
-                # Check whether to overwrite previous output directory
-                overwriteOutputDirectory = self.parameter('overwriteOutputDirectory').value()
-                LOGGER.info(f'Overwrite output fileset: {overwriteOutputDirectory}')
-                if overwriteOutputDirectory:
-                    if os.path.isdir(outputDirectoryPath):
-                        shutil.rmtree(outputDirectoryPath)
-                os.makedirs(outputDirectoryPath, exist_ok=True)
-
                 selectedSlicesDirectoryPath = os.path.join(outputDirectoryPath, 'slices')
-                if os.path.isdir(selectedSlicesDirectoryPath):
-                    shutil.rmtree(selectedSlicesDirectoryPath)
                 os.makedirs(selectedSlicesDirectoryPath, exist_ok=False)
 
                 # Each CT scan's files should be in a separate subdirectory inside the root directory
@@ -141,30 +116,19 @@ class TotalSegmentatorTask(Task):
                             totalsegmentator(
                                 scanDirectoryPath, outputScanDirectoryPath, fast=fast, device=device)
                             roiFilePath = os.path.join(outputScanDirectoryPath, vertebra + '.nii.gz')
+                            segmentation = nib.load(roiFilePath)
 
-                            ok = True
-                            if qualityCheck:
-                                totalsegmentator(
-                                    scanDirectoryPath, outputScanDirectoryPath, fast=fast, device=device, ml=True)
-                                segmentationFilePath = os.path.join(outputDirectoryPath, scanDirectoryName + '.nii') # No .gz extension!
-                                segmentation = nib.load(segmentationFilePath)
-                                checker = CheckSegmentation(segmentation=segmentation, scanName=scanDirectoryName)
-                                ok = checker.execute()
-
-                            if ok:
-                                # Get requested ROI and select DICOM slice running through it
-                                roi = nib.load(roiFilePath)
-                                selector = SliceSelector(roi=roi, volume=segmentation, dicomDirectory=scanDirectoryPath)
-                                output_files = selector.execute()
-                                if len(output_files) > 0:
-                                    LOGGER.info(f'Found median slice {output_files[0]} for {vertebra}')
-                                    selectedSlice = os.path.join(selectedSlicesDirectoryPath, scanDirectoryName + '-' + vertebra + '-' + os.path.split(output_files[0])[1])
-                                    shutil.copyfile(output_files[0], selectedSlice)
-                                    LOGGER.info(f'Elapsed time after one scan: {elapsedSeconds(startTime)} seconds')
-                                else:
-                                    LOGGER.error(f'Output of slice selector contains more than one file')
+                            # Get requested ROI and select DICOM slice running through it
+                            roi = nib.load(roiFilePath)
+                            selector = SliceSelector(roi=roi, volume=segmentation, dicomDirectory=scanDirectoryPath)
+                            output_files = selector.execute()
+                            if len(output_files) > 0:
+                                LOGGER.info(f'Found median slice {output_files[0]} for {vertebra}')
+                                selectedSlice = os.path.join(selectedSlicesDirectoryPath, scanDirectoryName + '-' + vertebra + '-' + os.path.split(output_files[0])[1])
+                                shutil.copyfile(output_files[0], selectedSlice)
+                                LOGGER.info(f'Elapsed time after one scan: {elapsedSeconds(startTime)} seconds')
                             else:
-                                LOGGER.error(f'Error checking segmentation')
+                                LOGGER.error(f'Output of slice selector contains more than one file')
                         except Exception as e:
                             LOGGER.error(f'Exception running Total Segmentator on DICOM files in {scanDirectoryPath} ({e})')
 
@@ -173,7 +137,6 @@ class TotalSegmentatorTask(Task):
 
                 self.dataManager().createFileSet(fileSetPath=selectedSlicesDirectoryPath)
                 LOGGER.info(f'Total elapsed time: {elapsedSeconds(startTimeTotal)} seconds')
-
                 LOGGER.info('Finished')
                 LOGGER.info(f'Results can be found in: {outputDirectoryPath}')
             else:

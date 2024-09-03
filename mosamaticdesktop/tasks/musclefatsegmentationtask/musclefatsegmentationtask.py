@@ -52,11 +52,6 @@ class MuscleFatSegmentationTask(Task):
             labelText='Output File Set Name',
             optional=True,
         )
-        self.addBooleanParameter(
-            name='overwriteOutputFileSet',
-            labelText='Overwrite Output File Set',
-            defaultValue=True,
-        )
 
     def loadModelFiles(self, files: List[File]) -> List[Any]:
         tfLoaded = False
@@ -123,13 +118,7 @@ class MuscleFatSegmentationTask(Task):
             outputFileSetName = self.generateTimestampForFileSetName(name=inputFileSetName)
         outputFileSetPath = self.parameter('outputFileSetPath').value()
         outputFileSetPath = os.path.join(outputFileSetPath, outputFileSetName)
-
-        overwriteOutputFileSet = self.parameter('overwriteOutputFileSet').value()
-        LOGGER.info(f'Overwrite output fileset: {overwriteOutputFileSet}')
-        if overwriteOutputFileSet:
-            if os.path.isdir(outputFileSetPath):
-                shutil.rmtree(outputFileSetPath)
-        os.makedirs(outputFileSetPath, exist_ok=True)
+        os.makedirs(outputFileSetPath, exist_ok=False)
         LOGGER.info(f'Output fileset path: {outputFileSetPath}')
 
         # Get mode (ARGMAX or PROBABILITIES)
