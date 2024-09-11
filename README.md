@@ -11,14 +11,14 @@ These installation scripts will setup a virtual Python environment for installin
 you to use the GPU on your system (if present). Note that the automatic slice selection task will be very slow if there is no GPU support on your system. You can check whether
 you have GPU support by going to "About" > "Application Info" in the main menu of Mosamatic Desktop. If it says "GPU Enabled: True" you're good to go.
 
-## Install Python
+<!-- ## Install Python
 - Go to [https://www.python.org](https://www.python.org) (open in new browser tab) and install the most recent Python environment (3.12 as of writing this manual). After installation, test your installation by opening a terminal window by clicking the "Start" button in your Windows task bar and searching for "Terminal". You can also directly go to [https://www.python.org/ftp/python/3.12.6/python-3.12.6-amd64.exe](https://www.python.org/ftp/python/3.12.6/python-3.12.6-amd64.exe) (open in new browser tab).
-- In the terminal type "python --version". You should now see some information about the recently installed Python environment, particularly the installed version.
+- In the terminal type "python --version". You should now see some information about the recently installed Python environment, particularly the installed version. -->
 
 ## Install Mosamatic using the InstallMosamatic.bat script
 - Find the installation script "InstallMosamatic.bat" in the root directory of the source code project here on GitHub.
 - Download the installation script somewhere on your system, e.g., on your Desktop.
-- Double-click the installation script. This will start the installation process for Mosamatic. After the script finishes (hopefully successfully), you should see another icon on your desktop "MosamaticDesktop". This is a shortcut pointing to the executable (.exe) of the application.
+- Double-click the installation script. This will start the installation process for Mosamatic. After the script finishes (hopefully successfully), you should see another icon on your desktop "MosamaticDesktop". This is a shortcut pointing to the executable (.exe) of the application. If Python has not yet been installed, it will be installed through this script as well. Mosamatic Desktop requires Python 3.11. Later versions may not work due to version conflicts with the AI functionality in the tool (to be fixed later).
 
 # Running Mosmatic Desktop
 - After successful installation, you can double-click the "MosamaticDesktop" icon on your desktop (if that's where you installed it) to start the application. After a few seconds you should see the main tool window as illustrated in the figure below.
