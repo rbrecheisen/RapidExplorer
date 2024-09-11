@@ -38,3 +38,7 @@ The AI model files are just another file set in Mosamatic Desktop so you also ha
 - Now that you have the AI model files in the local directory, you can import this directory as a file set in Mosamatic Desktop. This should look as illustrated in the following figure
 
 ![File set of AI model files](assets/MosamaticTensorFlowModelFileSet.png)
+
+## Analyzing body composition
+After you have loaded the AI model files and a file set with L3 images you can proceed to run the body composition analysis steps as follows:
+- 
