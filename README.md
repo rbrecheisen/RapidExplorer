@@ -20,7 +20,18 @@ you have GPU support by going to "About" > "Application Info" in the main menu o
 - Download the installation script somewhere on your system, e.g., on your Desktop.
 - Double-click the installation script. This will start the installation process for Mosamatic. After the script finishes (hopefully successfully), you should see another icon on your desktop "MosamaticDesktop". This is a shortcut pointing to the executable (.exe) of the application.
 
-# Run
+# Running Mosmatic Desktop
 - After successful installation, you can double-click the "MosamaticDesktop" icon on your desktop (if that's where you installed it) to start the application. After a few seconds you should see the main tool window as illustrated in the figure below.
 
 ![Mosamatic Desktop main window](assets/MosamaticMainWindow.png)
+
+## Loading L3 images
+- After starting Mosamatic Desktop, go to "Data" in the top menu and click "Import File Set...".
+- A dialog window opens where you can navigate to your a directory containing, e.g., a list of CT images acquired at L3 level. Just select the directory name and click "Ok" to load the dataset. After successful loading of the images, you should now see them displayed in the left "Data" panel as illustrated in the figure below.
+
+![File set with L3 images](assets/MosamaticExampleFileSet.png)
+
+## Loading AI model files
+The AI model files are just another file set in Mosamatic Desktop so you also have to load them using the "Data" > "Import File Set..." menu. 
+- First create a directory somewhere on your system, e.g., on your desktop called "Mosamatic AI Model Files" (or some other name)
+- Then download each AI model file to this directory on your system. The model files can be found in the "assets" directory of the source code project or from the following links: [model.zip](https://drive.google.com/file/d/1RJKBgw0ejyemh02x5BewBzp5I5GRenUy/view?usp=drive_link), [contour_model.zip](https://drive.google.com/file/d/10tW_-9_JESvPKnoX_kDO1Vn2QGaDkfkq/view?usp=drive_link), [params.json](https://drive.google.com/file/d/1y8TRqVuKIvqn8w1fH2dP7roSzwgfXj5S/view?usp=drive_link).
