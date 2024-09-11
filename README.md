@@ -34,4 +34,7 @@ you have GPU support by going to "About" > "Application Info" in the main menu o
 ## Loading AI model files
 The AI model files are just another file set in Mosamatic Desktop so you also have to load them using the "Data" > "Import File Set..." menu. 
 - First create a directory somewhere on your system, e.g., on your desktop called "Mosamatic AI Model Files" (or some other name)
-- Then download each AI model file to this directory on your system. The model files can be found in the "assets" directory of the source code project or from the following links: [model.zip](https://mosamatic.rbeesoft.nl/data/model.zip), [contour_model.zip](https://mosamatic.rbeesoft.nl/data/contour_model.zip), [params.json](https://mosamatic.rbeesoft.nl/data/params.json).
+- Then download each AI model file to this directory on your system. The model files can be found in the "assets" directory of the source code project or from the following links: [model.zip](https://mosamatic.rbeesoft.nl/data/model.zip), [contour_model.zip](https://mosamatic.rbeesoft.nl/data/contour_model.zip), [params.json](https://mosamatic.rbeesoft.nl/data/params.json). The params.json file may just display in your browser after clicking it. You can actually download it by selecting the whole text and copy-pasting it into a text file (in the local directory) called "params.json".
+- Now that you have the AI model files in the local directory, you can import this directory as a file set in Mosamatic Desktop. This should look as illustrated in the following figure
+
+![File set of AI model files](assets/MosamaticTensorFlowModelFileSet.png)
