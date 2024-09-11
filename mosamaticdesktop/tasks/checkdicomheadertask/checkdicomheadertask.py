@@ -53,11 +53,6 @@ class CheckDicomHeaderTask(Task):
             labelText='Output File Set Name',
             optional=True,
         )
-        self.addBooleanParameter(
-            name='overwriteOutputFileSet',
-            labelText='Overwrite Output File Set',
-            defaultValue=True,
-        )
 
     def execute(self) -> None:
         inputFileSetName = self.parameter('inputFileSetName').value()
@@ -69,11 +64,7 @@ class CheckDicomHeaderTask(Task):
         outputFileSetName = self.parameter('outputFileSetName').value()
         if outputFileSetName is None:
             outputFileSetName = self.generateTimestampForFileSetName(name=inputFileSetName)
-        overwriteOutputFileSet = self.parameter('overwriteOutputFileSet').value()
         outputFileSetPath = os.path.join(outputFileSetPath, outputFileSetName)
-        if overwriteOutputFileSet:
-            if os.path.isdir(outputFileSetPath):
-                shutil.rmtree(outputFileSetPath)
         os.makedirs(outputFileSetPath, exist_ok=False)
         step = 0
         dicomFilesOk = []
