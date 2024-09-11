@@ -12,7 +12,7 @@ you to use the GPU on your system (if present). Note that the automatic slice se
 you have GPU support by going to "About" > "Application Info" in the main menu of Mosamatic Desktop. If it says "GPU Enabled: True" you're good to go.
 
 ## Install Python
-- Go to https://www.python.org and install the most recent Python environment (3.12 as of writing this manual). After installation, test your installation by opening a terminal window by clicking the "Start" button in your Windows task bar and searching for "Terminal". You can also directly go to https://www.python.org/ftp/python/3.12.6/python-3.12.6-amd64.exe.
+- Go to [https://www.python.org](https://www.python.org) and install the most recent Python environment (3.12 as of writing this manual). After installation, test your installation by opening a terminal window by clicking the "Start" button in your Windows task bar and searching for "Terminal". You can also directly go to [https://www.python.org/ftp/python/3.12.6/python-3.12.6-amd64.exe](https://www.python.org/ftp/python/3.12.6/python-3.12.6-amd64.exe).
 - In the terminal type "python --version". You should now see some information about the recently installed Python environment, particularly the installed version.
 
 ## Install Mosamatic using the InstallMosamatic.bat script
