@@ -47,7 +47,7 @@ After you have loaded the AI model files and a file set with L3 images you use a
 ### Checking DICOM attributes
 Start with checking whether your L3 DICOM files have the correct dimensions (512 x 512) and contain the required DICOM attributes for successful analysis. For that, select the "CheckDicomHeaderTask". Click the button "Show Task Widget" to display a dialog window with parameters for this task as illustrated in the figure below:
 
-<!-- ![Check DICOM Task](assets/MosamaticCheckDicomTask.png) -->
+![Check DICOM Task](assets/MosamaticCheckDicomTask.png)
 
 - In the "Input File Set" field, select the L3 file set you imported previously
 - Leave the "Input Extensions to Ignore" unchanged
