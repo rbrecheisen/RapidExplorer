@@ -109,7 +109,7 @@ After running this task a new output file set will have been created that contai
 ### Creating PNG images of the segmentation files
 For publication in an article you may want to create PNG images of relevant imaging files. For this, you can select the "CreatePngFromSegmentationFileTask" and click the "Show Task Widget" button. This will display a dialog window where you can specify the parameters for this task as illustrated in the following figure:
 
-![Create PNGs DICOM](assets/CreatePngFromSegmentationFileTask.png)
+![Create PNGs DICOM](assets/MosamaticCreatePngFromSegmentationFileTask.png)
 
 - In the "Input File Set" field, select the segmentation file set (ending in "_segmentations") you created previously
 - In the "Output File Set Path", navigate and select the directory where you want to save a new directory for holding the output results. This new directory will be created automatically and the output results saved in it
