@@ -21,7 +21,7 @@ you have GPU support by going to "About" > "Application Info" in the main menu o
 - Double-click the installation script. This will start the installation process for Mosamatic. After the script finishes (hopefully successfully), you should see another icon on your desktop "MosamaticDesktop". This is a shortcut pointing to the executable (.exe) of the application.
 - After successful installation, you can double-click the "MosamaticDesktop" icon on your desktop to start the application. After a few seconds you should see the main tool window as illustrated in the figure below.
 
-![Mosamatic Desktop main window](MosamaticDesktop/asserts/MosamaticMainWindow.png)
+![Mosamatic Desktop main window](assets/MosamaticMainWindow.png)
 
 # Run
 Running Mosamatic Desktop can be done by executing the Mosamatic.bat or Mosamatic.sh scripts. Both will first enable the virtual Python environment Mosamatic Desktop was 
