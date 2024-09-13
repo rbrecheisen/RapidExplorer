@@ -50,11 +50,6 @@ class CalculateBodyCompositionMetricsTaskTask(Task):
             labelText='Output File Set Name',
             optional=True,
         )
-        self.addBooleanParameter(
-            name='overwriteOutputFileSet',
-            labelText='Overwrite Output File Set',
-            defaultValue=True,
-        )
 
     def findSegmentationFileForDicomFile(self, dicomFile: File, segmentationFiles: List[File]) -> File:
         for segmentationFile in segmentationFiles:
@@ -130,11 +125,7 @@ class CalculateBodyCompositionMetricsTaskTask(Task):
             outputFileSetName = self.generateTimestampForFileSetName(name=inputFileSetName)
         outputFileSetPath = self.parameter('outputFileSetPath').value()
         outputFileSetPath = os.path.join(outputFileSetPath, outputFileSetName)
-        overwriteOutputFileSet = self.parameter('overwriteOutputFileSet').value()
-        if overwriteOutputFileSet:
-            if os.path.isdir(outputFileSetPath):
-                shutil.rmtree(outputFileSetPath)
-        os.makedirs(outputFileSetPath, exist_ok=True)
+        os.makedirs(outputFileSetPath, exist_ok=False)
 
         files = inputFileSet.files()
         nrSteps = len(files)
