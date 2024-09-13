@@ -7,6 +7,7 @@ import pydicom.errors
 import numpy as np
 
 from typing import List, Any
+from pydicom.uid import ExplicitVRLittleEndian, ImplicitVRLittleEndian, ExplicitVRBigEndian
 
 from mosamaticdesktop.tasks.task import Task
 from mosamaticdesktop.tasks.musclefatsegmentationtask.tensorflowmodel import TensorFlowModel
@@ -105,6 +106,9 @@ class MuscleFatSegmentationTask(Task):
         mask = np.uint8(pred_max)
         return mask
     
+    def is_compressed(self, p):
+        return p.file_meta.TransferSyntaxUID not in [ExplicitVRLittleEndian, ImplicitVRLittleEndian, ExplicitVRBigEndian]
+    
     def execute(self) -> None:
 
         # Get input fileset
@@ -141,7 +145,8 @@ class MuscleFatSegmentationTask(Task):
                     content = readFromCache(file=file)
                     if not content:
                         p = pydicom.dcmread(file.path())
-                        p.decompress()
+                        if not self.is_compressed(p):
+                            p.decompress()
                         content = writeToCache(file, p)
                     p = content.fileObject()
 
