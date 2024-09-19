@@ -4,20 +4,20 @@ pyside6
 sqlalchemy
 pendulum
 pydicom 
-pylibjpeg[all]
-pyjpegls
-python-gdcm
+# pylibjpeg[all]
+# pyjpegls
+# python-gdcm
 pytest
 tensorflow==2.15.0
 # pyinstaller
 matplotlib
-torch==2.3.1
-torchvision==0.18.1
-torchaudio==2.3.1
+# torch==2.3.1
+# torchvision==0.18.1
+# torchaudio==2.3.1
 # torch==2.3.1+cu121 -f https://download.pytorch.org/whl/torch_stable.html
 # torchvision==0.18.1 -f https://download.pytorch.org/whl/torch_stable.html
 # torchaudio==2.3.1 -f https://download.pytorch.org/whl/torch_stable.html
-totalsegmentator
+# totalsegmentator
 scipy
 scikit-image
 statistics
