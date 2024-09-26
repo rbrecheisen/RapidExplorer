@@ -1,13 +1,26 @@
-#!/bin/bash
+import subprocess
+import os
 
-# https://chat.openai.com/c/143bf330-901c-46ea-9115-03b450fdd07d
-# Also install Python3 if needed
+# Path to the virtual environment
+VENV_DIR = os.path.expanduser("~/.mosamatic/MosamaticDesktop")
 
-VENV_DIR="$HOME/.mosamatic/MosamaticDesktop"
+# Prepare the command to get the version of Mosamatic
+command_get_version = f"{VENV_DIR}/bin/pip list | grep mosamatic | awk '{{print $2}}'"
 
-VERSION=$($HOME/.mosamatic/MosamaticDesktop/bin/pip list | grep mosamatic | awk '{print $2}')
+# Execute the command and get the version
+process = subprocess.Popen(command_get_version, shell=True, stdout=subprocess.PIPE, text=True)
+version = process.communicate()[0].strip()
 
-echo "Activating virtual environment and starting Mosamatic Desktop ${VERSION}..."
-source $VENV_DIR/bin/activate
-$HOME/.mosamatic/MosamaticDesktop/bin/mosamatic-desktop
-deactivate
+print(f"Activating virtual environment and starting Mosamatic Desktop {version}...")
+
+# Environment setup for subprocesses
+env = os.environ.copy()
+env['VIRTUAL_ENV'] = VENV_DIR
+env['PATH'] = f"{VENV_DIR}/bin:" + env['PATH']
+
+# Start Mosamatic Desktop
+mosamatic_cmd = f"{VENV_DIR}/bin/mosamatic-desktop"
+process = subprocess.Popen(mosamatic_cmd, env=env, shell=True)
+process.wait()  # Wait for the process to complete
+
+print("Mosamatic Desktop closed, virtual environment deactivated.")
